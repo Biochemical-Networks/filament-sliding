@@ -15,4 +15,9 @@ ParameterMap::ParameterMap()
     defineParameter("runName", "run"); // The code relies on this parameter being called "runName"
     defineParameter("numberEquilibrationBlocks", 50, "blocks");
     defineParameter("numberRunBlocks", 100, "blocks");
+    defineParameter("calcTimeStep", 1.e-3, "seconds");
+
+    defineParameter("lengthMobileMicrotubule", 50., "micrometer");
+    defineParameter("lengthFixedMicrotubule", 50., "micrometer");
+    defineParameter("latticeSpacing", 8.e-3, "micrometer");
 }

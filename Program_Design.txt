@@ -1,0 +1,15 @@
+Classes:
+*Microtubule - Lattice of binding sites. It has a certain lattice spacing and a length.
+*MobileMicrotubule : Microtubule - derived type, also has a position, diffusion constant. Can move.
+
+*Crosslinker - abstract class, spring with two binding sites. Has a spring constant, and virtual move, bind, and unbind functions. 
+*PassiveLinker : Crosslinker - 
+*ActiveLinker : Crosslinker -
+*HybridLinker : Crosslinker -
+
+Microtubules and crosslinkers are objects with some properties and methods that can be used to update their state, but propagation is handled externally. 
+
+Input file:
+Write template class for input: parameter name (string), value (T), and unit (string). 
+Write container class for all input parameters. std::vector? Add function to count the number of members, so that the number of parameters is known.
+

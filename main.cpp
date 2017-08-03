@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Clock/Clock.hpp"
 #include "Input/Input.hpp"
+#include "Microtubule.hpp"
 
 int main()
 {
@@ -12,6 +13,15 @@ int main()
     input.copyParameter("numberRunBlocks", test2);
 
     std::cout<<test1<<' '<<test2<<'\n';
+
+    double length;
+    double latticeSpacing;
+    input.copyParameter("lengthFixedMicrotubule", length);
+    input.copyParameter("latticeSpacing", latticeSpacing);
+
+    Microtubule microtubule(length, latticeSpacing);
+
+    std::cout <<"Length is "<< length << " and lattice spacing is " << latticeSpacing << '\n';
 
     return 0;
 }
