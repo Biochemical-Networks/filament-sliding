@@ -1,20 +1,15 @@
 #ifndef INPUTEXCEPTION_HPP
 #define INPUTEXCEPTION_HPP
 
+#include "../GeneralException/GeneralException.hpp"
 #include <string>
-#include <iostream> // std::cerr
 
-// A class to be thrown upon exceptions relating the input file
-class InputException
+// A class to be thrown upon exceptions relating the input file. Define it to create more general exceptions
+class InputException : public GeneralException
 {
-private:
-    const std::string m_error;
-
 public:
     InputException(const std::string &error);
     InputException() = delete; // Do not allow an exception without a label
-
-    const std::string& getError() const;
 };
 
 

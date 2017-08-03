@@ -1,15 +1,9 @@
 #include "InputException.hpp"
+#include "../GeneralException/GeneralException.hpp"
 #include <string>
 #include <iostream> // std::cerr
 
 
-InputException::InputException(const std::string &error) : m_error(error)
+InputException::InputException(const std::string &error) : GeneralException(error)
 {
-    // Output the error message upon construction
-    std::cerr << m_error << '\n';
-}
-
-const std::string& InputException::getError() const
-{
-    return m_error;
 }
