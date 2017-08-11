@@ -1,15 +1,17 @@
 #include "Propagator.hpp"
-#include <random>
+
 #include <cstdint>
 #include <string>
 
-Propagator::Propagator(const std::string seedString, const int32_t nTimeSteps)
-    :   m_nTimeSteps(nTimeSteps)
+Propagator::Propagator(const int32_t nTimeSteps, const double calcTimeStep, const double diffusionConstantMicrotubule, const double springConstant)
+    :   m_nTimeSteps(nTimeSteps),
+        m_calcTimeStep(calcTimeStep),
+        m_diffusionConstantMicrotubule(diffusionConstantMicrotubule),
+        m_springConstant(springConstant)
 {
-    std::seed_seq seed(seedString.begin(), seedString.end());
-    m_generator.seed(seed);
 }
 
 Propagator::~Propagator()
 {
 }
+
