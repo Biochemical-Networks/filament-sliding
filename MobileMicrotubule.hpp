@@ -13,6 +13,8 @@ public:
     MobileMicrotubule(const double length, const double latticeSpacing, const double initialPosition = 0.);
     virtual ~MobileMicrotubule();
 
+    void setPosition(const double initialPosition);
+
     void updatePosition(const double change);
 
     double getPosition();

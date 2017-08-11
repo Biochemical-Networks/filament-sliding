@@ -19,3 +19,8 @@ double MobileMicrotubule::getPosition()
 {
     return m_position;
 }
+
+void MobileMicrotubule::setPosition(const double initialPosition)
+{
+    m_position = initialPosition;
+}

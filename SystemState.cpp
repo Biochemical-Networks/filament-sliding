@@ -1,5 +1,6 @@
 #include "SystemState.hpp"
-
+#include "Microtubule.hpp"
+#include "MobileMicrotubule.hpp"
 
 SystemState::SystemState(const double lengthMobileMicrotubule,
                             const double lengthFixedMicrotubule,
@@ -19,4 +20,14 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
 
 SystemState::~SystemState()
 {
+}
+
+Microtubule& SystemState::getFixedMicrotubule()
+{
+    return m_fixedMicrotubule;
+}
+
+MobileMicrotubule& SystemState::getMobileMicrotubule()
+{
+    return m_mobileMicrotubule;
 }

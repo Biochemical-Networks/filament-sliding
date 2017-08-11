@@ -1,8 +1,10 @@
 #include "Clock/Clock.hpp"
 #include "Input/Input.hpp"
 #include "SystemState.hpp"
+#include "Initialiser.hpp"
 #include "Propagator.hpp"
 #include "RandomGenerator.hpp"
+#include "Output.hpp"
 
 #include <iostream>
 #include <cstdint>
@@ -14,14 +16,15 @@ int main()
     Clock clock; // Counts time from creation to destruction
     Input input; // Read the input file, ask to create a default one when anything is wrong with it (e.g. nonexistent)
 
-    /*************************************************************************************************/
+    //=====================================================================================================
+    // Instantiate all objects, using parameters from the input file
+    //-----------------------------------------------------------------------------------------------------
     // Get the name of the current run
 
-    std::string runName;
-    input.copyParameter("runName", runName);
+    std::string runName = input.getRunName(); // copyParameter("runName", runName) would give the runName as it is in the input file, while this is the unique version
 
-    /*************************************************************************************************/
-    // Get the parameters needed for initialising the systemState.
+    //-----------------------------------------------------------------------------------------------------
+    // Get the parameters needed for defining the general systemState.
     double lengthMobileMicrotubule;
     input.copyParameter("lengthMobileMicrotubule", lengthMobileMicrotubule);
 
@@ -43,8 +46,16 @@ int main()
     SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing,
                             nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers);
 
-    /*************************************************************************************************/
-    // Get the parameters needed for initialising the propagator
+    //-----------------------------------------------------------------------------------------------------
+    // Get the parameters needed for initialising the state.
+
+    double initialPositionMicrotubule;
+    input.copyParameter("initialPositionMicrotubule", initialPositionMicrotubule);
+
+    Initialiser initialiser(initialPositionMicrotubule);
+
+    //-----------------------------------------------------------------------------------------------------
+    // Get the parameters needed for setting the propagator
 
     int32_t nTimeSteps;
     input.copyParameter("numberTimeSteps", nTimeSteps);
@@ -60,11 +71,22 @@ int main()
 
     Propagator propagator(nTimeSteps, calcTimeStep, diffusionConstantMicrotubule, springConstant);
 
-    /*************************************************************************************************/
+    //-----------------------------------------------------------------------------------------------------
     // Set the random number generator
 
     RandomGenerator generator(runName); // Seed with the runName, which is unique
 
+    //-----------------------------------------------------------------------------------------------------
+    // Create the output class
+
+    Output output(runName);
+
+    //=====================================================================================================
+    // Using the objects created so far, perform the actions
+
+    initialiser.initialise(systemState, generator);
+
+    output.writeMicrotubulePosition(0.0, systemState.getMobileMicrotubule().getPosition());
 
     return 0;
 }

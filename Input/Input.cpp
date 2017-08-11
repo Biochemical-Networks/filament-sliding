@@ -29,7 +29,6 @@ Input::Input(const std::string fileName) : m_fileName(fileName)
     }
     setRunName(); // Set the name of the current run, first from the input file, adding labels if the name was previously used
 
-
 }
 
 Input::~Input()

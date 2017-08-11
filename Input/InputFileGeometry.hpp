@@ -3,7 +3,7 @@
 
 /* Put the InputFileGeometry in global variables,
  * because this way these are grouped together.
- * Furthermore, it is not necessary to write a seperate InputFileLine class
+ * Furthermore, it is not necessary to write a separate InputFileLine class
  * just for input/output of one line in the file.
  */
 

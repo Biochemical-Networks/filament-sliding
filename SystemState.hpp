@@ -5,6 +5,7 @@
 #include "MobileMicrotubule.hpp"
 #include "Crosslinker.hpp"
 #include <cstdint>
+#include <iostream>
 
 class SystemState
 {
@@ -26,6 +27,9 @@ public:
                 const int32_t nDualCrosslinkers,
                 const int32_t nPassiveCrosslinkers);
     ~SystemState();
+
+    Microtubule& getFixedMicrotubule();
+    MobileMicrotubule& getMobileMicrotubule();
 };
 
 #endif // SYSTEMSTATE_HPP

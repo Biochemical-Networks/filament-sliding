@@ -7,9 +7,9 @@
 class Initialiser
 {
 private:
-
+    const double m_initialPositionMicrotubule;
 public:
-    Initialiser();
+    Initialiser(const double initialPositionMicrotubule);
     ~Initialiser();
 
     void initialise(SystemState& systemState, RandomGenerator& generator);
