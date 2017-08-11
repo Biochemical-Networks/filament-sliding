@@ -1,27 +1,47 @@
 #include <iostream>
 #include "Clock/Clock.hpp"
 #include "Input/Input.hpp"
-#include "Microtubule.hpp"
+#include "SystemState.hpp"
+#include "Propagator.hpp"
+#include <cstdint>
+#include <string>
 
 int main()
 {
     Clock clock; // Counts time from creation to destruction
     Input input;
 
-    int test1, test2;
-    input.copyParameter("numberEquilibrationBlocks", test1);
-    input.copyParameter("numberRunBlocks", test2);
+    // Get the parameters needed for initialising the systemState.
+    double lengthMobileMicrotubule;
+    input.copyParameter("lengthMobileMicrotubule", lengthMobileMicrotubule);
 
-    std::cout<<test1<<' '<<test2<<'\n';
+    double lengthFixedMicrotubule;
+    input.copyParameter("lengthFixedMicrotubule", lengthFixedMicrotubule);
 
-    double length;
     double latticeSpacing;
-    input.copyParameter("lengthFixedMicrotubule", length);
     input.copyParameter("latticeSpacing", latticeSpacing);
 
-    Microtubule microtubule(length, latticeSpacing);
+    int32_t nActiveCrosslinkers;
+    input.copyParameter("numberActiveCrosslinkers", nActiveCrosslinkers);
 
-    std::cout <<"Length is "<< length << " and lattice spacing is " << latticeSpacing << '\n';
+    int32_t nDualCrosslinkers;
+    input.copyParameter("numberDualCrosslinkers", nDualCrosslinkers);
+
+    int32_t nPassiveCrosslinkers;
+    input.copyParameter("numberPassiveCrosslinkers", nPassiveCrosslinkers);
+
+    SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing,
+                            nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers);
+
+
+    std::string runName;
+    input.copyParameter("runName", runName);
+
+    int32_t nTimeSteps;
+    input.copyParameter("numberTimeSteps", nTimeSteps);
+
+    // Use the (unique) run name as the seed for the random number generator
+    Propagator propagator(runName, nTimeSteps);
 
     return 0;
 }

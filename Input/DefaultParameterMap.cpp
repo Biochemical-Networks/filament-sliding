@@ -20,4 +20,10 @@ ParameterMap::ParameterMap()
     defineParameter("lengthMobileMicrotubule", 50., "micrometer");
     defineParameter("lengthFixedMicrotubule", 50., "micrometer");
     defineParameter("latticeSpacing", 8.e-3, "micrometer");
+    defineParameter("diffusionConstantMicrotubule", 10., "micrometer^(2) second^(-1)");
+
+    defineParameter("numberActiveCrosslinkers", 0, "crosslinkers");
+    defineParameter("numberDualCrosslinkers", 0, "crosslinkers");
+    defineParameter("numberPassiveCrosslinkers", 1000, "crosslinkers");
+    defineParameter("springConstant", 1., "kT micrometer^(-2)");
 }
