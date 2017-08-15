@@ -28,6 +28,8 @@ public:
 
     int32_t getPosition() const;
 
+    MicrotubuleType getMicrotubuleType() const;
+
     void connect(const MicrotubuleType connectTo, const int32_t sitePosition);
 
     void disconnect();

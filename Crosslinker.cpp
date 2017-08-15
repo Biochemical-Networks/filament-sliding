@@ -3,8 +3,9 @@
 
 #include "Extremity.hpp"
 
-Crosslinker::Crosslinker(bool headConnected, bool tailConnected)
-    :   m_head(headConnected),
+Crosslinker::Crosslinker(const Type type, bool headConnected, bool tailConnected)
+    :   m_type(type),
+        m_head(headConnected),
         m_tail(tailConnected)
 {
 }
@@ -26,6 +27,16 @@ int32_t Crosslinker::getHeadPosition() const
 int32_t Crosslinker::getTailPosition() const
 {
     return m_tail.getPosition();
+}
+
+Extremity::MicrotubuleType Crosslinker::getHeadMicrotubuleType() const
+{
+    return m_head.getMicrotubuleType();
+}
+
+Extremity::MicrotubuleType Crosslinker::getTailMicrotubuleType() const
+{
+    return m_tail.getMicrotubuleType();
 }
 
 /*

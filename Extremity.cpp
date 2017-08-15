@@ -25,6 +25,15 @@ int32_t Extremity::getPosition() const
     return m_sitePosition;
 }
 
+Extremity::MicrotubuleType Extremity::getMicrotubuleType() const
+{
+    if (!m_connected)
+    {
+        throw GeneralException("Tried to get the microtubule type of a free crosslinker extremity");
+    }
+    return m_connectedTo;
+}
+
 void Extremity::connect(const MicrotubuleType connectTo, const int32_t sitePosition)
 {
     if (m_connected)

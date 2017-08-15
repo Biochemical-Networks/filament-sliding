@@ -15,7 +15,7 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
         m_nDualCrosslinkers(nDualCrosslinkers),
         m_nPassiveCrosslinkers(nPassiveCrosslinkers),
         m_nCrosslinkers(m_nActiveCrosslinkers+m_nDualCrosslinkers+m_nPassiveCrosslinkers),
-        m_crosslinkers(m_nCrosslinkers, Crosslinker(false, false)) // Initialise crosslinkers to have both extremities free
+        m_crosslinkers(m_nCrosslinkers, Crosslinker(Crosslinker::Type::PASSIVE, false, false)) // Initialise crosslinkers to have both extremities free
 {
 }
 
