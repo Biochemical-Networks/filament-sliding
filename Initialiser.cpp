@@ -13,5 +13,5 @@ Initialiser::~Initialiser()
 
 void Initialiser::initialise(SystemState& systemState, RandomGenerator& generator)
 {
-    systemState.getMobileMicrotubule().setPosition(m_initialPositionMicrotubule);
+    systemState.initiate(m_initialPositionMicrotubule);
 }

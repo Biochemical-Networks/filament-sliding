@@ -4,6 +4,8 @@
 #include <iostream>
 #include <iomanip> // For std::setw()
 
+#include "SystemState.hpp"
+
 Output::Output(const std::string &runName)
     :   m_microtubulePositionFile((runName+".microtubule_position.txt").c_str())
 {
@@ -15,7 +17,7 @@ Output::~Output()
 {
 }
 
-void Output::writeMicrotubulePosition(const double time, const double position)
+void Output::writeMicrotubulePosition(const double time, const SystemState& systemState) // Non-const, stream is changed
 {
-    m_microtubulePositionFile << std::setw(m_collumnWidth) << time << std::setw(m_collumnWidth) << position << '\n';
+    m_microtubulePositionFile << std::setw(m_collumnWidth) << time << std::setw(m_collumnWidth) << systemState.getMicrotubulePosition() << '\n';
 }

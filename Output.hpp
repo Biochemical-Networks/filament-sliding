@@ -2,6 +2,7 @@
 #define OUPUT_HPP
 
 #include <fstream>
+#include "SystemState.hpp"
 
 class Output
 {
@@ -13,7 +14,7 @@ public:
     Output(const std::string &runName);
     ~Output();
 
-    void writeMicrotubulePosition(const double time, const double position);
+    void writeMicrotubulePosition(const double time, const SystemState& systemState);
 };
 
 #endif // OUPUT_HPP

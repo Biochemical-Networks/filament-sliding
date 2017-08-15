@@ -86,7 +86,8 @@ int main()
 
     initialiser.initialise(systemState, generator);
 
-    output.writeMicrotubulePosition(0.0, systemState.getMobileMicrotubule().getPosition());
+    propagator.run(systemState, generator, output);
+
 
     return 0;
 }

@@ -1,6 +1,7 @@
 #include "SystemState.hpp"
 #include "Microtubule.hpp"
 #include "MobileMicrotubule.hpp"
+#include "Crosslinker.hpp"
 
 SystemState::SystemState(const double lengthMobileMicrotubule,
                             const double lengthFixedMicrotubule,
@@ -22,12 +23,19 @@ SystemState::~SystemState()
 {
 }
 
-Microtubule& SystemState::getFixedMicrotubule()
+void SystemState::initiate(const double initialPosition)
 {
-    return m_fixedMicrotubule;
+    m_mobileMicrotubule.setPosition(initialPosition);
+
+
 }
 
-MobileMicrotubule& SystemState::getMobileMicrotubule()
+void SystemState::update(const double changeMicrotubulePosition)
 {
-    return m_mobileMicrotubule;
+    m_mobileMicrotubule.updatePosition(changeMicrotubulePosition);
+}
+
+double SystemState::getMicrotubulePosition() const
+{
+    return m_mobileMicrotubule.getPosition();
 }

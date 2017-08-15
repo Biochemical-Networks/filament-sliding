@@ -17,7 +17,7 @@ public:
 
     void updatePosition(const double change);
 
-    double getPosition();
+    double getPosition() const;
 };
 
 #endif // MOBILEMICROTUBULE_HPP

@@ -11,3 +11,9 @@ RandomGenerator::RandomGenerator(const std::string seedString)
 RandomGenerator::~RandomGenerator()
 {
 }
+
+const double RandomGenerator::getGaussian(const double mean, const double deviation)
+{
+    std::normal_distribution<double> distribution(mean, deviation);
+    return distribution(m_generator);
+}

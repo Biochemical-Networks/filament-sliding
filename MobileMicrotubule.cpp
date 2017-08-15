@@ -15,7 +15,7 @@ void MobileMicrotubule::updatePosition(const double change)
     m_position+=change;
 }
 
-double MobileMicrotubule::getPosition()
+double MobileMicrotubule::getPosition() const
 {
     return m_position;
 }

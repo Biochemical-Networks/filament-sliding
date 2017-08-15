@@ -13,9 +13,19 @@ Crosslinker::~Crosslinker()
 {
 }
 
-bool Crosslinker::isConnected()
+bool Crosslinker::isConnected() const
 {
     return (m_head.isConnected()||m_tail.isConnected());
+}
+
+int32_t Crosslinker::getHeadPosition() const
+{
+    return m_head.getPosition();
+}
+
+int32_t Crosslinker::getTailPosition() const
+{
+    return m_tail.getPosition();
 }
 
 /*

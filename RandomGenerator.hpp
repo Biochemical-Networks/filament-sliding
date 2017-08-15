@@ -8,9 +8,14 @@ class RandomGenerator
 {
 private:
     std::mt19937_64 m_generator;
+
+
 public:
     RandomGenerator(const std::string seedString);
     ~RandomGenerator();
+
+    // Functions that change the generator state should not be const
+    const double getGaussian(const double mean, const double deviation);
 };
 
 #endif // RANDOMGENERATOR_HPP
