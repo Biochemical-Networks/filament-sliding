@@ -11,12 +11,30 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
                             const int32_t nPassiveCrosslinkers)
     :   m_fixedMicrotubule(lengthFixedMicrotubule, latticeSpacing),
         m_mobileMicrotubule(lengthMobileMicrotubule, latticeSpacing),
-        m_nActiveCrosslinkers(nActiveCrosslinkers),
-        m_nDualCrosslinkers(nDualCrosslinkers),
         m_nPassiveCrosslinkers(nPassiveCrosslinkers),
-        m_nCrosslinkers(m_nActiveCrosslinkers+m_nDualCrosslinkers+m_nPassiveCrosslinkers),
-        m_crosslinkers(m_nCrosslinkers, Crosslinker(Crosslinker::Type::PASSIVE, false, false)) // Initialise crosslinkers to have both extremities free
+        m_nDualCrosslinkers(nDualCrosslinkers),
+        m_nActiveCrosslinkers(nActiveCrosslinkers),
+        m_nCrosslinkers(m_nActiveCrosslinkers+m_nDualCrosslinkers+m_nPassiveCrosslinkers)
 {
+    /* Create the crosslinkers here. The vector already exists, but the crosslinker constructor needs to be called knowing what type the crosslinker is (since the type is constant).
+     * The vector creates these crosslinkers when they are pushed back. No vector constructor exists that creates crosslinkers with different constructors.
+     * Also, insert is not an option, since it requires the assignment operator for Crosslinker, which was implicitly deleted due to the const member variable.
+     * First, create crosslinkers to have both extremities free.
+     */
+
+    m_crosslinkers.reserve(m_nCrosslinkers);
+    for (int32_t i=0; i<m_nPassiveCrosslinkers; ++i)
+    {
+        m_crosslinkers.push_back(Crosslinker(Crosslinker::Type::PASSIVE, false, false));
+    }
+    for (int32_t i=0; i<m_nDualCrosslinkers; ++i)
+    {
+        m_crosslinkers.push_back(Crosslinker(Crosslinker::Type::DUAL, false, false));
+    }
+    for (int32_t i=0; i<m_nActiveCrosslinkers; ++i)
+    {
+        m_crosslinkers.push_back(Crosslinker(Crosslinker::Type::ACTIVE, false, false));
+    }
 }
 
 SystemState::~SystemState()

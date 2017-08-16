@@ -79,7 +79,10 @@ int main()
     //-----------------------------------------------------------------------------------------------------
     // Create the output class
 
-    Output output(runName);
+    int32_t probePeriod;
+    input.copyParameter("probePeriod", probePeriod);
+
+    Output output(runName, probePeriod);
 
     //=====================================================================================================
     // Using the objects created so far, perform the actions

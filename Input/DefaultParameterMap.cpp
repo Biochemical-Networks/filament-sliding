@@ -19,6 +19,7 @@ ParameterMap::ParameterMap()
     defineParameter("numberRunBlocks", 100, "blocks");
     defineParameter("calcTimeStep", 1.e-3, "s");
     defineParameter("numberTimeSteps", 1000, "steps");
+    defineParameter("probePeriod", 10, "steps");
 
     // General state parameters
     defineParameter("lengthMobileMicrotubule", 50., "micron");

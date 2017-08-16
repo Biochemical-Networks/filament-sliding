@@ -39,16 +39,3 @@ Extremity::MicrotubuleType Crosslinker::getTailMicrotubuleType() const
     return m_tail.getMicrotubuleType();
 }
 
-/*
-bool Crosslinker::isConnected(const Crosslinker::Extremity& side)
-{
-    switch (side)
-    {
-        case Crosslinker::Extremity::HEAD :
-            return m_headConnected;
-        case Crosslinker::Extremity::TAIL :
-            return m_tailConnected;
-        default:
-            throw GeneralException("An extremity was passed to Crosslinker::isConnected() that does not hold an appropriate value");
-    }
-}*/

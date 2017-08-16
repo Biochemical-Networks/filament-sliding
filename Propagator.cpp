@@ -26,14 +26,15 @@ Propagator::~Propagator()
 
 void Propagator::run(SystemState& systemState, RandomGenerator& generator, Output& output)
 {
+    int32_t probePeriod = output.getProbePeriod();
     for (int32_t timeStep = 0; timeStep < m_nTimeSteps; ++timeStep)
     {
-        if (timeStep%10==0)
+        if (timeStep%probePeriod==0)
             output.writeMicrotubulePosition(timeStep*m_calcTimeStep, systemState);
 
         moveMicrotubule(systemState, generator);
     }
-    output.writeMicrotubulePosition(m_nTimeSteps*m_calcTimeStep, systemState);
+    output.writeMicrotubulePosition(m_nTimeSteps*m_calcTimeStep, systemState); // Write the final state as well. It does not have to be the same
 
 }
 
