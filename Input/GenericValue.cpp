@@ -4,7 +4,6 @@
 #include <string>
 #include <iostream> // For overloading the IO operators
 #include <iomanip> // For std::setw()
-#include <limits> // For std::numeric_limits
 #include <cstdint> // For int32_t
 
 // Default copy constructor: copy all members
@@ -166,11 +165,6 @@ std::istream& operator>> (std::istream& in, GenericValue &genericValue)
     {
         in.clear(); // Reset error flags
         throw InputException("At least one parameter is absent or has a wrong format");
-    }
-    else
-    {
-        // Remove junk from the input stream. Not sure if this is always present.
-        in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 
     // Convert type to AllowedTypes

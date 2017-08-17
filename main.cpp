@@ -57,7 +57,7 @@ int main()
     double fractionConnectedCrosslinkers;
     input.copyParameter("fractionConnectedCrosslinkers", fractionConnectedCrosslinkers);
 
-    Initialiser initialiser(initialPositionMicrotubule, fractionConnectedCrosslinkers);
+    Initialiser initialiser(initialPositionMicrotubule, fractionConnectedCrosslinkers, Initialiser::InitialCrosslinkerDistribution::RANDOM);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the propagator

@@ -17,6 +17,7 @@ namespace InputFileGeometry
     static constexpr int valueWidth = 20;
     static constexpr int unitWidth = 20;
     static constexpr int typeWidth = 20;
+    static constexpr int possibleValuesWidth = 80;
 }
 
 #endif // INPUTFILEGEOMETRY

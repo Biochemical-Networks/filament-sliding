@@ -16,13 +16,15 @@ private:
      */
     std::unordered_map<std::string, GenericValue> m_parameterMap;
     std::deque<std::string> m_parameterOrder;
+    std::unordered_map<std::string, std::string> m_possibleValuesMap;
 
     // This function makes the syntax for adding elements easier.
     template <typename T>
-    void defineParameter(const std::string name, T value, std::string unit = "unitless")
+    void defineParameter(const std::string name, T value, std::string unit = "unitless", std::string possibleValues = "all")
     {
         m_parameterOrder.push_back(name); // Add the name to this FIFO container, such that it can be printed in the right order
         m_parameterMap.insert({name, GenericValue{value, unit}}); // The map uses the name as a key and the GenericValue as the value.
+        m_possibleValuesMap.insert({name, possibleValues});
     }
 public:
     ParameterMap();
