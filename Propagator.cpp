@@ -11,9 +11,10 @@
 
 #include <iostream>
 
-Propagator::Propagator(const int32_t nTimeSteps, const double calcTimeStep, const double diffusionConstantMicrotubule, const double springConstant)
+Propagator::Propagator(const int32_t nTimeSteps, const double calcTimeStep, const int32_t probePeriod, const double diffusionConstantMicrotubule, const double springConstant)
     :   m_nTimeSteps(nTimeSteps),
         m_calcTimeStep(calcTimeStep),
+        m_probePeriod(probePeriod),
         m_diffusionConstantMicrotubule(diffusionConstantMicrotubule),
         m_springConstant(springConstant),
         m_deviationMicrotubule(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep))
@@ -26,16 +27,14 @@ Propagator::~Propagator()
 
 void Propagator::run(SystemState& systemState, RandomGenerator& generator, Output& output)
 {
-    int32_t probePeriod = output.getProbePeriod();
     for (int32_t timeStep = 0; timeStep < m_nTimeSteps; ++timeStep)
     {
-        if (timeStep%probePeriod==0)
+        if (timeStep%m_probePeriod==0)
             output.writeMicrotubulePosition(timeStep*m_calcTimeStep, systemState);
 
         moveMicrotubule(systemState, generator);
     }
-    output.writeMicrotubulePosition(m_nTimeSteps*m_calcTimeStep, systemState); // Write the final state as well. It does not have to be the same
-
+    output.writeMicrotubulePosition(m_nTimeSteps*m_calcTimeStep, systemState); // Write the final state as well. The time it writes at is not equidistant compared to the previous writing times, when probePeriod does not divide nTimeSteps
 }
 
 void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& generator)

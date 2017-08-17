@@ -15,10 +15,10 @@ public:
     };
 
 private:
+    const Type m_type;
+
     Extremity m_head;
     Extremity m_tail;
-
-    const Type m_type;
 
 public:
 
@@ -35,11 +35,6 @@ public:
 
 /*    void setHeadPosition(const int32_t sitePosition);
     void setTailPosition(const int32_t sitePosition);*/
-
-
-    /*bool isConnected(const Extremity& side);*/
-
-
 
 };
 

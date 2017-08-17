@@ -18,10 +18,10 @@ private:
     int32_t m_nActiveCrosslinkers;
     int32_t m_nCrosslinkers;
 
-    /*std::vector<Crosslinker> m_passiveCrosslinkers;
-    std::vector<Crosslinker> m_dualCrosslinkers;
-    std::vector<Crosslinker> m_activeCrosslinkers;*/
     std::vector<Crosslinker> m_crosslinkers;
+
+    int32_t m_nFreeCrosslinkers;
+    std::vector<bool> m_crosslinkerFree;
 
     // The force on the microtubule is a property of the system as a whole, because it is caused by the crosslinkers and a possible external force
     double m_forceMicrotubule;
@@ -36,7 +36,9 @@ public:
                 const int32_t nPassiveCrosslinkers);
     ~SystemState();
 
-    void initiate(const double positionMicrotubule);
+    void setMicrotubulePosition(const double positionMicrotubule);
+
+    void setCrosslinkerPositions();
 
     void update(const double changeMicrotubulePosition);
 

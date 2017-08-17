@@ -43,6 +43,8 @@ int main()
     int32_t nPassiveCrosslinkers;
     input.copyParameter("numberPassiveCrosslinkers", nPassiveCrosslinkers);
 
+
+
     SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing,
                             nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers);
 
@@ -52,7 +54,10 @@ int main()
     double initialPositionMicrotubule;
     input.copyParameter("initialPositionMicrotubule", initialPositionMicrotubule);
 
-    Initialiser initialiser(initialPositionMicrotubule);
+    double fractionConnectedCrosslinkers;
+    input.copyParameter("fractionConnectedCrosslinkers", fractionConnectedCrosslinkers);
+
+    Initialiser initialiser(initialPositionMicrotubule, fractionConnectedCrosslinkers);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the propagator
@@ -63,13 +68,16 @@ int main()
     double calcTimeStep;
     input.copyParameter("calcTimeStep", calcTimeStep);
 
+    int32_t probePeriod;
+    input.copyParameter("probePeriod", probePeriod);
+
     double diffusionConstantMicrotubule;
     input.copyParameter("diffusionConstantMicrotubule", diffusionConstantMicrotubule);
 
     double springConstant;
     input.copyParameter("springConstant", springConstant);
 
-    Propagator propagator(nTimeSteps, calcTimeStep, diffusionConstantMicrotubule, springConstant);
+    Propagator propagator(nTimeSteps, calcTimeStep, probePeriod, diffusionConstantMicrotubule, springConstant);
 
     //-----------------------------------------------------------------------------------------------------
     // Set the random number generator
@@ -79,10 +87,7 @@ int main()
     //-----------------------------------------------------------------------------------------------------
     // Create the output class
 
-    int32_t probePeriod;
-    input.copyParameter("probePeriod", probePeriod);
-
-    Output output(runName, probePeriod);
+    Output output(runName);
 
     //=====================================================================================================
     // Using the objects created so far, perform the actions

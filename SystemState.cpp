@@ -14,7 +14,9 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
         m_nPassiveCrosslinkers(nPassiveCrosslinkers),
         m_nDualCrosslinkers(nDualCrosslinkers),
         m_nActiveCrosslinkers(nActiveCrosslinkers),
-        m_nCrosslinkers(m_nActiveCrosslinkers+m_nDualCrosslinkers+m_nPassiveCrosslinkers)
+        m_nCrosslinkers(m_nActiveCrosslinkers+m_nDualCrosslinkers+m_nPassiveCrosslinkers),
+        m_nFreeCrosslinkers(m_nCrosslinkers),
+        m_crosslinkerFree(m_nFreeCrosslinkers, true)
 {
     /* Create the crosslinkers here. The vector already exists, but the crosslinker constructor needs to be called knowing what type the crosslinker is (since the type is constant).
      * The vector creates these crosslinkers when they are pushed back. No vector constructor exists that creates crosslinkers with different constructors.
@@ -41,7 +43,7 @@ SystemState::~SystemState()
 {
 }
 
-void SystemState::initiate(const double initialPosition)
+void SystemState::setMicrotubulePosition(const double initialPosition)
 {
     m_mobileMicrotubule.setPosition(initialPosition);
 

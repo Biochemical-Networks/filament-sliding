@@ -13,7 +13,7 @@ ParameterMap::ParameterMap()
      * If a parameter is to be of type double, always add a floating point (e.g. "4.") to make it double
      * The strings (for example the unit!) are NOT allowed to contain white space, since reading will then try to read the next field
      */
-     // Run parameters
+    // Run parameters
     defineParameter("runName", "run"); // The code relies on this parameter being called "runName"
     defineParameter("numberEquilibrationBlocks", 50, "blocks");
     defineParameter("numberRunBlocks", 100, "blocks");
@@ -29,6 +29,8 @@ ParameterMap::ParameterMap()
     defineParameter("numberActiveCrosslinkers", 0, "crosslinkers");
     defineParameter("numberDualCrosslinkers", 0, "crosslinkers");
     defineParameter("numberPassiveCrosslinkers", 1000, "crosslinkers");
+    defineParameter("fractionConnectedCrosslinkers", 1.0);
+    defineParameter("initialCrosslinkerDistribution", "RANDOM"); // Can only hold the values set by Initialiser::InitialCrosslinkerDistribution
 
     // Initial state parameters
     defineParameter("initialPositionMicrotubule", 10., "micron"); // The position of the mobile microtubule relative to the fixed one, where 0. means that the two have the same (left) boundary position
