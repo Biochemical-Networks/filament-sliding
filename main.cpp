@@ -43,8 +43,6 @@ int main()
     int32_t nPassiveCrosslinkers;
     input.copyParameter("numberPassiveCrosslinkers", nPassiveCrosslinkers);
 
-
-
     SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing,
                             nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers);
 

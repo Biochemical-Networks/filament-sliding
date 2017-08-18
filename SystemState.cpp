@@ -15,28 +15,13 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
         m_nDualCrosslinkers(nDualCrosslinkers),
         m_nActiveCrosslinkers(nActiveCrosslinkers),
         m_nCrosslinkers(m_nActiveCrosslinkers+m_nDualCrosslinkers+m_nPassiveCrosslinkers),
-        m_nFreeCrosslinkers(m_nCrosslinkers),
-        m_crosslinkerFree(m_nFreeCrosslinkers, true)
+        m_nFreePassiveCrosslinkers(m_nPassiveCrosslinkers),
+        m_nFreeDualCrosslinkers(m_nDualCrosslinkers),
+        m_nFreeActiveCrosslinkers(m_nActiveCrosslinkers),
+        m_passiveCrosslinkers(m_nPassiveCrosslinkers, Crosslinker(Crosslinker::Type::PASSIVE, false, false)),
+        m_dualCrosslinkers(m_nDualCrosslinkers, Crosslinker(Crosslinker::Type::DUAL, false, false)),
+        m_activeCrosslinkers(m_nActiveCrosslinkers, Crosslinker(Crosslinker::Type::ACTIVE, false, false))
 {
-    /* Create the crosslinkers here. The vector already exists, but the crosslinker constructor needs to be called knowing what type the crosslinker is (since the type is constant).
-     * The vector creates these crosslinkers when they are pushed back. No vector constructor exists that creates crosslinkers with different constructors.
-     * Also, insert is not an option, since it requires the assignment operator for Crosslinker, which was implicitly deleted due to the const member variable.
-     * First, create crosslinkers to have both extremities free.
-     */
-
-    m_crosslinkers.reserve(m_nCrosslinkers);
-    for (int32_t i=0; i<m_nPassiveCrosslinkers; ++i)
-    {
-        m_crosslinkers.push_back(Crosslinker(Crosslinker::Type::PASSIVE, false, false));
-    }
-    for (int32_t i=0; i<m_nDualCrosslinkers; ++i)
-    {
-        m_crosslinkers.push_back(Crosslinker(Crosslinker::Type::DUAL, false, false));
-    }
-    for (int32_t i=0; i<m_nActiveCrosslinkers; ++i)
-    {
-        m_crosslinkers.push_back(Crosslinker(Crosslinker::Type::ACTIVE, false, false));
-    }
 }
 
 SystemState::~SystemState()
@@ -58,4 +43,19 @@ void SystemState::update(const double changeMicrotubulePosition)
 double SystemState::getMicrotubulePosition() const
 {
     return m_mobileMicrotubule.getPosition();
+}
+
+int32_t SystemState::getNFreePassiveCrosslinkers() const
+{
+    return m_nFreePassiveCrosslinkers;
+}
+
+int32_t SystemState::getNFreeDualCrosslinkers() const
+{
+    return m_nFreeDualCrosslinkers;
+}
+
+int32_t SystemState::getNFreeActiveCrosslinkers() const
+{
+    return m_nFreeActiveCrosslinkers;
 }

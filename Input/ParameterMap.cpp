@@ -9,6 +9,9 @@
 #include "InputException.hpp"
 #include "InputFileGeometry.hpp"
 
+/* FOR THE CONSTRUCTOR DEFINITION, LOOK IN "DefaultParameterMap.cpp" !!!
+ */
+
 std::ostream& operator<< (std::ostream& out, const ParameterMap &parameterMap)
 {
     out << std::left; // Left justified
@@ -46,7 +49,12 @@ std::istream& operator>> (std::istream& in, ParameterMap &parameterMap)
         in >> parameterMap.m_parameterMap.at(parameterName); // Use the overloaded input operator for GenericValue
 
         std::string possibleValues;
-        in >> possibleValues; // throw this away
+        in >> possibleValues;
+
+        if (possibleValues != ParameterMap().m_possibleValuesMap.at(parameterName)) // Check if the default ParameterMap contains the same possibleValues as the one read
+        {
+            throw InputException("The parameter "+readName+" does not have correct allowed values, or the parameters are not ordered correctly");
+        }
 
         // Check if input failed
         if (in.fail())

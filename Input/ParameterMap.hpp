@@ -40,9 +40,9 @@ public:
         // Change a std::out_of_range to an InputException, such that the exceptions can be handled uniformly.
         try
         {
-            variableType = m_parameterMap.at(name); // Call the assignment operator. Will throw if the types don't match
+            variableType = m_parameterMap.at(name); // Call the assignment operator. This operation will throw if the types don't match
         }
-        catch(const std::out_of_range &error)
+        catch(const std::out_of_range &error) // Throw if m_parameterMap does not contain the key 'name'
         {
             throw InputException{"Out of range error: the parameterMap does not contain a variable with the name "+name+".\n"};
         }
