@@ -6,6 +6,8 @@
 #include "Site.hpp"
 #include "Crosslinker.hpp"
 
+#include <stdexcept>
+
 Microtubule::Microtubule(const double length, const double latticeSpacing)
     :   m_length(length),
         m_latticeSpacing(latticeSpacing),
@@ -21,5 +23,12 @@ Microtubule::~Microtubule()
 
 void Microtubule::connectSite(const int32_t sitePosition, Crosslinker& crosslinkerToConnect, const Crosslinker::Terminus terminusToConnect)
 {
-    m_sites.at(sitePosition).connectCrosslinker(crosslinkerToConnect, terminusToConnect);
+    try
+    {
+        m_sites.at(sitePosition).connectCrosslinker(crosslinkerToConnect, terminusToConnect);
+    }
+    catch(std::out_of_range)
+    {
+        throw GeneralException("The sitePosition given to Microtubule::connectSite() does not exist");
+    }
 }

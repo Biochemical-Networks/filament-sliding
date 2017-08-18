@@ -5,6 +5,8 @@
 #include "Extremity.hpp"
 #include "GeneralException/GeneralException.hpp"
 
+#include <stdexcept>
+
 SystemState::SystemState(const double lengthMobileMicrotubule,
                             const double lengthFixedMicrotubule,
                             const double latticeSpacing,
@@ -58,8 +60,6 @@ void SystemState::connectFreeCrosslinker(const Crosslinker::Type type, const Cro
             throw GeneralException("An incorrect crosslinker type was passed to connectCrosslinker");
             break;
     }
-    Crosslinker &crosslinkerToConnect = p_crosslinkersVector->at(nFreeCrosslinkers-1); // Reference, because only one crosslinker is connected in this function
-
 
     Microtubule *p_microtubuleToConnect = nullptr;
     switch(microtubuleToConnectTo)
@@ -76,9 +76,20 @@ void SystemState::connectFreeCrosslinker(const Crosslinker::Type type, const Cro
     }
 
 
-    crosslinkerToConnect.connectFromFree(microtubuleToConnectTo, terminusToConnect, position); // Connect the crosslinker
+    try
+    {
+        // Everything needs to be defined within the try block, otherwise crosslinkerToConnect is not defined in the right scope
+        Crosslinker &crosslinkerToConnect = p_crosslinkersVector->at(nFreeCrosslinkers-1); // Reference, because only one crosslinker is connected in this function
 
-    p_microtubuleToConnect->connectSite(position, crosslinkerToConnect, terminusToConnect);
+        crosslinkerToConnect.connectFromFree(microtubuleToConnectTo, terminusToConnect, position); // Connect the crosslinker
+
+        p_microtubuleToConnect->connectSite(position, crosslinkerToConnect, terminusToConnect);
+    }
+    catch(std::out_of_range) // For the at function
+    {
+        throw GeneralException("There are no free crosslinkers, but still one was tried to be connected");
+    }
+
 }
 
 void SystemState::update(const double changeMicrotubulePosition)
