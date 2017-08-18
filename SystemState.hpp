@@ -4,6 +4,7 @@
 #include "Microtubule.hpp"
 #include "MobileMicrotubule.hpp"
 #include "Crosslinker.hpp"
+#include "Extremity.hpp"
 #include <cstdint>
 #include <iostream>
 
@@ -22,6 +23,8 @@ private:
     int32_t m_nFreeDualCrosslinkers;
     int32_t m_nFreeActiveCrosslinkers;
 
+    // Store the free crosslinkers in the beginning, and store the connected ones in the end of the vectors.
+    // This way, m_nFree*Crosslinkers-1 labels the position of the next free crosslinker
     std::vector<Crosslinker> m_passiveCrosslinkers;
     std::vector<Crosslinker> m_dualCrosslinkers;
     std::vector<Crosslinker> m_activeCrosslinkers;
@@ -43,7 +46,7 @@ public:
 
     void setMicrotubulePosition(const double positionMicrotubule);
 
-    void setCrosslinkerPositions();
+    void connectFreeCrosslinker(const Crosslinker::Type type, const Crosslinker::Terminus terminusToConnect, const Extremity::MicrotubuleType microtubuleToConnectTo, const int32_t position);
 
     void update(const double changeMicrotubulePosition);
 

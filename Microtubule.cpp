@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "Site.hpp"
+#include "Crosslinker.hpp"
 
 Microtubule::Microtubule(const double length, const double latticeSpacing)
     :   m_length(length),
@@ -16,4 +17,9 @@ Microtubule::Microtubule(const double length, const double latticeSpacing)
 
 Microtubule::~Microtubule()
 {
+}
+
+void Microtubule::connectSite(const int32_t sitePosition, Crosslinker& crosslinkerToConnect, const Crosslinker::Terminus terminusToConnect)
+{
+    m_sites.at(sitePosition).connectCrosslinker(crosslinkerToConnect, terminusToConnect);
 }

@@ -39,3 +39,19 @@ Extremity::MicrotubuleType Crosslinker::getTailMicrotubuleType() const
     return m_tail.getMicrotubuleType();
 }
 
+void Crosslinker::connectFromFree(const Extremity::MicrotubuleType microtubuleToConnectTo, const Terminus terminusToConnect, const int32_t position)
+{
+    switch(terminusToConnect)
+    {
+        case Crosslinker::Terminus::HEAD:
+            m_head.connect(microtubuleToConnectTo, position);
+            break;
+        case Crosslinker::Terminus::TAIL:
+            m_tail.connect(microtubuleToConnectTo, position);
+            break;
+        default:
+            throw GeneralException("An incorrect crosslinker terminus was passed to Crosslinker::connectFromFree()");
+            break;
+    }
+}
+

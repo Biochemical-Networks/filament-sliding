@@ -2,6 +2,8 @@
 #include "Microtubule.hpp"
 #include "MobileMicrotubule.hpp"
 #include "Crosslinker.hpp"
+#include "Extremity.hpp"
+#include "GeneralException/GeneralException.hpp"
 
 SystemState::SystemState(const double lengthMobileMicrotubule,
                             const double lengthFixedMicrotubule,
@@ -31,8 +33,52 @@ SystemState::~SystemState()
 void SystemState::setMicrotubulePosition(const double initialPosition)
 {
     m_mobileMicrotubule.setPosition(initialPosition);
+}
+
+// The following function assumes that it is possible to connect the crosslinker, otherwise it will throw
+void SystemState::connectFreeCrosslinker(const Crosslinker::Type type, const Crosslinker::Terminus terminusToConnect, const Extremity::MicrotubuleType microtubuleToConnectTo, const int32_t position)
+{
+    std::vector<Crosslinker> *p_crosslinkersVector = nullptr;
+    int32_t nFreeCrosslinkers;
+    switch(type)
+    {
+        case Crosslinker::Type::PASSIVE:
+            p_crosslinkersVector = &m_passiveCrosslinkers;
+            nFreeCrosslinkers = m_nFreePassiveCrosslinkers;
+            break;
+        case Crosslinker::Type::DUAL:
+            p_crosslinkersVector = &m_dualCrosslinkers;
+            nFreeCrosslinkers = m_nFreeDualCrosslinkers;
+            break;
+        case Crosslinker::Type::ACTIVE:
+            p_crosslinkersVector = &m_activeCrosslinkers;
+            nFreeCrosslinkers = m_nFreeActiveCrosslinkers;
+            break;
+        default:
+            throw GeneralException("An incorrect crosslinker type was passed to connectCrosslinker");
+            break;
+    }
+    Crosslinker &crosslinkerToConnect = p_crosslinkersVector->at(nFreeCrosslinkers-1); // Reference, because only one crosslinker is connected in this function
 
 
+    Microtubule *p_microtubuleToConnect = nullptr;
+    switch(microtubuleToConnectTo)
+    {
+        case Extremity::MicrotubuleType::FIXED:
+            p_microtubuleToConnect = &m_fixedMicrotubule;
+            break;
+        case Extremity::MicrotubuleType::MOBILE:
+            p_microtubuleToConnect = &m_mobileMicrotubule;
+            break;
+        default:
+            throw GeneralException("An incorrect microtubule type was passed to connectCrosslinker");
+            break;
+    }
+
+
+    crosslinkerToConnect.connectFromFree(microtubuleToConnectTo, terminusToConnect, position); // Connect the crosslinker
+
+    p_microtubuleToConnect->connectSite(position, crosslinkerToConnect, terminusToConnect);
 }
 
 void SystemState::update(const double changeMicrotubulePosition)

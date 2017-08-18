@@ -4,6 +4,7 @@
 #include <vector>
 #include "Input/Input.hpp"
 #include "Site.hpp"
+#include "Crosslinker.hpp"
 
 class Microtubule
 {
@@ -20,6 +21,8 @@ public:
 
     Microtubule(const double length, const double latticeSpacing);
     virtual ~Microtubule();
+
+    void connectSite(const int32_t sitePosition, Crosslinker& crosslinkerToConnect, const Crosslinker::Terminus terminusToConnect);
 
 };
 

@@ -14,6 +14,12 @@ public:
         ACTIVE
     };
 
+    enum class Terminus // Such that other classes can name the extremities
+    {
+        HEAD,
+        TAIL
+    };
+
 private:
     const Type m_type;
 
@@ -32,6 +38,8 @@ public:
 
     Extremity::MicrotubuleType getHeadMicrotubuleType() const;
     Extremity::MicrotubuleType getTailMicrotubuleType() const;
+
+    void connectFromFree(const Extremity::MicrotubuleType microtubuleToConnectTo, const Terminus terminusToConnect, const int32_t position);
 
 /*    void setHeadPosition(const int32_t sitePosition);
     void setTailPosition(const int32_t sitePosition);*/
