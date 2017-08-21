@@ -6,6 +6,7 @@
 #include "GeneralException/GeneralException.hpp"
 
 #include <stdexcept>
+#include <algorithm>
 
 SystemState::SystemState(const double lengthMobileMicrotubule,
                             const double lengthFixedMicrotubule,
@@ -115,4 +116,11 @@ int32_t SystemState::getNFreeDualCrosslinkers() const
 int32_t SystemState::getNFreeActiveCrosslinkers() const
 {
     return m_nFreeActiveCrosslinkers;
+}
+
+double SystemState::calculateOverlapLength() const
+{
+    // Returns a negative value if there is no overlap
+    // 0.0 is the position of the beginning of the fixed microtubule
+    return std::min(m_fixedMicrotubule.getLength(), m_mobileMicrotubule.getLength() + m_mobileMicrotubule.getPosition()) - std::max(0.0, m_mobileMicrotubule.getPosition());
 }

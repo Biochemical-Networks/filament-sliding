@@ -24,6 +24,7 @@ public:
 
     void connectSite(const int32_t sitePosition, Crosslinker& crosslinkerToConnect, const Crosslinker::Terminus terminusToConnect);
 
+    double getLength() const;
 };
 
 #endif // MICROTUBULE_HPP

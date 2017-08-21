@@ -4,6 +4,8 @@
 #include "SystemState.hpp"
 #include "RandomGenerator.hpp"
 
+#include <string>
+
 class Initialiser
 {
 public:
@@ -17,9 +19,9 @@ public:
 private:
     const double m_initialPositionMicrotubule;
     const double m_fractionConnectedCrosslinkers;
-    const InitialCrosslinkerDistribution m_method;
+    InitialCrosslinkerDistribution m_initialCrosslinkerDistribution;
 public:
-    Initialiser(const double initialPositionMicrotubule, const double fractionConnectedCrosslinkers, const InitialCrosslinkerDistribution method);
+    Initialiser(const double initialPositionMicrotubule, const double fractionConnectedCrosslinkers, const std::string initialCrosslinkerDistributionString);
     ~Initialiser();
 
     void initialise(SystemState& systemState, RandomGenerator& generator);

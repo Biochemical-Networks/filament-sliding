@@ -23,7 +23,15 @@ private:
     void moveMicrotubule(SystemState& systemState, RandomGenerator& generator);
 
 public:
-    Propagator(const int32_t nTimeSteps, const double calcTimeStep, const int32_t probePeriod, const double diffusionConstantMicrotubule, const double springConstant);
+    Propagator(const int32_t nTimeSteps,
+               const double calcTimeStep,
+               const int32_t probePeriod,
+               const double diffusionConstantMicrotubule,
+               const double springConstant,
+               const double rateZeroToOneExtremitiesConnected,
+               const double rateOneToZeroExtremitiesConnected,
+               const double rateOneToTwoExtremitiesConnected,
+               const double rateTwoToOneExtremitiesConnected);
     ~Propagator();
 
     // Enter the SystemState as a reference into the run function, such that the propagator can propagate it.

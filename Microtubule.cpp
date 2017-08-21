@@ -32,3 +32,9 @@ void Microtubule::connectSite(const int32_t sitePosition, Crosslinker& crosslink
         throw GeneralException("The sitePosition given to Microtubule::connectSite() does not exist");
     }
 }
+
+
+double Microtubule::getLength() const
+{
+    return m_length;
+}

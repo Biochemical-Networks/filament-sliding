@@ -55,6 +55,8 @@ public:
     int32_t getNFreePassiveCrosslinkers() const;
     int32_t getNFreeDualCrosslinkers() const;
     int32_t getNFreeActiveCrosslinkers() const;
+
+    double calculateOverlapLength() const;
 };
 
 #endif // SYSTEMSTATE_HPP

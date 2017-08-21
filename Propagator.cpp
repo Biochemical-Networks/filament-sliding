@@ -11,7 +11,15 @@
 
 #include <iostream>
 
-Propagator::Propagator(const int32_t nTimeSteps, const double calcTimeStep, const int32_t probePeriod, const double diffusionConstantMicrotubule, const double springConstant)
+Propagator::Propagator(const int32_t nTimeSteps,
+                       const double calcTimeStep,
+                       const int32_t probePeriod,
+                       const double diffusionConstantMicrotubule,
+                       const double springConstant,
+                       const double rateZeroToOneExtremitiesConnected,
+                       const double rateOneToZeroExtremitiesConnected,
+                       const double rateOneToTwoExtremitiesConnected,
+                       const double rateTwoToOneExtremitiesConnected)
     :   m_nTimeSteps(nTimeSteps),
         m_calcTimeStep(calcTimeStep),
         m_probePeriod(probePeriod),

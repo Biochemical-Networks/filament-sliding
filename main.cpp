@@ -55,7 +55,12 @@ int main()
     double fractionConnectedCrosslinkers;
     input.copyParameter("fractionConnectedCrosslinkers", fractionConnectedCrosslinkers);
 
-    Initialiser initialiser(initialPositionMicrotubule, fractionConnectedCrosslinkers, Initialiser::InitialCrosslinkerDistribution::RANDOM);
+    std::string initialCrosslinkerDistributionString;
+    input.copyParameter("initialCrosslinkerDistribution", initialCrosslinkerDistributionString);
+
+
+
+    Initialiser initialiser(initialPositionMicrotubule, fractionConnectedCrosslinkers, initialCrosslinkerDistributionString);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the propagator
@@ -75,7 +80,27 @@ int main()
     double springConstant;
     input.copyParameter("springConstant", springConstant);
 
-    Propagator propagator(nTimeSteps, calcTimeStep, probePeriod, diffusionConstantMicrotubule, springConstant);
+    double rateZeroToOneExtremitiesConnected;
+    input.copyParameter("rateZeroToOneExtremitiesConnected", rateZeroToOneExtremitiesConnected);
+
+    double rateOneToZeroExtremitiesConnected;
+    input.copyParameter("rateOneToZeroExtremitiesConnected", rateOneToZeroExtremitiesConnected);
+
+    double rateOneToTwoExtremitiesConnected;
+    input.copyParameter("rateOneToTwoExtremitiesConnected", rateOneToTwoExtremitiesConnected);
+
+    double rateTwoToOneExtremitiesConnected;
+    input.copyParameter("rateTwoToOneExtremitiesConnected", rateTwoToOneExtremitiesConnected);
+
+    Propagator propagator(nTimeSteps,
+                          calcTimeStep,
+                          probePeriod,
+                          diffusionConstantMicrotubule,
+                          springConstant,
+                          rateZeroToOneExtremitiesConnected,
+                          rateOneToZeroExtremitiesConnected,
+                          rateOneToTwoExtremitiesConnected,
+                          rateTwoToOneExtremitiesConnected);
 
     //-----------------------------------------------------------------------------------------------------
     // Set the random number generator
