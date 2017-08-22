@@ -31,7 +31,7 @@ ParameterMap::ParameterMap()
     defineParameter("numberActiveCrosslinkers", 0, "crosslinkers", ">=0");
     defineParameter("numberDualCrosslinkers", 0, "crosslinkers", ">=0");
     defineParameter("numberPassiveCrosslinkers", 1000, "crosslinkers", ">=0");
-    defineParameter("fractionConnectedCrosslinkers", 1.0, "unitless", ">0");
+    defineParameter("fractionOverlapSitesConnected", 1.0, "unitless", ">0");
     defineParameter("initialCrosslinkerDistribution", "unitless", "RANDOM", "RANDOM,HEADSMOBILE,TAILSMOBILE,ALLCONNECTED"); // Can only hold the values set by Initialiser::InitialCrosslinkerDistribution
 
     // Initial state parameters

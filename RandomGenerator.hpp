@@ -14,8 +14,11 @@ public:
     RandomGenerator(const std::string seedString);
     ~RandomGenerator();
 
+    std::mt19937_64& getBareGenerator(); // Return by reference, otherwise a copy is made, and the generator is not updated upon use
+
     // Functions that change the generator state should not be const
-    const double getGaussian(const double mean, const double deviation);
+    double getGaussian(const double mean, const double deviation);
+    bool getBernoulli(const double probability);
 };
 
 #endif // RANDOMGENERATOR_HPP

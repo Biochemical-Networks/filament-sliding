@@ -52,15 +52,15 @@ int main()
     double initialPositionMicrotubule;
     input.copyParameter("initialPositionMicrotubule", initialPositionMicrotubule);
 
-    double fractionConnectedCrosslinkers;
-    input.copyParameter("fractionConnectedCrosslinkers", fractionConnectedCrosslinkers);
+    double fractionOverlapSitesConnected;
+    input.copyParameter("fractionOverlapSitesConnected", fractionOverlapSitesConnected);
 
     std::string initialCrosslinkerDistributionString;
     input.copyParameter("initialCrosslinkerDistribution", initialCrosslinkerDistributionString);
 
 
 
-    Initialiser initialiser(initialPositionMicrotubule, fractionConnectedCrosslinkers, initialCrosslinkerDistributionString);
+    Initialiser initialiser(initialPositionMicrotubule, fractionOverlapSitesConnected, initialCrosslinkerDistributionString);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the propagator

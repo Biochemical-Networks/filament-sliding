@@ -29,6 +29,11 @@ int32_t Crosslinker::getTailPosition() const
     return m_tail.getPosition();
 }
 
+Crosslinker::Type Crosslinker::getType() const
+{
+    return m_type;
+}
+
 Extremity::MicrotubuleType Crosslinker::getHeadMicrotubuleType() const
 {
     return m_head.getMicrotubuleType();
@@ -54,4 +59,6 @@ void Crosslinker::connectFromFree(const Extremity::MicrotubuleType microtubuleTo
             break;
     }
 }
+
+
 

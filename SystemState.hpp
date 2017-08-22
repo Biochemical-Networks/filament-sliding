@@ -14,10 +14,10 @@ private:
     Microtubule m_fixedMicrotubule;
     MobileMicrotubule m_mobileMicrotubule;
 
-    int32_t m_nPassiveCrosslinkers;
-    int32_t m_nDualCrosslinkers;
-    int32_t m_nActiveCrosslinkers;
-    int32_t m_nCrosslinkers;
+    const int32_t m_nPassiveCrosslinkers;
+    const int32_t m_nDualCrosslinkers;
+    const int32_t m_nActiveCrosslinkers;
+    const int32_t m_nCrosslinkers;
 
     int32_t m_nFreePassiveCrosslinkers;
     int32_t m_nFreeDualCrosslinkers;
@@ -35,6 +35,8 @@ private:
     double m_forceMicrotubule;
     double m_energy;
 
+
+
 public:
     SystemState(const double lengthMobileMicrotubule,
                 const double lengthFixedMicrotubule,
@@ -46,7 +48,17 @@ public:
 
     void setMicrotubulePosition(const double positionMicrotubule);
 
-    void connectFreeCrosslinker(const Crosslinker::Type type, const Crosslinker::Terminus terminusToConnect, const Extremity::MicrotubuleType microtubuleToConnectTo, const int32_t position);
+    void fullyConnectFreeCrosslinker(const Crosslinker::Type type,
+                                     const Crosslinker::Terminus terminusToConnectToFixedMicrotubule,
+                                     const int32_t positionOnFixedMicrotubule,
+                                     const int32_t positionOnMobileMicrotubule);
+
+    void connectFreeCrosslinker(const Crosslinker::Type type,
+                                const Crosslinker::Terminus terminusToConnect,
+                                const Extremity::MicrotubuleType microtubuleToConnectTo,
+                                const int32_t position);
+
+    void connectPartiallyConnectedCrosslinker(Crosslinker& crosslinker, const int32_t positionOnOpositeMicrotubule);
 
     void update(const double changeMicrotubulePosition);
 
@@ -55,8 +67,20 @@ public:
     int32_t getNFreePassiveCrosslinkers() const;
     int32_t getNFreeDualCrosslinkers() const;
     int32_t getNFreeActiveCrosslinkers() const;
+    int32_t getNFreeCrosslinkers() const;
 
-    double calculateOverlapLength() const;
+    double beginningOverlap() const;
+    double endOverlap() const;
+    double overlapLength() const;
+
+    int32_t firstSiteOverlapFixed() const;
+    int32_t lastSiteOverlapFixed() const;
+    int32_t firstSiteOverlapMobile() const;
+    int32_t lastSiteOverlapMobile() const;
+
+    int32_t getNSitesOverlapFixed() const;
+    int32_t getNSitesOverlapMobile() const;
+
 };
 
 #endif // SYSTEMSTATE_HPP

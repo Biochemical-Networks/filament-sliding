@@ -12,8 +12,19 @@ RandomGenerator::~RandomGenerator()
 {
 }
 
-const double RandomGenerator::getGaussian(const double mean, const double deviation)
+std::mt19937_64& RandomGenerator::getBareGenerator()
+{
+    return m_generator;
+}
+
+double RandomGenerator::getGaussian(const double mean, const double deviation)
 {
     std::normal_distribution<double> distribution(mean, deviation);
+    return distribution(m_generator);
+}
+
+bool RandomGenerator::getBernoulli(const double probability)
+{
+    std::bernoulli_distribution distribution(probability);
     return distribution(m_generator);
 }

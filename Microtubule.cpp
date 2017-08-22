@@ -38,3 +38,13 @@ double Microtubule::getLength() const
 {
     return m_length;
 }
+
+int32_t Microtubule::getNSites() const
+{
+    return m_nSites;
+}
+
+double Microtubule::getLatticeSpacing() const
+{
+    return m_latticeSpacing;
+}

@@ -7,6 +7,7 @@
 
 #include <stdexcept>
 #include <algorithm>
+#include <cmath>
 
 SystemState::SystemState(const double lengthMobileMicrotubule,
                             const double lengthFixedMicrotubule,
@@ -38,9 +39,18 @@ void SystemState::setMicrotubulePosition(const double initialPosition)
     m_mobileMicrotubule.setPosition(initialPosition);
 }
 
+void SystemState::fullyConnectFreeCrosslinker(const Crosslinker::Type type,
+                                              const Crosslinker::Terminus terminusToConnectToFixedMicrotubule,
+                                              const int32_t positionOnFixedMicrotubule,
+                                              const int32_t positionOnMobileMicrotubule)
+{
+
+}
+
 // The following function assumes that it is possible to connect the crosslinker, otherwise it will throw
 void SystemState::connectFreeCrosslinker(const Crosslinker::Type type, const Crosslinker::Terminus terminusToConnect, const Extremity::MicrotubuleType microtubuleToConnectTo, const int32_t position)
 {
+    // Get the number of free crosslinkers of a certain type, because this number is used to label the position of the next crosslinker which needs to be connected in its respective vector
     std::vector<Crosslinker> *p_crosslinkersVector = nullptr;
     int32_t nFreeCrosslinkers;
     switch(type)
@@ -93,6 +103,11 @@ void SystemState::connectFreeCrosslinker(const Crosslinker::Type type, const Cro
 
 }
 
+void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& crosslinker, const int32_t positionOnOpositeMicrotubule)
+{
+    crosslinker.getType();
+}
+
 void SystemState::update(const double changeMicrotubulePosition)
 {
     m_mobileMicrotubule.updatePosition(changeMicrotubulePosition);
@@ -118,9 +133,88 @@ int32_t SystemState::getNFreeActiveCrosslinkers() const
     return m_nFreeActiveCrosslinkers;
 }
 
-double SystemState::calculateOverlapLength() const
+int32_t SystemState::getNFreeCrosslinkers() const
+{
+    return m_nFreePassiveCrosslinkers + m_nFreeDualCrosslinkers + m_nFreeActiveCrosslinkers;
+}
+
+double SystemState::beginningOverlap() const
+{
+    // 0.0 is the position of the beginning of the fixed microtubule
+    return std::max(0.0, m_mobileMicrotubule.getPosition());
+}
+
+double SystemState::endOverlap() const
+{
+    return std::min(m_fixedMicrotubule.getLength(), m_mobileMicrotubule.getLength() + m_mobileMicrotubule.getPosition());
+}
+
+double SystemState::overlapLength() const
 {
     // Returns a negative value if there is no overlap
-    // 0.0 is the position of the beginning of the fixed microtubule
-    return std::min(m_fixedMicrotubule.getLength(), m_mobileMicrotubule.getLength() + m_mobileMicrotubule.getPosition()) - std::max(0.0, m_mobileMicrotubule.getPosition());
+    return endOverlap()-beginningOverlap();
+}
+
+// Return the first and last site of the overlap where crosslinkers could connect. They can stretch one lattice spacing, so a site just next to the strict overlap is still an option.
+// Assume that the overlap exists
+int32_t SystemState::firstSiteOverlapFixed() const
+{
+    double pos = beginningOverlap();
+    if (pos<0.0) // Shouldn't be possible, but just in case the floating point rounds to slightly below zero
+    {
+        return 0; // The first site of the fixed microtubule
+    }
+    else
+    {
+        return static_cast <int32_t> (std::floor(pos / m_fixedMicrotubule.getLatticeSpacing()));
+    }
+}
+
+int32_t SystemState::lastSiteOverlapFixed() const
+{
+    double pos = endOverlap();
+    if (pos>m_fixedMicrotubule.getLength()) // Shouldn't be possible, but just in case the floating point rounds to slightly above the length
+    {
+        return m_fixedMicrotubule.getNSites(); // The last site of the fixed microtubule
+    }
+    else
+    {
+        return static_cast <int32_t> (std::ceil(pos / m_fixedMicrotubule.getLatticeSpacing()));
+    }
+}
+
+int32_t SystemState::firstSiteOverlapMobile() const
+{
+    double pos = beginningOverlap()-m_mobileMicrotubule.getPosition();
+    if (pos<0.0) // Shouldn't be possible, but just in case the floating point rounds to slightly below zero
+    {
+        return 0; // The first site of the mobile microtubule
+    }
+    else
+    {
+        return static_cast <int32_t> (std::floor(pos / m_mobileMicrotubule.getLatticeSpacing()));
+    }
+}
+
+int32_t SystemState::lastSiteOverlapMobile() const
+{
+    double pos = endOverlap()-m_mobileMicrotubule.getPosition();
+    if (pos>m_mobileMicrotubule.getLength()) // Shouldn't be possible, but just in case the floating point rounds to slightly above the length
+    {
+        return m_mobileMicrotubule.getNSites(); // The last site of the mobile microtubule
+    }
+    else
+    {
+        return static_cast <int32_t> (std::ceil(pos / m_mobileMicrotubule.getLatticeSpacing()));
+    }
+}
+
+int32_t SystemState::getNSitesOverlapFixed() const
+{
+    return lastSiteOverlapFixed()-firstSiteOverlapFixed()+1;
+}
+
+int32_t SystemState::getNSitesOverlapMobile() const
+{
+    return lastSiteOverlapMobile()-firstSiteOverlapMobile()+1;
 }

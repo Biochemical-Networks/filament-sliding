@@ -36,10 +36,14 @@ public:
     int32_t getHeadPosition() const;
     int32_t getTailPosition() const;
 
+    Type getType() const;
+
     Extremity::MicrotubuleType getHeadMicrotubuleType() const;
     Extremity::MicrotubuleType getTailMicrotubuleType() const;
 
     void connectFromFree(const Extremity::MicrotubuleType microtubuleToConnectTo, const Terminus terminusToConnect, const int32_t position);
+
+    void fullyConnectFromPartialConnection();
 
 /*    void setHeadPosition(const int32_t sitePosition);
     void setTailPosition(const int32_t sitePosition);*/
