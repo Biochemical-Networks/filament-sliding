@@ -9,7 +9,6 @@
 #include <random>
 #include <cmath>
 
-#include <iostream>
 
 Propagator::Propagator(const int32_t nTimeSteps,
                        const double calcTimeStep,

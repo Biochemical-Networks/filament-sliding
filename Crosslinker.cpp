@@ -46,6 +46,11 @@ Extremity::MicrotubuleType Crosslinker::getTailMicrotubuleType() const
 
 void Crosslinker::connectFromFree(const Extremity::MicrotubuleType microtubuleToConnectTo, const Terminus terminusToConnect, const int32_t position)
 {
+    // Check here whether it is not already connected in some way. Upon connecting an extremity, it is also checked whether those are not connected already.
+    if (isConnected())
+    {
+        throw GeneralException("An attempt was made to connect a crosslinker that was already connected");
+    }
     switch(terminusToConnect)
     {
         case Crosslinker::Terminus::HEAD:
@@ -60,5 +65,21 @@ void Crosslinker::connectFromFree(const Extremity::MicrotubuleType microtubuleTo
     }
 }
 
+void Crosslinker::fullyConnectFromPartialConnection(const Extremity::MicrotubuleType microtubuleToConnectTo, const int32_t position)
+{
+    // Check whether it is not free. It is not necessary to check that it is fully connected, the extremities will take care of that.
+    if(!isConnected())
+    {
+        throw GeneralException("A free crosslinker was assumed to be partially connected.");
+    }
+    else if (m_head.isConnected())
+    {
+        m_tail.connect(microtubuleToConnectTo, position);
+    }
+    else
+    {
+        m_head.connect(microtubuleToConnectTo, position);
+    }
+}
 
 

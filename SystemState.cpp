@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cmath>
 
+
 SystemState::SystemState(const double lengthMobileMicrotubule,
                             const double lengthFixedMicrotubule,
                             const double latticeSpacing,
@@ -39,33 +40,26 @@ void SystemState::setMicrotubulePosition(const double initialPosition)
     m_mobileMicrotubule.setPosition(initialPosition);
 }
 
-void SystemState::fullyConnectFreeCrosslinker(const Crosslinker::Type type,
-                                              const Crosslinker::Terminus terminusToConnectToFixedMicrotubule,
-                                              const int32_t positionOnFixedMicrotubule,
-                                              const int32_t positionOnMobileMicrotubule)
-{
-
-}
-
 // The following function assumes that it is possible to connect the crosslinker, otherwise it will throw
-void SystemState::connectFreeCrosslinker(const Crosslinker::Type type, const Crosslinker::Terminus terminusToConnect, const Extremity::MicrotubuleType microtubuleToConnectTo, const int32_t position)
+Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type, const Crosslinker::Terminus terminusToConnect, const Extremity::MicrotubuleType microtubuleToConnectTo, const int32_t position)
 {
-    // Get the number of free crosslinkers of a certain type, because this number is used to label the position of the next crosslinker which needs to be connected in its respective vector
     std::vector<Crosslinker> *p_crosslinkersVector = nullptr;
-    int32_t nFreeCrosslinkers;
+    // Get the number of free crosslinkers of a certain type, because this number is used to label the position of the next crosslinker which needs to be connected in its respective vector
+    int32_t *p_nFreeCrosslinkers;
+
     switch(type)
     {
         case Crosslinker::Type::PASSIVE:
             p_crosslinkersVector = &m_passiveCrosslinkers;
-            nFreeCrosslinkers = m_nFreePassiveCrosslinkers;
+            p_nFreeCrosslinkers = &m_nFreePassiveCrosslinkers;
             break;
         case Crosslinker::Type::DUAL:
             p_crosslinkersVector = &m_dualCrosslinkers;
-            nFreeCrosslinkers = m_nFreeDualCrosslinkers;
+            p_nFreeCrosslinkers = &m_nFreeDualCrosslinkers;
             break;
         case Crosslinker::Type::ACTIVE:
             p_crosslinkersVector = &m_activeCrosslinkers;
-            nFreeCrosslinkers = m_nFreeActiveCrosslinkers;
+            p_nFreeCrosslinkers = &m_nFreeActiveCrosslinkers;
             break;
         default:
             throw GeneralException("An incorrect crosslinker type was passed to connectCrosslinker");
@@ -90,11 +84,15 @@ void SystemState::connectFreeCrosslinker(const Crosslinker::Type type, const Cro
     try
     {
         // Everything needs to be defined within the try block, otherwise crosslinkerToConnect is not defined in the right scope
-        Crosslinker &crosslinkerToConnect = p_crosslinkersVector->at(nFreeCrosslinkers-1); // Reference, because only one crosslinker is connected in this function
+        Crosslinker &crosslinkerToConnect = p_crosslinkersVector->at((*p_nFreeCrosslinkers)-1); // Reference, because only one crosslinker is connected in this function
 
         crosslinkerToConnect.connectFromFree(microtubuleToConnectTo, terminusToConnect, position); // Connect the crosslinker
 
         p_microtubuleToConnect->connectSite(position, crosslinkerToConnect, terminusToConnect);
+
+        --(*p_nFreeCrosslinkers); // The number of free crosslinkers of this type decreases upon being connected
+
+        return crosslinkerToConnect; // Such that the caller can use this specific crosslinker immediately
     }
     catch(std::out_of_range) // For the at function
     {
@@ -103,9 +101,22 @@ void SystemState::connectFreeCrosslinker(const Crosslinker::Type type, const Cro
 
 }
 
-void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& crosslinker, const int32_t positionOnOpositeMicrotubule)
+void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& crosslinker, const Extremity::MicrotubuleType oppositeMicrotubule, const int32_t positionOnOppositeMicrotubule)
 {
-    crosslinker.getType();
+    crosslinker.fullyConnectFromPartialConnection(oppositeMicrotubule, positionOnOppositeMicrotubule);
+}
+
+void SystemState::fullyConnectFreeCrosslinker(const Crosslinker::Type type,
+                                              const Crosslinker::Terminus terminusToConnectToFixedMicrotubule,
+                                              const int32_t positionOnFixedMicrotubule,
+                                              const int32_t positionOnMobileMicrotubule)
+{
+    // Store a reference to the connected crosslinker, such that the next function can be called easily
+
+    Crosslinker &connectedCrosslinker = connectFreeCrosslinker(type, terminusToConnectToFixedMicrotubule, Extremity::MicrotubuleType::FIXED, positionOnFixedMicrotubule);
+
+    connectPartiallyConnectedCrosslinker(connectedCrosslinker, Extremity::MicrotubuleType::MOBILE, positionOnMobileMicrotubule);
+
 }
 
 void SystemState::update(const double changeMicrotubulePosition)

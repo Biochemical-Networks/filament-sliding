@@ -4,6 +4,8 @@
 #include "SystemState.hpp"
 #include "RandomGenerator.hpp"
 
+#include "Crosslinker.hpp"
+
 #include <string>
 
 class Initialiser
@@ -13,15 +15,14 @@ public:
     {
         RANDOM,
         HEADSMOBILE,
-        TAILSMOBILE,
-        ALLCONNECTED
+        TAILSMOBILE
     };
 private:
     const double m_initialPositionMicrotubule;
     const double m_fractionOverlapSitesConnected;
     InitialCrosslinkerDistribution m_initialCrosslinkerDistribution;
 
-    void initialiseCrosslinkersRandom(SystemState& systemState, RandomGenerator& generator);
+    void initialiseCrosslinkers(SystemState& systemState, RandomGenerator& generator);
 
     void nCrosslinkersEachTypeToConnect(int32_t& nPassiveCrosslinkersToConnect,
                                         int32_t& nDualCrosslinkersToConnect,
@@ -31,6 +32,8 @@ private:
                                         const int32_t nFreePassiveCrosslinkers,
                                         const int32_t nFreeDualCrosslinkers,
                                         const int32_t nFreeActiveCrosslinkers) const;
+
+    Crosslinker::Terminus terminusToConnectToFixedMicrotubule(RandomGenerator &generator);
 
 public:
     Initialiser(const double initialPositionMicrotubule, const double fractionOverlapSitesConnected, const std::string initialCrosslinkerDistributionString);

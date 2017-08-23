@@ -15,16 +15,12 @@ private:
 /*    Site *m_leftFreeSite;
     Site *m_rightFreeSite;
 
-    Extremity *m_leftOccupiedNeighbour;
-    Extremity *m_rightOccupiedNeighbour;
+    Extremity *mp_leftOccupiedNeighbour;
+    Extremity *mp_rightOccupiedNeighbour;
 
-    Crosslinker *m_leftFullyConnectedCrosslinker;
-    Crosslinker *m_rightFullyConnectedCrosslinker;
-
-
-    // There are two sites on the opposing microtubule that are close to this site
-    Site *m_leftOppositeSite;
-    Site *m_rightOppositeSite;*/
+    Crosslinker *mp_leftFullyConnectedCrosslinker;
+    Crosslinker *mp_rightFullyConnectedCrosslinker;
+*/
 
 public:
     Site(const bool isFree);

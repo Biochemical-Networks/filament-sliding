@@ -24,7 +24,7 @@ private:
     int32_t m_nFreeActiveCrosslinkers;
 
     // Store the free crosslinkers in the beginning, and store the connected ones in the end of the vectors.
-    // This way, m_nFree*Crosslinkers-1 labels the position of the next free crosslinker
+    // This way, m_nFree*Crosslinkers-1 labels the position of the next free crosslinker (* meant as regular expression)
     std::vector<Crosslinker> m_passiveCrosslinkers;
     std::vector<Crosslinker> m_dualCrosslinkers;
     std::vector<Crosslinker> m_activeCrosslinkers;
@@ -53,12 +53,12 @@ public:
                                      const int32_t positionOnFixedMicrotubule,
                                      const int32_t positionOnMobileMicrotubule);
 
-    void connectFreeCrosslinker(const Crosslinker::Type type,
+    Crosslinker& connectFreeCrosslinker(const Crosslinker::Type type,
                                 const Crosslinker::Terminus terminusToConnect,
                                 const Extremity::MicrotubuleType microtubuleToConnectTo,
                                 const int32_t position);
 
-    void connectPartiallyConnectedCrosslinker(Crosslinker& crosslinker, const int32_t positionOnOpositeMicrotubule);
+    void connectPartiallyConnectedCrosslinker(Crosslinker& crosslinker, const Extremity::MicrotubuleType oppositeMicrotubule, const int32_t positionOnOppositeMicrotubule);
 
     void update(const double changeMicrotubulePosition);
 

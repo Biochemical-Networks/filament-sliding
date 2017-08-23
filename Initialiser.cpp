@@ -31,10 +31,6 @@ Initialiser::Initialiser(const double initialPositionMicrotubule, const double f
     {
         m_initialCrosslinkerDistribution = Initialiser::InitialCrosslinkerDistribution::TAILSMOBILE;
     }
-    else if (initialCrosslinkerDistributionString=="ALLCONNECTED")
-    {
-        m_initialCrosslinkerDistribution = Initialiser::InitialCrosslinkerDistribution::ALLCONNECTED;
-    }
     else
     {
         throw GeneralException("The given initialCrosslinkerDistributionString does not hold a recognised value.");
@@ -49,14 +45,15 @@ void Initialiser::initialise(SystemState& systemState, RandomGenerator& generato
 {
     systemState.setMicrotubulePosition(m_initialPositionMicrotubule);
 
+    initialiseCrosslinkers(systemState, generator);
 
-    systemState.connectFreeCrosslinker(Crosslinker::Type::PASSIVE, Crosslinker::Terminus::HEAD, Extremity::MicrotubuleType::FIXED, 0); // TEST
 }
 
-void Initialiser::initialiseCrosslinkersRandom(SystemState& systemState, RandomGenerator& generator)
+void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerator& generator)
 {
     int32_t nSitesOverlapFixed = systemState.getNSitesOverlapFixed();
     int32_t nSitesOverlapMobile = systemState.getNSitesOverlapMobile();
+    // std::cout << "nSitesOverlapFixed: " << nSitesOverlapFixed << " nSitesOverlapMobile: " << nSitesOverlapMobile << '\n'; // TEST OKAY
 
     int32_t nSitesOverlap; // If Fixed and Mobile are equal, then use that number. Can be different when one microtubule is completely overlapping with the other, then use the shortest
     (nSitesOverlapFixed < nSitesOverlapMobile) ? (nSitesOverlap = nSitesOverlapFixed) : (nSitesOverlap = nSitesOverlapMobile);
@@ -66,6 +63,7 @@ void Initialiser::initialiseCrosslinkersRandom(SystemState& systemState, RandomG
     std::shuffle(positionsToConnect.begin(), positionsToConnect.end(), generator.getBareGenerator()); // Shuffle the positions
 
     int32_t nSitesToConnect = static_cast<int32_t> (std::ceil(m_fractionOverlapSitesConnected * nSitesOverlap));
+
     if (nSitesToConnect > nSitesOverlap) // Check whether nothing went wrong in the conversion from double to int
     {
         nSitesToConnect = nSitesOverlap;
@@ -104,11 +102,38 @@ void Initialiser::initialiseCrosslinkersRandom(SystemState& systemState, RandomG
 
     int32_t connectedSoFar = 0;
 
-/*    for (int32_t i = 0; i<nPassiveCrosslinkersToConnect; ++connectedSoFar, ++i)
+    // Get the following numbers locally, such that they don't need to be retrieved upon every entry in the following loops
+    int32_t firstSiteOverlapFixed = systemState.firstSiteOverlapFixed();
+    int32_t firstSiteOverlapMobile = systemState.firstSiteOverlapMobile();
+
+    for (int32_t i = 0; i<nPassiveCrosslinkersToConnect; ++connectedSoFar, ++i)
     {
-        systemState.connectFreeCrosslinker(Crosslinker::Type::PASSIVE, (generator.getBernoulli())?(Crosslinker::Terminus::HEAD):(Crosslinker::Terminus::TAIL), )
-        connectFreeCrosslinker(const Crosslinker::Type type, const Crosslinker::Terminus terminusToConnect, const Extremity::MicrotubuleType microtubuleToConnectTo, const int32_t position)
-    }*/
+        systemState.fullyConnectFreeCrosslinker(Crosslinker::Type::PASSIVE,
+                                              terminusToConnectToFixedMicrotubule(generator),
+                                              firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar), // The position on the fixed microtubule
+                                              firstSiteOverlapMobile+positionsToConnect.at(connectedSoFar));
+    }
+
+    for (int32_t i = 0; i<nDualCrosslinkersToConnect; ++connectedSoFar, ++i)
+    {
+        systemState.fullyConnectFreeCrosslinker(Crosslinker::Type::DUAL,
+                                              terminusToConnectToFixedMicrotubule(generator),
+                                              firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar), // The position on the fixed microtubule
+                                              firstSiteOverlapMobile+positionsToConnect.at(connectedSoFar));
+    }
+
+    for (int32_t i = 0; i<nActiveCrosslinkersToConnect; ++connectedSoFar, ++i)
+    {
+        systemState.fullyConnectFreeCrosslinker(Crosslinker::Type::ACTIVE,
+                                              terminusToConnectToFixedMicrotubule(generator),
+                                              firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar), // The position on the fixed microtubule
+                                              firstSiteOverlapMobile+positionsToConnect.at(connectedSoFar));
+    }
+
+    if (connectedSoFar != nSitesToConnect)
+    {
+        throw GeneralException("Something went wrong in the initialiser: the number of connected crosslinkers failed to reach the number of sites to connect");
+    }
 
 }
 
@@ -156,5 +181,24 @@ void Initialiser::nCrosslinkersEachTypeToConnect(int32_t& nPassiveCrosslinkersTo
                 throw GeneralException("The iterator in Initialiser::initialiseCrosslinkersRandom() returned a nonexistent position");
                 break;
         }
+    }
+}
+
+Crosslinker::Terminus Initialiser::terminusToConnectToFixedMicrotubule(RandomGenerator &generator)
+{
+    switch(m_initialCrosslinkerDistribution)
+    {
+        case InitialCrosslinkerDistribution::RANDOM:
+            return ((generator.getBernoulli(0.5))?(Crosslinker::Terminus::HEAD):(Crosslinker::Terminus::TAIL));
+            break;
+        case InitialCrosslinkerDistribution::HEADSMOBILE:
+            return Crosslinker::Terminus::TAIL;
+            break;
+        case InitialCrosslinkerDistribution::TAILSMOBILE:
+            return Crosslinker::Terminus::HEAD;
+            break;
+        default:
+            throw GeneralException("Caller asked for an unsupported initial crosslinker distribution");
+            break;
     }
 }
