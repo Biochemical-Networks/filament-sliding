@@ -2,9 +2,12 @@
 #include "Crosslinker.hpp"
 #include "GeneralException/GeneralException.hpp"
 
+#include <cstdint>
+
 Site::Site(const bool isFree)
     :   m_isFree(isFree),
         mp_connectedCrosslinker(nullptr)
+
     /*,
         m_leftFreeSite(nullptr),
         m_rightFreeSite(nullptr),
@@ -33,3 +36,12 @@ void Site::connectCrosslinker(Crosslinker& crosslinkerToConnect, const Crosslink
 
     m_isFree = false;
 }
+
+/*void Site::setLeftFreeSite(const Site* p_leftNeighbour)
+{
+    mp_leftFreeSite = p_leftNeighbour;
+}
+void setRightFreeSite(const Site* p_rightNeighbour)
+{
+    mp_rightFreeSite = p_rightNeighbour;
+}*/

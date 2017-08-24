@@ -45,6 +45,8 @@ public:
 
     void fullyConnectFromPartialConnection(const Extremity::MicrotubuleType microtubuleToConnectTo, const int32_t position);
 
+    Terminus getFreeTerminusWhenPartiallyConnected() const;
+
 /*    void setHeadPosition(const int32_t sitePosition);
     void setTailPosition(const int32_t sitePosition);*/
 

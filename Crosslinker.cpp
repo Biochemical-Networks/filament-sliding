@@ -82,4 +82,24 @@ void Crosslinker::fullyConnectFromPartialConnection(const Extremity::Microtubule
     }
 }
 
+Crosslinker::Terminus Crosslinker::getFreeTerminusWhenPartiallyConnected() const
+{
+    if ((m_head.isConnected())&&(!m_tail.isConnected()))
+    {
+        return Terminus::TAIL;
+    }
+    else if ((!m_head.isConnected())&&(m_tail.isConnected()))
+    {
+        return Terminus::HEAD;
+    }
+    else if ((m_head.isConnected())&&(m_tail.isConnected()))
+    {
+        throw GeneralException("A fully connected crosslinker was assumed to be partially connected");
+    }
+    else if ((!m_head.isConnected())&&(!m_tail.isConnected()))
+    {
+        throw GeneralException("A free crosslinker was assumed to be partially connected");
+    }
+}
+
 

@@ -10,6 +10,7 @@
 #include <cmath>
 
 
+
 Propagator::Propagator(const int32_t nTimeSteps,
                        const double calcTimeStep,
                        const int32_t probePeriod,

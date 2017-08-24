@@ -1,22 +1,24 @@
 #include "Microtubule.hpp"
 #include <cstdint>
 #include <cmath>
-#include <iostream>
-#include <vector>
+#include <stdexcept>
+#include <algorithm>
+
 #include "Site.hpp"
 #include "Crosslinker.hpp"
 
-#include <stdexcept>
 
-#include <iostream>
+
 
 Microtubule::Microtubule(const double length, const double latticeSpacing)
     :   m_length(length),
         m_latticeSpacing(latticeSpacing),
         m_nSites(static_cast<int32_t>(std::floor(m_length/m_latticeSpacing))+1), // Choose such that microtubule always starts and ends with a site. The
         m_nFreeSites(m_nSites),
-        m_sites(m_nSites, Site(true))
+        m_sites(m_nSites, Site(true)),
+        m_freeSitePositions(m_nSites) // Set the number of sites, but fill it in the body of the constructor
 {
+    std::iota(m_freeSitePositions.begin(), m_freeSitePositions.end(), 0); // All sites are initially free
 }
 
 Microtubule::~Microtubule()
@@ -28,6 +30,9 @@ void Microtubule::connectSite(const int32_t sitePosition, Crosslinker& crosslink
     try
     {
         m_sites.at(sitePosition).connectCrosslinker(crosslinkerToConnect, terminusToConnect);
+
+        m_freeSitePositions.erase(std::remove(m_freeSitePositions.begin(), m_freeSitePositions.end(), sitePosition), m_freeSitePositions.end()); // Erase-remove idiom
+        --m_nFreeSites;
     }
     catch(std::out_of_range)
     {
@@ -50,3 +55,9 @@ double Microtubule::getLatticeSpacing() const
 {
     return m_latticeSpacing;
 }
+
+int32_t Microtubule::getNFreeSites() const
+{
+    return m_nFreeSites;
+}
+

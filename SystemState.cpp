@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include <iostream>
 
 SystemState::SystemState(const double lengthMobileMicrotubule,
                             const double lengthFixedMicrotubule,
@@ -103,8 +104,27 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type, c
 
 void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& crosslinker, const Extremity::MicrotubuleType oppositeMicrotubule, const int32_t positionOnOppositeMicrotubule)
 {
+    Microtubule *p_microtubuleToConnect = nullptr;
+    switch(oppositeMicrotubule)
+    {
+        case Extremity::MicrotubuleType::FIXED:
+            p_microtubuleToConnect = &m_fixedMicrotubule;
+            break;
+        case Extremity::MicrotubuleType::MOBILE:
+            p_microtubuleToConnect = &m_mobileMicrotubule;
+            break;
+        default:
+            throw GeneralException("An incorrect microtubule type was passed to connectCrosslinker");
+            break;
+    }
+
+    Crosslinker::Terminus terminusToConnect = crosslinker.getFreeTerminusWhenPartiallyConnected();
+
     crosslinker.fullyConnectFromPartialConnection(oppositeMicrotubule, positionOnOppositeMicrotubule);
+
+    p_microtubuleToConnect->connectSite(positionOnOppositeMicrotubule, crosslinker, terminusToConnect);
 }
+
 
 void SystemState::fullyConnectFreeCrosslinker(const Crosslinker::Type type,
                                               const Crosslinker::Terminus terminusToConnectToFixedMicrotubule,
