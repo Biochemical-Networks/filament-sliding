@@ -3,10 +3,12 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include "SystemState.hpp"
 #include "RandomGenerator.hpp"
 #include "Output.hpp"
+#include "Reaction.hpp"
 
 class Propagator
 {
@@ -17,10 +19,17 @@ private:
     const double m_diffusionConstantMicrotubule;
     const double m_springConstant;
 
-    const double m_deviationMicrotubule;
+    const double m_deviationMicrotubule; // sqrt(2 D t), with t the time step size and D the diffusion constant of the microtubule. Stored to prevent this calculation every time step
 
+    double m_currentReactionRateThreshold;
+
+    std::unordered_map<std::string, Reaction> m_reactions;
 
     void moveMicrotubule(SystemState& systemState, RandomGenerator& generator);
+
+    void performReaction(SystemState& systemState, RandomGenerator& generator);
+
+    double getNewReactionRateThreshold(const double probability);
 
 public:
     Propagator(const int32_t nTimeSteps,

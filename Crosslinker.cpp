@@ -96,7 +96,7 @@ Crosslinker::Terminus Crosslinker::getFreeTerminusWhenPartiallyConnected() const
     {
         throw GeneralException("A fully connected crosslinker was assumed to be partially connected");
     }
-    else if ((!m_head.isConnected())&&(!m_tail.isConnected()))
+    else //if ((!m_head.isConnected())&&(!m_tail.isConnected()))
     {
         throw GeneralException("A free crosslinker was assumed to be partially connected");
     }

@@ -33,6 +33,7 @@ void Microtubule::connectSite(const int32_t sitePosition, Crosslinker& crosslink
 
         m_freeSitePositions.erase(std::remove(m_freeSitePositions.begin(), m_freeSitePositions.end(), sitePosition), m_freeSitePositions.end()); // Erase-remove idiom
         --m_nFreeSites;
+
     }
     catch(std::out_of_range)
     {

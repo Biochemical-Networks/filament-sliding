@@ -7,6 +7,8 @@
 #include "Extremity.hpp"
 #include <cstdint>
 #include <iostream>
+#include <vector>
+#include <utility>
 
 class SystemState
 {
@@ -24,12 +26,13 @@ private:
     int32_t m_nFreeActiveCrosslinkers;
 
     // Store the free crosslinkers in the beginning, and store the connected ones in the end of the vectors.
-    // This way, m_nFree*Crosslinkers-1 labels the position of the next free crosslinker (* meant as regular expression)
+    // This way, m_nFree*Crosslinkers-1 labels the position of the next free crosslinker (* meant here as regular expression)
     std::vector<Crosslinker> m_passiveCrosslinkers;
     std::vector<Crosslinker> m_dualCrosslinkers;
     std::vector<Crosslinker> m_activeCrosslinkers;
 
-    //std::vector<bool> m_crosslinkerFree;
+    std::deque<Crosslinker*> m_partiallyConnectedCrosslinkers;
+    std::deque<Crosslinker*> m_fullyConnectedCrosslinkers;
 
     // The force on the microtubule is a property of the system as a whole, because it is caused by the crosslinkers and a possible external force
     double m_forceMicrotubule;

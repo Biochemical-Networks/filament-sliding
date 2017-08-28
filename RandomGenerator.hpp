@@ -9,6 +9,7 @@ class RandomGenerator
 private:
     std::mt19937_64 m_generator;
 
+    std::uniform_real_distribution<double> m_distributionProbility; // Create as a member variable, such that it is only created once
 
 public:
     RandomGenerator(const std::string seedString);
@@ -19,6 +20,8 @@ public:
     // Functions that change the generator state should not be const
     double getGaussian(const double mean, const double deviation);
     bool getBernoulli(const double probability);
+    double getProbability();
+    double getUniform(const double lowerBound, const double upperBound);
 };
 
 #endif // RANDOMGENERATOR_HPP
