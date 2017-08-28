@@ -5,7 +5,8 @@
 
 class Extremity
 {
-// The following part needs to be defined earlier than the private m_connectedTo
+// The following part needs to be defined earlier than the private m_connectedTo.
+// It is defined in Extremity, because defining it in Microtubule.hpp would mean it needs to be included here, causing a circular dependence
 public:
     enum class MicrotubuleType
     {

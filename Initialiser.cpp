@@ -94,9 +94,9 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
                                    nActiveCrosslinkersToConnect,
                                    nSitesToConnect,
                                    nFreeCrosslinkers,
-                                   systemState.getNFreePassiveCrosslinkers(),
-                                   systemState.getNFreeDualCrosslinkers(),
-                                   systemState.getNFreeActiveCrosslinkers());
+                                   systemState.getNFreeCrosslinkersOfType(Crosslinker::Type::PASSIVE),
+                                   systemState.getNFreeCrosslinkersOfType(Crosslinker::Type::DUAL),
+                                   systemState.getNFreeCrosslinkersOfType(Crosslinker::Type::ACTIVE));
 
     /* The following code will connect the crosslinkers */
 

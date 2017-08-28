@@ -2,6 +2,7 @@
 #define RANDOMGENERATOR_HPP
 
 #include <random>
+#include <cstdint>
 
 // The class is made, such that the seeding, implementation etc. is shielded from the user, and random numbers from certain distributions can be asked via its methods
 class RandomGenerator
@@ -22,6 +23,7 @@ public:
     bool getBernoulli(const double probability);
     double getProbability();
     double getUniform(const double lowerBound, const double upperBound);
+    int32_t getUniformInteger(const int32_t inclusiveLowerBound, const int32_t inclusiveUpperBound);
 };
 
 #endif // RANDOMGENERATOR_HPP

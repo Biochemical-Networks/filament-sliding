@@ -114,7 +114,7 @@ void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& crosslinker,
             p_microtubuleToConnect = &m_mobileMicrotubule;
             break;
         default:
-            throw GeneralException("An incorrect microtubule type was passed to connectCrosslinker");
+            throw GeneralException("An incorrect microtubule type was passed to connectCrosslinker()");
             break;
     }
 
@@ -149,19 +149,23 @@ double SystemState::getMicrotubulePosition() const
     return m_mobileMicrotubule.getPosition();
 }
 
-int32_t SystemState::getNFreePassiveCrosslinkers() const
+int32_t SystemState::getNFreeCrosslinkersOfType(const Crosslinker::Type type) const
 {
-    return m_nFreePassiveCrosslinkers;
-}
-
-int32_t SystemState::getNFreeDualCrosslinkers() const
-{
-    return m_nFreeDualCrosslinkers;
-}
-
-int32_t SystemState::getNFreeActiveCrosslinkers() const
-{
-    return m_nFreeActiveCrosslinkers;
+    switch(type)
+    {
+        case Crosslinker::Type::PASSIVE:
+            return m_nFreePassiveCrosslinkers;
+            break;
+        case Crosslinker::Type::DUAL:
+            return m_nFreeDualCrosslinkers;
+            break;
+        case Crosslinker::Type::ACTIVE:
+            return m_nFreeActiveCrosslinkers;
+            break;
+        default:
+            throw GeneralException("An incorrect crosslinker type was passed to getNFreeCrosslinkersOfType()");
+            break;
+    }
 }
 
 int32_t SystemState::getNFreeCrosslinkers() const
@@ -249,3 +253,37 @@ int32_t SystemState::getNSitesOverlapMobile() const
 {
     return lastSiteOverlapMobile()-firstSiteOverlapMobile()+1;
 }
+
+int32_t SystemState::getNFreeSites() const
+{
+    return m_fixedMicrotubule.getNFreeSites() + m_mobileMicrotubule.getNFreeSites();
+}
+
+int32_t SystemState::getNFreeSitesFixed() const
+{
+    return m_fixedMicrotubule.getNFreeSites();
+}
+
+int32_t SystemState::getNFreeSitesMobile() const
+{
+    return m_mobileMicrotubule.getNFreeSites();
+}
+
+int32_t SystemState::getFreeSitePosition(const Extremity::MicrotubuleType microtubuleType, const int32_t whichFreeSite) const
+{
+    switch(microtubuleType)
+    {
+        case Extremity::MicrotubuleType::FIXED:
+            return m_fixedMicrotubule.getFreeSitePosition(whichFreeSite);
+            break;
+        case Extremity::MicrotubuleType::MOBILE:
+            return m_mobileMicrotubule.getFreeSitePosition(whichFreeSite);
+            break;
+        default:
+            throw GeneralException("An incorrect microtubule type was passed to getFreeSitePosition");
+            break;
+    }
+}
+
+
+

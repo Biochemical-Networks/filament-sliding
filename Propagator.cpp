@@ -4,11 +4,14 @@
 #include "SystemState.hpp"
 #include "Output.hpp"
 #include "Reaction.hpp"
+#include "BindFreeCrosslinker.hpp"
+#include "Crosslinker.hpp"
 
 #include <cstdint>
 #include <string>
 #include <random>
 #include <cmath>
+#include <memory>
 
 
 
@@ -26,13 +29,14 @@ Propagator::Propagator(const int32_t nTimeSteps,
         m_probePeriod(probePeriod),
         m_diffusionConstantMicrotubule(diffusionConstantMicrotubule),
         m_springConstant(springConstant),
-        m_deviationMicrotubule(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep)),
-        m_reactions({
-                        {"bindingFreePassiveCrosslinker", Reaction(rateZeroToOneExtremitiesConnected)},
-                        {"bindingFreeDualCrosslinker", Reaction(rateZeroToOneExtremitiesConnected)},
-                        {"bindingFreeActiveCrosslinker", Reaction(rateZeroToOneExtremitiesConnected)}
-                    })
+        m_deviationMicrotubule(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep))
+
 {
+    // objects in std::initializer_list are inherently const, so std::unique_ptr's copy constructor cannot be used there, and we cannot use this method of initialising m_reactions.
+    // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
+    m_reactions["bindingFreePassiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(rateZeroToOneExtremitiesConnected, Crosslinker::Type::PASSIVE));
+    m_reactions["bindingFreeDualCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(rateZeroToOneExtremitiesConnected, Crosslinker::Type::DUAL));
+    m_reactions["bindingFreeActiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(rateZeroToOneExtremitiesConnected, Crosslinker::Type::ACTIVE));
 }
 
 Propagator::~Propagator()

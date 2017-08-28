@@ -62,3 +62,8 @@ int32_t Microtubule::getNFreeSites() const
     return m_nFreeSites;
 }
 
+int32_t Microtubule::getFreeSitePosition(const int32_t whichFreeSite) const
+{
+    return m_freeSitePositions.at(whichFreeSite);
+}
+

@@ -67,9 +67,7 @@ public:
 
     double getMicrotubulePosition() const;
 
-    int32_t getNFreePassiveCrosslinkers() const;
-    int32_t getNFreeDualCrosslinkers() const;
-    int32_t getNFreeActiveCrosslinkers() const;
+    int32_t getNFreeCrosslinkersOfType(const Crosslinker::Type type) const;
     int32_t getNFreeCrosslinkers() const;
 
     double beginningOverlap() const;
@@ -84,6 +82,11 @@ public:
     int32_t getNSitesOverlapFixed() const;
     int32_t getNSitesOverlapMobile() const;
 
+    int32_t getNFreeSites() const;
+    int32_t getNFreeSitesFixed() const;
+    int32_t getNFreeSitesMobile() const;
+
+    int32_t getFreeSitePosition(const Extremity::MicrotubuleType microtubuleType, const int32_t whichFreeSite) const;
 };
 
 #endif // SYSTEMSTATE_HPP

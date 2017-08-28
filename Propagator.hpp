@@ -10,6 +10,8 @@
 #include "Output.hpp"
 #include "Reaction.hpp"
 
+#include <memory>
+
 class Propagator
 {
 private:
@@ -23,7 +25,8 @@ private:
 
     double m_currentReactionRateThreshold;
 
-    std::unordered_map<std::string, Reaction> m_reactions;
+    // std::unique_ptr deletes the thing it is pointing to when going out of scope, meaning that we don't have to worry about memory leaks
+    std::unordered_map<std::string, std::unique_ptr<Reaction>> m_reactions;
 
     void moveMicrotubule(SystemState& systemState, RandomGenerator& generator);
 

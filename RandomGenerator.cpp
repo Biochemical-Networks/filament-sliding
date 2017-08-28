@@ -39,3 +39,10 @@ double RandomGenerator::getUniform(const double lowerBound, const double upperBo
     std::uniform_real_distribution<double> distribution(lowerBound, upperBound);
     return distribution(m_generator);
 }
+
+int32_t RandomGenerator::getUniformInteger(const int32_t inclusiveLowerBound, const int32_t inclusiveUpperBound)
+{
+    std::uniform_int_distribution<int32_t> distribution(inclusiveLowerBound, inclusiveUpperBound);
+    return distribution(m_generator);
+}
+
