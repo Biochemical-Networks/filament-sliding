@@ -102,6 +102,47 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type, c
 
 }
 
+void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& crosslinker)
+{
+    Extremity::MicrotubuleType microtubuleToDisconnectFrom;
+    int32_t positionToDisconnectFrom;
+    crosslinker.getBindingPositionWhenPartiallyConnected(microtubuleToDisconnectFrom, positionToDisconnectFrom); // Both are passed by reference, to get two return values
+
+    Crosslinker::Type type = crosslinker.getType();
+
+    crosslinker.disconnectFromPartialConnection();
+
+    switch(type)
+    {
+        case Crosslinker::Type::PASSIVE:
+            ++m_nFreePassiveCrosslinkers;
+            break;
+        case Crosslinker::Type::DUAL:
+            ++m_nFreeDualCrosslinkers;
+            break;
+        case Crosslinker::Type::ACTIVE:
+            ++m_nFreeActiveCrosslinkers;
+            break;
+        default:
+            throw GeneralException("An incorrect crosslinker type was passed to disconnectPartiallyConnectedCrosslinker()");
+            break;
+    }
+
+    switch(microtubuleToDisconnectFrom)
+    {
+        case Extremity::MicrotubuleType::FIXED:
+            m_fixedMicrotubule.disconnectSite(positionToDisconnectFrom);
+            break;
+        case Extremity::MicrotubuleType::MOBILE:
+            m_mobileMicrotubule.disconnectSite(positionToDisconnectFrom);
+            break;
+        default:
+            throw GeneralException("An incorrect microtubule type was passed to disconnectPartiallyConnectedCrosslinker()");
+            break;
+    }
+
+}
+
 void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& crosslinker, const Extremity::MicrotubuleType oppositeMicrotubule, const int32_t positionOnOppositeMicrotubule)
 {
     Microtubule *p_microtubuleToConnect = nullptr;

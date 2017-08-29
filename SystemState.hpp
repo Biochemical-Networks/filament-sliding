@@ -31,13 +31,13 @@ private:
     std::vector<Crosslinker> m_dualCrosslinkers;
     std::vector<Crosslinker> m_activeCrosslinkers;
 
+/*    std::deque<Crosslinker*> m_freeCrosslinkers;
     std::deque<Crosslinker*> m_partiallyConnectedCrosslinkers;
-    std::deque<Crosslinker*> m_fullyConnectedCrosslinkers;
+    std::deque<Crosslinker*> m_fullyConnectedCrosslinkers;*/
 
     // The force on the microtubule is a property of the system as a whole, because it is caused by the crosslinkers and a possible external force
     double m_forceMicrotubule;
     double m_energy;
-
 
 
 public:
@@ -60,6 +60,8 @@ public:
                                 const Crosslinker::Terminus terminusToConnect,
                                 const Extremity::MicrotubuleType microtubuleToConnectTo,
                                 const int32_t position);
+
+    void disconnectPartiallyConnectedCrosslinker(Crosslinker& crosslinker);
 
     void connectPartiallyConnectedCrosslinker(Crosslinker& crosslinker, const Extremity::MicrotubuleType oppositeMicrotubule, const int32_t positionOnOppositeMicrotubule);
 

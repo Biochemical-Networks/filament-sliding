@@ -34,6 +34,8 @@ public:
 
     void connectCrosslinker(Crosslinker& crosslinkerToConnect, const Crosslinker::Terminus terminusToConnect);
 
+    void disconnectCrosslinker();
+
 /*    void setLeftFreeSite(const Site* p_leftNeighbour);
     void setRightFreeSite(const Site* p_rightNeighbour);*/
 };

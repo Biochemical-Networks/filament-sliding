@@ -65,6 +65,25 @@ void Crosslinker::connectFromFree(const Extremity::MicrotubuleType microtubuleTo
     }
 }
 
+void Crosslinker::disconnectFromPartialConnection()
+{
+    bool partialWithTail = (!m_head.isConnected())&&(m_tail.isConnected());
+    bool partialWithHead = (m_head.isConnected())&&(!m_tail.isConnected());
+    if(partialWithTail)
+    {
+        m_tail.disconnect();
+    }
+    else if(partialWithHead)
+    {
+        m_head.disconnect();
+    }
+    else
+    {
+        throw GeneralException("disconnectFromPartialConnection() was called from a crosslinker in a different state");
+    }
+
+}
+
 void Crosslinker::fullyConnectFromPartialConnection(const Extremity::MicrotubuleType microtubuleToConnectTo, const int32_t position)
 {
     // Check whether it is not free. It is not necessary to check that it is fully connected, the extremities will take care of that.
@@ -100,6 +119,27 @@ Crosslinker::Terminus Crosslinker::getFreeTerminusWhenPartiallyConnected() const
     {
         throw GeneralException("A free crosslinker was assumed to be partially connected");
     }
+}
+
+void Crosslinker::getBindingPositionWhenPartiallyConnected(Extremity::MicrotubuleType& microtubuleToDisconnect, int32_t& positionToDisconnectFrom) const
+{
+    bool partialWithTail = (!m_head.isConnected())&&(m_tail.isConnected());
+    bool partialWithHead = (m_head.isConnected())&&(!m_tail.isConnected());
+    if(partialWithTail)
+    {
+        microtubuleToDisconnect = m_tail.getMicrotubuleType();
+        positionToDisconnectFrom = m_tail.getPosition();
+    }
+    else if(partialWithHead)
+    {
+        microtubuleToDisconnect = m_head.getMicrotubuleType();
+        positionToDisconnectFrom = m_head.getPosition();
+    }
+    else
+    {
+        throw GeneralException("getBindingPositionWhenPartiallyConnected() was called from a crosslinker in a different state");
+    }
+
 }
 
 

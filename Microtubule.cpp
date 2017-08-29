@@ -41,6 +41,22 @@ void Microtubule::connectSite(const int32_t sitePosition, Crosslinker& crosslink
     }
 }
 
+void Microtubule::disconnectSite(const int32_t sitePosition)
+{
+    try
+    {
+        m_sites.at(sitePosition).disconnectCrosslinker();
+
+        m_freeSitePositions.push_back(sitePosition);
+        ++m_nFreeSites;
+
+    }
+    catch(std::out_of_range)
+    {
+        throw GeneralException("The sitePosition given to Microtubule::disconnectSite() does not exist");
+    }
+}
+
 
 double Microtubule::getLength() const
 {

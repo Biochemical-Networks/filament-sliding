@@ -4,6 +4,7 @@
 #include <cstdint>
 #include "Extremity.hpp"
 
+
 class Crosslinker
 {
 public:
@@ -43,9 +44,15 @@ public:
 
     void connectFromFree(const Extremity::MicrotubuleType microtubuleToConnectTo, const Terminus terminusToConnect, const int32_t position);
 
+    void disconnectFromPartialConnection();
+
     void fullyConnectFromPartialConnection(const Extremity::MicrotubuleType microtubuleToConnectTo, const int32_t position);
 
+    void disconnectFromFullConnection();
+
     Terminus getFreeTerminusWhenPartiallyConnected() const;
+
+    void getBindingPositionWhenPartiallyConnected(Extremity::MicrotubuleType& microtubuleToDisconnect, int32_t& positionToDisconnectFrom) const;
 
 /*    void setHeadPosition(const int32_t sitePosition);
     void setTailPosition(const int32_t sitePosition);*/

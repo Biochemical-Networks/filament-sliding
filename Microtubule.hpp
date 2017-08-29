@@ -21,7 +21,7 @@ private:
     int32_t m_nFreeSites;
     std::vector<Site> m_sites; // Vector, because the size never changes, but is only known at run time
 
-    std::deque<int32_t> m_freeSitePositions; // Elements are removed often, so std::deque is used
+    std::deque<int32_t> m_freeSitePositions; // Elements are removed often, so std::deque is used. The order of the positions will NOT be preserved.
 
 /*    // Following maps site position to pointer to next free site on the left or right
     std::map<int32_t, Site*> m_nextFreeSiteLeft;
@@ -33,6 +33,8 @@ public:
     virtual ~Microtubule();
 
     void connectSite(const int32_t sitePosition, Crosslinker& crosslinkerToConnect, const Crosslinker::Terminus terminusToConnect);
+
+    void disconnectSite(const int32_t sitePosition);
 
     double getLength() const;
 
