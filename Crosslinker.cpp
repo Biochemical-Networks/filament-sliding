@@ -3,10 +3,10 @@
 
 #include "Extremity.hpp"
 
-Crosslinker::Crosslinker(const Type type, bool headConnected, bool tailConnected)
+Crosslinker::Crosslinker(const Type type)
     :   m_type(type),
-        m_head(headConnected),
-        m_tail(tailConnected)
+        m_head(false), // A crosslinker always starts as a free one, because it requires no information
+        m_tail(false)
 {
 }
 

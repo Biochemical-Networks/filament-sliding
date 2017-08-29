@@ -5,11 +5,8 @@
 #include "Extremity.hpp"
 #include "GeneralException/GeneralException.hpp"
 
-#include <stdexcept>
-#include <algorithm>
-#include <cmath>
-
-#include <iostream>
+#include <algorithm> // max/min
+#include <cmath> // ceil/floor
 
 SystemState::SystemState(const double lengthMobileMicrotubule,
                             const double lengthFixedMicrotubule,
@@ -26,9 +23,9 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
         m_nFreePassiveCrosslinkers(m_nPassiveCrosslinkers),
         m_nFreeDualCrosslinkers(m_nDualCrosslinkers),
         m_nFreeActiveCrosslinkers(m_nActiveCrosslinkers),
-        m_passiveCrosslinkers(m_nPassiveCrosslinkers, Crosslinker(Crosslinker::Type::PASSIVE, false, false)),
-        m_dualCrosslinkers(m_nDualCrosslinkers, Crosslinker(Crosslinker::Type::DUAL, false, false)),
-        m_activeCrosslinkers(m_nActiveCrosslinkers, Crosslinker(Crosslinker::Type::ACTIVE, false, false))
+        m_passiveCrosslinkers(m_nPassiveCrosslinkers, Crosslinker(Crosslinker::Type::PASSIVE)),
+        m_dualCrosslinkers(m_nDualCrosslinkers, Crosslinker(Crosslinker::Type::DUAL)),
+        m_activeCrosslinkers(m_nActiveCrosslinkers, Crosslinker(Crosslinker::Type::ACTIVE))
 {
 }
 
@@ -44,22 +41,22 @@ void SystemState::setMicrotubulePosition(const double initialPosition)
 // The following function assumes that it is possible to connect the crosslinker, otherwise it will throw
 Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type, const Crosslinker::Terminus terminusToConnect, const Extremity::MicrotubuleType microtubuleToConnectTo, const int32_t position)
 {
-    std::vector<Crosslinker> *p_crosslinkersVector = nullptr;
+    CrosslinkerContainer *p_crosslinkersContainer = nullptr;
     // Get the number of free crosslinkers of a certain type, because this number is used to label the position of the next crosslinker which needs to be connected in its respective vector
     int32_t *p_nFreeCrosslinkers;
 
     switch(type)
     {
         case Crosslinker::Type::PASSIVE:
-            p_crosslinkersVector = &m_passiveCrosslinkers;
+            p_crosslinkersContainer = &m_passiveCrosslinkers;
             p_nFreeCrosslinkers = &m_nFreePassiveCrosslinkers;
             break;
         case Crosslinker::Type::DUAL:
-            p_crosslinkersVector = &m_dualCrosslinkers;
+            p_crosslinkersContainer = &m_dualCrosslinkers;
             p_nFreeCrosslinkers = &m_nFreeDualCrosslinkers;
             break;
         case Crosslinker::Type::ACTIVE:
-            p_crosslinkersVector = &m_activeCrosslinkers;
+            p_crosslinkersContainer = &m_activeCrosslinkers;
             p_nFreeCrosslinkers = &m_nFreeActiveCrosslinkers;
             break;
         default:
@@ -82,24 +79,16 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type, c
     }
 
 
-    try
-    {
-        // Everything needs to be defined within the try block, otherwise crosslinkerToConnect is not defined in the right scope
-        Crosslinker &crosslinkerToConnect = p_crosslinkersVector->at((*p_nFreeCrosslinkers)-1); // Reference, because only one crosslinker is connected in this function
+    // Everything needs to be defined within the try block, otherwise crosslinkerToConnect is not defined in the right scope
+    Crosslinker &crosslinkerToConnect = p_crosslinkersContainer->at((*p_nFreeCrosslinkers)-1); // Reference, because only one crosslinker is connected in this function
 
-        crosslinkerToConnect.connectFromFree(microtubuleToConnectTo, terminusToConnect, position); // Connect the crosslinker
+    crosslinkerToConnect.connectFromFree(microtubuleToConnectTo, terminusToConnect, position); // Connect the crosslinker
 
-        p_microtubuleToConnect->connectSite(position, crosslinkerToConnect, terminusToConnect);
+    p_microtubuleToConnect->connectSite(position, crosslinkerToConnect, terminusToConnect);
 
-        --(*p_nFreeCrosslinkers); // The number of free crosslinkers of this type decreases upon being connected
+    --(*p_nFreeCrosslinkers); // The number of free crosslinkers of this type decreases upon being connected
 
-        return crosslinkerToConnect; // Such that the caller can use this specific crosslinker immediately
-    }
-    catch(std::out_of_range) // For the at function
-    {
-        throw GeneralException("There are no free crosslinkers, but still one was tried to be connected");
-    }
-
+    return crosslinkerToConnect; // Such that the caller can use this specific crosslinker immediately
 }
 
 void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& crosslinker)

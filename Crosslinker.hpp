@@ -29,7 +29,7 @@ private:
 
 public:
 
-    Crosslinker(const Type crosslinkerType, bool headConnected, bool tailConnected);
+    Crosslinker(const Type crosslinkerType);
     ~Crosslinker();
 
     bool isConnected() const;
