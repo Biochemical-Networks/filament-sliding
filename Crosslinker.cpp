@@ -101,6 +101,28 @@ void Crosslinker::fullyConnectFromPartialConnection(const Extremity::Microtubule
     }
 }
 
+void Crosslinker::disconnectFromFullConnection(const Terminus terminusToDisconnect)
+{
+    bool fullyConnected = (m_head.isConnected())&&(m_tail.isConnected());
+    if(!fullyConnected)
+    {
+        throw GeneralException("disconnectFromFullConnection() was called on a crosslinker that is not fully connected");
+    }
+
+    switch(terminusToDisconnect)
+    {
+        case Terminus::TAIL:
+            m_tail.disconnect();
+            break;
+        case Terminus::HEAD:
+            m_head.disconnect();
+            break;
+        default:
+            throw GeneralException("disconnectFromFullConnection() was passed a wrong Terminus.");
+            break;
+    }
+}
+
 Crosslinker::Terminus Crosslinker::getFreeTerminusWhenPartiallyConnected() const
 {
     if ((m_head.isConnected())&&(!m_tail.isConnected()))
@@ -141,5 +163,34 @@ void Crosslinker::getBindingPositionWhenPartiallyConnected(Extremity::Microtubul
     }
 
 }
+
+void Crosslinker::getOneBindingPositionWhenFullyConnected(const Crosslinker::Terminus terminus, Extremity::MicrotubuleType& microtubuleToDisconnect, int32_t& positionToDisconnectFrom) const
+{
+    bool fullyConnected = (m_head.isConnected())&&(m_tail.isConnected());
+
+    if(!fullyConnected)
+    {
+        throw GeneralException("getOneBindingPositionWhenFullyConnected() was called on a crosslinker that is not fully connected.");
+    }
+
+    switch(terminus)
+    {
+        case Crosslinker::Terminus::TAIL:
+            microtubuleToDisconnect = m_tail.getMicrotubuleType();
+            positionToDisconnectFrom = m_tail.getPosition();
+            break;
+        case Crosslinker::Terminus::HEAD:
+            microtubuleToDisconnect = m_head.getMicrotubuleType();
+            positionToDisconnectFrom = m_head.getPosition();
+            break;
+        default:
+            throw GeneralException("getOneBindingPositionWhenFullyConnected() was passed a wrong Terminus.");
+    }
+}
+
+
+
+
+
 
 

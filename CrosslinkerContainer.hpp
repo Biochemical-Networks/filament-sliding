@@ -25,13 +25,18 @@ public:
     Crosslinker& at(const int32_t position);
 
 
-    Crosslinker& connectFromFreeToPartial();
+    Crosslinker* connectFromFreeToPartial();
 
     void disconnectFromPartialToFree(Crosslinker& crosslinkerToDisconnect);
 
     void connectFromPartialToFull(Crosslinker& crosslinkerToConnect);
 
     void disconnectFromFullToPartial(Crosslinker& crosslinkerToDisconnect);
+
+    int32_t getNCrosslinkers() const;
+    int32_t getNFreeCrosslinkers() const;
+    int32_t getNPartialCrosslinkers() const;
+    int32_t getNFullCrosslinkers() const;
 };
 
 #endif // CROSSLINKERCONTAINER_HPP

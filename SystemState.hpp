@@ -23,9 +23,9 @@ private:
     const int32_t m_nActiveCrosslinkers;
     const int32_t m_nCrosslinkers;
 
-    int32_t m_nFreePassiveCrosslinkers;
+    /*int32_t m_nFreePassiveCrosslinkers;
     int32_t m_nFreeDualCrosslinkers;
-    int32_t m_nFreeActiveCrosslinkers;
+    int32_t m_nFreeActiveCrosslinkers;*/
 
     CrosslinkerContainer m_passiveCrosslinkers;
     CrosslinkerContainer m_dualCrosslinkers;
@@ -66,6 +66,8 @@ public:
     void disconnectPartiallyConnectedCrosslinker(Crosslinker& crosslinker);
 
     void connectPartiallyConnectedCrosslinker(Crosslinker& crosslinker, const Extremity::MicrotubuleType oppositeMicrotubule, const int32_t positionOnOppositeMicrotubule);
+
+    void disconnectFullyConnectedCrosslinker(Crosslinker& crosslinker, const Crosslinker::Terminus terminusToDisconnect);
 
     void update(const double changeMicrotubulePosition);
 

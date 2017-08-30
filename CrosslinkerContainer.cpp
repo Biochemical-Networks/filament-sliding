@@ -23,6 +23,8 @@ CrosslinkerContainer::~CrosslinkerContainer()
 
 Crosslinker& CrosslinkerContainer::at(const int32_t position)
 {
+    // Convert the std::out_of_range error into a GeneralException, such that a text is printed when it goes wrong.
+    //Also, it is possible for the caller to catch it, without having to know what kind of error happened.
     try
     {
         return m_crosslinkers.at(position);
@@ -33,14 +35,14 @@ Crosslinker& CrosslinkerContainer::at(const int32_t position)
     }
 }
 
-Crosslinker& CrosslinkerContainer::connectFromFreeToPartial()
+Crosslinker* CrosslinkerContainer::connectFromFreeToPartial()
 {
     // All free crosslinkers are in the same state, so it doesn't matter which one is taken. Therefore, we take the final one in the row.
-    Crosslinker* p_crosslinkerToConnect = m_freeCrosslinkers.back();
+    Crosslinker* p_crosslinkerToConnect = m_freeCrosslinkers.back(); // Returns last element, which is a pointer
     m_freeCrosslinkers.pop_back();
     m_partialCrosslinkers.push_back(p_crosslinkerToConnect);
 
-    return *p_crosslinkerToConnect;
+    return p_crosslinkerToConnect;
 }
 
 void CrosslinkerContainer::disconnectFromPartialToFree(Crosslinker& crosslinkerToDisconnect)
@@ -60,3 +62,32 @@ void CrosslinkerContainer::disconnectFromFullToPartial(Crosslinker& crosslinkerT
     m_fullCrosslinkers.erase(std::remove(m_fullCrosslinkers.begin(), m_fullCrosslinkers.end(), &crosslinkerToDisconnect));
     m_partialCrosslinkers.push_back(&crosslinkerToDisconnect);
 }
+
+int32_t CrosslinkerContainer::getNCrosslinkers() const
+{
+    return m_crosslinkers.size();
+}
+
+int32_t CrosslinkerContainer::getNFreeCrosslinkers() const
+{
+    return m_freeCrosslinkers.size();
+}
+
+int32_t CrosslinkerContainer::getNPartialCrosslinkers() const
+{
+    return m_partialCrosslinkers.size();
+}
+
+int32_t CrosslinkerContainer::getNFullCrosslinkers() const
+{
+    return m_fullCrosslinkers.size();
+}
+
+
+
+
+
+
+
+
+
