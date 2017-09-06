@@ -18,13 +18,14 @@ BindFreeCrosslinker::~BindFreeCrosslinker()
 
 void BindFreeCrosslinker::setCurrentRate(const SystemState& systemState)
 {
+    // getNFreeSites() gives the number of free sites on both microtubules. A fully connected crosslinker takes two of those sites.
     int32_t nCrosslinkersOfType = systemState.getNFreeCrosslinkersOfType(m_typeToBind);
     m_currentRate = m_elementaryRate * systemState.getNFreeSites() * nCrosslinkersOfType;
 }
 
-void BindFreeCrosslinker::updateAccumulatedAction(const SystemState& systemState)
+void BindFreeCrosslinker::updateAction()
 {
-    m_accumulatedAction += m_currentRate;
+    m_action += m_currentRate;
 }
 
 void BindFreeCrosslinker::whereToConnect(const SystemState& systemState, RandomGenerator& generator, Extremity::MicrotubuleType& microtubuleToConnect, int32_t& position)

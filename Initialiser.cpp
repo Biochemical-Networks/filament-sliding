@@ -133,7 +133,7 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
 
     if (connectedSoFar != nSitesToConnect)
     {
-        throw GeneralException("Something went wrong in the initialiser: the number of connected crosslinkers failed to reach the number of sites to connect");
+        throw GeneralException("Something went wrong in the initialiser: the number of connected crosslinkers failed to equal the number of sites to connect");
     }
 
 }

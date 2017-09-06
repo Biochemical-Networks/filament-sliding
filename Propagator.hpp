@@ -25,6 +25,7 @@ private:
 
     double m_currentReactionRateThreshold;
 
+    // Store pointers to Reactions in the map m_reactions, because we want to store instances of inherited classes in there. That would not be possible with just the objects.
     // std::unique_ptr deletes the thing it is pointing to when going out of scope, meaning that we don't have to worry about memory leaks
     std::unordered_map<std::string, std::unique_ptr<Reaction>> m_reactions;
 
@@ -33,6 +34,12 @@ private:
     void performReaction(SystemState& systemState, RandomGenerator& generator);
 
     double getNewReactionRateThreshold(const double probability);
+
+    double getTotalAction() const; // The single actions are stored in the Reactions, contained in m_reactions. The
+
+    Reaction& getReactionToHappen(RandomGenerator& generator) const;
+
+    void updateAction(double totalReactionRate);
 
 public:
     Propagator(const int32_t nTimeSteps,

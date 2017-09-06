@@ -9,7 +9,13 @@ Reaction::~Reaction()
 {
 }
 
-void Reaction::resetAccumulatedAction()
+void Reaction::resetAction()
 {
-    m_accumulatedAction = 0.0;
+    m_action = 0.0;
+}
+
+
+double Reaction::getAction() const
+{
+    return m_action;
 }
