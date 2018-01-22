@@ -14,7 +14,7 @@ protected:
     double m_action; // The summation of the rates at each time step, used for integrating the rate over time
 public:
     Reaction(const double elementaryRate);
-    virtual ~Reaction();
+    virtual ~Reaction(); // Don't allow Reaction pointers to destroy derived objects only using the Reaction destructor
 
     void resetAction();
 
