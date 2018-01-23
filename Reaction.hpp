@@ -18,7 +18,7 @@ public:
 
     void resetAction();
 
-    double getAction() const;
+    double getAction() const; // does not have time step duration included
 
     void updateAction(); // Action is updated by adding the current rate times the time step size to it. Once the total action of all reactions reaches a (randomly set) plateau value, one fires
 

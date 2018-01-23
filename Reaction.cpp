@@ -3,6 +3,7 @@
 Reaction::Reaction(const double elementaryRate)
     :   m_elementaryRate(elementaryRate)
 {
+    resetAction(); // set initial action to zero
 }
 
 Reaction::~Reaction()

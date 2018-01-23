@@ -24,7 +24,7 @@ void BindFreeCrosslinker::setCurrentRate(const SystemState& systemState)
 }
 
 
-
+// Return through references, since two values are returned
 void BindFreeCrosslinker::whereToConnect(const SystemState& systemState, RandomGenerator& generator, Extremity::MicrotubuleType& microtubuleToConnect, int32_t& position)
 {
     int32_t nFreeSitesFixed = systemState.getNFreeSitesFixed();
