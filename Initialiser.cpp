@@ -147,6 +147,11 @@ void Initialiser::nCrosslinkersEachTypeToConnect(int32_t& nPassiveCrosslinkersTo
                                                  const int32_t nFreeDualCrosslinkers,
                                                  const int32_t nFreeActiveCrosslinkers) const
 {
+    /* To calculate the number of connected crosslinkers to assign to each type,
+     * first use integer division. In this setup, e.g. 0 <= remainderPassiveCrosslinkers < nFreeCrosslinkers.
+     * Since the fractions are floored to integers, the resulting number of connected crosslinkers is always lower than nSitesToConnect.
+     * To make up for the loss, assign the remaining crosslinkers to the largest remainders.
+     */
     nPassiveCrosslinkersToConnect = (nFreePassiveCrosslinkers*nSitesToConnect) / nFreeCrosslinkers;
     int32_t remainderPassiveCrosslinkers = (nFreePassiveCrosslinkers*nSitesToConnect) % nFreeCrosslinkers;
 
@@ -164,7 +169,7 @@ void Initialiser::nCrosslinkersEachTypeToConnect(int32_t& nPassiveCrosslinkersTo
     {
         std::vector<int32_t>::iterator iteratorMaxRemainder;
         iteratorMaxRemainder = std::max_element(remainders.begin(), remainders.end());
-        *iteratorMaxRemainder -= nFreeCrosslinkers;
+        *iteratorMaxRemainder -= nFreeCrosslinkers; // remainder<nFreeCrosslinkers, so this makes the remainder negative. Hence, the same point won't be chosen again.
         int32_t positionMaxRemainder = std::distance(remainders.begin(), iteratorMaxRemainder);
 
         switch (positionMaxRemainder) // The possible values are 0 (passive), 1 (dual), and 2 (active)
