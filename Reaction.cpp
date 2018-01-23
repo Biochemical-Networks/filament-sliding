@@ -19,3 +19,8 @@ double Reaction::getAction() const
 {
     return m_action;
 }
+
+void Reaction::updateAction()
+{
+    m_action += m_currentRate;
+}

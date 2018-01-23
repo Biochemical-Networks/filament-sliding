@@ -20,7 +20,7 @@ public:
 
     virtual void setCurrentRate(const SystemState& systemState) override;
 
-    virtual void updateAction() override;
+    //virtual void updateAction() override;
 
     virtual void performReaction(SystemState& systemState, RandomGenerator& generator) override;
 };
