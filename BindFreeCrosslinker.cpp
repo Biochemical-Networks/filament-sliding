@@ -51,7 +51,8 @@ void BindFreeCrosslinker::performReaction(SystemState& systemState, RandomGenera
 
     // The following can be changed when there are different binding affinities for the head and tail of a crosslinker.
     // Now, the binding affinities are assumed to be equal.
-    Crosslinker::Terminus terminusToConnect = ((generator.getBernoulli(0.5))?(Crosslinker::Terminus::HEAD):(Crosslinker::Terminus::TAIL));
+    double probHeadBinds = 0.5;
+    Crosslinker::Terminus terminusToConnect = ((generator.getBernoulli(probHeadBinds))?(Crosslinker::Terminus::HEAD):(Crosslinker::Terminus::TAIL));
 
     systemState.connectFreeCrosslinker(m_typeToBind, terminusToConnect, microtubuleToConnect, position);
 
