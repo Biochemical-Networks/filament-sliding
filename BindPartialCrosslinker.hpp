@@ -1,5 +1,5 @@
-#ifndef BINDFREECROSSLINKER_HPP
-#define BINDFREECROSSLINKER_HPP
+#ifndef BINDPARTIALCROSSLINKER_HPP
+#define BINDPARTIALCROSSLINKER_HPP
 
 #include "Reaction.hpp"
 #include "SystemState.hpp"
@@ -8,19 +8,21 @@
 
 #include <cstdint>
 
-class BindFreeCrosslinker : public Reaction
+class BindPartialCrosslinker : public Reaction
 {
 private:
     const Crosslinker::Type m_typeToBind;
 
+    // The following function returns through references
     void whereToConnect(const SystemState& systemState, RandomGenerator& generator, Extremity::MicrotubuleType& microtubuleToConnect, int32_t& siteToConnect);
 public:
-    BindFreeCrosslinker(const double elementaryRate, const Crosslinker::Type typeToBind);
-    virtual ~BindFreeCrosslinker();
+    BindPartialCrosslinker(const double elementaryRate, const Crosslinker::Type typeToBind);
+    virtual ~BindPartialCrosslinker();
 
     virtual void setCurrentRate(const SystemState& systemState) override;
 
     virtual void performReaction(SystemState& systemState, RandomGenerator& generator) override;
 };
 
-#endif // BINDFREECROSSLINKER_HPP
+#endif // BINDPARTIALCROSSLINKER_HPP
+

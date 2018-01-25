@@ -5,6 +5,8 @@
 #include "RandomGenerator.hpp"
 
 
+// Reactions set the rules by which the SystemState is changed. To change it, it uses methods of SystemState, and Reactions are called by the Propagator
+
 class Reaction
 {
 protected:

@@ -45,6 +45,7 @@ void BindFreeCrosslinker::whereToConnect(const SystemState& systemState, RandomG
 
 void BindFreeCrosslinker::performReaction(SystemState& systemState, RandomGenerator& generator)
 {
+    // whereToConnect() returns through references, so define the variables first
     Extremity::MicrotubuleType microtubuleToConnect;
     int32_t position;
     whereToConnect(systemState, generator, microtubuleToConnect, position); // Get the microtubule and site which should be connected.
@@ -55,7 +56,6 @@ void BindFreeCrosslinker::performReaction(SystemState& systemState, RandomGenera
     Crosslinker::Terminus terminusToConnect = ((generator.getBernoulli(probHeadBinds))?(Crosslinker::Terminus::HEAD):(Crosslinker::Terminus::TAIL));
 
     systemState.connectFreeCrosslinker(m_typeToBind, terminusToConnect, microtubuleToConnect, position);
-
 
 }
 

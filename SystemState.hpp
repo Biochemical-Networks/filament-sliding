@@ -11,6 +11,7 @@
 
 #include <vector>
 
+// SystemState methods allow the SystemState to be changed; they do not provide the rules by which it is changed
 
 class SystemState
 {

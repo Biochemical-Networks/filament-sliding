@@ -36,8 +36,12 @@ void SystemState::setMicrotubulePosition(const double initialPosition)
 }
 
 // The following function assumes that it is possible to connect the crosslinker, otherwise it will throw
-Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type, const Crosslinker::Terminus terminusToConnect, const Extremity::MicrotubuleType microtubuleToConnectTo, const int32_t position)
+Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type,
+                                                 const Crosslinker::Terminus terminusToConnect,
+                                                 const Extremity::MicrotubuleType microtubuleToConnectTo,
+                                                 const int32_t position)
 {
+    // Find a pointer to the microtubule that the crosslinker needs to be connected to, such that we can use its methods.
     Microtubule *p_microtubuleToConnect = nullptr;
     switch(microtubuleToConnectTo)
     {
@@ -54,6 +58,9 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type, c
 
     Crosslinker* p_connectingCrosslinker;
 
+    // Now, the members containing all crosslinkers of each type are called to connect a free crosslinker in their administration, and to return a pointer to the one that it connected.
+    // Then, the pointer can be used to connect the crosslinker in its own administration as well.
+    // Done this way, such that the containers don't have to know about the position or microtubule that needs to be connected.
     switch(type)
     {
         case Crosslinker::Type::PASSIVE:
@@ -70,8 +77,10 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type, c
             break;
     }
 
+    // Connect crosslinker in its own administration
     p_connectingCrosslinker->connectFromFree(microtubuleToConnectTo, terminusToConnect, position); // Connect the crosslinker
 
+    // Then, perform the connection in the administration of the microtubule
     p_microtubuleToConnect->connectSite(position, *p_connectingCrosslinker, terminusToConnect);
 
     return *p_connectingCrosslinker; // Such that the caller can use this specific crosslinker immediately
@@ -85,8 +94,10 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
 
     Crosslinker::Type type = disconnectingCrosslinker.getType();
 
+    // Disconnect in administration of crosslinker
     disconnectingCrosslinker.disconnectFromPartialConnection();
 
+    // Disconnect in administration of crosslinker container
     switch(type)
     {
         case Crosslinker::Type::PASSIVE:
@@ -103,6 +114,7 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
             break;
     }
 
+    // Disconnect in administration of microtubule
     switch(microtubuleToDisconnectFrom)
     {
         case Extremity::MicrotubuleType::FIXED:
@@ -136,11 +148,13 @@ void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCr
 
     Crosslinker::Terminus terminusToConnect = connectingCrosslinker.getFreeTerminusWhenPartiallyConnected();
 
-
+    // Connect in administration of crosslinker
     connectingCrosslinker.fullyConnectFromPartialConnection(oppositeMicrotubule, positionOnOppositeMicrotubule);
 
+    // Connect in administration of microtubule
     p_microtubuleToConnect->connectSite(positionOnOppositeMicrotubule, connectingCrosslinker, terminusToConnect);
 
+    // Connect in administration of crosslinker container
     switch(connectingCrosslinker.getType())
     {
         case Crosslinker::Type::PASSIVE:
@@ -167,8 +181,10 @@ void SystemState::disconnectFullyConnectedCrosslinker(Crosslinker& disconnecting
 
     Crosslinker::Type type = disconnectingCrosslinker.getType();
 
+    // Disconnect in administration of crosslinker
     disconnectingCrosslinker.disconnectFromFullConnection(terminusToDisconnect);
 
+    // Disconnect in administration of crosslinker container
     switch(type)
     {
         case Crosslinker::Type::PASSIVE:
@@ -185,6 +201,7 @@ void SystemState::disconnectFullyConnectedCrosslinker(Crosslinker& disconnecting
             break;
     }
 
+    // Disconnect in administration of microtubule
     switch(microtubuleToDisconnectFrom)
     {
         case Extremity::MicrotubuleType::FIXED:
@@ -200,7 +217,7 @@ void SystemState::disconnectFullyConnectedCrosslinker(Crosslinker& disconnecting
 
 }
 
-
+// This function performs all steps to go from a free to a fully connected crosslinker
 void SystemState::fullyConnectFreeCrosslinker(const Crosslinker::Type type,
                                               const Crosslinker::Terminus terminusToConnectToFixedMicrotubule,
                                               const int32_t positionOnFixedMicrotubule,
@@ -276,7 +293,7 @@ int32_t SystemState::firstSiteOverlapFixed() const
     }
     else
     {
-        return static_cast <int32_t> (std::floor(pos / m_fixedMicrotubule.getLatticeSpacing()));
+        return static_cast <int32_t> (std::floor(pos / m_fixedMicrotubule.getLatticeSpacing())); // Floor, because the crosslinker can stretch maximally one lattice spacing
     }
 }
 
@@ -289,7 +306,7 @@ int32_t SystemState::lastSiteOverlapFixed() const
     }
     else
     {
-        return static_cast <int32_t> (std::ceil(pos / m_fixedMicrotubule.getLatticeSpacing()));
+        return static_cast <int32_t> (std::ceil(pos / m_fixedMicrotubule.getLatticeSpacing())); // Ceil, because the crosslinker can stretch maximally one lattice spacing
     }
 }
 
@@ -302,7 +319,7 @@ int32_t SystemState::firstSiteOverlapMobile() const
     }
     else
     {
-        return static_cast <int32_t> (std::floor(pos / m_mobileMicrotubule.getLatticeSpacing()));
+        return static_cast <int32_t> (std::floor(pos / m_mobileMicrotubule.getLatticeSpacing())); // Floor, because the crosslinker can stretch maximally one lattice spacing
     }
 }
 
@@ -315,7 +332,7 @@ int32_t SystemState::lastSiteOverlapMobile() const
     }
     else
     {
-        return static_cast <int32_t> (std::ceil(pos / m_mobileMicrotubule.getLatticeSpacing()));
+        return static_cast <int32_t> (std::ceil(pos / m_mobileMicrotubule.getLatticeSpacing())); // Ceil, because the crosslinker can stretch maximally one lattice spacing
     }
 }
 
