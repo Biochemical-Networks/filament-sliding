@@ -16,6 +16,12 @@
 class SystemState
 {
 private:
+    // With a stretch < 1.5 lattice spacing, there are maximally 3 types of stretch at a time (at exactly 1.5, there could be 4).
+    // The number is defined smaller than 1.5 to be sure that there are never 4 states possible, in which the state could become locked.
+    // 15 decimals seems to be the precision
+    constexpr static double m_maxStretchPerLatticeSpacing=1.499999999999999;
+    const double m_maxStretch; // To be defined in terms of the lattice spacing and m_maxStretchPerLatticeSpacing
+
     Microtubule m_fixedMicrotubule;
     MobileMicrotubule m_mobileMicrotubule;
 

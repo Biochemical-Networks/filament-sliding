@@ -16,3 +16,21 @@ BindPartialCrosslinker::~BindPartialCrosslinker()
 {
 }
 
+
+void BindPartialCrosslinker::setCurrentRate(const SystemState& systemState)
+{
+
+}
+
+
+// Return through references, since two values are returned
+void BindPartialCrosslinker::whereToConnect(const SystemState& systemState, RandomGenerator& generator, Extremity::MicrotubuleType& microtubuleToConnect, int32_t& position)
+{
+
+}
+
+
+void BindPartialCrosslinker::performReaction(SystemState& systemState, RandomGenerator& generator)
+{
+
+}
