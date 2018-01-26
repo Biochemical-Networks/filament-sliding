@@ -280,61 +280,49 @@ double SystemState::endOverlap() const
 double SystemState::overlapLength() const
 {
     // Returns a negative value if there is no overlap
-    return endOverlap()-beginningOverlap();
+    double overlap = endOverlap()-beginningOverlap();
+
+    if(overlap <=(-m_maxStretch))
+    {
+        throw GeneralException("The overlap disappeared");
+    }
+    return overlap;
 }
 
-// Return the first and last site of the overlap where crosslinkers could connect. They can stretch one lattice spacing, so a site just next to the strict overlap is still an option.
+// Return the first and last site of the overlap where crosslinkers could connect.
+// They can stretch m_maxStretchPerLatticeSpacing lattice spacing, so a site just next to the strict overlap is still an option.
 // Assume that the overlap exists
+// The function floor((x-maxStretch)/latticeSpacing+1) returns the first point that is within a distance of maxStretch from x, excluding the exact distance of maxStretch.
+// Given A<C, min(max(A,B),C) = { A if B<=A, B if A<=B<=C, C if B>=C }. (By the way, if A<C, then min(max(A,B),C)=max(A,min(B,C)) )
 int32_t SystemState::firstSiteOverlapFixed() const
 {
     double pos = beginningOverlap();
-    if (pos<0.0) // Shouldn't be possible, but just in case the floating point rounds to slightly below zero
-    {
-        return 0; // The first site of the fixed microtubule
-    }
-    else
-    {
-        return static_cast <int32_t> (std::floor(pos / m_fixedMicrotubule.getLatticeSpacing())); // Floor, because the crosslinker can stretch maximally one lattice spacing
-    }
+    int32_t estimatedSite = static_cast <int32_t> (std::floor(pos / m_fixedMicrotubule.getLatticeSpacing()-m_maxStretchPerLatticeSpacing+1));
+    // The first position cannot be smaller than 0, and not bigger than NSites
+    return std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_fixedMicrotubule.getNSites());
 }
 
 int32_t SystemState::lastSiteOverlapFixed() const
 {
     double pos = endOverlap();
-    if (pos>m_fixedMicrotubule.getLength()) // Shouldn't be possible, but just in case the floating point rounds to slightly above the length
-    {
-        return m_fixedMicrotubule.getNSites(); // The last site of the fixed microtubule
-    }
-    else
-    {
-        return static_cast <int32_t> (std::ceil(pos / m_fixedMicrotubule.getLatticeSpacing())); // Ceil, because the crosslinker can stretch maximally one lattice spacing
-    }
+    int32_t estimatedSite = static_cast <int32_t> (std::ceil(pos / m_fixedMicrotubule.getLatticeSpacing()+m_maxStretchPerLatticeSpacing-1));
+    return std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_fixedMicrotubule.getNSites());
 }
 
 int32_t SystemState::firstSiteOverlapMobile() const
 {
     double pos = beginningOverlap()-m_mobileMicrotubule.getPosition();
-    if (pos<0.0) // Shouldn't be possible, but just in case the floating point rounds to slightly below zero
-    {
-        return 0; // The first site of the mobile microtubule
-    }
-    else
-    {
-        return static_cast <int32_t> (std::floor(pos / m_mobileMicrotubule.getLatticeSpacing())); // Floor, because the crosslinker can stretch maximally one lattice spacing
-    }
+    int32_t estimatedSite = static_cast <int32_t> (std::floor(pos / m_mobileMicrotubule.getLatticeSpacing()-m_maxStretchPerLatticeSpacing+1));
+    // The first position cannot be smaller than 0, and not bigger than NSites
+    return std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_mobileMicrotubule.getNSites());
 }
 
 int32_t SystemState::lastSiteOverlapMobile() const
 {
     double pos = endOverlap()-m_mobileMicrotubule.getPosition();
-    if (pos>m_mobileMicrotubule.getLength()) // Shouldn't be possible, but just in case the floating point rounds to slightly above the length
-    {
-        return m_mobileMicrotubule.getNSites(); // The last site of the mobile microtubule
-    }
-    else
-    {
-        return static_cast <int32_t> (std::ceil(pos / m_mobileMicrotubule.getLatticeSpacing())); // Ceil, because the crosslinker can stretch maximally one lattice spacing
-    }
+    int32_t estimatedSite = static_cast <int32_t> (std::ceil(pos / m_mobileMicrotubule.getLatticeSpacing()+m_maxStretchPerLatticeSpacing-1));
+    // The first position cannot be smaller than 0, and not bigger than NSites
+    return std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_mobileMicrotubule.getNSites());
 }
 
 int32_t SystemState::getNSitesOverlapFixed() const
