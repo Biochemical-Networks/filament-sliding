@@ -100,6 +100,8 @@ public:
     int32_t getNFreeSitesMobile() const;
 
     int32_t getFreeSitePosition(const Extremity::MicrotubuleType microtubuleType, const int32_t whichFreeSite) const;
+
+    double getMaxStretch() const;
 };
 
 #endif // SYSTEMSTATE_HPP

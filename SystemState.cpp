@@ -366,5 +366,8 @@ int32_t SystemState::getFreeSitePosition(const Extremity::MicrotubuleType microt
     }
 }
 
-
+double SystemState::getMaxStretch() const
+{
+    return m_maxStretch;
+}
 
