@@ -35,11 +35,11 @@ private:
 
     double getNewReactionRateThreshold(const double probability);
 
-    double getTotalAction() const; // The single actions are stored in the Reactions, contained in m_reactions. The
+    double getTotalAction() const; // The single actions are stored in the Reactions, contained in m_reactions
+
+    double getTotalRate() const;
 
     Reaction& getReactionToHappen(RandomGenerator& generator) const;
-
-    void updateAction(double totalReactionRate);
 
 public:
     Propagator(const int32_t nTimeSteps,

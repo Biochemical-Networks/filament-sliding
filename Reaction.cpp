@@ -25,3 +25,8 @@ void Reaction::updateAction()
 {
     m_action += m_currentRate;
 }
+
+double Reaction::getCurrentRate() const
+{
+    return m_currentRate;
+}

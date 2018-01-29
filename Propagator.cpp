@@ -99,14 +99,26 @@ double Propagator::getTotalAction() const
     return accumulatedAction;
 }
 
+double Propagator::getTotalRate() const
+{
+    double accumulatedRate = 0.0;
+    // auto becomes a std::pair of the relevant types. Needs to be reference, because std::unique_ptr does not have a copy constructor
+    for(const auto& reaction : m_reactions)
+    {
+        accumulatedRate += reaction.second->getCurrentRate();
+    }
+
+    return accumulatedRate;
+}
+
 Reaction& Propagator::getReactionToHappen(RandomGenerator& generator) const
 {
-    double totalAction = getTotalAction();
-    double randomNumber = generator.getUniform(0.0, totalAction);
+    double totalRate = getTotalRate();
+    double randomNumber = generator.getUniform(0.0, totalRate);
 
     for (const auto& reaction : m_reactions)
     {
-        randomNumber -= reaction.second->getAction();
+        randomNumber -= reaction.second->getCurrentRate();
         if (randomNumber < 0.0) // randomNumber is strictly smaller than the upper bound totalAccumulatedAction, so subtracting the total upper bound after the for loop will definitely make it lower than 0.0
         {
             return *reaction.second;
