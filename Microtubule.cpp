@@ -8,8 +8,6 @@
 #include "Crosslinker.hpp"
 
 
-
-
 Microtubule::Microtubule(const double length, const double latticeSpacing)
     :   m_length(length),
         m_latticeSpacing(latticeSpacing),

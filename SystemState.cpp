@@ -8,6 +8,7 @@
 #include <algorithm> // max/min
 #include <cmath> // ceil/floor
 
+
 SystemState::SystemState(const double lengthMobileMicrotubule,
                             const double lengthFixedMicrotubule,
                             const double latticeSpacing,
@@ -298,41 +299,48 @@ int32_t SystemState::firstSiteOverlapFixed() const
 {
     double pos = beginningOverlap();
     int32_t estimatedSite = static_cast <int32_t> (std::floor(pos / m_fixedMicrotubule.getLatticeSpacing()-m_maxStretchPerLatticeSpacing+1));
-    // The first position cannot be smaller than 0, and not bigger than NSites
-    return std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_fixedMicrotubule.getNSites());
+    // The first position cannot be smaller than 0, and not bigger than (NSites-1), since counting starts at 0
+    int32_t firstSite = std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_fixedMicrotubule.getNSites()-1);
+    return firstSite;
 }
 
 int32_t SystemState::lastSiteOverlapFixed() const
 {
     double pos = endOverlap();
     int32_t estimatedSite = static_cast <int32_t> (std::ceil(pos / m_fixedMicrotubule.getLatticeSpacing()+m_maxStretchPerLatticeSpacing-1));
-    return std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_fixedMicrotubule.getNSites());
+    // The first position cannot be smaller than 0, and not bigger than (NSites-1), since counting starts at 0
+    int32_t lastSite = std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_fixedMicrotubule.getNSites()-1);
+    return lastSite;
 }
 
 int32_t SystemState::firstSiteOverlapMobile() const
 {
     double pos = beginningOverlap()-m_mobileMicrotubule.getPosition();
     int32_t estimatedSite = static_cast <int32_t> (std::floor(pos / m_mobileMicrotubule.getLatticeSpacing()-m_maxStretchPerLatticeSpacing+1));
-    // The first position cannot be smaller than 0, and not bigger than NSites
-    return std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_mobileMicrotubule.getNSites());
+    // The first position cannot be smaller than 0, and not bigger than (NSites-1), since counting starts at 0
+    int32_t firstSite = std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_mobileMicrotubule.getNSites()-1);
+    return firstSite;
 }
 
 int32_t SystemState::lastSiteOverlapMobile() const
 {
     double pos = endOverlap()-m_mobileMicrotubule.getPosition();
     int32_t estimatedSite = static_cast <int32_t> (std::ceil(pos / m_mobileMicrotubule.getLatticeSpacing()+m_maxStretchPerLatticeSpacing-1));
-    // The first position cannot be smaller than 0, and not bigger than NSites
-    return std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_mobileMicrotubule.getNSites());
+    // The first position cannot be smaller than 0, and not bigger than (NSites-1), since counting starts at 0
+    int32_t lastSite = std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_mobileMicrotubule.getNSites()-1);
+    return lastSite;
 }
 
 int32_t SystemState::getNSitesOverlapFixed() const
 {
-    return lastSiteOverlapFixed()-firstSiteOverlapFixed()+1;
+    int32_t nSites = lastSiteOverlapFixed()-firstSiteOverlapFixed()+1;
+    return nSites;
 }
 
 int32_t SystemState::getNSitesOverlapMobile() const
 {
-    return lastSiteOverlapMobile()-firstSiteOverlapMobile()+1;
+    int32_t nSites = lastSiteOverlapMobile()-firstSiteOverlapMobile()+1;
+    return nSites;
 }
 
 int32_t SystemState::getNFreeSites() const
