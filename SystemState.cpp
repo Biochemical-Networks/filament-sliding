@@ -4,9 +4,11 @@
 #include "Crosslinker.hpp"
 #include "Extremity.hpp"
 #include "GeneralException/GeneralException.hpp"
+#include "CrosslinkerContainer.hpp"
 
 #include <algorithm> // max/min
 #include <cmath> // ceil/floor
+#include <deque>
 
 
 SystemState::SystemState(const double lengthMobileMicrotubule,
@@ -92,7 +94,7 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
 {
     Extremity::MicrotubuleType microtubuleToDisconnectFrom;
     int32_t positionToDisconnectFrom;
-    disconnectingCrosslinker.getBindingPositionWhenPartiallyConnected(microtubuleToDisconnectFrom, positionToDisconnectFrom); // Both are passed by reference, to get two return values
+    disconnectingCrosslinker.getBoundPositionWhenPartiallyConnected(microtubuleToDisconnectFrom, positionToDisconnectFrom); // Both are passed by reference, to get two return values
 
     Crosslinker::Type type = disconnectingCrosslinker.getType();
 
@@ -378,4 +380,36 @@ double SystemState::getMaxStretch() const
 {
     return m_maxStretch;
 }
+
+int32_t SystemState::getNSitesToBindPartial(const Crosslinker::Type type) const
+{
+    const CrosslinkerContainer* containerToCheck = nullptr;
+    switch(type)
+    {
+        case Crosslinker::Type::PASSIVE:
+            containerToCheck = &m_passiveCrosslinkers;
+            break;
+        case Crosslinker::Type::DUAL:
+            containerToCheck = &m_dualCrosslinkers;
+            break;
+        case Crosslinker::Type::ACTIVE:
+            containerToCheck = &m_activeCrosslinkers;
+            break;
+        default:
+            throw GeneralException("An incorrect crosslinker type was passed to getNSitesToBindPartial()");
+            break;
+    }
+
+    CrosslinkerContainer::beginEndDeque itPair = containerToCheck->getPartialCrosslinkers();
+    // If there are no partially connected crosslinkers, the for body will not execute
+    for(std::deque<Crosslinker*>::const_iterator it = itPair.first; it!= itPair.second; ++it)
+    {
+        Extremity::MicrotubuleType microtubuleConnectedTo;
+        int32_t positionConnectedTo;
+        // it is an iterator to a pointer to a Crosslinker
+        (*it)->getBoundPositionWhenPartiallyConnected(microtubuleConnectedTo,positionConnectedTo);
+    }
+    return 0;
+}
+
 

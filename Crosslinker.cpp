@@ -143,23 +143,23 @@ Crosslinker::Terminus Crosslinker::getFreeTerminusWhenPartiallyConnected() const
     }
 }
 
-void Crosslinker::getBindingPositionWhenPartiallyConnected(Extremity::MicrotubuleType& microtubuleToDisconnect, int32_t& positionToDisconnectFrom) const
+void Crosslinker::getBoundPositionWhenPartiallyConnected(Extremity::MicrotubuleType& microtubuleConnectedTo, int32_t& positionConnectedTo) const
 {
     bool partialWithTail = (!m_head.isConnected())&&(m_tail.isConnected());
     bool partialWithHead = (m_head.isConnected())&&(!m_tail.isConnected());
     if(partialWithTail)
     {
-        microtubuleToDisconnect = m_tail.getMicrotubuleType();
-        positionToDisconnectFrom = m_tail.getPosition();
+        microtubuleConnectedTo = m_tail.getMicrotubuleType();
+        positionConnectedTo = m_tail.getPosition();
     }
     else if(partialWithHead)
     {
-        microtubuleToDisconnect = m_head.getMicrotubuleType();
-        positionToDisconnectFrom = m_head.getPosition();
+        microtubuleConnectedTo = m_head.getMicrotubuleType();
+        positionConnectedTo = m_head.getPosition();
     }
     else
     {
-        throw GeneralException("getBindingPositionWhenPartiallyConnected() was called from a crosslinker in a different state");
+        throw GeneralException("getBoundPositionWhenPartiallyConnected() was called from a crosslinker in a different state");
     }
 
 }

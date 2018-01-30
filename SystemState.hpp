@@ -102,6 +102,9 @@ public:
     int32_t getFreeSitePosition(const Extremity::MicrotubuleType microtubuleType, const int32_t whichFreeSite) const;
 
     double getMaxStretch() const;
+
+    int32_t getNSitesToBindPartial(const Crosslinker::Type type) const;
+
 };
 
 #endif // SYSTEMSTATE_HPP

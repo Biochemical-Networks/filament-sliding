@@ -52,7 +52,7 @@ public:
 
     Terminus getFreeTerminusWhenPartiallyConnected() const;
 
-    void getBindingPositionWhenPartiallyConnected(Extremity::MicrotubuleType& microtubuleToDisconnect, int32_t& positionToDisconnectFrom) const;
+    void getBoundPositionWhenPartiallyConnected(Extremity::MicrotubuleType& microtubuleConnectedTo, int32_t& positionConnectedTo) const;
 
     void getOneBindingPositionWhenFullyConnected(const Crosslinker::Terminus terminus, Extremity::MicrotubuleType& microtubuleToDisconnect, int32_t& positionToDisconnectFrom) const;
 

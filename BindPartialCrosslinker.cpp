@@ -4,6 +4,9 @@
 #include "RandomGenerator.hpp"
 #include "Extremity.hpp"
 
+#include "CrosslinkerContainer.hpp"
+#include "Crosslinker.hpp"
+
 #include <cstdint>
 
 BindPartialCrosslinker::BindPartialCrosslinker(const double elementaryRate, const Crosslinker::Type typeToBind)

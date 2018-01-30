@@ -84,11 +84,20 @@ int32_t CrosslinkerContainer::getNFullCrosslinkers() const
     return m_fullCrosslinkers.size();
 }
 
+CrosslinkerContainer::beginEndDeque CrosslinkerContainer::getFreeCrosslinkers() const
+{
+    return std::make_pair(m_freeCrosslinkers.begin(),m_freeCrosslinkers.end());
+}
+
 CrosslinkerContainer::beginEndDeque CrosslinkerContainer::getPartialCrosslinkers() const
 {
     return std::make_pair(m_partialCrosslinkers.begin(),m_partialCrosslinkers.end());
 }
 
+CrosslinkerContainer::beginEndDeque CrosslinkerContainer::getFullCrosslinkers() const
+{
+    return std::make_pair(m_fullCrosslinkers.begin(),m_fullCrosslinkers.end());
+}
 
 
 

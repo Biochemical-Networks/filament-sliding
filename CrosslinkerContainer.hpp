@@ -43,7 +43,10 @@ public:
 
     // To find where to connect partial crosslinkers, BindPartialCrosslinker needs information on the positions of the crosslinkers.
     // To give access to the positions of the partial crosslinkers, it is easiest to pass the whole deque to the function (to avoid copying as well)
-    beginEndDeque getPartialCrosslinkers() const; // const_iterator doesn't allow for the modification of the container elements
+    // const_iterator doesn't allow for the modification of the container elements
+    beginEndDeque getFreeCrosslinkers() const;
+    beginEndDeque getPartialCrosslinkers() const;
+    beginEndDeque getFullCrosslinkers() const;
 
 };
 

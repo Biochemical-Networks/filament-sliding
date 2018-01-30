@@ -12,8 +12,6 @@
 #include <cmath>
 #include <vector>
 
-
-
 Initialiser::Initialiser(const double initialPositionMicrotubule, const double fractionOverlapSitesConnected, const std::string initialCrosslinkerDistributionString)
     :   m_initialPositionMicrotubule(initialPositionMicrotubule),
         m_fractionOverlapSitesConnected(fractionOverlapSitesConnected)

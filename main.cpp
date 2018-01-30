@@ -11,6 +11,8 @@
 #include <string>
 
 
+#include "Crosslinker.hpp"
+
 int main()
 {
     Clock clock; // Counts time from creation to destruction
@@ -118,7 +120,6 @@ int main()
     initialiser.initialise(systemState, generator);
 
     propagator.run(systemState, generator, output);
-
 
     return 0;
 }
