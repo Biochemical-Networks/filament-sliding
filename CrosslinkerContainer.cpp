@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <vector>
 #include <algorithm>
+#include <utility>
 
 CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker)
     :   m_crosslinkers(nCrosslinkers, defaultCrosslinker)
@@ -83,7 +84,10 @@ int32_t CrosslinkerContainer::getNFullCrosslinkers() const
     return m_fullCrosslinkers.size();
 }
 
-
+CrosslinkerContainer::beginEndDeque CrosslinkerContainer::getPartialCrosslinkers() const
+{
+    return std::make_pair(m_partialCrosslinkers.begin(),m_partialCrosslinkers.end());
+}
 
 
 
