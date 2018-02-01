@@ -383,6 +383,7 @@ double SystemState::getMaxStretch() const
 
 int32_t SystemState::getNSitesToBindPartial(const Crosslinker::Type type) const
 {
+    // Get a pointer to the right container, since each type is stored in a separate container
     const CrosslinkerContainer* containerToCheck = nullptr;
     switch(type)
     {
@@ -401,12 +402,12 @@ int32_t SystemState::getNSitesToBindPartial(const Crosslinker::Type type) const
     }
 
     CrosslinkerContainer::beginEndDeque itPair = containerToCheck->getPartialCrosslinkers();
-    // If there are no partially connected crosslinkers, the for body will not execute
+    // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
     for(std::deque<Crosslinker*>::const_iterator it = itPair.first; it!= itPair.second; ++it)
     {
         Extremity::MicrotubuleType microtubuleConnectedTo;
         int32_t positionConnectedTo;
-        // it is an iterator to a pointer to a Crosslinker
+        // 'it' is an iterator to a pointer to a Crosslinker
         (*it)->getBoundPositionWhenPartiallyConnected(microtubuleConnectedTo,positionConnectedTo);
     }
     return 0;
