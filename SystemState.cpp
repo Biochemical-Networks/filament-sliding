@@ -83,7 +83,7 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type,
     p_connectingCrosslinker->connectFromFree(terminusToConnect, locationToConnectTo); // Connect the crosslinker
 
     // Then, perform the connection in the administration of the microtubule
-    p_microtubuleToConnect->connectSite(position, *p_connectingCrosslinker, terminusToConnect);
+    p_microtubuleToConnect->connectSite(locationToConnectTo.position, *p_connectingCrosslinker, terminusToConnect);
 
     return *p_connectingCrosslinker; // Such that the caller can use this specific crosslinker immediately
 }
@@ -203,10 +203,10 @@ void SystemState::disconnectFullyConnectedCrosslinker(Crosslinker& disconnecting
     switch(locationToDisconnectFrom.microtubule)
     {
         case MicrotubuleType::FIXED:
-            m_fixedMicrotubule.disconnectSite(positionToDisconnectFrom);
+            m_fixedMicrotubule.disconnectSite(locationToDisconnectFrom.position);
             break;
         case MicrotubuleType::MOBILE:
-            m_mobileMicrotubule.disconnectSite(positionToDisconnectFrom);
+            m_mobileMicrotubule.disconnectSite(locationToDisconnectFrom.position);
             break;
         default:
             throw GeneralException("An incorrect microtubule type was passed to disconnectFullyConnectedCrosslinker()");

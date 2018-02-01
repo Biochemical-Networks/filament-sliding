@@ -57,7 +57,7 @@ SiteLocation Crosslinker::getSiteLocationOf(const Crosslinker::Terminus terminus
     case Crosslinker::Terminus::TAIL:
         return m_tail.getSiteLocation();
         break;
-    case default:
+    default:
         throw GeneralException("Wrong terminus passed to getSiteLocationOf()");
         break;
     }
