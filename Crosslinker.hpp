@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include "Extremity.hpp"
+#include "MicrotubuleType.hpp"
 
 
 class Crosslinker
@@ -34,27 +35,29 @@ public:
 
     bool isConnected() const;
 
-    int32_t getHeadPosition() const;
-    int32_t getTailPosition() const;
-
     Type getType() const;
 
-    Extremity::MicrotubuleType getHeadMicrotubuleType() const;
-    Extremity::MicrotubuleType getTailMicrotubuleType() const;
+/*    int32_t getHeadPosition() const;
+    int32_t getTailPosition() const;
 
-    void connectFromFree(const Extremity::MicrotubuleType microtubuleToConnectTo, const Terminus terminusToConnect, const int32_t position);
+    MicrotubuleType getHeadMicrotubuleType() const;
+    MicrotubuleType getTailMicrotubuleType() const;*/
+
+    SiteLocation getSiteLocationOf(const Terminus terminus) const;
+
+    void connectFromFree(const Terminus terminusToConnect, const SiteLocation connectAt);
 
     void disconnectFromPartialConnection();
 
-    void fullyConnectFromPartialConnection(const Extremity::MicrotubuleType microtubuleToConnectTo, const int32_t position);
+    void fullyConnectFromPartialConnection(const SiteLocation connectAt);
 
     void disconnectFromFullConnection(const Terminus terminusToDisconnect);
 
     Terminus getFreeTerminusWhenPartiallyConnected() const;
 
-    void getBoundPositionWhenPartiallyConnected(Extremity::MicrotubuleType& microtubuleConnectedTo, int32_t& positionConnectedTo) const;
+    SiteLocation getBoundPositionWhenPartiallyConnected() const;
 
-    void getOneBindingPositionWhenFullyConnected(const Crosslinker::Terminus terminus, Extremity::MicrotubuleType& microtubuleToDisconnect, int32_t& positionToDisconnectFrom) const;
+    SiteLocation getOneBindingPositionWhenFullyConnected(const Crosslinker::Terminus terminus) const;
 
 /*    void setHeadPosition(const int32_t sitePosition);
     void setTailPosition(const int32_t sitePosition);*/

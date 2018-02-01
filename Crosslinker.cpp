@@ -2,6 +2,7 @@
 #include "GeneralException/GeneralException.hpp"
 
 #include "Extremity.hpp"
+#include "MicrotubuleType.hpp"
 
 Crosslinker::Crosslinker(const Type type)
     :   m_type(type),
@@ -19,6 +20,12 @@ bool Crosslinker::isConnected() const
     return (m_head.isConnected()||m_tail.isConnected());
 }
 
+Crosslinker::Type Crosslinker::getType() const
+{
+    return m_type;
+}
+
+/*
 int32_t Crosslinker::getHeadPosition() const
 {
     return m_head.getPosition();
@@ -29,22 +36,34 @@ int32_t Crosslinker::getTailPosition() const
     return m_tail.getPosition();
 }
 
-Crosslinker::Type Crosslinker::getType() const
-{
-    return m_type;
-}
-
-Extremity::MicrotubuleType Crosslinker::getHeadMicrotubuleType() const
+MicrotubuleType Crosslinker::getHeadMicrotubuleType() const
 {
     return m_head.getMicrotubuleType();
 }
 
-Extremity::MicrotubuleType Crosslinker::getTailMicrotubuleType() const
+MicrotubuleType Crosslinker::getTailMicrotubuleType() const
 {
     return m_tail.getMicrotubuleType();
+}*/
+
+SiteLocation Crosslinker::getSiteLocationOf(const Crosslinker::Terminus terminus) const
+{
+    // If the specific extremity is not connected, its getSiteLocation will throw
+    switch(terminus)
+    {
+    case Crosslinker::Terminus::HEAD:
+        return m_head.getSiteLocation();
+        break;
+    case Crosslinker::Terminus::TAIL:
+        return m_tail.getSiteLocation();
+        break;
+    case default:
+        throw GeneralException("Wrong terminus passed to getSiteLocationOf()");
+        break;
+    }
 }
 
-void Crosslinker::connectFromFree(const Extremity::MicrotubuleType microtubuleToConnectTo, const Terminus terminusToConnect, const int32_t position)
+void Crosslinker::connectFromFree(const Terminus terminusToConnect, const SiteLocation connectAt)
 {
     // Check here whether it is not already connected in some way. Upon connecting an extremity, it is also checked whether those are not connected already.
     if (isConnected())
@@ -54,10 +73,10 @@ void Crosslinker::connectFromFree(const Extremity::MicrotubuleType microtubuleTo
     switch(terminusToConnect)
     {
         case Crosslinker::Terminus::HEAD:
-            m_head.connect(microtubuleToConnectTo, position);
+            m_head.connect(connectAt);
             break;
         case Crosslinker::Terminus::TAIL:
-            m_tail.connect(microtubuleToConnectTo, position);
+            m_tail.connect(connectAt);
             break;
         default:
             throw GeneralException("An incorrect crosslinker terminus was passed to Crosslinker::connectFromFree()");
@@ -84,7 +103,7 @@ void Crosslinker::disconnectFromPartialConnection()
 
 }
 
-void Crosslinker::fullyConnectFromPartialConnection(const Extremity::MicrotubuleType microtubuleToConnectTo, const int32_t position)
+void Crosslinker::fullyConnectFromPartialConnection(const SiteLocation connectAt)
 {
     // Check whether it is not free. It is not necessary to check that it is fully connected, the extremities will take care of that.
     if(!isConnected())
@@ -93,11 +112,11 @@ void Crosslinker::fullyConnectFromPartialConnection(const Extremity::Microtubule
     }
     else if (m_head.isConnected())
     {
-        m_tail.connect(microtubuleToConnectTo, position);
+        m_tail.connect(connectAt);
     }
     else
     {
-        m_head.connect(microtubuleToConnectTo, position);
+        m_head.connect(connectAt);
     }
 }
 
@@ -143,28 +162,25 @@ Crosslinker::Terminus Crosslinker::getFreeTerminusWhenPartiallyConnected() const
     }
 }
 
-void Crosslinker::getBoundPositionWhenPartiallyConnected(Extremity::MicrotubuleType& microtubuleConnectedTo, int32_t& positionConnectedTo) const
+SiteLocation Crosslinker::getBoundPositionWhenPartiallyConnected() const
 {
     bool partialWithTail = (!m_head.isConnected())&&(m_tail.isConnected());
     bool partialWithHead = (m_head.isConnected())&&(!m_tail.isConnected());
     if(partialWithTail)
     {
-        microtubuleConnectedTo = m_tail.getMicrotubuleType();
-        positionConnectedTo = m_tail.getPosition();
+        return m_tail.getSiteLocation();
     }
     else if(partialWithHead)
     {
-        microtubuleConnectedTo = m_head.getMicrotubuleType();
-        positionConnectedTo = m_head.getPosition();
+        return m_head.getSiteLocation();
     }
     else
     {
         throw GeneralException("getBoundPositionWhenPartiallyConnected() was called from a crosslinker in a different state");
     }
-
 }
 
-void Crosslinker::getOneBindingPositionWhenFullyConnected(const Crosslinker::Terminus terminus, Extremity::MicrotubuleType& microtubuleToDisconnect, int32_t& positionToDisconnectFrom) const
+SiteLocation Crosslinker::getOneBindingPositionWhenFullyConnected(const Crosslinker::Terminus terminus) const
 {
     bool fullyConnected = (m_head.isConnected())&&(m_tail.isConnected());
 
@@ -176,12 +192,10 @@ void Crosslinker::getOneBindingPositionWhenFullyConnected(const Crosslinker::Ter
     switch(terminus)
     {
         case Crosslinker::Terminus::TAIL:
-            microtubuleToDisconnect = m_tail.getMicrotubuleType();
-            positionToDisconnectFrom = m_tail.getPosition();
+            return m_tail.getSiteLocation();
             break;
         case Crosslinker::Terminus::HEAD:
-            microtubuleToDisconnect = m_head.getMicrotubuleType();
-            positionToDisconnectFrom = m_head.getPosition();
+            return m_head.getSiteLocation();
             break;
         default:
             throw GeneralException("getOneBindingPositionWhenFullyConnected() was passed a wrong Terminus.");

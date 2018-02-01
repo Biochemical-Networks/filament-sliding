@@ -2,46 +2,33 @@
 #define EXTREMITY_HPP
 
 #include <cstdint>
+#include "MicrotubuleType.hpp"
 
 class Extremity
 {
-// The following part needs to be defined earlier than the private m_connectedTo.
-// It is defined in Extremity, because defining it in Microtubule.hpp would mean it needs to be included here, causing a circular dependence
-public:
-    enum class MicrotubuleType
-    {
-        FIXED,
-        MOBILE
-    };
-
-    struct SiteLocation
-    {
-        MicrotubuleType microtubule;
-        int32_t position;
-    };
-
 private:
     bool m_connected;
     MicrotubuleType m_connectedTo;
     int32_t m_sitePosition;
 
-
 public:
-
     Extremity(const bool connected);
     ~Extremity();
 
     bool isConnected() const;
 
-    int32_t getPosition() const;
+    // CAN THE TWO FOLLOWING FUNCTIONS BE REPLACED WITH THE THIRD?
+    /*int32_t getPosition() const;
 
-    MicrotubuleType getMicrotubuleType() const;
+    MicrotubuleType getMicrotubuleType() const;*/
 
-    void connect(const MicrotubuleType connectTo, const int32_t sitePosition);
+    SiteLocation getSiteLocation() const;
+
+    void connect(const SiteLocation siteToConnectTo);
 
     void disconnect();
 
-    void changePosition(const MicrotubuleType connectedTo, const int32_t sitePosition);
+    void changePosition(const SiteLocation siteToConnectTo);
 };
 
 #endif // EXTREMITY_HPP
