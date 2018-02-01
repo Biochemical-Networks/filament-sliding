@@ -1,5 +1,6 @@
 #include "CrosslinkerContainer.hpp"
 
+#include "Crosslinker.hpp"
 #include "GeneralException/GeneralException.hpp"
 
 #include <stdexcept>

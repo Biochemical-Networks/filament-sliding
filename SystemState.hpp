@@ -2,6 +2,7 @@
 #define SYSTEMSTATE_HPP
 
 #include "Microtubule.hpp"
+#include "MicrotubuleType.hpp"
 #include "MobileMicrotubule.hpp"
 #include "Crosslinker.hpp"
 #include "Extremity.hpp"
@@ -67,12 +68,11 @@ public:
 
     Crosslinker& connectFreeCrosslinker(const Crosslinker::Type type,
                                 const Crosslinker::Terminus terminusToConnect,
-                                const Extremity::MicrotubuleType microtubuleToConnectTo,
-                                const int32_t position);
+                                const SiteLocation locationToConnectTo);
 
     void disconnectPartiallyConnectedCrosslinker(Crosslinker& crosslinker);
 
-    void connectPartiallyConnectedCrosslinker(Crosslinker& crosslinker, const Extremity::MicrotubuleType oppositeMicrotubule, const int32_t positionOnOppositeMicrotubule);
+    void connectPartiallyConnectedCrosslinker(Crosslinker& crosslinker, const SiteLocation locationOppositeMicrotubule);
 
     void disconnectFullyConnectedCrosslinker(Crosslinker& crosslinker, const Crosslinker::Terminus terminusToDisconnect);
 
@@ -99,7 +99,8 @@ public:
     int32_t getNFreeSitesFixed() const;
     int32_t getNFreeSitesMobile() const;
 
-    int32_t getFreeSitePosition(const Extremity::MicrotubuleType microtubuleType, const int32_t whichFreeSite) const;
+    // whichFreeSite gives the location in the storage of the Microtubule objects, does not say anything about which physical site that is.
+    int32_t getFreeSitePosition(const MicrotubuleType microtubuleType, const int32_t whichFreeSite) const;
 
     double getMaxStretch() const;
 

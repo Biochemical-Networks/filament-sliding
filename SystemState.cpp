@@ -42,17 +42,16 @@ void SystemState::setMicrotubulePosition(const double initialPosition)
 // The following function assumes that it is possible to connect the crosslinker, otherwise it will throw
 Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type,
                                                  const Crosslinker::Terminus terminusToConnect,
-                                                 const Extremity::MicrotubuleType microtubuleToConnectTo,
-                                                 const int32_t position)
+                                                 const SiteLocation locationToConnectTo)
 {
     // Find a pointer to the microtubule that the crosslinker needs to be connected to, such that we can use its methods.
     Microtubule *p_microtubuleToConnect = nullptr;
-    switch(microtubuleToConnectTo)
+    switch(locationToConnectTo.microtubule)
     {
-        case Extremity::MicrotubuleType::FIXED:
+        case MicrotubuleType::FIXED:
             p_microtubuleToConnect = &m_fixedMicrotubule;
             break;
-        case Extremity::MicrotubuleType::MOBILE:
+        case MicrotubuleType::MOBILE:
             p_microtubuleToConnect = &m_mobileMicrotubule;
             break;
         default:
@@ -82,7 +81,7 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type,
     }
 
     // Connect crosslinker in its own administration
-    p_connectingCrosslinker->connectFromFree(microtubuleToConnectTo, terminusToConnect, position); // Connect the crosslinker
+    p_connectingCrosslinker->connectFromFree(terminusToConnect, locationToConnectTo); // Connect the crosslinker
 
     // Then, perform the connection in the administration of the microtubule
     p_microtubuleToConnect->connectSite(position, *p_connectingCrosslinker, terminusToConnect);
@@ -92,9 +91,7 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type,
 
 void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnectingCrosslinker)
 {
-    Extremity::MicrotubuleType microtubuleToDisconnectFrom;
-    int32_t positionToDisconnectFrom;
-    disconnectingCrosslinker.getBoundPositionWhenPartiallyConnected(microtubuleToDisconnectFrom, positionToDisconnectFrom); // Both are passed by reference, to get two return values
+    SiteLocation locationToDisconnectFrom = disconnectingCrosslinker.getBoundPositionWhenPartiallyConnected();
 
     Crosslinker::Type type = disconnectingCrosslinker.getType();
 
@@ -119,13 +116,13 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
     }
 
     // Disconnect in administration of microtubule
-    switch(microtubuleToDisconnectFrom)
+    switch(locationToDisconnectFrom.microtubule)
     {
-        case Extremity::MicrotubuleType::FIXED:
-            m_fixedMicrotubule.disconnectSite(positionToDisconnectFrom);
+        case MicrotubuleType::FIXED:
+            m_fixedMicrotubule.disconnectSite(locationToDisconnectFrom.position);
             break;
-        case Extremity::MicrotubuleType::MOBILE:
-            m_mobileMicrotubule.disconnectSite(positionToDisconnectFrom);
+        case MicrotubuleType::MOBILE:
+            m_mobileMicrotubule.disconnectSite(locationToDisconnectFrom.position);
             break;
         default:
             throw GeneralException("An incorrect microtubule type was passed to disconnectPartiallyConnectedCrosslinker()");
@@ -134,15 +131,15 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
 
 }
 
-void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCrosslinker, const Extremity::MicrotubuleType oppositeMicrotubule, const int32_t positionOnOppositeMicrotubule)
+void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCrosslinker, const SiteLocation locationOppositeMicrotubule)
 {
     Microtubule *p_microtubuleToConnect = nullptr;
-    switch(oppositeMicrotubule)
+    switch(locationOppositeMicrotubule.microtubule)
     {
-        case Extremity::MicrotubuleType::FIXED:
+        case MicrotubuleType::FIXED:
             p_microtubuleToConnect = &m_fixedMicrotubule;
             break;
-        case Extremity::MicrotubuleType::MOBILE:
+        case MicrotubuleType::MOBILE:
             p_microtubuleToConnect = &m_mobileMicrotubule;
             break;
         default:
@@ -153,10 +150,10 @@ void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCr
     Crosslinker::Terminus terminusToConnect = connectingCrosslinker.getFreeTerminusWhenPartiallyConnected();
 
     // Connect in administration of crosslinker
-    connectingCrosslinker.fullyConnectFromPartialConnection(oppositeMicrotubule, positionOnOppositeMicrotubule);
+    connectingCrosslinker.fullyConnectFromPartialConnection(locationOppositeMicrotubule);
 
     // Connect in administration of microtubule
-    p_microtubuleToConnect->connectSite(positionOnOppositeMicrotubule, connectingCrosslinker, terminusToConnect);
+    p_microtubuleToConnect->connectSite(locationOppositeMicrotubule.position, connectingCrosslinker, terminusToConnect);
 
     // Connect in administration of crosslinker container
     switch(connectingCrosslinker.getType())
@@ -179,9 +176,7 @@ void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCr
 void SystemState::disconnectFullyConnectedCrosslinker(Crosslinker& disconnectingCrosslinker, const Crosslinker::Terminus terminusToDisconnect)
 {
     // Retrieve the microtubule and position on that microtubule where the crosslinker is connected
-    Extremity::MicrotubuleType microtubuleToDisconnectFrom;
-    int32_t positionToDisconnectFrom;
-    disconnectingCrosslinker.getOneBindingPositionWhenFullyConnected(terminusToDisconnect, microtubuleToDisconnectFrom, positionToDisconnectFrom);
+    SiteLocation locationToDisconnectFrom = disconnectingCrosslinker.getOneBindingPositionWhenFullyConnected(terminusToDisconnect);
 
     Crosslinker::Type type = disconnectingCrosslinker.getType();
 
@@ -206,12 +201,12 @@ void SystemState::disconnectFullyConnectedCrosslinker(Crosslinker& disconnecting
     }
 
     // Disconnect in administration of microtubule
-    switch(microtubuleToDisconnectFrom)
+    switch(locationToDisconnectFrom.microtubule)
     {
-        case Extremity::MicrotubuleType::FIXED:
+        case MicrotubuleType::FIXED:
             m_fixedMicrotubule.disconnectSite(positionToDisconnectFrom);
             break;
-        case Extremity::MicrotubuleType::MOBILE:
+        case MicrotubuleType::MOBILE:
             m_mobileMicrotubule.disconnectSite(positionToDisconnectFrom);
             break;
         default:
@@ -229,9 +224,9 @@ void SystemState::fullyConnectFreeCrosslinker(const Crosslinker::Type type,
 {
     // Store a reference to the connected crosslinker, such that the next function can be called easily
 
-    Crosslinker &connectedCrosslinker = connectFreeCrosslinker(type, terminusToConnectToFixedMicrotubule, Extremity::MicrotubuleType::FIXED, positionOnFixedMicrotubule);
+    Crosslinker &connectedCrosslinker = connectFreeCrosslinker(type, terminusToConnectToFixedMicrotubule, SiteLocation{Extremity::MicrotubuleType::FIXED, positionOnFixedMicrotubule});
 
-    connectPartiallyConnectedCrosslinker(connectedCrosslinker, Extremity::MicrotubuleType::MOBILE, positionOnMobileMicrotubule);
+    connectPartiallyConnectedCrosslinker(connectedCrosslinker, SiteLocation{Extremity::MicrotubuleType::MOBILE, positionOnMobileMicrotubule});
 
 }
 
@@ -360,14 +355,14 @@ int32_t SystemState::getNFreeSitesMobile() const
     return m_mobileMicrotubule.getNFreeSites();
 }
 
-int32_t SystemState::getFreeSitePosition(const Extremity::MicrotubuleType microtubuleType, const int32_t whichFreeSite) const
+int32_t SystemState::getFreeSitePosition(const MicrotubuleType microtubuleType, const int32_t whichFreeSite) const
 {
     switch(microtubuleType)
     {
-        case Extremity::MicrotubuleType::FIXED:
+        case MicrotubuleType::FIXED:
             return m_fixedMicrotubule.getFreeSitePosition(whichFreeSite);
             break;
-        case Extremity::MicrotubuleType::MOBILE:
+        case MicrotubuleType::MOBILE:
             return m_mobileMicrotubule.getFreeSitePosition(whichFreeSite);
             break;
         default:
@@ -405,10 +400,8 @@ int32_t SystemState::getNSitesToBindPartial(const Crosslinker::Type type) const
     // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
     for(std::deque<Crosslinker*>::const_iterator it = itPair.first; it!= itPair.second; ++it)
     {
-        Extremity::MicrotubuleType microtubuleConnectedTo;
-        int32_t positionConnectedTo;
         // 'it' is an iterator to a pointer to a Crosslinker
-        (*it)->getBoundPositionWhenPartiallyConnected(microtubuleConnectedTo,positionConnectedTo);
+        SiteLocation locationConnectedTo = (*it)->getBoundPositionWhenPartiallyConnected();
     }
     return 0;
 }
