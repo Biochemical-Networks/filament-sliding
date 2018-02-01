@@ -14,6 +14,12 @@ public:
         MOBILE
     };
 
+    struct SiteLocation
+    {
+        MicrotubuleType microtubule;
+        int32_t position;
+    };
+
 private:
     bool m_connected;
     MicrotubuleType m_connectedTo;
