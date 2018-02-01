@@ -5,6 +5,7 @@
 #include "SystemState.hpp"
 #include "Crosslinker.hpp"
 #include "RandomGenerator.hpp"
+#include "MicrotubuleType.hpp"
 
 #include <cstdint>
 
@@ -13,7 +14,7 @@ class BindFreeCrosslinker : public Reaction
 private:
     const Crosslinker::Type m_typeToBind;
 
-    void whereToConnect(const SystemState& systemState, RandomGenerator& generator, Extremity::MicrotubuleType& microtubuleToConnect, int32_t& siteToConnect);
+    SiteLocation whereToConnect(const SystemState& systemState, RandomGenerator& generator);
 public:
     BindFreeCrosslinker(const double elementaryRate, const Crosslinker::Type typeToBind);
     virtual ~BindFreeCrosslinker();

@@ -2,7 +2,6 @@
 #include "Microtubule.hpp"
 #include "MobileMicrotubule.hpp"
 #include "Crosslinker.hpp"
-#include "Extremity.hpp"
 #include "GeneralException/GeneralException.hpp"
 #include "CrosslinkerContainer.hpp"
 
@@ -224,9 +223,9 @@ void SystemState::fullyConnectFreeCrosslinker(const Crosslinker::Type type,
 {
     // Store a reference to the connected crosslinker, such that the next function can be called easily
 
-    Crosslinker &connectedCrosslinker = connectFreeCrosslinker(type, terminusToConnectToFixedMicrotubule, SiteLocation{Extremity::MicrotubuleType::FIXED, positionOnFixedMicrotubule});
+    Crosslinker &connectedCrosslinker = connectFreeCrosslinker(type, terminusToConnectToFixedMicrotubule, SiteLocation{MicrotubuleType::FIXED, positionOnFixedMicrotubule});
 
-    connectPartiallyConnectedCrosslinker(connectedCrosslinker, SiteLocation{Extremity::MicrotubuleType::MOBILE, positionOnMobileMicrotubule});
+    connectPartiallyConnectedCrosslinker(connectedCrosslinker, SiteLocation{MicrotubuleType::MOBILE, positionOnMobileMicrotubule});
 
 }
 

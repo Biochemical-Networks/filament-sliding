@@ -2,7 +2,7 @@
 #include "Crosslinker.hpp"
 #include "SystemState.hpp"
 #include "RandomGenerator.hpp"
-#include "Extremity.hpp"
+#include "MicrotubuleType.hpp"
 
 #include <cstdint>
 
@@ -24,38 +24,36 @@ void BindFreeCrosslinker::setCurrentRate(const SystemState& systemState)
 }
 
 
-// Return through references, since two values are returned
-void BindFreeCrosslinker::whereToConnect(const SystemState& systemState, RandomGenerator& generator, Extremity::MicrotubuleType& microtubuleToConnect, int32_t& position)
+SiteLocation BindFreeCrosslinker::whereToConnect(const SystemState& systemState, RandomGenerator& generator)
 {
     int32_t nFreeSitesFixed = systemState.getNFreeSitesFixed();
     int32_t nFreeSitesMobile = systemState.getNFreeSitesMobile();
     int32_t nFreeSites = nFreeSitesFixed + nFreeSitesMobile;
 
     // Initialise these as if the fixed microtubule needs to be connected, and change it after if the opposite needs to happen
-    microtubuleToConnect = Extremity::MicrotubuleType::FIXED;
+    MicrotubuleType microtubuleToConnect = MicrotubuleType::FIXED;
     int32_t freeSiteLabelToConnect = generator.getUniformInteger(0, nFreeSites-1);
     if (freeSiteLabelToConnect >= nFreeSitesFixed)
     {
-        microtubuleToConnect = Extremity::MicrotubuleType::MOBILE;
+        microtubuleToConnect = MicrotubuleType::MOBILE;
         freeSiteLabelToConnect -= nFreeSitesFixed;
     }
 
-    position = systemState.getFreeSitePosition(microtubuleToConnect, freeSiteLabelToConnect);
+    int32_t positionToConnectAt = systemState.getFreeSitePosition(microtubuleToConnect, freeSiteLabelToConnect);
+
+    return SiteLocation{microtubuleToConnect, positionToConnectAt};
 }
 
 void BindFreeCrosslinker::performReaction(SystemState& systemState, RandomGenerator& generator)
 {
-    // whereToConnect() returns through references, so define the variables first
-    Extremity::MicrotubuleType microtubuleToConnect;
-    int32_t position;
-    whereToConnect(systemState, generator, microtubuleToConnect, position); // Get the microtubule and site which should be connected.
+    SiteLocation connectLocation = whereToConnect(systemState, generator);
 
     // The following can be changed when there are different binding affinities for the head and tail of a crosslinker.
     // Now, the binding affinities are assumed to be equal.
     double probHeadBinds = 0.5;
     Crosslinker::Terminus terminusToConnect = ((generator.getBernoulli(probHeadBinds))?(Crosslinker::Terminus::HEAD):(Crosslinker::Terminus::TAIL));
 
-    systemState.connectFreeCrosslinker(m_typeToBind, terminusToConnect, microtubuleToConnect, position);
+    systemState.connectFreeCrosslinker(m_typeToBind, terminusToConnect, connectLocation);
 
 }
 

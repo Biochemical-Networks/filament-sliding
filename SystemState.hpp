@@ -5,7 +5,6 @@
 #include "MicrotubuleType.hpp"
 #include "MobileMicrotubule.hpp"
 #include "Crosslinker.hpp"
-#include "Extremity.hpp"
 #include "CrosslinkerContainer.hpp"
 
 #include <cstdint>
