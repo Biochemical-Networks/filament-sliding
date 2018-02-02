@@ -15,6 +15,14 @@
 
 class SystemState
 {
+public:
+    // Defined struct to group data about possible connections for partial linkers
+    struct possibleFullConnection
+    {
+        Crosslinker* p_partialLinker;
+        SiteLocation location;
+        double extension;
+    };
 private:
     // With a stretch < 1.5 lattice spacing, there are maximally 3 types of stretch at a time (at exactly 1.5, there could be 4).
     // The number is defined smaller than 1.5 to be sure that there are never 4 states possible, in which the state could become locked.
@@ -48,6 +56,8 @@ private:
     double m_forceMicrotubule;
     double m_energy;
 
+    // Stores all possible connections such that the search needs to be done once every time step
+    std::vector<possibleFullConnection> m_possibleConnections; // To be reset every time step, not updated dynamically, since after MT diffusion, it can completely change
 
 public:
     SystemState(const double lengthMobileMicrotubule,
