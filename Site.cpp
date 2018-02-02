@@ -49,6 +49,11 @@ void Site::disconnectCrosslinker()
     m_isFree = true;
 }
 
+bool Site::isFree() const
+{
+    return m_isFree;
+}
+
 /*void Site::setLeftFreeSite(const Site* p_leftNeighbour)
 {
     mp_leftFreeSite = p_leftNeighbour;

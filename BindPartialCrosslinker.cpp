@@ -19,7 +19,7 @@ BindPartialCrosslinker::~BindPartialCrosslinker()
 {
 }
 
-
+// Energy dependent rate
 void BindPartialCrosslinker::setCurrentRate(const SystemState& systemState)
 {
 

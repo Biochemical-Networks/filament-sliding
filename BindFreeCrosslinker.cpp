@@ -32,7 +32,7 @@ SiteLocation BindFreeCrosslinker::whereToConnect(const SystemState& systemState,
 
     // Initialise these as if the fixed microtubule needs to be connected, and change it after if the opposite needs to happen
     MicrotubuleType microtubuleToConnect = MicrotubuleType::FIXED;
-    int32_t freeSiteLabelToConnect = generator.getUniformInteger(0, nFreeSites-1);
+    int32_t freeSiteLabelToConnect = generator.getUniformInteger(0, nFreeSites-1); // Each site has equal probability of binding
     if (freeSiteLabelToConnect >= nFreeSitesFixed)
     {
         microtubuleToConnect = MicrotubuleType::MOBILE;

@@ -46,6 +46,12 @@ public:
 
     int32_t getFreeSitePosition(const int32_t whichFreeSite) const; // whichFreeSite labels the free sites, and can be 0 <= whichFreeSite < m_nFreeSites
 
+    int32_t getFirstPositionCloseTo(const double position, const double maxStretch) const;
+
+    int32_t getLastPositionCloseTo(const double position, const double maxStretch) const;
+
+    int32_t getNFreeSitesCloseTo(const double position, const double maxStretch) const;
+
 };
 
 #endif // MICROTUBULE_HPP

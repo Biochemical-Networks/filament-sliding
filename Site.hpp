@@ -36,6 +36,8 @@ public:
 
     void disconnectCrosslinker();
 
+    bool isFree() const;
+
 /*    void setLeftFreeSite(const Site* p_leftNeighbour);
     void setRightFreeSite(const Site* p_rightNeighbour);*/
 };

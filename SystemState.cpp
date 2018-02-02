@@ -4,6 +4,7 @@
 #include "Crosslinker.hpp"
 #include "GeneralException/GeneralException.hpp"
 #include "CrosslinkerContainer.hpp"
+#include "MicrotubuleType.hpp"
 
 #include <algorithm> // max/min
 #include <cmath> // ceil/floor
@@ -289,43 +290,30 @@ double SystemState::overlapLength() const
 // Return the first and last site of the overlap where crosslinkers could connect.
 // They can stretch m_maxStretchPerLatticeSpacing lattice spacing, so a site just next to the strict overlap is still an option.
 // Assume that the overlap exists
-// The function floor((x-maxStretch)/latticeSpacing+1) returns the first point that is within a distance of maxStretch from x, excluding the exact distance of maxStretch.
-// Given A<C, min(max(A,B),C) = { A if B<=A, B if A<=B<=C, C if B>=C }. (By the way, if A<C, then min(max(A,B),C)=max(A,min(B,C)) )
 int32_t SystemState::firstSiteOverlapFixed() const
 {
     double pos = beginningOverlap();
-    int32_t estimatedSite = static_cast <int32_t> (std::floor(pos / m_fixedMicrotubule.getLatticeSpacing()-m_maxStretchPerLatticeSpacing+1));
-    // The first position cannot be smaller than 0, and not bigger than (NSites-1), since counting starts at 0
-    int32_t firstSite = std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_fixedMicrotubule.getNSites()-1);
-    return firstSite;
+    return m_fixedMicrotubule.getFirstPositionCloseTo(pos,m_maxStretch);
 }
 
 int32_t SystemState::lastSiteOverlapFixed() const
 {
     double pos = endOverlap();
-    int32_t estimatedSite = static_cast <int32_t> (std::ceil(pos / m_fixedMicrotubule.getLatticeSpacing()+m_maxStretchPerLatticeSpacing-1));
-    // The first position cannot be smaller than 0, and not bigger than (NSites-1), since counting starts at 0
-    int32_t lastSite = std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_fixedMicrotubule.getNSites()-1);
-    return lastSite;
+    return m_fixedMicrotubule.getLastPositionCloseTo(pos,m_maxStretch);
 }
 
 int32_t SystemState::firstSiteOverlapMobile() const
 {
     double pos = beginningOverlap()-m_mobileMicrotubule.getPosition();
-    int32_t estimatedSite = static_cast <int32_t> (std::floor(pos / m_mobileMicrotubule.getLatticeSpacing()-m_maxStretchPerLatticeSpacing+1));
-    // The first position cannot be smaller than 0, and not bigger than (NSites-1), since counting starts at 0
-    int32_t firstSite = std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_mobileMicrotubule.getNSites()-1);
-    return firstSite;
+    return m_mobileMicrotubule.getFirstPositionCloseTo(pos,m_maxStretch);
 }
 
 int32_t SystemState::lastSiteOverlapMobile() const
 {
     double pos = endOverlap()-m_mobileMicrotubule.getPosition();
-    int32_t estimatedSite = static_cast <int32_t> (std::ceil(pos / m_mobileMicrotubule.getLatticeSpacing()+m_maxStretchPerLatticeSpacing-1));
-    // The first position cannot be smaller than 0, and not bigger than (NSites-1), since counting starts at 0
-    int32_t lastSite = std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_mobileMicrotubule.getNSites()-1);
-    return lastSite;
+    return m_mobileMicrotubule.getLastPositionCloseTo(pos,m_maxStretch);
 }
+
 
 int32_t SystemState::getNSitesOverlapFixed() const
 {
@@ -396,13 +384,31 @@ int32_t SystemState::getNSitesToBindPartial(const Crosslinker::Type type) const
     }
 
     CrosslinkerContainer::beginEndDeque itPair = containerToCheck->getPartialCrosslinkers();
+
+    const double mobilePosition = m_mobileMicrotubule.getPosition(); // Won't change during the subsequent for-loop
+
+    int32_t nSitesToBindPartial = 0;
+
     // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
     for(std::deque<Crosslinker*>::const_iterator it = itPair.first; it!= itPair.second; ++it)
     {
         // 'it' is an iterator to a pointer to a Crosslinker
         SiteLocation locationConnectedTo = (*it)->getBoundPositionWhenPartiallyConnected();
+
+        // Check the free sites on the opposite microtubule!
+        switch(locationConnectedTo.microtubule)
+        {
+        case MicrotubuleType::FIXED:
+            nSitesToBindPartial += m_mobileMicrotubule.getNFreeSitesCloseTo(locationConnectedTo.position - mobilePosition, m_maxStretch);
+            break;
+        case MicrotubuleType::MOBILE:
+            nSitesToBindPartial += m_fixedMicrotubule.getNFreeSitesCloseTo(locationConnectedTo.position, m_maxStretch);
+            break;
+        default:
+            throw GeneralException("Wrong location stored and encountered in getNSitesToBindPartial()");
+        }
     }
-    return 0;
+    return nSitesToBindPartial;
 }
 
 

@@ -2,7 +2,8 @@
 #include <cstdint>
 #include <cmath>
 #include <stdexcept>
-#include <algorithm>
+#include <algorithm> // max/min
+#include <cmath> // ceil/floor
 
 #include "Site.hpp"
 #include "Crosslinker.hpp"
@@ -79,5 +80,44 @@ int32_t Microtubule::getNFreeSites() const
 int32_t Microtubule::getFreeSitePosition(const int32_t whichFreeSite) const
 {
     return m_freeSitePositions.at(whichFreeSite);
+}
+
+// The function floor((x-maxStretch)/latticeSpacing+1) returns the first point that is within a distance of maxStretch from x, excluding the exact distance of maxStretch.
+// Given A<C, min(max(A,B),C) = { A if B<=A, B if A<=B<=C, C if B>=C }. (By the way, if A<C, then min(max(A,B),C)=max(A,min(B,C)) )
+int32_t Microtubule::getFirstPositionCloseTo(const double position, const double maxStretch) const
+{
+    int32_t estimatedSite = static_cast <int32_t> (std::floor( (position-maxStretch)/m_latticeSpacing+1));
+    // The first position cannot be smaller than 0, and not bigger than (NSites-1), since counting starts at 0
+    return std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_nSites-1);
+}
+
+int32_t Microtubule::getLastPositionCloseTo(const double position, const double maxStretch) const
+{
+    int32_t estimatedSite = static_cast <int32_t> (std::ceil( (position+maxStretch)/m_latticeSpacing-1));
+    // The first position cannot be smaller than 0, and not bigger than (NSites-1), since counting starts at 0
+    return std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_nSites-1);
+}
+
+int32_t Microtubule::getNFreeSitesCloseTo(const double position, const double maxStretch) const
+{
+    if (position<=-maxStretch||position >= m_length + maxStretch)
+    {
+        return 0;
+    }
+    else
+    {
+        // Now, we can assume there is at least one site (does not have to be free) within reach
+        int32_t nFreeSites = 0;
+        int32_t lowerSiteLabel = getFirstPositionCloseTo(position, maxStretch);
+        int32_t upperSiteLabel = getLastPositionCloseTo(position, maxStretch);
+        for (int32_t posToCheck = lowerSiteLabel; posToCheck<=upperSiteLabel; ++posToCheck)
+        {
+            if(m_sites.at(posToCheck).isFree())
+            {
+                ++nFreeSites;
+            }
+        }
+        return nFreeSites;
+    }
 }
 
