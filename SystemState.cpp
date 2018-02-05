@@ -5,6 +5,7 @@
 #include "GeneralException/GeneralException.hpp"
 #include "CrosslinkerContainer.hpp"
 #include "MicrotubuleType.hpp"
+#include "PossibleFullConnection.hpp"
 
 #include <algorithm> // max/min
 #include <cmath> // ceil/floor
@@ -409,6 +410,33 @@ int32_t SystemState::getNSitesToBindPartial(const Crosslinker::Type type) const
         }
     }
     return nSitesToBindPartial;
+}
+
+void SystemState::findPossibleConnections(const Crosslinker::Type type)
+{
+    m_possibleConnections.clear(); // Empty the container, this function recalculates the whole vector
+
+    // Get a pointer to the right container, since each type is stored in a separate container
+    const CrosslinkerContainer* containerToCheck = nullptr;
+    switch(type)
+    {
+        case Crosslinker::Type::PASSIVE:
+            containerToCheck = &m_passiveCrosslinkers;
+            break;
+        case Crosslinker::Type::DUAL:
+            containerToCheck = &m_dualCrosslinkers;
+            break;
+        case Crosslinker::Type::ACTIVE:
+            containerToCheck = &m_activeCrosslinkers;
+            break;
+        default:
+            throw GeneralException("An incorrect crosslinker type was passed to getNSitesToBindPartial()");
+            break;
+    }
+
+    CrosslinkerContainer::beginEndDeque itPair = containerToCheck->getPartialCrosslinkers();
+
+    const double mobilePosition = m_mobileMicrotubule.getPosition(); // Won't change during the subsequent for-loop
 }
 
 

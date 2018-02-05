@@ -6,6 +6,7 @@
 #include "MobileMicrotubule.hpp"
 #include "Crosslinker.hpp"
 #include "CrosslinkerContainer.hpp"
+#include "PossibleFullConnection.hpp"
 
 #include <cstdint>
 
@@ -15,14 +16,6 @@
 
 class SystemState
 {
-public:
-    // Defined struct to group data about possible connections for partial linkers
-    struct possibleFullConnection
-    {
-        Crosslinker* p_partialLinker;
-        SiteLocation location;
-        double extension;
-    };
 private:
     // With a stretch < 1.5 lattice spacing, there are maximally 3 types of stretch at a time (at exactly 1.5, there could be 4).
     // The number is defined smaller than 1.5 to be sure that there are never 4 states possible, in which the state could become locked.
@@ -57,7 +50,10 @@ private:
     double m_energy;
 
     // Stores all possible connections such that the search needs to be done once every time step
-    std::vector<possibleFullConnection> m_possibleConnections; // To be reset every time step, not updated dynamically, since after MT diffusion, it can completely change
+    // Needs to be updated dynamically.  After MT diffusion, it can completely change
+    // Will be traversed linearly, to calculate all rates: this should happen every time step, so a vector can be accessed quickly.
+    // However, to find elements or for resizing, it may be less quick. Make sure that it doesn't resize too often!
+    std::vector<possibleFullConnection> m_possibleConnections;
 
 public:
     SystemState(const double lengthMobileMicrotubule,
@@ -114,6 +110,8 @@ public:
     double getMaxStretch() const;
 
     int32_t getNSitesToBindPartial(const Crosslinker::Type type) const;
+
+    void findPossibleConnections(const Crosslinker::Type type);
 
 };
 

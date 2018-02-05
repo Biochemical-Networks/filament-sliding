@@ -100,7 +100,36 @@ CrosslinkerContainer::beginEndDeque CrosslinkerContainer::getFullCrosslinkers() 
     return std::make_pair(m_fullCrosslinkers.begin(),m_fullCrosslinkers.end());
 }
 
+int32_t CrosslinkerContainer::getNSitesToBindPartial() const
+{
 
+    beginEndDeque itPair = containerToCheck->getPartialCrosslinkers();
+
+    const double mobilePosition = m_mobileMicrotubule.getPosition(); // Won't change during the subsequent for-loop
+
+    int32_t nSitesToBindPartial = 0;
+
+    // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
+    for(std::deque<Crosslinker*>::const_iterator it = m_partialCrosslinkers.begin(); it!= m_partialCrosslinkers.end(); ++it)
+    {
+        // 'it' is an iterator to a pointer to a Crosslinker
+        SiteLocation locationConnectedTo = (*it)->getBoundPositionWhenPartiallyConnected();
+
+        // Check the free sites on the opposite microtubule!
+        switch(locationConnectedTo.microtubule)
+        {
+        case MicrotubuleType::FIXED:
+            nSitesToBindPartial += m_mobileMicrotubule.getNFreeSitesCloseTo(locationConnectedTo.position - mobilePosition, m_maxStretch);
+            break;
+        case MicrotubuleType::MOBILE:
+            nSitesToBindPartial += m_fixedMicrotubule.getNFreeSitesCloseTo(locationConnectedTo.position, m_maxStretch);
+            break;
+        default:
+            throw GeneralException("Wrong location stored and encountered in getNSitesToBindPartial()");
+        }
+    }
+    return nSitesToBindPartial;
+}
 
 
 

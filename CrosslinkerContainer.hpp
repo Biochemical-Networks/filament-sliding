@@ -22,6 +22,13 @@ private:
     std::deque<Crosslinker*> m_partialCrosslinkers;
     std::deque<Crosslinker*> m_fullCrosslinkers;
 
+    // Stores all possible connections such that the search needs to be done once every time step
+    // Needs to be updated dynamically.  After MT diffusion, it can completely change
+    // Will be traversed linearly, to calculate all rates: this should happen every time step, so a vector can be accessed quickly.
+    // However, to find elements or for resizing, it may be less quick. Make sure that it doesn't resize too often!
+    // Added to crosslinkerContainer, because it is stored for each type of crosslinker separately.
+    std::vector<possibleFullConnection> m_possibleConnections;
+
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker);
     ~CrosslinkerContainer();
@@ -47,6 +54,10 @@ public:
     beginEndDeque getFreeCrosslinkers() const;
     beginEndDeque getPartialCrosslinkers() const;
     beginEndDeque getFullCrosslinkers() const;
+
+    int32_t getNSitesToBindPartial() const;
+
+    void findPossibleConnections();
 
 };
 
