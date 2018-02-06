@@ -1,7 +1,8 @@
 #include "MobileMicrotubule.hpp"
+#include "MicrotubuleType.hpp"
 
 MobileMicrotubule::MobileMicrotubule(const double length, const double latticeSpacing, const double initialPosition)
-    :   Microtubule(length, latticeSpacing),
+    :   Microtubule(MicrotubuleType::MOBILE, length, latticeSpacing),
         m_position(initialPosition)
 {
 }

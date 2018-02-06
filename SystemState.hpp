@@ -51,12 +51,6 @@ private:
     double m_forceMicrotubule;
     double m_energy;
 
-    // Stores all possible connections such that the search needs to be done once every time step
-    // Needs to be updated dynamically.  After MT diffusion, it can completely change
-    // Will be traversed linearly, to calculate all rates: this should happen every time step, so a vector can be accessed quickly.
-    // However, to find elements or for resizing, it may be less quick. Make sure that it doesn't resize too often!
-    std::vector<possibleFullConnection> m_possibleConnections;
-
 public:
     SystemState(const double lengthMobileMicrotubule,
                 const double lengthFixedMicrotubule,

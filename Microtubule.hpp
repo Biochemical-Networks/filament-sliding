@@ -53,7 +53,7 @@ public:
 
     int32_t getNFreeSitesCloseTo(const double position, const double maxStretch) const;
 
-    std::vector<PossibleFullConnection> getFreeSitesCloseTo(const Crosslinker* const oppositeCrosslinker, const double position, const double maxStretch) const;
+    std::vector<PossibleFullConnection> getFreeSitesCloseTo(Crosslinker* const oppositeCrosslinker, const double position, const double maxStretch) const;
 
 };
 

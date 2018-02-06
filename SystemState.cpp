@@ -20,7 +20,7 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
                             const int32_t nPassiveCrosslinkers)
     :   m_maxStretch(m_maxStretchPerLatticeSpacing*latticeSpacing),
         m_fixedMicrotubule(MicrotubuleType::FIXED, lengthFixedMicrotubule, latticeSpacing),
-        m_mobileMicrotubule(MicrotubuleType::MOBILE, lengthMobileMicrotubule, latticeSpacing),
+        m_mobileMicrotubule(lengthMobileMicrotubule, latticeSpacing),
         m_nPassiveCrosslinkers(nPassiveCrosslinkers),
         m_nDualCrosslinkers(nDualCrosslinkers),
         m_nActiveCrosslinkers(nActiveCrosslinkers),
@@ -389,8 +389,6 @@ int32_t SystemState::getNSitesToBindPartial(const Crosslinker::Type type) const
 
 void SystemState::findPossibleConnections(const Crosslinker::Type type)
 {
-    m_possibleConnections.clear(); // Empty the container, this function recalculates the whole vector
-
     // Get a pointer to the right container, since each type is stored in a separate container
     const CrosslinkerContainer* containerToCheck = nullptr;
     switch(type)
