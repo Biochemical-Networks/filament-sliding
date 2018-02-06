@@ -1,6 +1,5 @@
 #include "Microtubule.hpp"
 #include <cstdint>
-#include <cmath>
 #include <stdexcept>
 #include <algorithm> // max/min
 #include <cmath> // ceil/floor
