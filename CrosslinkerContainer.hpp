@@ -30,7 +30,7 @@ private:
     // Will be traversed linearly, to calculate all rates: this should happen every time step, so a vector can be accessed quickly.
     // However, to find elements or for resizing, it may be less quick. Make sure that it doesn't resize too often!
     // Added to crosslinkerContainer, because it is stored for each type of crosslinker separately.
-    std::vector<possibleFullConnection> m_possibleConnections;
+    std::vector<PossibleFullConnection> m_possibleConnections;
 
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker);

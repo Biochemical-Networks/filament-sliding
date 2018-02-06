@@ -2,7 +2,7 @@
 #define POSSIBLEFULLCONNECTION_HPP
 
 // Defined struct to group data about possible connections for partial linkers
-struct possibleFullConnection
+struct PossibleFullConnection
 {
     Crosslinker* p_partialLinker;
     SiteLocation location;

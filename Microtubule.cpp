@@ -4,14 +4,18 @@
 #include <stdexcept>
 #include <algorithm> // max/min
 #include <cmath> // ceil/floor
+#include <vector>
+
 #include "PossibleFullConnection.hpp"
+#include "MicrotubuleType.hpp"
 
 #include "Site.hpp"
 #include "Crosslinker.hpp"
 
 
-Microtubule::Microtubule(const double length, const double latticeSpacing)
-    :   m_length(length),
+Microtubule::Microtubule(const MicrotubuleType type, const double length, const double latticeSpacing)
+    :   m_type(type),
+        m_length(length),
         m_latticeSpacing(latticeSpacing),
         m_nSites(static_cast<int32_t>(std::floor(m_length/m_latticeSpacing))+1), // Choose such that microtubule always starts and ends with a site. The
         m_nFreeSites(m_nSites),
@@ -122,5 +126,28 @@ int32_t Microtubule::getNFreeSitesCloseTo(const double position, const double ma
     }
 }
 
-std::array<possibleFullConnection, MaximumStretch::maxNumberOfCloseSites> getFreeSitesCloseTo(const double position, const double maxStretch) const
+// position is the position relative to the start of THIS microtubule, not the mobile one per se
+std::vector<PossibleFullConnection> getFreeSitesCloseTo(const Crosslinker* const oppositeCrosslinker, const double position, const double maxStretch) const
+{
+    if (position<=-maxStretch||position >= m_length + maxStretch)
+    {
+        return {}; // list initialisation
+    }
+    else
+    {
+        // Now, we can assume there is at least one site (does not have to be free) within reach
+        //int32_t nFreeSites = 0;
+        std::vector<PossibleFullConnection> freeSites = {};
+        int32_t lowerSiteLabel = getFirstPositionCloseTo(position, maxStretch);
+        int32_t upperSiteLabel = getLastPositionCloseTo(position, maxStretch);
+        for (int32_t posToCheck = lowerSiteLabel; posToCheck<=upperSiteLabel; ++posToCheck)
+        {
+            if(m_sites.at(posToCheck).isFree())
+            {
+                freeSites.push_back(PossibleFullConnection{oppositeCrosslinker, SiteLocation{}, )
+            }
+        }
+        return nFreeSites;
+    }
+}
 

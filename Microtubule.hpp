@@ -8,10 +8,12 @@
 #include "Site.hpp"
 #include "Crosslinker.hpp"
 #include "PossibleFullConnection.hpp"
+#include "MicrotubuleType.hpp"
 
 class Microtubule
 {
 private:
+    const MicrotubuleType m_type;
     const double m_length;
     const double m_latticeSpacing;
     const int32_t m_nSites;
@@ -28,7 +30,7 @@ private:
 
 public:
 
-    Microtubule(const double length, const double latticeSpacing);
+    Microtubule(const MicrotubuleType type, const double length, const double latticeSpacing);
     virtual ~Microtubule();
 
     void connectSite(const int32_t sitePosition, Crosslinker& crosslinkerToConnect, const Crosslinker::Terminus terminusToConnect);
@@ -51,7 +53,7 @@ public:
 
     int32_t getNFreeSitesCloseTo(const double position, const double maxStretch) const;
 
-    std::vector<possibleFullConnection> getFreeSitesCloseTo(const double position, const double maxStretch) const;
+    std::vector<PossibleFullConnection> getFreeSitesCloseTo(const Crosslinker* const oppositeCrosslinker, const double position, const double maxStretch) const;
 
 };
 
