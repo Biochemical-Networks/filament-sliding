@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <algorithm> // max/min
 #include <cmath> // ceil/floor
+#include "PossibleFullConnection.hpp"
 
 #include "Site.hpp"
 #include "Crosslinker.hpp"
@@ -120,4 +121,6 @@ int32_t Microtubule::getNFreeSitesCloseTo(const double position, const double ma
         return nFreeSites;
     }
 }
+
+std::array<possibleFullConnection, MaximumStretch::maxNumberOfCloseSites> getFreeSitesCloseTo(const double position, const double maxStretch) const
 

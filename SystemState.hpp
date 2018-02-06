@@ -9,6 +9,7 @@
 #include "PossibleFullConnection.hpp"
 
 #include <cstdint>
+#include <cmath>
 
 #include <vector>
 
@@ -21,6 +22,7 @@ private:
     // The number is defined smaller than 1.5 to be sure that there are never 4 states possible, in which the state could become locked.
     // 15 decimals seems to be the precision
     constexpr static double m_maxStretchPerLatticeSpacing=1.499999999999999;
+    constexpr static int32_t m_maxNumberOfCloseSites = static_cast<int32_t> (std::ceil(2*m_maxStretchPerLatticeSpacing));
     const double m_maxStretch; // To be defined in terms of the lattice spacing and m_maxStretchPerLatticeSpacing
 
     Microtubule m_fixedMicrotubule;

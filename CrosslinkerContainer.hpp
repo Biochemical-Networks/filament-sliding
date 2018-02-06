@@ -2,6 +2,9 @@
 #define CROSSLINKERCONTAINER_HPP
 
 #include "Crosslinker.hpp"
+#include "Microtubule.hpp"
+#include "MobileMicrotubule.hpp"
+#include "PossibleFullConnection.hpp"
 
 #include <cstdint>
 #include <vector>
@@ -51,13 +54,13 @@ public:
     // To find where to connect partial crosslinkers, BindPartialCrosslinker needs information on the positions of the crosslinkers.
     // To give access to the positions of the partial crosslinkers, it is easiest to pass the whole deque to the function (to avoid copying as well)
     // const_iterator doesn't allow for the modification of the container elements
-    beginEndDeque getFreeCrosslinkers() const;
+    /*beginEndDeque getFreeCrosslinkers() const;
     beginEndDeque getPartialCrosslinkers() const;
-    beginEndDeque getFullCrosslinkers() const;
+    beginEndDeque getFullCrosslinkers() const;*/
 
-    int32_t getNSitesToBindPartial() const;
+    int32_t getNSitesToBindPartial(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch) const;
 
-    void findPossibleConnections();
+    void findPossibleConnections(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
 
 };
 

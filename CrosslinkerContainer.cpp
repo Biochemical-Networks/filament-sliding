@@ -2,6 +2,10 @@
 
 #include "Crosslinker.hpp"
 #include "GeneralException/GeneralException.hpp"
+#include "MicrotubuleType.hpp"
+#include "PossibleFullConnection.hpp"
+#include "Microtubule.hpp"
+#include "MobileMicrotubule.hpp"
 
 #include <stdexcept>
 #include <cstdint>
@@ -85,7 +89,7 @@ int32_t CrosslinkerContainer::getNFullCrosslinkers() const
     return m_fullCrosslinkers.size();
 }
 
-CrosslinkerContainer::beginEndDeque CrosslinkerContainer::getFreeCrosslinkers() const
+/*CrosslinkerContainer::beginEndDeque CrosslinkerContainer::getFreeCrosslinkers() const
 {
     return std::make_pair(m_freeCrosslinkers.begin(),m_freeCrosslinkers.end());
 }
@@ -98,31 +102,27 @@ CrosslinkerContainer::beginEndDeque CrosslinkerContainer::getPartialCrosslinkers
 CrosslinkerContainer::beginEndDeque CrosslinkerContainer::getFullCrosslinkers() const
 {
     return std::make_pair(m_fullCrosslinkers.begin(),m_fullCrosslinkers.end());
-}
+}*/
 
-int32_t CrosslinkerContainer::getNSitesToBindPartial() const
+int32_t CrosslinkerContainer::getNSitesToBindPartial(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch) const
 {
-
-    beginEndDeque itPair = containerToCheck->getPartialCrosslinkers();
-
-    const double mobilePosition = m_mobileMicrotubule.getPosition(); // Won't change during the subsequent for-loop
+    const double mobilePosition = mobileMicrotubule.getPosition(); // Won't change during the subsequent for-loop
 
     int32_t nSitesToBindPartial = 0;
 
     // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
-    for(std::deque<Crosslinker*>::const_iterator it = m_partialCrosslinkers.begin(); it!= m_partialCrosslinkers.end(); ++it)
+    for(auto p_linker : m_partialCrosslinkers)
     {
-        // 'it' is an iterator to a pointer to a Crosslinker
-        SiteLocation locationConnectedTo = (*it)->getBoundPositionWhenPartiallyConnected();
+        SiteLocation locationConnectedTo = p_linker->getBoundPositionWhenPartiallyConnected();
 
         // Check the free sites on the opposite microtubule!
         switch(locationConnectedTo.microtubule)
         {
         case MicrotubuleType::FIXED:
-            nSitesToBindPartial += m_mobileMicrotubule.getNFreeSitesCloseTo(locationConnectedTo.position - mobilePosition, m_maxStretch);
+            nSitesToBindPartial += mobileMicrotubule.getNFreeSitesCloseTo(locationConnectedTo.position - mobilePosition, maxStretch);
             break;
         case MicrotubuleType::MOBILE:
-            nSitesToBindPartial += m_fixedMicrotubule.getNFreeSitesCloseTo(locationConnectedTo.position, m_maxStretch);
+            nSitesToBindPartial += fixedMicrotubule.getNFreeSitesCloseTo(locationConnectedTo.position, maxStretch);
             break;
         default:
             throw GeneralException("Wrong location stored and encountered in getNSitesToBindPartial()");
@@ -131,6 +131,30 @@ int32_t CrosslinkerContainer::getNSitesToBindPartial() const
     return nSitesToBindPartial;
 }
 
+void CrosslinkerContainer::findPossibleConnections(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch)
+{
+    // Empty the container, the following will recalculate the whole vector
+    // The capacity of the vector does not change (?)
+    m_possibleConnections.clear();
 
+    // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
+    for(Crosslinker* p_linker : m_partialCrosslinkers)
+    {
+        SiteLocation locationConnectedTo = p_linker->getBoundPositionWhenPartiallyConnected();
+
+        // Check the free sites on the opposite microtubule!
+/*        switch(locationConnectedTo.microtubule)
+        {
+        case MicrotubuleType::FIXED:
+            nSitesToBindPartial += mobileMicrotubule.getNFreeSitesCloseTo(locationConnectedTo.position - mobilePosition, maxStretch);
+            break;
+        case MicrotubuleType::MOBILE:
+            nSitesToBindPartial += fixedMicrotubule.getNFreeSitesCloseTo(locationConnectedTo.position, maxStretch);
+            break;
+        default:
+            throw GeneralException("Wrong location stored and encountered in getNSitesToBindPartial()");
+        }*/
+    }
+}
 
 

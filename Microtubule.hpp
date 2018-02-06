@@ -3,12 +3,11 @@
 #include <cstdint>
 #include <vector>
 #include <deque>
-//#include <map>
-
 
 #include "Input/Input.hpp"
 #include "Site.hpp"
 #include "Crosslinker.hpp"
+#include "PossibleFullConnection.hpp"
 
 class Microtubule
 {
@@ -51,6 +50,8 @@ public:
     int32_t getLastPositionCloseTo(const double position, const double maxStretch) const;
 
     int32_t getNFreeSitesCloseTo(const double position, const double maxStretch) const;
+
+    std::vector<possibleFullConnection> getFreeSitesCloseTo(const double position, const double maxStretch) const;
 
 };
 
