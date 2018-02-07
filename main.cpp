@@ -121,7 +121,11 @@ int main()
 
     propagator.run(systemState, generator, output);
 
+    // TEST
+    systemState.findPossibleConnections(Crosslinker::Type::PASSIVE);
+
     std::cout << systemState.getNSitesToBindPartial(Crosslinker::Type::PASSIVE);
+    // END_TEST
 
     return 0;
 }

@@ -15,7 +15,7 @@ class CrosslinkerContainer
 {
 public:
     // To prevent typing too much, define the std::pair giving the end and beginning of the deques used in this class
-    typedef std::pair<std::deque<Crosslinker*>::const_iterator,std::deque<Crosslinker*>::const_iterator> beginEndDeque;
+    //typedef std::pair<std::deque<Crosslinker*>::const_iterator,std::deque<Crosslinker*>::const_iterator> beginEndDeque;
 private:
     std::vector<Crosslinker> m_crosslinkers; // The vector manages existence of the crosslinkers.
 
@@ -31,6 +31,11 @@ private:
     // However, to find elements or for resizing, it may be less quick. Make sure that it doesn't resize too often!
     // Added to crosslinkerContainer, because it is stored for each type of crosslinker separately.
     std::vector<PossibleFullConnection> m_possibleConnections;
+
+    // The following functions are used internally; cannot be called by public, m_possibleConnections is only altered through calls to (dis)connect functions, or to findPossibleConnections
+    void addPossibleConnections(Crosslinker* p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
+
+    void removePossibleConnections(Crosslinker* p_oldPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
 
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker);
@@ -61,6 +66,8 @@ public:
     int32_t getNSitesToBindPartial(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch) const;
 
     void findPossibleConnections(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
+
+
 
 };
 

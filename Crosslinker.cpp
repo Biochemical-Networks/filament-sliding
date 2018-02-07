@@ -20,6 +20,11 @@ bool Crosslinker::isConnected() const
     return (m_head.isConnected()||m_tail.isConnected());
 }
 
+bool Crosslinker::isPartial() const
+{
+    return (m_head.isConnected() != m_tail.isConnected());
+}
+
 Crosslinker::Type Crosslinker::getType() const
 {
     return m_type;

@@ -137,26 +137,32 @@ void CrosslinkerContainer::findPossibleConnections(const Microtubule& fixedMicro
     // The capacity of the vector does not change (?)
     m_possibleConnections.clear();
 
-    const double mobilePosition = mobileMicrotubule.getPosition(); // Won't change during the subsequent for-loop
-
     // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
     for(Crosslinker* p_linker : m_partialCrosslinkers)
     {
-        SiteLocation locationConnectedTo = p_linker->getBoundPositionWhenPartiallyConnected();
+        addPossibleConnections(p_linker, fixedMicrotubule, mobileMicrotubule, maxStretch);
+    }
+}
 
-        // Check the free sites on the opposite microtubule!
-        // Microtubule.getFreeSitesCloseTo changes possibleConnections through a reference, such that no extra vectors need to be made
-        switch(locationConnectedTo.microtubule)
-        {
-        case MicrotubuleType::FIXED:
-            mobileMicrotubule.addFreeSitesCloseTo(m_possibleConnections, p_linker, locationConnectedTo.position - mobilePosition, maxStretch);
-            break;
-        case MicrotubuleType::MOBILE:
-            fixedMicrotubule.addFreeSitesCloseTo(m_possibleConnections, p_linker, locationConnectedTo.position, maxStretch);
-            break;
-        default:
-            throw GeneralException("Wrong location stored and encountered in findPossibleConnections()");
-        }
+void CrosslinkerContainer::addPossibleConnections(Crosslinker* p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch)
+{
+    if(!(p_newPartialCrosslinker->isPartial()))
+    {
+        throw GeneralException("The Crosslinker pointer passed to CrosslinkerContainer::addPossibleConnections() is not partial yet, which is assumed.");
+    }
+    SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundPositionWhenPartiallyConnected();
+    // Check the free sites on the opposite microtubule!
+    // Microtubule.getFreeSitesCloseTo changes possibleConnections through a reference, such that no extra vectors need to be made
+    switch(locationConnectedTo.microtubule)
+    {
+    case MicrotubuleType::FIXED:
+        mobileMicrotubule.addFreeSitesCloseTo(m_possibleConnections, p_newPartialCrosslinker, locationConnectedTo.position - mobileMicrotubule.getPosition(), maxStretch);
+        break;
+    case MicrotubuleType::MOBILE:
+        fixedMicrotubule.addFreeSitesCloseTo(m_possibleConnections, p_newPartialCrosslinker, locationConnectedTo.position, maxStretch);
+        break;
+    default:
+        throw GeneralException("Wrong location stored and encountered in addPossibleConnections()");
     }
 }
 

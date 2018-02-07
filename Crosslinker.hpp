@@ -35,6 +35,8 @@ public:
 
     bool isConnected() const;
 
+    bool isPartial() const;
+
     Type getType() const;
 
 /*    int32_t getHeadPosition() const;
