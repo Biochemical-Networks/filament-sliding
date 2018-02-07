@@ -144,7 +144,11 @@ void CrosslinkerContainer::findPossibleConnections(const Microtubule& fixedMicro
     }
 }
 
-void CrosslinkerContainer::addPossibleConnections(Crosslinker* p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch)
+/* The following function adds all possible connections of *p_newPartialCrosslinker to m_possibleConnections.
+ * It does not finish changing m_possibleConnections:
+ * it is possible that the new partial linker also occupies the previously free position of a partial linker on the opposite microtubule.
+ */
+void CrosslinkerContainer::addPossibleConnections(Crosslinker*const p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch)
 {
     if(!(p_newPartialCrosslinker->isPartial()))
     {
@@ -166,4 +170,29 @@ void CrosslinkerContainer::addPossibleConnections(Crosslinker* p_newPartialCross
     }
 }
 
+void CrosslinkerContainer::removePossibleConnections(Crosslinker*const p_oldPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch)
+{
+    if((p_oldPartialCrosslinker->isPartial()))
+    {
+        throw GeneralException("The Crosslinker pointer passed to CrosslinkerContainer::removePossibleConnections() is still partial. Change it first.");
+    }
+
+    // Use a lambda expression as a predicate for std::remove_if
+    m_possibleConnections.erase(std::remove_if(m_possibleConnections.begin(),m_possibleConnections.end(),
+                                                // lambda expression, capturing p_oldPartialCrosslinker by value, since it is a pointer
+                                                [p_oldPartialCrosslinker](const PossibleFullConnection& possibleConnection)
+                                                {
+                                                    // The identity of a partial linker is checked through its pointer (memory location)
+                                                    // IS THIS OKAY???
+                                                    if(possibleConnection.p_partialLinker==p_oldPartialCrosslinker)
+                                                    {
+                                                        return true;
+                                                    }
+                                                    else
+                                                    {
+                                                        return false;
+                                                    }
+                                                }), m_possibleConnections.end());
+
+}
 

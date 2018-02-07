@@ -33,9 +33,9 @@ private:
     std::vector<PossibleFullConnection> m_possibleConnections;
 
     // The following functions are used internally; cannot be called by public, m_possibleConnections is only altered through calls to (dis)connect functions, or to findPossibleConnections
-    void addPossibleConnections(Crosslinker* p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
+    void addPossibleConnections(Crosslinker*const p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
 
-    void removePossibleConnections(Crosslinker* p_oldPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
+    void removePossibleConnections(Crosslinker*const p_oldPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
 
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker);
