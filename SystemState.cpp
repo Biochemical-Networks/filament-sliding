@@ -390,7 +390,7 @@ int32_t SystemState::getNSitesToBindPartial(const Crosslinker::Type type) const
 void SystemState::findPossibleConnections(const Crosslinker::Type type)
 {
     // Get a pointer to the right container, since each type is stored in a separate container
-    const CrosslinkerContainer* containerToCheck = nullptr;
+    CrosslinkerContainer* containerToCheck = nullptr; // Not const, container will be changed
     switch(type)
     {
         case Crosslinker::Type::PASSIVE:
@@ -406,7 +406,7 @@ void SystemState::findPossibleConnections(const Crosslinker::Type type)
             throw GeneralException("An incorrect crosslinker type was passed to getNSitesToBindPartial()");
             break;
     }
-
+    containerToCheck->findPossibleConnections(m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch);
 }
 
 

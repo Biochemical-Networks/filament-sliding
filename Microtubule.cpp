@@ -126,27 +126,20 @@ int32_t Microtubule::getNFreeSitesCloseTo(const double position, const double ma
 }
 
 // position is the position relative to the start of THIS microtubule, not the mobile one per se
-std::vector<PossibleFullConnection> Microtubule::getFreeSitesCloseTo(Crosslinker* const oppositeCrosslinker, const double position, const double maxStretch) const
+void Microtubule::addFreeSitesCloseTo(std::vector<PossibleFullConnection>& possibleConnections, Crosslinker* const oppositeCrosslinker, const double position, const double maxStretch) const
 {
-    if (position<=-maxStretch||position >= m_length + maxStretch)
-    {
-        return {}; // list initialisation
-    }
-    else
+    if (!(position<=-maxStretch||position >= m_length + maxStretch))
     {
         // Now, we can assume there is at least one site (does not have to be free) within reach
-        //int32_t nFreeSites = 0;
-        std::vector<PossibleFullConnection> freeSites = {};
         int32_t lowerSiteLabel = getFirstPositionCloseTo(position, maxStretch);
         int32_t upperSiteLabel = getLastPositionCloseTo(position, maxStretch);
         for (int32_t posToCheck = lowerSiteLabel; posToCheck<=upperSiteLabel; ++posToCheck)
         {
             if(m_sites.at(posToCheck).isFree())
             {
-                freeSites.push_back(PossibleFullConnection{oppositeCrosslinker, SiteLocation{m_type, posToCheck}, m_latticeSpacing*posToCheck-position});
+                possibleConnections.push_back(PossibleFullConnection{oppositeCrosslinker, SiteLocation{m_type, posToCheck}, m_latticeSpacing*posToCheck-position});
             }
         }
-        return freeSites;
     }
 }
 
