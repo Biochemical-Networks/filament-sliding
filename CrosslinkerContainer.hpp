@@ -13,14 +13,12 @@
 
 class CrosslinkerContainer
 {
-public:
-    // To prevent typing too much, define the std::pair giving the end and beginning of the deques used in this class
-    //typedef std::pair<std::deque<Crosslinker*>::const_iterator,std::deque<Crosslinker*>::const_iterator> beginEndDeque;
 private:
     std::vector<Crosslinker> m_crosslinkers; // The vector manages existence of the crosslinkers.
 
     int32_t m_nFreeCrosslinkers;
-
+    // Use pointers to crosslinkers as IDs: THIS IS DANGEROUS! It will break if m_crosslinkers would ever resize, since that invalidates all pointers to its elements.
+    // A possible fix for this (if it were required to resize the m_crosslinkers sometimes) would be to store the labels (0,...,nCrosslinkers-1) instead of pointers)
     std::deque<Crosslinker*> m_freeCrosslinkers;
     std::deque<Crosslinker*> m_partialCrosslinkers;
     std::deque<Crosslinker*> m_fullCrosslinkers;
@@ -35,7 +33,7 @@ private:
     // The following functions are used internally; cannot be called by public, m_possibleConnections is only altered through calls to (dis)connect functions, or to findPossibleConnections
     void addPossibleConnections(Crosslinker*const p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
 
-    void removePossibleConnections(Crosslinker*const p_oldPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
+    void removePossibleConnections(Crosslinker*const p_oldPartialCrosslinker, const double maxStretch);
 
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker);
@@ -55,13 +53,6 @@ public:
     int32_t getNFreeCrosslinkers() const;
     int32_t getNPartialCrosslinkers() const;
     int32_t getNFullCrosslinkers() const;
-
-    // To find where to connect partial crosslinkers, BindPartialCrosslinker needs information on the positions of the crosslinkers.
-    // To give access to the positions of the partial crosslinkers, it is easiest to pass the whole deque to the function (to avoid copying as well)
-    // const_iterator doesn't allow for the modification of the container elements
-    /*beginEndDeque getFreeCrosslinkers() const;
-    beginEndDeque getPartialCrosslinkers() const;
-    beginEndDeque getFullCrosslinkers() const;*/
 
     int32_t getNSitesToBindPartial(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch) const;
 

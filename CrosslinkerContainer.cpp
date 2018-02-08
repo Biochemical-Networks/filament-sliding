@@ -89,21 +89,6 @@ int32_t CrosslinkerContainer::getNFullCrosslinkers() const
     return m_fullCrosslinkers.size();
 }
 
-/*CrosslinkerContainer::beginEndDeque CrosslinkerContainer::getFreeCrosslinkers() const
-{
-    return std::make_pair(m_freeCrosslinkers.begin(),m_freeCrosslinkers.end());
-}
-
-CrosslinkerContainer::beginEndDeque CrosslinkerContainer::getPartialCrosslinkers() const
-{
-    return std::make_pair(m_partialCrosslinkers.begin(),m_partialCrosslinkers.end());
-}
-
-CrosslinkerContainer::beginEndDeque CrosslinkerContainer::getFullCrosslinkers() const
-{
-    return std::make_pair(m_fullCrosslinkers.begin(),m_fullCrosslinkers.end());
-}*/
-
 int32_t CrosslinkerContainer::getNSitesToBindPartial(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch) const
 {
     const double mobilePosition = mobileMicrotubule.getPosition(); // Won't change during the subsequent for-loop
@@ -170,7 +155,7 @@ void CrosslinkerContainer::addPossibleConnections(Crosslinker*const p_newPartial
     }
 }
 
-void CrosslinkerContainer::removePossibleConnections(Crosslinker*const p_oldPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch)
+void CrosslinkerContainer::removePossibleConnections(Crosslinker*const p_oldPartialCrosslinker, const double maxStretch)
 {
     if((p_oldPartialCrosslinker->isPartial()))
     {
@@ -178,12 +163,13 @@ void CrosslinkerContainer::removePossibleConnections(Crosslinker*const p_oldPart
     }
 
     // Use a lambda expression as a predicate for std::remove_if
+    // erase-remove idiom erases all elements complying to the predicate
     m_possibleConnections.erase(std::remove_if(m_possibleConnections.begin(),m_possibleConnections.end(),
                                                 // lambda expression, capturing p_oldPartialCrosslinker by value, since it is a pointer
                                                 [p_oldPartialCrosslinker](const PossibleFullConnection& possibleConnection)
                                                 {
                                                     // The identity of a partial linker is checked through its pointer (memory location)
-                                                    // IS THIS OKAY???
+                                                    // This is okay as long as the CrosslinkerContainer class guarantees that m_crosslinkers is never resized.
                                                     if(possibleConnection.p_partialLinker==p_oldPartialCrosslinker)
                                                     {
                                                         return true;
