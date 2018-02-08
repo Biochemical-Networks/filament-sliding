@@ -38,6 +38,9 @@ private:
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker);
     ~CrosslinkerContainer();
+    // Delete the default copy constructor and assignment operator, there is no use for them
+    CrosslinkerContainer(const CrosslinkerContainer&) = delete;
+    CrosslinkerContainer& operator=(const CrosslinkerContainer&) = delete;
 
     Crosslinker& at(const int32_t position);
 

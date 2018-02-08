@@ -50,6 +50,9 @@ public:
                 const int32_t nPassiveCrosslinkers);
     ~SystemState();
 
+    SystemState(const SystemState&) = delete;
+    SystemState& operator=(const SystemState&) = delete;
+
     void setMicrotubulePosition(const double positionMicrotubule);
 
     void fullyConnectFreeCrosslinker(const Crosslinker::Type type,

@@ -18,7 +18,7 @@ Microtubule::Microtubule(const MicrotubuleType type, const double length, const 
         m_latticeSpacing(latticeSpacing),
         m_nSites(static_cast<int32_t>(std::floor(m_length/m_latticeSpacing))+1), // Choose such that microtubule always starts and ends with a site. The
         m_nFreeSites(m_nSites),
-        m_sites(m_nSites, Site(true)),
+        m_sites(m_nSites, Site(true)), // Create a copy of Site which is free (isFree=true), and copy it into the vector
         m_freeSitePositions(m_nSites) // Set the number of sites, but fill it in the body of the constructor
 {
     std::iota(m_freeSitePositions.begin(), m_freeSitePositions.end(), 0); // All sites are initially free

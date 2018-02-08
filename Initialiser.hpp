@@ -39,6 +39,9 @@ public:
     Initialiser(const double initialPositionMicrotubule, const double fractionOverlapSitesConnected, const std::string initialCrosslinkerDistributionString);
     ~Initialiser();
 
+    Initialiser(const Initialiser&) = delete;
+    Initialiser& operator=(const Initialiser&) = delete;
+
     void initialise(SystemState& systemState, RandomGenerator& generator);
 
 };

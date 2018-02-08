@@ -24,10 +24,6 @@ private:
 
     std::deque<int32_t> m_freeSitePositions; // Elements are removed often, so std::deque is used. The order of the positions will NOT be preserved.
 
-/*    // Following maps site position to pointer to next free site on the left or right
-    std::map<int32_t, Site*> m_nextFreeSiteLeft;
-    std::map<int32_t, Site*> m_nextFreeSiteRight;*/
-
 public:
 
     Microtubule(const MicrotubuleType type, const double length, const double latticeSpacing);

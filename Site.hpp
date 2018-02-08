@@ -18,19 +18,11 @@ private:
     Crosslinker *mp_connectedCrosslinker;
     Crosslinker::Terminus m_connectedTerminus;
 
-/*    Site *mp_leftFreeSite;
-    Site *mp_rightFreeSite;
-
-    Extremity *mp_leftOccupiedNeighbour;
-    Extremity *mp_rightOccupiedNeighbour;
-
-    Crosslinker *mp_leftFullyConnectedCrosslinker;
-    Crosslinker *mp_rightFullyConnectedCrosslinker;
-*/
-
 public:
     Site(const bool isFree);
     ~Site();
+
+    // Default copy constructor used to initialise vector of Sites in the Microtubule class
 
     void connectCrosslinker(Crosslinker& crosslinkerToConnect, const Crosslinker::Terminus terminusToConnect);
 
@@ -38,8 +30,6 @@ public:
 
     bool isFree() const;
 
-/*    void setLeftFreeSite(const Site* p_leftNeighbour);
-    void setRightFreeSite(const Site* p_rightNeighbour);*/
 };
 
 #endif // SITE_HPP

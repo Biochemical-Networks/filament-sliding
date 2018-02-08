@@ -17,11 +17,6 @@ public:
 
     bool isConnected() const;
 
-    // CAN THE TWO FOLLOWING FUNCTIONS BE REPLACED WITH THE THIRD?
-    /*int32_t getPosition() const;
-
-    MicrotubuleType getMicrotubuleType() const;*/
-
     SiteLocation getSiteLocation() const;
 
     void connect(const SiteLocation siteToConnectTo);

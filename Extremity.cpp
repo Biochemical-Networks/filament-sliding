@@ -17,25 +17,6 @@ bool Extremity::isConnected() const
     return m_connected;
 }
 
-// CAN THE FOLLOWING TWO FUNCTIONS BE REPLACED WITH THE THIRD?
-/*int32_t Extremity::getPosition() const
-{
-    if (!m_connected)
-    {
-        throw GeneralException("Tried to get the position of a free crosslinker extremity");
-    }
-    return m_sitePosition;
-}
-
-Extremity::MicrotubuleType Extremity::getMicrotubuleType() const
-{
-    if (!m_connected)
-    {
-        throw GeneralException("Tried to get the microtubule type of a free crosslinker extremity");
-    }
-    return m_connectedTo;
-}*/
-
 SiteLocation Extremity::getSiteLocation() const
 {
     if (!m_connected)
