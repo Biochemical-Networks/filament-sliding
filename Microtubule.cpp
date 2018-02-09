@@ -157,43 +157,18 @@ std::vector<Crosslinker*> Microtubule::getPartialCrosslinkersCloseTo(const doubl
         // Now, we can assume there is at least one site (does not have to be free) within reach
         int32_t lowerSiteLabel = getFirstPositionCloseTo(position, maxStretch);
         int32_t upperSiteLabel = getLastPositionCloseTo(position, maxStretch);
-        std::vector<Crosslinker*> closePartials;
+        std::vector<Crosslinker*> partialsCloseby;
         for (int32_t posToCheck = lowerSiteLabel; posToCheck<=upperSiteLabel; ++posToCheck)
         {
             if(m_sites.at(posToCheck).isPartial())
             {
-                closePartials.push_back(m_sites.at(posToCheck).whichCrosslinkerIsBound());
+                partialsCloseby.push_back(m_sites.at(posToCheck).whichCrosslinkerIsBound());
             }
         }
-        return closePartials;
+        return partialsCloseby;
     }
 }
 
-/*void Microtubule::removePossibleConnectionsCloseTo(std::vector<PossibleFullConnection>& possibleConnectionsPassive,
-                                                   std::vector<PossibleFullConnection>& possibleConnectionsDual,
-                                                   std::vector<PossibleFullConnection>& possibleConnectionsActive,
-                                                   const double position,
-                                                   const double maxStretch) const
-{
-    if (!(position<=-maxStretch||position >= m_length + maxStretch)) // No sites close to a point outside of the microtubule
-    {
-        // Now, we can assume there is at least one site (does not have to be free) within reach
-        int32_t lowerSiteLabel = getFirstPositionCloseTo(position, maxStretch);
-        int32_t upperSiteLabel = getLastPositionCloseTo(position, maxStretch);
-        for (int32_t posToCheck = lowerSiteLabel; posToCheck<=upperSiteLabel; ++posToCheck)
-        {
-            if(m_sites.at(posToCheck).isPartial())
-            {
-                Crosslinker *p_partialCrosslinker = m_sites.at(posToCheck).whichCrosslinkerIsBound();
-                switch(p_partialCrosslinker->getType())
-                {
-                case Crosslinker::Type::PASSIVE:
-                    possibleConnectionsPassive.rem
-                }
-            }
-        }
-    }
-}*/
 
 
 

@@ -61,6 +61,10 @@ public:
 
     void findPossibleConnections(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
 
+    void updatePossibleConnectionsAfterAddition(Crosslinker*const p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
+
+    void updatePossibleConnectionsAfterRemoval(Crosslinker*const p_oldPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
+
 
 
 };
