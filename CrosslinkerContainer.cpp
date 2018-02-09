@@ -145,10 +145,10 @@ void CrosslinkerContainer::addPossibleConnections(Crosslinker*const p_newPartial
     switch(locationConnectedTo.microtubule)
     {
     case MicrotubuleType::FIXED:
-        mobileMicrotubule.addFreeSitesCloseTo(m_possibleConnections, p_newPartialCrosslinker, locationConnectedTo.position - mobileMicrotubule.getPosition(), maxStretch);
+        mobileMicrotubule.addPossibleConnectionsCloseTo(m_possibleConnections, p_newPartialCrosslinker, locationConnectedTo.position - mobileMicrotubule.getPosition(), maxStretch);
         break;
     case MicrotubuleType::MOBILE:
-        fixedMicrotubule.addFreeSitesCloseTo(m_possibleConnections, p_newPartialCrosslinker, locationConnectedTo.position, maxStretch);
+        fixedMicrotubule.addPossibleConnectionsCloseTo(m_possibleConnections, p_newPartialCrosslinker, locationConnectedTo.position, maxStretch);
         break;
     default:
         throw GeneralException("Wrong location stored and encountered in addPossibleConnections()");

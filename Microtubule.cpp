@@ -126,7 +126,7 @@ int32_t Microtubule::getNFreeSitesCloseTo(const double position, const double ma
 }
 
 // position is the position relative to the start of THIS microtubule, not the mobile one per se
-void Microtubule::addFreeSitesCloseTo(std::vector<PossibleFullConnection>& possibleConnections, Crosslinker* const oppositeCrosslinker, const double position, const double maxStretch) const
+void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnection>& possibleConnections, Crosslinker* const oppositeCrosslinker, const double position, const double maxStretch) const
 {
     if (!(position<=-maxStretch||position >= m_length + maxStretch))
     {
