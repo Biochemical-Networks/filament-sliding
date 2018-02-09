@@ -52,7 +52,8 @@ public:
     // The following functions are const, since they do not modify the Microtubule in any way; only the CrosslinkerContainer is changed
     void addPossibleConnectionsCloseTo(std::vector<PossibleFullConnection>& possibleConnections, Crosslinker* const oppositeCrosslinker, const double position, const double maxStretch) const;
 
-    void removePossibleConnectionsCloseTo(std::vector<PossibleFullConnection>& possibleConnections, Crosslinker* const oppositeCrosslinker, const double position, const double maxStretch) const;
+    //void removePossibleConnectionsCloseTo(std::vector<PossibleFullConnection>& possibleConnections, Crosslinker* const oppositeCrosslinker, const double position, const double maxStretch) const;
+    std::vector<Crosslinker*> getPartialCrosslinkersCloseTo(const double position, const double maxStretch) const;
 
 };
 

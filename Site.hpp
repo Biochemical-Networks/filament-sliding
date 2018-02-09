@@ -30,6 +30,10 @@ public:
 
     bool isFree() const;
 
+    bool isPartial() const;
+
+    Crosslinker* whichCrosslinkerIsBound() const;
+
 };
 
 #endif // SITE_HPP

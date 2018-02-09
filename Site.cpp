@@ -43,3 +43,18 @@ bool Site::isFree() const
 {
     return m_isFree;
 }
+
+bool Site::isPartial() const
+{
+    if (m_isFree)
+    {
+        return false;
+    }
+    return mp_connectedCrosslinker->isPartial();
+}
+
+
+Crosslinker* Site::whichCrosslinkerIsBound() const
+{
+    return mp_connectedCrosslinker;
+}
