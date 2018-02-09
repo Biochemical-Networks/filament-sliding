@@ -63,7 +63,7 @@ public:
 
     void updatePossibleConnectionsAfterAddition(Crosslinker*const p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
 
-    void updatePossibleConnectionsAfterRemoval(Crosslinker*const p_oldPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
+    void updatePossibleConnectionsAfterRemoval(Crosslinker*const p_oldPartialCrosslinker, SiteLocation locationOldConnection, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
 
 
 

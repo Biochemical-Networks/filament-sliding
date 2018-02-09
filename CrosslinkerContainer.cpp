@@ -135,10 +135,6 @@ void CrosslinkerContainer::findPossibleConnections(const Microtubule& fixedMicro
  */
 void CrosslinkerContainer::addPossibleConnections(Crosslinker*const p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch)
 {
-    if(!(p_newPartialCrosslinker->isPartial()))
-    {
-        throw GeneralException("The Crosslinker pointer passed to CrosslinkerContainer::addPossibleConnections() is not partial yet, which is assumed.");
-    }
     SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundPositionWhenPartiallyConnected();
     // Check the free sites on the opposite microtubule!
     // Microtubule.getFreeSitesCloseTo changes possibleConnections through a reference, such that no extra vectors need to be made
@@ -157,11 +153,6 @@ void CrosslinkerContainer::addPossibleConnections(Crosslinker*const p_newPartial
 
 void CrosslinkerContainer::removePossibleConnections(Crosslinker*const p_oldPartialCrosslinker, const double maxStretch)
 {
-    if((p_oldPartialCrosslinker->isPartial()))
-    {
-        throw GeneralException("The Crosslinker pointer passed to CrosslinkerContainer::removePossibleConnections() is still partial. Change it first.");
-    }
-
     // Use a lambda expression as a predicate for std::remove_if
     // erase-remove idiom erases all elements complying to the predicate
     m_possibleConnections.erase(std::remove_if(m_possibleConnections.begin(),m_possibleConnections.end(),
@@ -180,5 +171,71 @@ void CrosslinkerContainer::removePossibleConnections(Crosslinker*const p_oldPart
                                                     }
                                                 }), m_possibleConnections.end());
 
+}
+
+
+void CrosslinkerContainer::updatePossibleConnectionsAfterAddition(Crosslinker*const p_newPartialCrosslinker,
+                                                                  const Microtubule& fixedMicrotubule,
+                                                                  const MobileMicrotubule& mobileMicrotubule,
+                                                                  const double maxStretch)
+{
+    if(!(p_newPartialCrosslinker->isPartial()))
+    {
+        throw GeneralException("updatePossibleConnectionsAfterAddition was called on a crosslinker that is not partial.");
+    }
+    /* Two types of connections are changed:
+     * connections from the new partial crosslinker to the opposite microtubule are added,
+     * and old possible connections to the site are removed if the site was free.
+     */
+    addPossibleConnections(p_newPartialCrosslinker, fixedMicrotubule, mobileMicrotubule, maxStretch);
+
+    SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundPositionWhenPartiallyConnected();
+    std::vector<Crosslinker*> oppositePartialCrosslinkers;
+
+    switch(locationConnectedTo.microtubule)
+    {
+    case MicrotubuleType::FIXED:
+        oppositePartialCrosslinkers = mobileMicrotubule.getPartialCrosslinkersCloseTo(locationConnectedTo.position - mobileMicrotubule.getPosition(), maxStretch);
+        break;
+    case MicrotubuleType::MOBILE:
+        oppositePartialCrosslinkers = fixedMicrotubule.getPartialCrosslinkersCloseTo(locationConnectedTo.position, maxStretch);
+        break;
+    default:
+        throw GeneralException("Wrong location stored and encountered in updatePossibleConnectionsAfterAddition()");
+    }
+
+    for (Crosslinker* p_linker : oppositePartialCrosslinkers)
+    {
+        // Only renew the system for crosslinkers that have the same type as stored in this container
+        if ((p_linker->getType())==(m_crosslinkers.front().getType()))
+        {
+            // First remove the connections involving the linker, and then add them again, where the possibly newly occupied site is taken into account
+            removePossibleConnections(p_linker, maxStretch);
+            addPossibleConnections(p_linker, fixedMicrotubule, mobileMicrotubule, maxStretch);
+        }
+    }
+}
+
+void CrosslinkerContainer::updatePossibleConnectionsAfterRemoval(Crosslinker*const p_oldPartialCrosslinker,
+                                                                 SiteLocation locationOldConnection,
+                                                                 const Microtubule& fixedMicrotubule,
+                                                                 const MobileMicrotubule& mobileMicrotubule,
+                                                                 const double maxStretch)
+{
+    removePossibleConnections(p_oldPartialCrosslinker, maxStretch);
+
+    std::vector<Crosslinker*> oppositePartialCrosslinkers;
+
+    switch(locationOldConnection.microtubule)
+    {
+    case MicrotubuleType::FIXED:
+        oppositePartialCrosslinkers = mobileMicrotubule.getPartialCrosslinkersCloseTo(locationOldConnection.position - mobileMicrotubule.getPosition(), maxStretch);
+        break;
+    case MicrotubuleType::MOBILE:
+        oppositePartialCrosslinkers = fixedMicrotubule.getPartialCrosslinkersCloseTo(locationOldConnection.position, maxStretch);
+        break;
+    default:
+        throw GeneralException("Wrong location stored and encountered in updatePossibleConnectionsAfterAddition()");
+    }
 }
 
