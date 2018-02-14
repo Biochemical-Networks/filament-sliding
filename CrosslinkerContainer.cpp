@@ -199,10 +199,10 @@ void CrosslinkerContainer::updatePossibleConnectionsAfterAddition(Crosslinker*co
     switch(locationConnectedTo.microtubule)
     {
     case MicrotubuleType::FIXED:
-        oppositePartialCrosslinkers = mobileMicrotubule.getPartialCrosslinkersCloseTo(locationConnectedTo.position - mobileMicrotubule.getPosition(), maxStretch);
+        oppositePartialCrosslinkers = mobileMicrotubule.getPartialCrosslinkersCloseTo(locationConnectedTo.position - mobileMicrotubule.getPosition(), maxStretch, m_linkerType);
         break;
     case MicrotubuleType::MOBILE:
-        oppositePartialCrosslinkers = fixedMicrotubule.getPartialCrosslinkersCloseTo(locationConnectedTo.position, maxStretch);
+        oppositePartialCrosslinkers = fixedMicrotubule.getPartialCrosslinkersCloseTo(locationConnectedTo.position, maxStretch, m_linkerType);
         break;
     default:
         throw GeneralException("Wrong location stored and encountered in updatePossibleConnectionsAfterAddition()");
@@ -210,13 +210,10 @@ void CrosslinkerContainer::updatePossibleConnectionsAfterAddition(Crosslinker*co
 
     for (Crosslinker* p_linker : oppositePartialCrosslinkers)
     {
-        // Only renew the system for crosslinkers that have the same type as stored in this container
-        if ((p_linker->getType())==m_linkerType)
-        {
-            // First remove the connections involving the linker, and then add them again, where the possibly newly occupied site is taken into account
-            removePossibleConnections(p_linker, maxStretch);
-            addPossibleConnections(p_linker, fixedMicrotubule, mobileMicrotubule, maxStretch);
-        }
+        // oppositePartialCrosslinkers are guaranteed to be of m_linkerType
+        // First remove the connections involving the linker, and then add them again, where the possibly newly occupied site is taken into account
+        removePossibleConnections(p_linker, maxStretch);
+        addPossibleConnections(p_linker, fixedMicrotubule, mobileMicrotubule, maxStretch);
     }
 }
 
@@ -241,10 +238,10 @@ void CrosslinkerContainer::updatePossibleConnectionsAfterRemoval(Crosslinker*con
     switch(locationOldConnection.microtubule)
     {
     case MicrotubuleType::FIXED:
-        oppositePartialCrosslinkers = mobileMicrotubule.getPartialCrosslinkersCloseTo(locationOldConnection.position - mobileMicrotubule.getPosition(), maxStretch);
+        oppositePartialCrosslinkers = mobileMicrotubule.getPartialCrosslinkersCloseTo(locationOldConnection.position - mobileMicrotubule.getPosition(), maxStretch, m_linkerType);
         break;
     case MicrotubuleType::MOBILE:
-        oppositePartialCrosslinkers = fixedMicrotubule.getPartialCrosslinkersCloseTo(locationOldConnection.position, maxStretch);
+        oppositePartialCrosslinkers = fixedMicrotubule.getPartialCrosslinkersCloseTo(locationOldConnection.position, maxStretch, m_linkerType);
         break;
     default:
         throw GeneralException("Wrong location stored and encountered in updatePossibleConnectionsAfterRemoval()");
@@ -252,13 +249,10 @@ void CrosslinkerContainer::updatePossibleConnectionsAfterRemoval(Crosslinker*con
 
     for (Crosslinker* p_linker : oppositePartialCrosslinkers)
     {
-        // Only renew the system for crosslinkers that have the same type as stored in this container
-        if ((p_linker->getType())==m_linkerType)
-        {
-            // First remove the connections involving the linker, and then add them again, where the possibly freed site is taken into account
-            removePossibleConnections(p_linker, maxStretch);
-            addPossibleConnections(p_linker, fixedMicrotubule, mobileMicrotubule, maxStretch);
-        }
+        // oppositePartialCrosslinkers are guaranteed to be of m_linkerType
+        // First remove the connections involving the linker, and then add them again, where the possibly freed site is taken into account
+        removePossibleConnections(p_linker, maxStretch);
+        addPossibleConnections(p_linker, fixedMicrotubule, mobileMicrotubule, maxStretch);
     }
 }
 

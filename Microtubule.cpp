@@ -146,7 +146,7 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
     }
 }
 
-std::vector<Crosslinker*> Microtubule::getPartialCrosslinkersCloseTo(const double position, const double maxStretch) const
+std::vector<Crosslinker*> Microtubule::getPartialCrosslinkersCloseTo(const double position, const double maxStretch, const Crosslinker::Type typeToCheck) const
 {
     if (position<=-maxStretch||position >= m_length + maxStretch) // No sites close to a point outside of the microtubule
     {
@@ -160,7 +160,7 @@ std::vector<Crosslinker*> Microtubule::getPartialCrosslinkersCloseTo(const doubl
         std::vector<Crosslinker*> partialsCloseby;
         for (int32_t posToCheck = lowerSiteLabel; posToCheck<=upperSiteLabel; ++posToCheck)
         {
-            if(m_sites.at(posToCheck).isPartial())
+            if(( m_sites.at(posToCheck).isPartial()) && (m_sites.at(posToCheck).whichCrosslinkerIsBound()->getType()==typeToCheck) )
             {
                 partialsCloseby.push_back(m_sites.at(posToCheck).whichCrosslinkerIsBound());
             }
