@@ -14,6 +14,7 @@
 class CrosslinkerContainer
 {
 private:
+    Crosslinker::Type m_linkerType;
     std::vector<Crosslinker> m_crosslinkers; // The vector manages existence of the crosslinkers.
 
     int32_t m_nFreeCrosslinkers;
@@ -36,7 +37,7 @@ private:
     void removePossibleConnections(Crosslinker*const p_oldPartialCrosslinker, const double maxStretch);
 
 public:
-    CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker);
+    CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker, const Crosslinker::Type linkerType);
     ~CrosslinkerContainer();
     // Delete the default copy constructor and assignment operator, there is no use for them
     CrosslinkerContainer(const CrosslinkerContainer&) = delete;

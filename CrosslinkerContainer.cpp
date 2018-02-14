@@ -13,8 +13,9 @@
 #include <algorithm>
 #include <utility>
 
-CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker)
-    :   m_crosslinkers(nCrosslinkers, defaultCrosslinker)
+CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker, const Crosslinker::Type linkerType)
+    :   m_linkerType(linkerType),
+        m_crosslinkers(nCrosslinkers, defaultCrosslinker)
 {
     // Fill the freeCrosslinkers deque with pointers to all crosslinkers: these are initially free
     for (int32_t i=0; i<nCrosslinkers; ++i)
@@ -187,7 +188,10 @@ void CrosslinkerContainer::updatePossibleConnectionsAfterAddition(Crosslinker*co
      * connections from the new partial crosslinker to the opposite microtubule are added,
      * and old possible connections to the site are removed if the site was free.
      */
-    addPossibleConnections(p_newPartialCrosslinker, fixedMicrotubule, mobileMicrotubule, maxStretch);
+    if(p_newPartialCrosslinker->getType()==m_linkerType)
+    {
+        addPossibleConnections(p_newPartialCrosslinker, fixedMicrotubule, mobileMicrotubule, maxStretch);
+    }
 
     SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundPositionWhenPartiallyConnected();
     std::vector<Crosslinker*> oppositePartialCrosslinkers;
@@ -207,7 +211,7 @@ void CrosslinkerContainer::updatePossibleConnectionsAfterAddition(Crosslinker*co
     for (Crosslinker* p_linker : oppositePartialCrosslinkers)
     {
         // Only renew the system for crosslinkers that have the same type as stored in this container
-        if ((p_linker->getType())==(m_crosslinkers.front().getType()))
+        if ((p_linker->getType())==m_linkerType)
         {
             // First remove the connections involving the linker, and then add them again, where the possibly newly occupied site is taken into account
             removePossibleConnections(p_linker, maxStretch);
@@ -226,7 +230,11 @@ void CrosslinkerContainer::updatePossibleConnectionsAfterRemoval(Crosslinker*con
     {
         throw GeneralException("updatePossibleConnectionsAfterRemoval was called on a crosslinker that is still partial.");
     }
-    removePossibleConnections(p_oldPartialCrosslinker, maxStretch);
+
+    if(p_oldPartialCrosslinker->getType() == m_linkerType)
+    {
+        removePossibleConnections(p_oldPartialCrosslinker, maxStretch);
+    }
 
     std::vector<Crosslinker*> oppositePartialCrosslinkers;
 
@@ -245,7 +253,7 @@ void CrosslinkerContainer::updatePossibleConnectionsAfterRemoval(Crosslinker*con
     for (Crosslinker* p_linker : oppositePartialCrosslinkers)
     {
         // Only renew the system for crosslinkers that have the same type as stored in this container
-        if ((p_linker->getType())==(m_crosslinkers.front().getType()))
+        if ((p_linker->getType())==m_linkerType)
         {
             // First remove the connections involving the linker, and then add them again, where the possibly freed site is taken into account
             removePossibleConnections(p_linker, maxStretch);
