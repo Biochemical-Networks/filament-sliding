@@ -19,6 +19,7 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
                             const int32_t nDualCrosslinkers,
                             const int32_t nPassiveCrosslinkers)
     :   m_maxStretch(m_maxStretchPerLatticeSpacing*latticeSpacing),
+        m_latticeSpacing(latticeSpacing),
         m_fixedMicrotubule(MicrotubuleType::FIXED, lengthFixedMicrotubule, latticeSpacing),
         m_mobileMicrotubule(lengthMobileMicrotubule, latticeSpacing),
         m_nPassiveCrosslinkers(nPassiveCrosslinkers),
@@ -177,7 +178,7 @@ void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCr
 void SystemState::disconnectFullyConnectedCrosslinker(Crosslinker& disconnectingCrosslinker, const Crosslinker::Terminus terminusToDisconnect)
 {
     // Retrieve the microtubule and position on that microtubule where the crosslinker is connected
-    SiteLocation locationToDisconnectFrom = disconnectingCrosslinker.getOneBindingPositionWhenFullyConnected(terminusToDisconnect);
+    SiteLocation locationToDisconnectFrom = disconnectingCrosslinker.getOneBoundPositionWhenFullyConnected(terminusToDisconnect);
 
     Crosslinker::Type type = disconnectingCrosslinker.getType();
 
@@ -384,7 +385,7 @@ int32_t SystemState::getNSitesToBindPartial(const Crosslinker::Type type) const
             break;
     }
 
-    return containerToCheck->getNSitesToBindPartial(m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch);
+    return containerToCheck->getNSitesToBindPartial(m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
 }
 
 void SystemState::findPossibleConnections(const Crosslinker::Type type)
@@ -406,7 +407,7 @@ void SystemState::findPossibleConnections(const Crosslinker::Type type)
             throw GeneralException("An incorrect crosslinker type was passed to getNSitesToBindPartial()");
             break;
     }
-    containerToCheck->findPossibleConnections(m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch);
+    containerToCheck->findPossibleConnections(m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
 }
 
 

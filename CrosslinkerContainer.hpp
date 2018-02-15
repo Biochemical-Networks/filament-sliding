@@ -32,9 +32,13 @@ private:
     std::vector<PossibleFullConnection> m_possibleConnections;
 
     // The following functions are used internally; cannot be called by public, m_possibleConnections is only altered through calls to (dis)connect functions, or to findPossibleConnections
-    void addPossibleConnections(Crosslinker*const p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
+    void addPossibleConnections(Crosslinker*const p_newPartialCrosslinker,
+                                const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
-    void removePossibleConnections(Crosslinker*const p_oldPartialCrosslinker, const double maxStretch);
+    void removePossibleConnections(Crosslinker*const p_oldPartialCrosslinker);
+
+    void updatePossibleConnectionsOppositeTo(Crosslinker*const p_partialCrosslinker, SiteLocation locationConnection,
+                                             const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker, const Crosslinker::Type linkerType);
@@ -58,16 +62,21 @@ public:
     int32_t getNPartialCrosslinkers() const;
     int32_t getNFullCrosslinkers() const;
 
-    int32_t getNSitesToBindPartial(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch) const;
+    int32_t getNSitesToBindPartial(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing) const;
 
-    void findPossibleConnections(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
+    void findPossibleConnections(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
-    void updatePossibleConnectionsAfterAddition(Crosslinker*const p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
+    void updatePossibleConnectionsFreeToPartial(Crosslinker*const p_newPartialCrosslinker,
+                                                const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
-    void updatePossibleConnectionsAfterRemoval(Crosslinker*const p_oldPartialCrosslinker, SiteLocation locationOldConnection, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch);
+    void updatePossibleConnectionsPartialToFree(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection,
+                                               const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
+    void updatePossibleConnectionsPartialToFull(Crosslinker*const p_newPartialCrosslinker, const SiteLocation locationNewConnection,
+                                                const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
-
+    void updatePossibleConnectionsFullToPartial(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection,
+                                                const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 };
 
 #endif // CROSSLINKERCONTAINER_HPP

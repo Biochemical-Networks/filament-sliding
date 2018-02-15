@@ -24,6 +24,7 @@ private:
     constexpr static double m_maxStretchPerLatticeSpacing=1.499999999999999;
     constexpr static int32_t m_maxNumberOfCloseSites = static_cast<int32_t> (std::ceil(2*m_maxStretchPerLatticeSpacing));
     const double m_maxStretch; // To be defined in terms of the lattice spacing and m_maxStretchPerLatticeSpacing
+    const double m_latticeSpacing;
 
     Microtubule m_fixedMicrotubule;
     MobileMicrotubule m_mobileMicrotubule;

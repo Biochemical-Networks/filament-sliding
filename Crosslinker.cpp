@@ -20,9 +20,19 @@ bool Crosslinker::isConnected() const
     return (m_head.isConnected()||m_tail.isConnected());
 }
 
+bool Crosslinker::isFree() const
+{
+    return (!isConnected());
+}
+
 bool Crosslinker::isPartial() const
 {
     return (m_head.isConnected() != m_tail.isConnected());
+}
+
+bool Crosslinker::isFull() const
+{
+    return (m_head.isConnected()&&m_tail.isConnected());
 }
 
 Crosslinker::Type Crosslinker::getType() const
@@ -185,7 +195,7 @@ SiteLocation Crosslinker::getBoundPositionWhenPartiallyConnected() const
     }
 }
 
-SiteLocation Crosslinker::getOneBindingPositionWhenFullyConnected(const Crosslinker::Terminus terminus) const
+SiteLocation Crosslinker::getOneBoundPositionWhenFullyConnected(const Crosslinker::Terminus terminus) const
 {
     bool fullyConnected = (m_head.isConnected())&&(m_tail.isConnected());
 
@@ -203,7 +213,7 @@ SiteLocation Crosslinker::getOneBindingPositionWhenFullyConnected(const Crosslin
             return m_head.getSiteLocation();
             break;
         default:
-            throw GeneralException("getOneBindingPositionWhenFullyConnected() was passed a wrong Terminus.");
+            throw GeneralException("getOneBoundPositionWhenFullyConnected() was passed a wrong Terminus.");
     }
 }
 

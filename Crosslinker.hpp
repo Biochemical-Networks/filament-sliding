@@ -35,7 +35,11 @@ public:
 
     bool isConnected() const;
 
+    bool isFree() const;
+
     bool isPartial() const;
+
+    bool isFull() const;
 
     Type getType() const;
 
@@ -59,7 +63,7 @@ public:
 
     SiteLocation getBoundPositionWhenPartiallyConnected() const;
 
-    SiteLocation getOneBindingPositionWhenFullyConnected(const Crosslinker::Terminus terminus) const;
+    SiteLocation getOneBoundPositionWhenFullyConnected(const Crosslinker::Terminus terminus) const;
 
 /*    void setHeadPosition(const int32_t sitePosition);
     void setTailPosition(const int32_t sitePosition);*/
