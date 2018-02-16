@@ -177,7 +177,7 @@ Crosslinker::Terminus Crosslinker::getFreeTerminusWhenPartiallyConnected() const
     }
 }
 
-SiteLocation Crosslinker::getBoundPositionWhenPartiallyConnected() const
+SiteLocation Crosslinker::getBoundLocationWhenPartiallyConnected() const
 {
     bool partialWithTail = (!m_head.isConnected())&&(m_tail.isConnected());
     bool partialWithHead = (m_head.isConnected())&&(!m_tail.isConnected());
@@ -195,7 +195,7 @@ SiteLocation Crosslinker::getBoundPositionWhenPartiallyConnected() const
     }
 }
 
-SiteLocation Crosslinker::getOneBoundPositionWhenFullyConnected(const Crosslinker::Terminus terminus) const
+SiteLocation Crosslinker::getOneBoundLocationWhenFullyConnected(const Crosslinker::Terminus terminus) const
 {
     bool fullyConnected = (m_head.isConnected())&&(m_tail.isConnected());
 

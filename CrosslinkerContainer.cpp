@@ -99,7 +99,7 @@ int32_t CrosslinkerContainer::getNSitesToBindPartial(const Microtubule& fixedMic
     // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
     for(auto p_linker : m_partialCrosslinkers)
     {
-        SiteLocation locationConnectedTo = p_linker->getBoundPositionWhenPartiallyConnected();
+        SiteLocation locationConnectedTo = p_linker->getBoundLocationWhenPartiallyConnected();
 
         // Check the free sites on the opposite microtubule!
         switch(locationConnectedTo.microtubule)
@@ -140,7 +140,7 @@ void CrosslinkerContainer::addPossibleConnections(Crosslinker*const p_newPartial
                                                   const double maxStretch,
                                                   const double latticeSpacing)
 {
-    SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundPositionWhenPartiallyConnected();
+    SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundLocationWhenPartiallyConnected();
     // Check the free sites on the opposite microtubule!
     // Microtubule.getFreeSitesCloseTo changes possibleConnections through a reference, such that no extra vectors need to be made
     switch(locationConnectedTo.microtubule)
@@ -198,7 +198,7 @@ void CrosslinkerContainer::updatePossibleConnectionsFreeToPartial(Crosslinker*co
         addPossibleConnections(p_newPartialCrosslinker, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
     }
 
-    SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundPositionWhenPartiallyConnected();
+    SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundLocationWhenPartiallyConnected();
 
     updatePossibleConnectionsOppositeTo(p_newPartialCrosslinker, locationConnectedTo, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
 }
@@ -317,3 +317,9 @@ void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const
     }
 }
 
+#ifdef MYDEBUG
+Crosslinker* CrosslinkerContainer::TESTgetAFullCrosslinker(const int32_t which) const
+{
+    return m_fullCrosslinkers.at(which);
+}
+#endif //MYDEBUG

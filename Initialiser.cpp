@@ -30,6 +30,10 @@ Initialiser::Initialiser(const double initialPositionMicrotubule, const double f
     {
         m_initialCrosslinkerDistribution = Initialiser::InitialCrosslinkerDistribution::TAILSMOBILE;
     }
+    else if (initialCrosslinkerDistributionString=="TEST")
+    {
+        m_initialCrosslinkerDistribution = Initialiser::InitialCrosslinkerDistribution::TEST;
+    }
     else
     {
         throw GeneralException("The given initialCrosslinkerDistributionString does not hold a recognised value.");
@@ -59,7 +63,22 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
 
     std::vector<int32_t> positionsToConnect(nSitesOverlap);
     std::iota(positionsToConnect.begin(), positionsToConnect.end(), 0); // Fill vector with 0, 1, ..., n-1, such that you have a list of all positions
-    std::shuffle(positionsToConnect.begin(), positionsToConnect.end(), generator.getBareGenerator()); // Shuffle the positions
+    switch(m_initialCrosslinkerDistribution)
+    {
+        case InitialCrosslinkerDistribution::RANDOM:
+        case InitialCrosslinkerDistribution::HEADSMOBILE:
+        case InitialCrosslinkerDistribution::TAILSMOBILE:
+            std::shuffle(positionsToConnect.begin(), positionsToConnect.end(), generator.getBareGenerator()); // Shuffle the positions
+            break;
+        case InitialCrosslinkerDistribution::TEST:
+            // Don't shuffle: linkers get connected from the beginning, such that the initial distribution is deterministic
+            // Passives are connected first, then duals, then actives
+            break;
+        default:
+            throw GeneralException("Caller of initialiseCrosslinkers() asked for an unsupported initial crosslinker distribution");
+            break;
+    }
+
 
     int32_t nSitesToConnect = static_cast<int32_t> (std::ceil(m_fractionOverlapSitesConnected * nSitesOverlap));
 
@@ -201,6 +220,8 @@ Crosslinker::Terminus Initialiser::terminusToConnectToFixedMicrotubule(RandomGen
         case InitialCrosslinkerDistribution::TAILSMOBILE:
             return Crosslinker::Terminus::HEAD;
             break;
+        case InitialCrosslinkerDistribution::TEST:
+            return Crosslinker::Terminus::TAIL;
         default:
             throw GeneralException("Caller asked for an unsupported initial crosslinker distribution");
             break;

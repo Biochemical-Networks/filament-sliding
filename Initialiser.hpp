@@ -15,7 +15,8 @@ public:
     {
         RANDOM,
         HEADSMOBILE,
-        TAILSMOBILE
+        TAILSMOBILE,
+        TEST
     };
 private:
     const double m_initialPositionMicrotubule;

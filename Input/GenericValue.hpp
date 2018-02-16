@@ -76,7 +76,7 @@ public:
 std::ostream& operator<< (std::ostream& out, const GenericValue &genericValue);
 std::istream& operator>> (std::istream& in, GenericValue &genericValue);
 
-const AllowedTypes convertToType(const std::string &type); // Function to convert some allowed string values to AllowedTypes
+AllowedTypes convertToType(const std::string &type); // Function to convert some allowed string values to AllowedTypes
 
 
 #endif // GENERICVALUE_HPP

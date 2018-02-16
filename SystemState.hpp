@@ -103,6 +103,9 @@ public:
 
     void findPossibleConnections(const Crosslinker::Type type);
 
+    #ifdef MYDEBUG
+    void TESTunbindAFullCrosslinker(const int32_t which, const Crosslinker::Terminus terminusToDisconnect);
+    #endif //MYDEBUG
 };
 
 #endif // SYSTEMSTATE_HPP

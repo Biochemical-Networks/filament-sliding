@@ -32,7 +32,7 @@ ParameterMap::ParameterMap()
     defineParameter("numberDualCrosslinkers", 5000, "crosslinkers", ">=0");
     defineParameter("numberPassiveCrosslinkers", 5000, "crosslinkers", ">=0");
     defineParameter("fractionOverlapSitesConnected", 1.0, "unitless", ">0");
-    defineParameter("initialCrosslinkerDistribution", "RANDOM", "unitless", "RANDOM,HEADSMOBILE,TAILSMOBILE"); // Can only hold the values set by Initialiser::InitialCrosslinkerDistribution
+    defineParameter("initialCrosslinkerDistribution", "RANDOM", "unitless", "RANDOM,HEADSMOBILE,TAILSMOBILE,TEST"); // Can only hold the values set by Initialiser::InitialCrosslinkerDistribution
 
     // Initial state parameters
     defineParameter("initialPositionMicrotubule", 0., "micron"); // The position of the mobile microtubule relative to the fixed one, where 0. means that the two have the same (left) boundary position

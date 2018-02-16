@@ -61,9 +61,9 @@ public:
 
     Terminus getFreeTerminusWhenPartiallyConnected() const;
 
-    SiteLocation getBoundPositionWhenPartiallyConnected() const;
+    SiteLocation getBoundLocationWhenPartiallyConnected() const;
 
-    SiteLocation getOneBoundPositionWhenFullyConnected(const Crosslinker::Terminus terminus) const;
+    SiteLocation getOneBoundLocationWhenFullyConnected(const Crosslinker::Terminus terminus) const;
 
 /*    void setHeadPosition(const int32_t sitePosition);
     void setTailPosition(const int32_t sitePosition);*/

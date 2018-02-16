@@ -8,7 +8,7 @@
 #include "PossibleFullConnection.hpp"
 
 #include <algorithm> // max/min
-#include <cmath> // ceil/floor
+#include <cmath> // ceil/floor/abs
 #include <deque>
 
 
@@ -38,6 +38,10 @@ SystemState::~SystemState()
 
 void SystemState::setMicrotubulePosition(const double initialPosition)
 {
+    if (m_nCrosslinkers!=getNFreeCrosslinkers())
+    {
+        throw GeneralException("setMicrotubulePosition() was called on a system which has connected linkers");
+    }
     m_mobileMicrotubule.setPosition(initialPosition);
 }
 
@@ -98,7 +102,7 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type,
 
 void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnectingCrosslinker)
 {
-    SiteLocation locationToDisconnectFrom = disconnectingCrosslinker.getBoundPositionWhenPartiallyConnected();
+    SiteLocation locationToDisconnectFrom = disconnectingCrosslinker.getBoundLocationWhenPartiallyConnected();
 
     Crosslinker::Type type = disconnectingCrosslinker.getType();
 
@@ -145,18 +149,32 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
 
 void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCrosslinker, const SiteLocation locationOppositeMicrotubule)
 {
+    // Test whether the connection is not outside of the range set by m_maxStretch
+    SiteLocation locationThisMicrotubule = connectingCrosslinker.getBoundLocationWhenPartiallyConnected();
+    double positionOnFixedMicrotubule;
+    double positionOnMobileMicrotubule;
+
     Microtubule *p_microtubuleToConnect = nullptr;
     switch(locationOppositeMicrotubule.microtubule)
     {
         case MicrotubuleType::FIXED:
             p_microtubuleToConnect = &m_fixedMicrotubule;
+            positionOnFixedMicrotubule = locationOppositeMicrotubule.position*m_latticeSpacing;
+            positionOnMobileMicrotubule = locationThisMicrotubule.position*m_latticeSpacing + m_mobileMicrotubule.getPosition();
             break;
         case MicrotubuleType::MOBILE:
             p_microtubuleToConnect = &m_mobileMicrotubule;
+            positionOnFixedMicrotubule = locationThisMicrotubule.position*m_latticeSpacing;
+            positionOnMobileMicrotubule = locationOppositeMicrotubule.position*m_latticeSpacing + m_mobileMicrotubule.getPosition();
             break;
         default:
             throw GeneralException("An incorrect microtubule type was passed to connectCrosslinker()");
             break;
+    }
+
+    if(std::abs(positionOnFixedMicrotubule-positionOnMobileMicrotubule)>=m_maxStretch)
+    {
+        throw GeneralException("A full connection attempt was made creating an overstretched crosslinker");
     }
 
     Crosslinker::Terminus terminusToConnect = connectingCrosslinker.getFreeTerminusWhenPartiallyConnected();
@@ -194,7 +212,7 @@ void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCr
 void SystemState::disconnectFullyConnectedCrosslinker(Crosslinker& disconnectingCrosslinker, const Crosslinker::Terminus terminusToDisconnect)
 {
     // Retrieve the microtubule and position on that microtubule where the crosslinker is connected
-    SiteLocation locationToDisconnectFrom = disconnectingCrosslinker.getOneBoundPositionWhenFullyConnected(terminusToDisconnect);
+    SiteLocation locationToDisconnectFrom = disconnectingCrosslinker.getOneBoundLocationWhenFullyConnected(terminusToDisconnect);
 
     Crosslinker::Type type = disconnectingCrosslinker.getType();
 
@@ -219,6 +237,7 @@ void SystemState::disconnectFullyConnectedCrosslinker(Crosslinker& disconnecting
     }
 
     // Disconnect in administration of microtubule
+    // Microtubules only keep track whether sites are free or occupied, and which crosslinker is connected to where.
     switch(locationToDisconnectFrom.microtubule)
     {
         case MicrotubuleType::FIXED:
@@ -255,6 +274,7 @@ void SystemState::fullyConnectFreeCrosslinker(const Crosslinker::Type type,
 
 void SystemState::update(const double changeMicrotubulePosition)
 {
+    // TODO: TEST WHETHER THE CHANGE IS ALLOWED GIVEN THE CURRENT STATE OF THE CROSSLINKERS
     m_mobileMicrotubule.updatePosition(changeMicrotubulePosition);
 }
 
@@ -431,4 +451,12 @@ void SystemState::findPossibleConnections(const Crosslinker::Type type)
     containerToCheck->findPossibleConnections(m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
 }
 
+#ifdef MYDEBUG
+void SystemState::TESTunbindAFullCrosslinker(const int32_t which, const Crosslinker::Terminus terminusToDisconnect)
+{
+    Crosslinker* p_linker = m_passiveCrosslinkers.TESTgetAFullCrosslinker(which);
+    disconnectFullyConnectedCrosslinker(*p_linker, terminusToDisconnect);
+
+}
+#endif //MYDEBUG
 

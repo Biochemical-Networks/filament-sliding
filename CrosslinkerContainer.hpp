@@ -77,6 +77,10 @@ public:
 
     void updatePossibleConnectionsFullToPartial(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection,
                                                 const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+
+    #ifdef MYDEBUG
+    Crosslinker* TESTgetAFullCrosslinker(const int32_t which) const;
+    #endif //MYDEBUG
 };
 
 #endif // CROSSLINKERCONTAINER_HPP

@@ -181,7 +181,7 @@ std::istream& operator>> (std::istream& in, GenericValue &genericValue)
 
 
 // Function to convert some allowed string values to AllowedTypes
-const AllowedTypes convertToType(const std::string &type)
+AllowedTypes convertToType(const std::string &type)
 {
     AllowedTypes givenType;
     if (type == "string" || type == "STRING" || type == "String"

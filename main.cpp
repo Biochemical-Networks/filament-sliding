@@ -119,12 +119,32 @@ int main()
 
     initialiser.initialise(systemState, generator);
 
-    propagator.run(systemState, generator, output);
+    //propagator.run(systemState, generator, output);
+
 
     // TEST
+    #ifdef MYDEBUG
+
+    // MAKE SURE THAT THE MICROTUBULE POSITION IS NOT CHANGED BEFORE: THIS WILL NOT TAKE INTO ACCOUNT THE CROSSLINKERS YET
+    // To this end, comment out the propagate part
+    std::cout << "Overlap:\nFirst site fixed:"<<systemState.firstSiteOverlapFixed()
+              << "\nLast site fixed:"<<systemState.lastSiteOverlapFixed()
+              << "\nFirst site mobile:"<<systemState.firstSiteOverlapMobile()
+              << "\nLast site mobile:"<<systemState.lastSiteOverlapMobile()
+              << "\nNumber of sites overlap fixed:"<<systemState.getNSitesOverlapFixed()
+              << "\nNumber of sites overlap mobile:"<<systemState.getNSitesOverlapMobile()
+              <<'\n';
+
     systemState.findPossibleConnections(Crosslinker::Type::PASSIVE);
 
-    std::cout << systemState.getNSitesToBindPartial(Crosslinker::Type::PASSIVE);
+    std::cout << systemState.getNSitesToBindPartial(Crosslinker::Type::PASSIVE)<<std::endl;
+
+    systemState.TESTunbindAFullCrosslinker(0, Crosslinker::Terminus::TAIL);
+    systemState.TESTunbindAFullCrosslinker(1, Crosslinker::Terminus::TAIL);
+
+    std::cout << systemState.getNSitesToBindPartial(Crosslinker::Type::PASSIVE)<<std::endl;
+
+    #endif //MYDEBUG
     // END_TEST
 
     return 0;
