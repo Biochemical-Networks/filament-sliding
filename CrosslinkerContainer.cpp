@@ -12,6 +12,7 @@
 #include <vector>
 #include <algorithm>
 #include <utility>
+#include <cmath>
 
 CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker, const Crosslinker::Type linkerType)
     :   m_linkerType(linkerType),
@@ -315,6 +316,18 @@ void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const
             addPossibleConnections(p_linker, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
         }
     }
+}
+
+bool CrosslinkerContainer::partialPossibleConnectionsConformToMobilePositionChange(const double positionChange, const double maxStretch) const
+{
+    for (const PossibleFullConnection connection : m_possibleConnections)
+    {
+        if(std::abs(connection.extension + positionChange) >= maxStretch)
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 #ifdef MYDEBUG

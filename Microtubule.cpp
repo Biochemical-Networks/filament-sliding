@@ -138,9 +138,23 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
         int32_t upperSiteLabel = getLastPositionCloseTo(position, maxStretch);
         for (int32_t posToCheck = lowerSiteLabel; posToCheck<=upperSiteLabel; ++posToCheck)
         {
+            /* The stretch is defined as the position of the connection on the mobile microtubule,
+             * minus the position on the fixed microtubule. The sign matters!
+             * This is done such that the stretch can be easily updated after a change in the microtubule position
+             */
             if(m_sites.at(posToCheck).isFree())
             {
-                possibleConnections.push_back(PossibleFullConnection{oppositeCrosslinker, SiteLocation{m_type, posToCheck}, m_latticeSpacing*posToCheck-position});
+                double stretch;
+                switch(m_type)
+                {
+                case MicrotubuleType::FIXED:
+                    stretch = position - posToCheck*m_latticeSpacing;
+                case MicrotubuleType::MOBILE:
+                    stretch = posToCheck*m_latticeSpacing - position;
+                default:
+                    throw GeneralException("Wrong microtubule type in addPossibleConnectionsCloseTo()");
+                }
+                possibleConnections.push_back(PossibleFullConnection{oppositeCrosslinker, SiteLocation{m_type, posToCheck}, stretch});
             }
         }
     }

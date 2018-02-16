@@ -78,6 +78,11 @@ public:
     void updatePossibleConnectionsFullToPartial(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection,
                                                 const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
+    bool fullLinkersAllowMobilePositionChange(const double positionChange, const double maxStretch) const; // NOT YET IMPLEMENTED!
+
+    bool partialPossibleConnectionsConformToMobilePositionChange(const double positionChange, const double maxStretch) const;
+
+
     #ifdef MYDEBUG
     Crosslinker* TESTgetAFullCrosslinker(const int32_t which) const;
     #endif //MYDEBUG

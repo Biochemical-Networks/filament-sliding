@@ -6,7 +6,7 @@ struct PossibleFullConnection
 {
     Crosslinker* p_partialLinker;
     SiteLocation location;
-    double extension;
+    double extension; // Is the position of the connection on the mobile microtubule minus the position on the fixed microtubule. Hence, is positive if fixed connection is closest to the origin
 };
 
 
