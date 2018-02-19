@@ -324,6 +324,18 @@ void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const
     }
 }
 
+bool CrosslinkerContainer::fullLinkersAllowMobilePositionChange(const double positionChange, const double maxStretch) const
+{
+    for (const FullConnection connection : m_fullConnections)
+    {
+        if(std::abs(connection.extension + positionChange) >= maxStretch)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool CrosslinkerContainer::partialPossibleConnectionsConformToMobilePositionChange(const double positionChange, const double maxStretch) const
 {
     for (const PossibleFullConnection connection : m_possibleConnections)
