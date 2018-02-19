@@ -89,6 +89,9 @@ public:
 
     bool partialPossibleConnectionsConformToMobilePositionChange(const double positionChange, const double maxStretch) const;
 
+    void updateConnectionsAfterMobilePositionChange(const double positionChange,
+                                                    const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+
 
     #ifdef MYDEBUG
     Crosslinker* TESTgetAFullCrosslinker(const int32_t which) const;

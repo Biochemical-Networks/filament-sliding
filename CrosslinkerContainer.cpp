@@ -348,6 +348,32 @@ bool CrosslinkerContainer::partialPossibleConnectionsConformToMobilePositionChan
     return true;
 }
 
+void CrosslinkerContainer::updateConnectionsAfterMobilePositionChange(const double positionChange,
+                                                                      const Microtubule& fixedMicrotubule,
+                                                                      const MobileMicrotubule& mobileMicrotubule,
+                                                                      const double maxStretch,
+                                                                      const double latticeSpacing)
+{
+    // This function assumes that the change is possible!
+    // Update extension of the full linkers
+    for (FullConnection connection : m_fullConnections)
+    {
+        connection.extension += positionChange;
+    }
+    // Check if the change is allowed by all the current possible connections: if not, then recalculate the possibilities completely
+    if (partialPossibleConnectionsConformToMobilePositionChange(positionChange, maxStretch))
+    {
+        for (PossibleFullConnection connection : m_possibleConnections)
+        {
+            connection.extension += positionChange;
+        }
+    }
+    else
+    {
+        findPossibleConnections(fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+    }
+}
+
 void CrosslinkerContainer::addFullConnection(Crosslinker*const p_newFullCrosslinker, const double mobilePosition, const double latticeSpacing, const double maxStretch)
 {
     SiteLocation headLocation = p_newFullCrosslinker->getOneBoundLocationWhenFullyConnected(Crosslinker::Terminus::HEAD);
