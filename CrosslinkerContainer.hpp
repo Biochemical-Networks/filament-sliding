@@ -5,6 +5,7 @@
 #include "Microtubule.hpp"
 #include "MobileMicrotubule.hpp"
 #include "PossibleFullConnection.hpp"
+#include "FullConnection.hpp"
 
 #include <cstdint>
 #include <vector>
@@ -31,6 +32,8 @@ private:
     // Added to crosslinkerContainer, because it is stored for each type of crosslinker separately.
     std::vector<PossibleFullConnection> m_possibleConnections;
 
+    std::vector<FullConnection> m_fullConnections;
+
     // The following functions are used internally; cannot be called by public, m_possibleConnections is only altered through calls to (dis)connect functions, or to findPossibleConnections
     void addPossibleConnections(Crosslinker*const p_newPartialCrosslinker,
                                 const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
@@ -39,6 +42,10 @@ private:
 
     void updatePossibleConnectionsOppositeTo(Crosslinker*const p_partialCrosslinker, SiteLocation locationConnection,
                                              const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+
+    void addFullConnection(Crosslinker*const p_newFullCrosslinker, const double mobilePosition, const double latticeSpacing);
+
+    void removeFullConnection(Crosslinker*const p_oldFullCrosslinker);
 
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker, const Crosslinker::Type linkerType);

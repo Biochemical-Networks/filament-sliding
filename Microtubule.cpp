@@ -149,8 +149,10 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
                 {
                 case MicrotubuleType::FIXED:
                     stretch = position - posToCheck*m_latticeSpacing;
+                    break;
                 case MicrotubuleType::MOBILE:
                     stretch = posToCheck*m_latticeSpacing - position;
+                    break;
                 default:
                     throw GeneralException("Wrong microtubule type in addPossibleConnectionsCloseTo()");
                 }

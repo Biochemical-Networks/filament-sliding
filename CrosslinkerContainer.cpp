@@ -330,6 +330,52 @@ bool CrosslinkerContainer::partialPossibleConnectionsConformToMobilePositionChan
     return true;
 }
 
+void CrosslinkerContainer::addFullConnection(Crosslinker*const p_newFullCrosslinker, const double mobilePosition, const double latticeSpacing)
+{
+    SiteLocation headLocation = p_newFullCrosslinker->getOneBoundLocationWhenFullyConnected(Crosslinker::Terminus::HEAD);
+    SiteLocation tailLocation = p_newFullCrosslinker->getOneBoundLocationWhenFullyConnected(Crosslinker::Terminus::TAIL);
+
+    double extension;
+
+    switch(headLocation.microtubule)
+    {
+    case MicrotubuleType::FIXED:
+        extension = mobilePosition + latticeSpacing*(tailLocation.position - headLocation.position);
+        break;
+    case MicrotubuleType::MOBILE:
+        extension = mobilePosition + latticeSpacing*(headLocation.position - tailLocation.position);
+        break;
+    default:
+        throw GeneralException("A wrong microtubule type encountered in addFullConnection()");
+    }
+
+    m_fullConnections.push_back(FullConnection{p_newFullCrosslinker, extension});
+
+}
+
+void CrosslinkerContainer::removeFullConnection(Crosslinker*const p_oldFullCrosslinker)
+{
+    // Use a lambda expression as a predicate for std::remove_if
+    // erase-remove idiom erases all elements complying to the predicate
+    m_fullConnections.erase(std::remove_if(m_fullConnections.begin(),m_fullConnections.end(),
+                                                // lambda expression, capturing p_oldFullCrosslinker by value, since it is a pointer
+                                                [p_oldFullCrosslinker](const FullConnection& fullConnection)
+                                                {
+                                                    // The identity of a full linker is checked through its pointer (memory location)
+                                                    // This is okay as long as the CrosslinkerContainer class guarantees that m_crosslinkers is never resized.
+                                                    if(fullConnection.p_fullLinker==p_oldFullCrosslinker)
+                                                    {
+                                                        return true;
+                                                    }
+                                                    else
+                                                    {
+                                                        return false;
+                                                    }
+                                                }), m_fullConnections.end());
+
+}
+
+
 #ifdef MYDEBUG
 Crosslinker* CrosslinkerContainer::TESTgetAFullCrosslinker(const int32_t which) const
 {
