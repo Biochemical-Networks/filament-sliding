@@ -47,6 +47,8 @@ private:
 
     void removeFullConnection(Crosslinker*const p_oldFullCrosslinker);
 
+    bool partialPossibleConnectionsConformToMobilePositionChange(const double positionChange, const double maxStretch) const;
+
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker, const Crosslinker::Type linkerType);
     ~CrosslinkerContainer();
@@ -86,8 +88,6 @@ public:
                                                 const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
     bool fullLinkersAllowMobilePositionChange(const double positionChange, const double maxStretch) const;
-
-    bool partialPossibleConnectionsConformToMobilePositionChange(const double positionChange, const double maxStretch) const;
 
     void updateConnectionsAfterMobilePositionChange(const double positionChange,
                                                     const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
