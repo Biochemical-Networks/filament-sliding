@@ -406,6 +406,7 @@ double SystemState::getMaxStretch() const
     return m_maxStretch;
 }
 
+#ifdef MYDEBUG
 int32_t SystemState::getNSitesToBindPartial(const Crosslinker::Type type) const
 {
     // Get a pointer to the right container, since each type is stored in a separate container
@@ -428,6 +429,7 @@ int32_t SystemState::getNSitesToBindPartial(const Crosslinker::Type type) const
 
     return containerToCheck->getNSitesToBindPartial(m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
 }
+#endif // MYDEBUG
 
 void SystemState::findPossibleConnections(const Crosslinker::Type type)
 {

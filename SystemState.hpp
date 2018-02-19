@@ -99,13 +99,15 @@ public:
 
     double getMaxStretch() const;
 
+    #ifdef MYDEBUG
     int32_t getNSitesToBindPartial(const Crosslinker::Type type) const;
+    #endif // MYDEBUG
 
     void findPossibleConnections(const Crosslinker::Type type);
 
     #ifdef MYDEBUG
     void TESTunbindAFullCrosslinker(const int32_t which, const Crosslinker::Terminus terminusToDisconnect);
-    #endif //MYDEBUG
+    #endif // MYDEBUG
 };
 
 #endif // SYSTEMSTATE_HPP

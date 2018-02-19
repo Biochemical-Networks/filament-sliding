@@ -91,6 +91,7 @@ int32_t CrosslinkerContainer::getNFullCrosslinkers() const
     return m_fullCrosslinkers.size();
 }
 
+#ifdef MYDEBUG
 int32_t CrosslinkerContainer::getNSitesToBindPartial(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing) const
 {
     const double mobilePosition = mobileMicrotubule.getPosition(); // Won't change during the subsequent for-loop
@@ -117,6 +118,7 @@ int32_t CrosslinkerContainer::getNSitesToBindPartial(const Microtubule& fixedMic
     }
     return nSitesToBindPartial;
 }
+#endif // MYDEBUG
 
 void CrosslinkerContainer::findPossibleConnections(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing)
 {
@@ -430,4 +432,4 @@ Crosslinker* CrosslinkerContainer::TESTgetAFullCrosslinker(const int32_t which) 
 {
     return m_fullCrosslinkers.at(which);
 }
-#endif //MYDEBUG
+#endif // MYDEBUG

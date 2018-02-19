@@ -71,7 +71,9 @@ public:
     int32_t getNPartialCrosslinkers() const;
     int32_t getNFullCrosslinkers() const;
 
+    #ifdef MYDEBUG
     int32_t getNSitesToBindPartial(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing) const;
+    #endif // MYDEBUG
 
     void findPossibleConnections(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
@@ -95,7 +97,7 @@ public:
 
     #ifdef MYDEBUG
     Crosslinker* TESTgetAFullCrosslinker(const int32_t which) const;
-    #endif //MYDEBUG
+    #endif // MYDEBUG
 };
 
 #endif // CROSSLINKERCONTAINER_HPP

@@ -144,7 +144,7 @@ int main()
 
     std::cout << systemState.getNSitesToBindPartial(Crosslinker::Type::PASSIVE)<<std::endl;
 
-    #endif //MYDEBUG
+    #endif // MYDEBUG
     // END_TEST
 
     return 0;

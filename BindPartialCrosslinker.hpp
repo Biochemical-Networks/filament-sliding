@@ -17,6 +17,8 @@ private:
 
     SiteLocation whereToConnect(const SystemState& systemState, RandomGenerator& generator);
 
+    std::vector<double> m_individualRates;
+
 public:
     BindPartialCrosslinker(const double elementaryRate, const Crosslinker::Type typeToBind);
     virtual ~BindPartialCrosslinker();
