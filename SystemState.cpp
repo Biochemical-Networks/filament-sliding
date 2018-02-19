@@ -93,9 +93,9 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type,
     p_microtubuleToConnect->connectSite(locationToConnectTo.position, *p_connectingCrosslinker, terminusToConnect);
 
     // Finally, update the information on possibilities with the new SystemState
-    m_passiveCrosslinkers.updatePossibleConnectionsFreeToPartial(p_connectingCrosslinker, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_dualCrosslinkers.updatePossibleConnectionsFreeToPartial(p_connectingCrosslinker, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_activeCrosslinkers.updatePossibleConnectionsFreeToPartial(p_connectingCrosslinker, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_passiveCrosslinkers.updateConnectionDataFreeToPartial(p_connectingCrosslinker, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_dualCrosslinkers.updateConnectionDataFreeToPartial(p_connectingCrosslinker, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_activeCrosslinkers.updateConnectionDataFreeToPartial(p_connectingCrosslinker, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
 
     return *p_connectingCrosslinker; // Such that the caller can use this specific crosslinker immediately
 }
@@ -141,9 +141,9 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
     }
 
     // Finally, update the information on possibilities with the new SystemState
-    m_passiveCrosslinkers.updatePossibleConnectionsPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_dualCrosslinkers.updatePossibleConnectionsPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_activeCrosslinkers.updatePossibleConnectionsPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_passiveCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_dualCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_activeCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
 
 }
 
@@ -203,9 +203,9 @@ void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCr
     }
 
     // Finally, update the information on possibilities with the new SystemState
-    m_passiveCrosslinkers.updatePossibleConnectionsPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_dualCrosslinkers.updatePossibleConnectionsPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_activeCrosslinkers.updatePossibleConnectionsPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_passiveCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_dualCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_activeCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
 
 }
 
@@ -252,9 +252,9 @@ void SystemState::disconnectFullyConnectedCrosslinker(Crosslinker& disconnecting
     }
 
     // Finally, update the information on possibilities with the new SystemState
-    m_passiveCrosslinkers.updatePossibleConnectionsFullToPartial(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_dualCrosslinkers.updatePossibleConnectionsFullToPartial(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_activeCrosslinkers.updatePossibleConnectionsFullToPartial(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_passiveCrosslinkers.updateConnectionDataFullToPartial(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_dualCrosslinkers.updateConnectionDataFullToPartial(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_activeCrosslinkers.updateConnectionDataFullToPartial(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
 
 }
 

@@ -43,7 +43,7 @@ private:
     void updatePossibleConnectionsOppositeTo(Crosslinker*const p_partialCrosslinker, SiteLocation locationConnection,
                                              const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
-    void addFullConnection(Crosslinker*const p_newFullCrosslinker, const double mobilePosition, const double latticeSpacing);
+    void addFullConnection(Crosslinker*const p_newFullCrosslinker, const double mobilePosition, const double latticeSpacing, const double maxStretch);
 
     void removeFullConnection(Crosslinker*const p_oldFullCrosslinker);
 
@@ -73,16 +73,16 @@ public:
 
     void findPossibleConnections(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
-    void updatePossibleConnectionsFreeToPartial(Crosslinker*const p_newPartialCrosslinker,
+    void updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker,
                                                 const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
-    void updatePossibleConnectionsPartialToFree(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection,
+    void updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection,
                                                const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
-    void updatePossibleConnectionsPartialToFull(Crosslinker*const p_newPartialCrosslinker, const SiteLocation locationNewConnection,
+    void updateConnectionDataPartialToFull(Crosslinker*const p_newPartialCrosslinker, const SiteLocation locationNewConnection,
                                                 const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
-    void updatePossibleConnectionsFullToPartial(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection,
+    void updateConnectionDataFullToPartial(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection,
                                                 const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
     bool fullLinkersAllowMobilePositionChange(const double positionChange, const double maxStretch) const; // NOT YET IMPLEMENTED!
