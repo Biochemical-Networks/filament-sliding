@@ -19,8 +19,10 @@ private:
 
     std::vector<double> m_individualRates;
 
+    const double m_springThermalRatio; // k/(4 k_B T)
+
 public:
-    BindPartialCrosslinker(const double elementaryRate, const Crosslinker::Type typeToBind);
+    BindPartialCrosslinker(const double elementaryRate, const Crosslinker::Type typeToBind, const double springConstant, const double thermalEnergy);
     virtual ~BindPartialCrosslinker();
 
     virtual void setCurrentRate(const SystemState& systemState) override;
