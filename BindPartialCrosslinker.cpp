@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <vector>
 #include <cmath> // exp
+#include <cstddef> // size_t
 
 BindPartialCrosslinker::BindPartialCrosslinker(const double elementaryRate, const Crosslinker::Type typeToBind, const double springConstant, const double thermalEnergy)
     :   Reaction(elementaryRate),
@@ -41,16 +42,30 @@ void BindPartialCrosslinker::setCurrentRate(const SystemState& systemState)
     m_currentRate = sum;
 }
 
-
-SiteLocation BindPartialCrosslinker::whereToConnect(const SystemState& systemState, RandomGenerator& generator)
+// This function uses the current (individual) rates, make sure they are updated!
+PossibleFullConnection BindPartialCrosslinker::whichToConnect(const SystemState& systemState, RandomGenerator& generator)
 {
-    /* This function will have to seek a spot to connect the crosslinkers. For a partial crosslinker to be able to connect, it needs to have at least one opposite site free,
-     * closer than one SystemState.getMaxStretch(). If there is no possible site, the rate of this reaction to be called should be zero.
-     */
+    const std::vector<PossibleFullConnection>& possibleConnections = systemState.getPossibleConnections(m_typeToBind);
+
+    // Choose the connection with a probability proportional to its rate
+    const double eventIdentifyingRate = generator.getUniform(0,m_currentRate);
+    double sum = 0;
+    for(std::size_t label = 0; label < m_individualRates.size(); ++label) // We need to find a location, so don't use a range based loop
+    {
+        sum += m_individualRates.at(label);
+        if (sum > eventIdentifyingRate)
+        {
+            return possibleConnections.at(label);
+        }
+    }
+    throw GeneralException("The end of BindPartialCrosslinker::whichToConnect() was reached");
 }
 
 
 void BindPartialCrosslinker::performReaction(SystemState& systemState, RandomGenerator& generator)
 {
+    PossibleFullConnection connectionToMake = whichToConnect(systemState, generator);
+
+    systemState.connectPartiallyConnectedCrosslinker(*(connectionToMake.p_partialLinker), connectionToMake.location);
 
 }

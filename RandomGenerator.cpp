@@ -36,7 +36,7 @@ double RandomGenerator::getProbability()
 
 double RandomGenerator::getUniform(const double lowerBound, const double upperBound)
 {
-    std::uniform_real_distribution<double> distribution(lowerBound, upperBound);
+    std::uniform_real_distribution<double> distribution(lowerBound, upperBound); // uses interval [a,b)
     return distribution(m_generator);
 }
 
