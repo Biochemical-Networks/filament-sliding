@@ -13,10 +13,10 @@
 #include <cmath> // exp
 #include <cstddef> // size_t
 
-BindPartialCrosslinker::BindPartialCrosslinker(const double elementaryRate, const Crosslinker::Type typeToBind, const double springConstant, const double thermalEnergy)
+BindPartialCrosslinker::BindPartialCrosslinker(const double elementaryRate, const Crosslinker::Type typeToBind, const double springConstant)
     :   Reaction(elementaryRate),
         m_typeToBind(typeToBind),
-        m_springThermalRatio(springConstant/(4*thermalEnergy))
+        m_springConstant(springConstant)
 {
 }
 
@@ -34,8 +34,8 @@ void BindPartialCrosslinker::setCurrentRate(const SystemState& systemState)
     double sum = 0;
     for(const PossibleFullConnection& possibleConnection : possibleConnections)
     {
-        // m_springThermalRatio = k / (4 k_B T), such that this quantity is only calculat
-        const double rate = m_elementaryRate*std::exp(-m_springThermalRatio*possibleConnection.extension*possibleConnection.extension);
+        // spread the effect of extension evenly over connecting and disconnecting: rate scales with exp(-k x^2 / (4 k_B T))
+        const double rate = m_elementaryRate*std::exp(-m_springConstant*possibleConnection.extension*possibleConnection.extension*0.25);
         m_individualRates.push_back(rate);
         sum += rate;
     }

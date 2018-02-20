@@ -291,13 +291,32 @@ int32_t SystemState::getNFreeCrosslinkersOfType(const Crosslinker::Type type) co
             return m_passiveCrosslinkers.getNFreeCrosslinkers();
             break;
         case Crosslinker::Type::DUAL:
-            return m_dualCrosslinkers.getNPartialCrosslinkers();
+            return m_dualCrosslinkers.getNFreeCrosslinkers();
             break;
         case Crosslinker::Type::ACTIVE:
-            return m_activeCrosslinkers.getNFullCrosslinkers();
+            return m_activeCrosslinkers.getNFreeCrosslinkers();
             break;
         default:
             throw GeneralException("An incorrect crosslinker type was passed to getNFreeCrosslinkersOfType()");
+            break;
+    }
+}
+
+int32_t SystemState::getNPartialCrosslinkersOfType(const Crosslinker::Type type) const
+{
+    switch(type)
+    {
+        case Crosslinker::Type::PASSIVE:
+            return m_passiveCrosslinkers.getNPartialCrosslinkers();
+            break;
+        case Crosslinker::Type::DUAL:
+            return m_dualCrosslinkers.getNPartialCrosslinkers();
+            break;
+        case Crosslinker::Type::ACTIVE:
+            return m_activeCrosslinkers.getNPartialCrosslinkers();
+            break;
+        default:
+            throw GeneralException("An incorrect crosslinker type was passed to getNPartialCrosslinkersOfType()");
             break;
     }
 }

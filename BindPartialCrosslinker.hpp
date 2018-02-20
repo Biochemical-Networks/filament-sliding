@@ -20,15 +20,15 @@ private:
 
     std::vector<double> m_individualRates; // store one rate for each member of the CrosslinkerContainer.m_possibleConnections
 
-    const double m_springThermalRatio; // k/(4 k_B T)
+    const double m_springConstant; // k/(k_B T)
 
 public:
-    BindPartialCrosslinker(const double elementaryRate, const Crosslinker::Type typeToBind, const double springConstant, const double thermalEnergy);
-    virtual ~BindPartialCrosslinker();
+    BindPartialCrosslinker(const double elementaryRate, const Crosslinker::Type typeToBind, const double springConstant);
+    ~BindPartialCrosslinker() override;
 
-    virtual void setCurrentRate(const SystemState& systemState) override;
+    void setCurrentRate(const SystemState& systemState) override;
 
-    virtual void performReaction(SystemState& systemState, RandomGenerator& generator) override;
+    void performReaction(SystemState& systemState, RandomGenerator& generator) override;
 
 };
 

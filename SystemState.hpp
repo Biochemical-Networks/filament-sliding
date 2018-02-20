@@ -79,6 +79,8 @@ public:
     int32_t getNFreeCrosslinkersOfType(const Crosslinker::Type type) const;
     int32_t getNFreeCrosslinkers() const;
 
+    int32_t getNPartialCrosslinkersOfType(const Crosslinker::Type type) const;
+
     double beginningOverlap() const;
     double endOverlap() const;
     double overlapLength() const;

@@ -17,11 +17,11 @@ private:
     SiteLocation whereToConnect(const SystemState& systemState, RandomGenerator& generator);
 public:
     BindFreeCrosslinker(const double elementaryRate, const Crosslinker::Type typeToBind);
-    virtual ~BindFreeCrosslinker();
+    ~BindFreeCrosslinker() override;
 
-    virtual void setCurrentRate(const SystemState& systemState) override;
+    void setCurrentRate(const SystemState& systemState) override;
 
-    virtual void performReaction(SystemState& systemState, RandomGenerator& generator) override;
+    void performReaction(SystemState& systemState, RandomGenerator& generator) override;
 };
 
 #endif // BINDFREECROSSLINKER_HPP
