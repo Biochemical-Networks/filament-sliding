@@ -453,6 +453,43 @@ void SystemState::findPossibleConnections(const Crosslinker::Type type)
     containerToCheck->findPossibleConnections(m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
 }
 
+const std::vector<PossibleFullConnection>& SystemState::getPossibleConnections(const Crosslinker::Type type) const
+{
+    switch(type)
+    {
+    case Crosslinker::Type::PASSIVE:
+        return m_passiveCrosslinkers.getPossibleConnections();
+        break;
+    case Crosslinker::Type::DUAL:
+        return m_dualCrosslinkers.getPossibleConnections();
+        break;
+    case Crosslinker::Type::ACTIVE:
+        return m_activeCrosslinkers.getPossibleConnections();
+        break;
+    default:
+        throw GeneralException("An incorrect type was passed to SystemState::getPossibleConnections()");
+    }
+}
+
+const std::vector<FullConnection>& SystemState::getFullConnections(const Crosslinker::Type type) const
+{
+    switch(type)
+    {
+    case Crosslinker::Type::PASSIVE:
+        return m_passiveCrosslinkers.getFullConnections();
+        break;
+    case Crosslinker::Type::DUAL:
+        return m_dualCrosslinkers.getFullConnections();
+        break;
+    case Crosslinker::Type::ACTIVE:
+        return m_activeCrosslinkers.getFullConnections();
+        break;
+    default:
+        throw GeneralException("An incorrect type was passed to SystemState::getFullConnections()");
+    }
+}
+
+
 #ifdef MYDEBUG
 void SystemState::TESTunbindAFullCrosslinker(const int32_t which, const Crosslinker::Terminus terminusToDisconnect)
 {

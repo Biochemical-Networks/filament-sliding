@@ -94,6 +94,10 @@ public:
     void updateConnectionsAfterMobilePositionChange(const double positionChange,
                                                     const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
+    const std::vector<PossibleFullConnection>& getPossibleConnections() const;
+
+    const std::vector<FullConnection>& getFullConnections() const;
+
 
     #ifdef MYDEBUG
     Crosslinker* TESTgetAFullCrosslinker(const int32_t which) const;

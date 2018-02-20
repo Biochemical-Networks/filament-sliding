@@ -426,6 +426,16 @@ void CrosslinkerContainer::removeFullConnection(Crosslinker*const p_oldFullCross
 
 }
 
+const std::vector<PossibleFullConnection>& CrosslinkerContainer::getPossibleConnections() const
+{
+    return m_possibleConnections;
+}
+
+const std::vector<FullConnection>& CrosslinkerContainer::getFullConnections() const
+{
+    return m_fullConnections;
+}
+
 
 #ifdef MYDEBUG
 Crosslinker* CrosslinkerContainer::TESTgetAFullCrosslinker(const int32_t which) const
@@ -433,3 +443,5 @@ Crosslinker* CrosslinkerContainer::TESTgetAFullCrosslinker(const int32_t which) 
     return m_fullCrosslinkers.at(which);
 }
 #endif // MYDEBUG
+
+

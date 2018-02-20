@@ -7,6 +7,7 @@
 #include "Crosslinker.hpp"
 #include "CrosslinkerContainer.hpp"
 #include "PossibleFullConnection.hpp"
+#include "FullConnection.hpp"
 
 #include <cstdint>
 #include <cmath>
@@ -108,6 +109,10 @@ public:
     #ifdef MYDEBUG
     void TESTunbindAFullCrosslinker(const int32_t which, const Crosslinker::Terminus terminusToDisconnect);
     #endif // MYDEBUG
+
+    const std::vector<PossibleFullConnection>& getPossibleConnections(const Crosslinker::Type type) const;
+
+    const std::vector<FullConnection>& getFullConnections(const Crosslinker::Type type) const;
 };
 
 #endif // SYSTEMSTATE_HPP
