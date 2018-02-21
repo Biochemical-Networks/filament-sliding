@@ -115,6 +115,8 @@ public:
     const std::vector<PossibleFullConnection>& getPossibleConnections(const Crosslinker::Type type) const;
 
     const std::vector<FullConnection>& getFullConnections(const Crosslinker::Type type) const;
+
+    const std::vector<Crosslinker*>& getPartialLinkers(const Crosslinker::Type type) const;
 };
 
 #endif // SYSTEMSTATE_HPP

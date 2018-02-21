@@ -508,6 +508,24 @@ const std::vector<FullConnection>& SystemState::getFullConnections(const Crossli
     }
 }
 
+const std::vector<Crosslinker*>& SystemState::getPartialLinkers(const Crosslinker::Type type) const
+{
+    switch(type)
+    {
+    case Crosslinker::Type::PASSIVE:
+        return m_passiveCrosslinkers.getPartialLinkers();
+        break;
+    case Crosslinker::Type::DUAL:
+        return m_dualCrosslinkers.getPartialLinkers();
+        break;
+    case Crosslinker::Type::ACTIVE:
+        return m_activeCrosslinkers.getPartialLinkers();
+        break;
+    default:
+        throw GeneralException("An incorrect type was passed to SystemState::getPartialLinkers()");
+    }
+}
+
 
 #ifdef MYDEBUG
 void SystemState::TESTunbindAFullCrosslinker(const int32_t which, const Crosslinker::Terminus terminusToDisconnect)
