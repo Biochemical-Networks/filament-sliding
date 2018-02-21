@@ -6,6 +6,7 @@
 #include "Reaction.hpp"
 #include "BindFreeCrosslinker.hpp"
 #include "BindPartialCrosslinker.hpp"
+#include "UnbindPartialCrosslinker.hpp"
 #include "Crosslinker.hpp"
 
 #include <cstdint>
@@ -37,12 +38,16 @@ Propagator::Propagator(const int32_t nTimeSteps,
     // objects in std::initializer_list are inherently const, so std::unique_ptr's copy constructor cannot be used there, and we cannot use this method of initialising m_reactions.
     // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
     // Use pointers, because m_reactions contains Reactions, while we want to store objects of a class inherited from Reaction
+    // Make sure that the specific reaction has been included in this file
     m_reactions["bindingFreePassiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(rateZeroToOneExtremitiesConnected, Crosslinker::Type::PASSIVE));
     m_reactions["bindingFreeDualCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(rateZeroToOneExtremitiesConnected, Crosslinker::Type::DUAL));
     m_reactions["bindingFreeActiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(rateZeroToOneExtremitiesConnected, Crosslinker::Type::ACTIVE));
     m_reactions["bindingPartialPassiveCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(rateOneToTwoExtremitiesConnected, Crosslinker::Type::PASSIVE, m_springConstant));
     m_reactions["bindingPartialDualCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(rateOneToTwoExtremitiesConnected, Crosslinker::Type::DUAL, m_springConstant));
     m_reactions["bindingPartialActiveCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(rateOneToTwoExtremitiesConnected, Crosslinker::Type::ACTIVE, m_springConstant));
+    m_reactions["unbindingPartialPassiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(rateOneToZeroExtremitiesConnected, Crosslinker::Type::PASSIVE));
+    m_reactions["unbindingPartialDualCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(rateOneToZeroExtremitiesConnected, Crosslinker::Type::DUAL));
+    m_reactions["unbindingPartialActiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(rateOneToZeroExtremitiesConnected, Crosslinker::Type::ACTIVE));
 }
 
 Propagator::~Propagator()
