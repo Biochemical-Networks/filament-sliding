@@ -88,7 +88,7 @@ public:
     void updateConnectionDataFullToPartial(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection,
                                                 const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
-    bool fullLinkersAllowMobilePositionChange(const double positionChange, const double maxStretch) const;
+    std::pair<double, double> movementBordersSetByFullLinkers(const double maxStretch) const;
 
     void updateConnectionsAfterMobilePositionChange(const double positionChange,
                                                     const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);

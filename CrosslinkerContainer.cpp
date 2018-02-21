@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <utility>
 #include <cmath>
+#include <limits>
 
 CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker, const Crosslinker::Type linkerType)
     :   m_linkerType(linkerType),
@@ -22,6 +23,11 @@ CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers, const Cr
     for (int32_t i=0; i<nCrosslinkers; ++i)
     {
         m_freeCrosslinkers.push_back(&(m_crosslinkers.at(i)));
+    }
+
+    if(!std::numeric_limits<double>::is_iec559)
+    {
+        throw GeneralException("An algorithm in the class CrosslinkerContainer uses the IEEE 754 standard to represent positive and negative infinity");
     }
 }
 
@@ -326,16 +332,29 @@ void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const
     }
 }
 
-bool CrosslinkerContainer::fullLinkersAllowMobilePositionChange(const double positionChange, const double maxStretch) const
+std::pair<double, double> CrosslinkerContainer::movementBordersSetByFullLinkers(const double maxStretch) const
 {
+    if(m_fullCrosslinkers.empty())
+    {
+        return std::pair<double,double>(-std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
+    }
+    // First, find the minimum and maximum stretch
+    // Initialise the borders with the first extension, since this is initially both the minimum and the maximum
+    double minimumStretch = m_fullConnections.front().extension;
+    double maximumStretch = minimumStretch;
     for (const FullConnection connection : m_fullConnections)
     {
-        if(std::abs(connection.extension + positionChange) >= maxStretch)
+        if(connection.extension < minimumStretch)
         {
-            return false;
+            minimumStretch = connection.extension;
+        }
+        else if(connection.extension > maximumStretch) // The maximum cannot change if the minimum changes
+        {
+            maximumStretch = connection.extension;
         }
     }
-    return true;
+
+    return std::pair<double,double>((-maxStretch-minimumStretch), (maxStretch-maximumStretch));
 }
 
 bool CrosslinkerContainer::partialPossibleConnectionsConformToMobilePositionChange(const double positionChange, const double maxStretch) const

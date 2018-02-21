@@ -11,7 +11,7 @@
 
 #include <cstdint>
 #include <cmath>
-
+#include <utility>
 #include <vector>
 
 // SystemState methods allow the SystemState to be changed; they do not provide the rules by which it is changed
@@ -73,6 +73,8 @@ public:
     void disconnectFullyConnectedCrosslinker(Crosslinker& crosslinker, const Crosslinker::Terminus terminusToDisconnect);
 
     void update(const double changeMicrotubulePosition);
+
+    std::pair<double, double> movementBordersSetByFullLinkers() const;
 
     double getMicrotubulePosition() const;
 

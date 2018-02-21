@@ -7,6 +7,7 @@
 #include "BindFreeCrosslinker.hpp"
 #include "BindPartialCrosslinker.hpp"
 #include "UnbindPartialCrosslinker.hpp"
+#include "UnbindFullCrosslinker.hpp"
 #include "Crosslinker.hpp"
 
 #include <cstdint>
@@ -48,6 +49,9 @@ Propagator::Propagator(const int32_t nTimeSteps,
     m_reactions["unbindingPartialPassiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(rateOneToZeroExtremitiesConnected, Crosslinker::Type::PASSIVE));
     m_reactions["unbindingPartialDualCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(rateOneToZeroExtremitiesConnected, Crosslinker::Type::DUAL));
     m_reactions["unbindingPartialActiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(rateOneToZeroExtremitiesConnected, Crosslinker::Type::ACTIVE));
+    m_reactions["unbindingFullPassiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(rateTwoToOneExtremitiesConnected, Crosslinker::Type::PASSIVE, m_springConstant));
+    m_reactions["unbindingFullDualCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(rateTwoToOneExtremitiesConnected, Crosslinker::Type::DUAL, m_springConstant));
+    m_reactions["unbindingFullActiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(rateTwoToOneExtremitiesConnected, Crosslinker::Type::ACTIVE, m_springConstant));
 }
 
 Propagator::~Propagator()

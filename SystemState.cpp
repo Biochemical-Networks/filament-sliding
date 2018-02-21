@@ -278,6 +278,15 @@ void SystemState::update(const double changeMicrotubulePosition)
     m_mobileMicrotubule.updatePosition(changeMicrotubulePosition);
 }
 
+std::pair<double, double> SystemState::movementBordersSetByFullLinkers() const
+{
+    std::pair<double,double> setByPassive = m_passiveCrosslinkers.movementBordersSetByFullLinkers(m_maxStretch);
+    std::pair<double,double> setByDual = m_dualCrosslinkers.movementBordersSetByFullLinkers(m_maxStretch);
+    std::pair<double,double> setByActive = m_activeCrosslinkers.movementBordersSetByFullLinkers(m_maxStretch);
+
+    return std::pair<double,double>(std::min({setByPassive.first, setByDual.first, setByActive.first}), std::max({setByPassive.second, setByDual.second, setByActive.second}));
+}
+
 double SystemState::getMicrotubulePosition() const
 {
     return m_mobileMicrotubule.getPosition();
