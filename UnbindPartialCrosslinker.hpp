@@ -12,7 +12,7 @@ class UnbindPartialCrosslinker : public Reaction
 private:
     const Crosslinker::Type m_typeToUnbind;
 
-    Crosslinker* whichToDisconnect(SystemState& systemState, RandomGenerator& generator) const;
+    Crosslinker& whichToDisconnect(SystemState& systemState, RandomGenerator& generator) const;
 public:
     UnbindPartialCrosslinker(const double elementaryRate, const Crosslinker::Type typeToUnbind);
     ~UnbindPartialCrosslinker() override;
