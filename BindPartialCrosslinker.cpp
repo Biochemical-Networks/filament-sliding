@@ -47,6 +47,15 @@ PossibleFullConnection BindPartialCrosslinker::whichToConnect(const SystemState&
 {
     const std::vector<PossibleFullConnection>& possibleConnections = systemState.getPossibleConnections(m_typeToBind);
 
+    if (possibleConnections.empty())
+    {
+        throw GeneralException("BindPartialCrosslinker::whichToConnect() was not able to disconnect a linker");
+    }
+    if(possibleConnections.size() != m_individualRates.size())
+    {
+        throw GeneralException("BindPartialCrosslinker::whichToConnect() was called with an outdated vector");
+    }
+
     // Choose the connection with a probability proportional to its rate
     const double eventIdentifyingRate = generator.getUniform(0,m_currentRate);
     double sum = 0;

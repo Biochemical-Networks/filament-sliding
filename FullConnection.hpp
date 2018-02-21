@@ -1,6 +1,8 @@
 #ifndef FULLCONNECTION_HPP
 #define FULLCONNECTION_HPP
 
+#include "Crosslinker.hpp"
+
 // Defined struct to group data about a fully connected crosslinker
 struct FullConnection
 {
