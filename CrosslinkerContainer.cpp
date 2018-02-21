@@ -18,7 +18,7 @@ CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers, const Cr
     :   m_linkerType(linkerType),
         m_crosslinkers(nCrosslinkers, defaultCrosslinker)
 {
-    // Fill the freeCrosslinkers deque with pointers to all crosslinkers: these are initially free
+    // Fill the freeCrosslinkers vector with pointers to all crosslinkers: these are initially free
     for (int32_t i=0; i<nCrosslinkers; ++i)
     {
         m_freeCrosslinkers.push_back(&(m_crosslinkers.at(i)));
@@ -434,6 +434,11 @@ const std::vector<PossibleFullConnection>& CrosslinkerContainer::getPossibleConn
 const std::vector<FullConnection>& CrosslinkerContainer::getFullConnections() const
 {
     return m_fullConnections;
+}
+
+const std::vector<Crosslinker*>& CrosslinkerContainer::getPartialLinkers() const
+{
+    return m_partialCrosslinkers;
 }
 
 

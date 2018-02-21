@@ -25,3 +25,8 @@ void UnbindPartialCrosslinker::performReaction(SystemState& systemState, RandomG
 {
 
 }
+
+Crosslinker* UnbindPartialCrosslinker::whichToDisconnect(SystemState& systemState, RandomGenerator& generator) const
+{
+
+}

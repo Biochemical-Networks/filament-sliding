@@ -9,7 +9,6 @@
 
 #include <cstdint>
 #include <vector>
-#include <deque>
 #include <utility> // for std::pair
 
 class CrosslinkerContainer
@@ -21,9 +20,9 @@ private:
     int32_t m_nFreeCrosslinkers;
     // Use pointers to crosslinkers as IDs: THIS IS DANGEROUS! It will break if m_crosslinkers would ever resize, since that invalidates all pointers to its elements.
     // A possible fix for this (if it were required to resize the m_crosslinkers sometimes) would be to store the labels (0,...,nCrosslinkers-1) instead of pointers)
-    std::deque<Crosslinker*> m_freeCrosslinkers;
-    std::deque<Crosslinker*> m_partialCrosslinkers;
-    std::deque<Crosslinker*> m_fullCrosslinkers;
+    std::vector<Crosslinker*> m_freeCrosslinkers;
+    std::vector<Crosslinker*> m_partialCrosslinkers;
+    std::vector<Crosslinker*> m_fullCrosslinkers;
 
     // Stores all possible connections such that the search needs to be done once every time step
     // Needs to be updated dynamically.  After MT diffusion, it can completely change
@@ -97,6 +96,8 @@ public:
     const std::vector<PossibleFullConnection>& getPossibleConnections() const;
 
     const std::vector<FullConnection>& getFullConnections() const;
+
+    const std::vector<Crosslinker*>& getPartialLinkers() const;
 
 
     #ifdef MYDEBUG
