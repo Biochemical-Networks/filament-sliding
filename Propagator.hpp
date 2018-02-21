@@ -20,6 +20,7 @@ private:
     const int32_t m_probePeriod; // Holds the number of time steps that are between two probes of the system, meaning that data will be written every so many time steps
     const double m_diffusionConstantMicrotubule;
     const double m_springConstant;
+    const double m_latticeSpacing;
 
     const double m_deviationMicrotubule; // sqrt(2 D t), with t the time step size and D the diffusion constant of the microtubule. Stored to prevent this calculation every time step
 
@@ -47,6 +48,7 @@ public:
                const int32_t probePeriod,
                const double diffusionConstantMicrotubule,
                const double springConstant,
+               const double latticeSpacing,
                const double rateZeroToOneExtremitiesConnected,
                const double rateOneToZeroExtremitiesConnected,
                const double rateOneToTwoExtremitiesConnected,

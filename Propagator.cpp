@@ -24,6 +24,7 @@ Propagator::Propagator(const int32_t nTimeSteps,
                        const int32_t probePeriod,
                        const double diffusionConstantMicrotubule,
                        const double springConstant,
+                       const double latticeSpacing,
                        const double rateZeroToOneExtremitiesConnected,
                        const double rateOneToZeroExtremitiesConnected,
                        const double rateOneToTwoExtremitiesConnected,
@@ -33,6 +34,7 @@ Propagator::Propagator(const int32_t nTimeSteps,
         m_probePeriod(probePeriod),
         m_diffusionConstantMicrotubule(diffusionConstantMicrotubule),
         m_springConstant(springConstant),
+        m_latticeSpacing(latticeSpacing),
         m_deviationMicrotubule(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep))
 
 {
@@ -52,6 +54,15 @@ Propagator::Propagator(const int32_t nTimeSteps,
     m_reactions["unbindingFullPassiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(rateTwoToOneExtremitiesConnected, Crosslinker::Type::PASSIVE, m_springConstant));
     m_reactions["unbindingFullDualCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(rateTwoToOneExtremitiesConnected, Crosslinker::Type::DUAL, m_springConstant));
     m_reactions["unbindingFullActiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(rateTwoToOneExtremitiesConnected, Crosslinker::Type::ACTIVE, m_springConstant));
+
+    // Have some checks, such that the methods of this class will work properly
+    /* The standard deviation of the average microtubule position update should be much smaller (orders of magnitude) smaller than the lattice spacing,
+     * since that sets a scale over which force differences definitely emerge. The choice 0.1 is pretty large, but this is a hard maximum limit.
+     */
+    if(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep)>(0.1*m_latticeSpacing))
+    {
+        throw GeneralException("The time step is too large to allow for the approximate microtubule movement to be trustworthy");
+    }
 }
 
 Propagator::~Propagator()
@@ -84,7 +95,34 @@ void Propagator::run(SystemState& systemState, RandomGenerator& generator, Outpu
 
 void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& generator)
 {
-    double change = generator.getGaussian(0.0, m_deviationMicrotubule);
+    std::pair<double,double> exclusiveMovementBorders = systemState.movementBordersSetByFullLinkers();
+    double change;
+    /* Ask the generator to propose a change to update the position of the microtubule.
+     * Repeat until the proposed change is within the allowed range set by the full linkers, which have a maximum stretch.
+     * The repetition should not happen too often: this means that the time step cannot be too big.
+     * For a maxStretch of 1.5 latticeSpacing, there is a guaranteed open interval of possible changes of the size of one lattice spacing.
+     * For time steps small enough, such that the usually proposed changes are small, this function will not repeat often, even for very stretched conformations.
+     * Hence, the repetition is a proper choice for the updating algorithm.
+     */
+
+    #ifdef MYDEBUG
+    std::cout << exclusiveMovementBorders.first << " " << exclusiveMovementBorders.second << std::endl;
+    int32_t trial = 0;
+    #endif // MYDEBUG
+
+    do
+    {
+        // The mean should be proportional to the force (overdamped system)
+        change = generator.getGaussian(0.0, m_deviationMicrotubule);
+
+        #ifdef MYDEBUG
+        ++trial;
+        std::cout << "Trial number: "<< trial << '\n';
+        std::cout << "Proposed change: " << change << '\n';
+        #endif // MYDEBUG
+    }
+    while (change<=exclusiveMovementBorders.first || change>=exclusiveMovementBorders.second);
+
     systemState.update(change);
 }
 

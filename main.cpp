@@ -99,6 +99,7 @@ int main()
                           probePeriod,
                           diffusionConstantMicrotubule,
                           springConstant,
+                          latticeSpacing,
                           rateZeroToOneExtremitiesConnected,
                           rateOneToZeroExtremitiesConnected,
                           rateOneToTwoExtremitiesConnected,
@@ -119,7 +120,7 @@ int main()
 
     initialiser.initialise(systemState, generator);
 
-    //propagator.run(systemState, generator, output);
+    propagator.run(systemState, generator, output);
 
 
     // TEST

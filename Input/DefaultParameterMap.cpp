@@ -19,7 +19,7 @@ ParameterMap::ParameterMap()
     defineParameter("runName", "run", "unitless"); // The code relies on this parameter being called "runName"
     defineParameter("numberEquilibrationBlocks", 50, "blocks", ">=0");
     defineParameter("numberRunBlocks", 100, "blocks", ">=0");
-    defineParameter("calcTimeStep", 1.e-3, "s", ">0");
+    defineParameter("calcTimeStep", 1.e-7, "s", ">0");
     defineParameter("numberTimeSteps", 1000, "steps", ">=0");
     defineParameter("probePeriod", 10, "steps", ">0");
 
@@ -39,7 +39,7 @@ ParameterMap::ParameterMap()
     defineParameter("numberInitiallyBoundCrosslinkers", 100, "crosslinkers", ">0");
 
     // Dynamics parameters
-    defineParameter("diffusionConstantMicrotubule", 10., "micron^(2)*s^(-1)", ">=0");
+    defineParameter("diffusionConstantMicrotubule", 0.1, "micron^(2)*s^(-1)", ">=0");
     defineParameter("springConstant", 1., "kT*micron^(-2)", ">=0");
 
     // Rates for connecting crosslinkers to the microtubules. The rates from zero to one are per crosslinker in solution per site.
