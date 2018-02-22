@@ -1,6 +1,9 @@
 #ifndef POSSIBLEFULLCONNECTION_HPP
 #define POSSIBLEFULLCONNECTION_HPP
 
+#include "Crosslinker.hpp"
+#include "MicrotubuleType.hpp"
+
 // Defined struct to group data about possible connections for partial linkers
 struct PossibleFullConnection
 {
