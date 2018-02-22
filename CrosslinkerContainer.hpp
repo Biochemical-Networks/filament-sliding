@@ -6,6 +6,7 @@
 #include "MobileMicrotubule.hpp"
 #include "PossibleFullConnection.hpp"
 #include "FullConnection.hpp"
+#include "PossibleHop.hpp"
 
 #include <cstdint>
 #include <vector>
@@ -30,6 +31,8 @@ private:
     // However, to find elements or for resizing, it may be less quick. Make sure that it doesn't resize too often!
     // Added to crosslinkerContainer, because it is stored for each type of crosslinker separately.
     std::vector<PossibleFullConnection> m_possibleConnections;
+
+    std::vector<PossiblePartialHop> m_possiblePartialHops;
 
     std::vector<FullConnection> m_fullConnections;
 

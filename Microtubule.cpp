@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "PossibleFullConnection.hpp"
+#include "PossibleHop.hpp"
 #include "MicrotubuleType.hpp"
 
 #include "Site.hpp"
@@ -127,10 +128,15 @@ int32_t Microtubule::getNFreeSitesCloseTo(const double position, const double ma
 
 // position is the position relative to the start of THIS microtubule, not the mobile one per se
 void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnection>& possibleConnections,
-                                                Crosslinker* const oppositeCrosslinker,
+                                                Crosslinker* const p_oppositeCrosslinker,
                                                 const double position,
                                                 const double maxStretch) const
 {
+    if(!p_oppositeCrosslinker->isPartial())
+    {
+        throw GeneralException("Microtubule::addPossibleConnectionsCloseTo() encountered a non-partial linker.");
+    }
+
     if (!(position<=-maxStretch||position >= m_length + maxStretch)) // Definitely no sites close if there is no microtubule there
     {
         // Now, we can assume there is at least one site (does not have to be free) within reach
@@ -154,11 +160,35 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
                     stretch = posToCheck*m_latticeSpacing - position;
                     break;
                 default:
-                    throw GeneralException("Wrong microtubule type in addPossibleConnectionsCloseTo()");
+                    throw GeneralException("Wrong microtubule type in Microtubule::addPossibleConnectionsCloseTo()");
                 }
-                possibleConnections.push_back(PossibleFullConnection{oppositeCrosslinker, SiteLocation{m_type, posToCheck}, stretch});
+                possibleConnections.push_back(PossibleFullConnection{p_oppositeCrosslinker, SiteLocation{m_type, posToCheck}, stretch});
             }
         }
+    }
+}
+
+void Microtubule::addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>& possiblePartialHops, Crosslinker* const p_partialLinker)
+{
+    if(!p_partialLinker->isPartial())
+    {
+        throw GeneralException("Microtubule::addPossiblePartialHopsCloseTo() encountered a non-partial linker.");
+    }
+
+    SiteLocation partialLocation = p_partialLinker->getBoundLocationWhenPartiallyConnected();
+
+    if (partialLocation.microtubule != m_type)
+    {
+        throw GeneralException("Microtubule::addPossiblePartialHopsCloseTo() was called on the wrong microtubule.");
+    }
+
+    if(partialLocation.position!=0 && m_sites.at(partialLocation.position-1).isFree())
+    {
+        possiblePartialHops.push_back(PossiblePartialHop{p_partialLinker, SiteLocation{m_type, partialLocation.position-1}});
+    }
+    if(partialLocation.position != (m_nSites-1) && m_sites.at(partialLocation.position+1).isFree())
+    {
+        possiblePartialHops.push_back(PossiblePartialHop{p_partialLinker, SiteLocation{m_type, partialLocation.position+1}});
     }
 }
 
