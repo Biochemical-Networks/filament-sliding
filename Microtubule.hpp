@@ -51,9 +51,10 @@ public:
     int32_t getNFreeSitesCloseTo(const double position, const double maxStretch) const;
 
     // The following functions are const, since they do not modify the Microtubule in any way; only the CrosslinkerContainer is changed
-    void addPossibleConnectionsCloseTo(std::vector<PossibleFullConnection>& possibleConnections, Crosslinker* const p_oppositeCrosslinker, const double position, const double maxStretch) const;
+    void addPossibleConnectionsCloseTo(std::vector<PossibleFullConnection>& possibleConnections, Crosslinker* const p_oppositeCrosslinker,
+                                       const double position, const double maxStretch) const;
 
-    void addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>& possibleHops, Crosslinker* const p_partialLinker);
+    void addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>& possibleHops, Crosslinker* const p_partialLinker) const;
 
     std::vector<Crosslinker*> getPartialCrosslinkersCloseTo(const double position, const double maxStretch, const Crosslinker::Type typeToCheck) const;
 

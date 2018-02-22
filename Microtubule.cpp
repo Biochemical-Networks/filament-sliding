@@ -168,7 +168,7 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
     }
 }
 
-void Microtubule::addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>& possiblePartialHops, Crosslinker* const p_partialLinker)
+void Microtubule::addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>& possiblePartialHops, Crosslinker* const p_partialLinker) const
 {
     if(!p_partialLinker->isPartial())
     {
@@ -177,10 +177,12 @@ void Microtubule::addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>&
 
     SiteLocation partialLocation = p_partialLinker->getBoundLocationWhenPartiallyConnected();
 
+    #ifdef MYDEBUG
     if (partialLocation.microtubule != m_type)
     {
         throw GeneralException("Microtubule::addPossiblePartialHopsCloseTo() was called on the wrong microtubule.");
     }
+    #endif // MYDEBUG
 
     if(partialLocation.position!=0 && m_sites.at(partialLocation.position-1).isFree())
     {

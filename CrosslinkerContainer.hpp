@@ -42,6 +42,10 @@ private:
 
     void removePossibleConnections(Crosslinker*const p_oldPartialCrosslinker);
 
+    void addPossiblePartialHops(Crosslinker*const p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule);
+
+    void removePossiblePartialHops(Crosslinker*const p_oldPartialCrosslinker);
+
     void updatePossibleConnectionsOppositeTo(Crosslinker*const p_partialCrosslinker, SiteLocation locationConnection,
                                              const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
@@ -77,7 +81,10 @@ public:
     int32_t getNSitesToBindPartial(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing) const;
     #endif // MYDEBUG
 
+    // Merge findPossibleConnections(), findPossiblePartialHops(), and findPossibleFullHops?
     void findPossibleConnections(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+
+    void findPossiblePartialHops(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule);
 
     void updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker,
                                                 const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);

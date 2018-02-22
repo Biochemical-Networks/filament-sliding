@@ -129,13 +129,26 @@ int32_t CrosslinkerContainer::getNSitesToBindPartial(const Microtubule& fixedMic
 void CrosslinkerContainer::findPossibleConnections(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing)
 {
     // Empty the container, the following will recalculate the whole vector
-    // The capacity of the vector does not change (?)
+    // The capacity of the vector does not change (not defined by standard)
     m_possibleConnections.clear();
 
     // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
     for(Crosslinker* p_linker : m_partialCrosslinkers)
     {
         addPossibleConnections(p_linker, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+    }
+}
+
+void CrosslinkerContainer::findPossiblePartialHops(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule)
+{
+    // Empty the container, the following will recalculate the whole vector
+    // The capacity of the vector does probably not change (not defined by standard)
+    m_possiblePartialHops.clear();
+
+    // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
+    for(Crosslinker* p_linker : m_partialCrosslinkers)
+    {
+        addPossiblePartialHops(p_linker, fixedMicrotubule, mobileMicrotubule);
     }
 }
 
@@ -161,7 +174,7 @@ void CrosslinkerContainer::addPossibleConnections(Crosslinker*const p_newPartial
         fixedMicrotubule.addPossibleConnectionsCloseTo(m_possibleConnections, p_newPartialCrosslinker, locationConnectedTo.position*latticeSpacing + mobileMicrotubule.getPosition(), maxStretch);
         break;
     default:
-        throw GeneralException("Wrong location stored and encountered in addPossibleConnections()");
+        throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::addPossibleConnections()");
     }
 }
 
@@ -175,18 +188,41 @@ void CrosslinkerContainer::removePossibleConnections(Crosslinker*const p_oldPart
                                                 {
                                                     // The identity of a partial linker is checked through its pointer (memory location)
                                                     // This is okay as long as the CrosslinkerContainer class guarantees that m_crosslinkers is never resized.
-                                                    if(possibleConnection.p_partialLinker==p_oldPartialCrosslinker)
-                                                    {
-                                                        return true;
-                                                    }
-                                                    else
-                                                    {
-                                                        return false;
-                                                    }
+                                                    return possibleConnection.p_partialLinker==p_oldPartialCrosslinker;
                                                 }), m_possibleConnections.end());
 
 }
 
+void CrosslinkerContainer::addPossiblePartialHops(Crosslinker*const p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule)
+{
+    SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundLocationWhenPartiallyConnected();
+
+    switch(locationConnectedTo.microtubule)
+    {
+    case MicrotubuleType::FIXED:
+        fixedMicrotubule.addPossiblePartialHopsCloseTo(m_possiblePartialHops, p_newPartialCrosslinker);
+        break;
+    case MicrotubuleType::MOBILE:
+        mobileMicrotubule.addPossiblePartialHopsCloseTo(m_possiblePartialHops, p_newPartialCrosslinker);
+        break;
+    default:
+        throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::addPossiblePartialHops()");
+    }
+}
+
+void CrosslinkerContainer::removePossiblePartialHops(Crosslinker*const p_oldPartialCrosslinker)
+{
+    // Use a lambda expression as a predicate for std::remove_if
+    // erase-remove idiom erases all elements complying to the predicate
+    m_possiblePartialHops.erase(std::remove_if(m_possiblePartialHops.begin(),m_possiblePartialHops.end(),
+                                                // lambda expression, capturing p_oldPartialCrosslinker by value, since it is a pointer
+                                                [p_oldPartialCrosslinker](const PossiblePartialHop& possiblePartialHop)
+                                                {
+                                                    // The identity of a partial linker is checked through its pointer (memory location)
+                                                    // This is okay as long as the CrosslinkerContainer class guarantees that m_crosslinkers is never resized.
+                                                    return possiblePartialHop.p_partialLinker==p_oldPartialCrosslinker;
+                                                }), m_possiblePartialHops.end());
+}
 
 void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker,
                                                                   const Microtubule& fixedMicrotubule,
