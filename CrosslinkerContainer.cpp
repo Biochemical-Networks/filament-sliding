@@ -241,11 +241,15 @@ void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p
     if(p_newPartialCrosslinker->getType()==m_linkerType)
     {
         addPossibleConnections(p_newPartialCrosslinker, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+
+        addPossiblePartialHops(p_newPartialCrosslinker, fixedMicrotubule, mobileMicrotubule);
     }
 
     SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundLocationWhenPartiallyConnected();
 
     updatePossibleConnectionsOppositeTo(p_newPartialCrosslinker, locationConnectedTo, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+
+    updatePossiblePartialHopsNextTo(locationConnectedTo, fixedMicrotubule, mobileMicrotubule);
 }
 
 void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker,
@@ -268,9 +272,13 @@ void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p
     if(p_oldPartialCrosslinker->getType() == m_linkerType)
     {
         removePossibleConnections(p_oldPartialCrosslinker);
+
+        removePossiblePartialHops(p_oldPartialCrosslinker);
     }
 
     updatePossibleConnectionsOppositeTo(p_oldPartialCrosslinker, locationOldConnection, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+
+    updatePossiblePartialHopsNextTo(locationOldConnection, fixedMicrotubule, mobileMicrotubule);
 }
 
 void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p_newPartialCrosslinker,
@@ -291,9 +299,13 @@ void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p
     if(p_newPartialCrosslinker->getType()==m_linkerType)
     {
         addPossibleConnections(p_newPartialCrosslinker, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+
+        addPossiblePartialHops(p_newPartialCrosslinker, fixedMicrotubule, mobileMicrotubule);
     }
 
     updatePossibleConnectionsOppositeTo(p_newPartialCrosslinker, locationOldConnection, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+
+    updatePossiblePartialHopsNextTo(locationOldConnection, fixedMicrotubule, mobileMicrotubule);
 
     // Update m_fullConnections:
     removeFullConnection(p_newPartialCrosslinker);
@@ -319,9 +331,13 @@ void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p
     if(p_oldPartialCrosslinker->getType() == m_linkerType)
     {
         removePossibleConnections(p_oldPartialCrosslinker);
+
+        removePossiblePartialHops(p_oldPartialCrosslinker);
     }
 
     updatePossibleConnectionsOppositeTo(p_oldPartialCrosslinker, locationNewConnection, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+
+    updatePossiblePartialHopsNextTo(locationNewConnection, fixedMicrotubule, mobileMicrotubule);
 
     // Update m_fullConnections:
     addFullConnection(p_oldPartialCrosslinker, mobileMicrotubule.getPosition(), latticeSpacing, maxStretch);
@@ -352,7 +368,7 @@ void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const
         partialNeighbours = fixedMicrotubule.getPartialCrosslinkersCloseTo(positionRelativeToOppositeMicrotubule, maxStretch, m_linkerType);
         break;
     default:
-        throw GeneralException("Wrong location stored and encountered in updatePossibleConnectionsOppositeTo()");
+        throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::updatePossibleConnectionsOppositeTo()");
     }
 
     for (Crosslinker* p_linker : partialNeighbours)
@@ -365,6 +381,29 @@ void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const
             removePossibleConnections(p_linker);
             addPossibleConnections(p_linker, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
         }
+    }
+}
+
+void CrosslinkerContainer::updatePossiblePartialHopsNextTo(const SiteLocation& originLocation, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule)
+{
+    std::vector<Crosslinker*> partialNeighbours;
+
+    switch(originLocation.microtubule)
+    {
+    case MicrotubuleType::FIXED:
+        partialNeighbours = fixedMicrotubule.getNeighbouringPartialCrosslinkersOf(originLocation, m_linkerType);
+        break;
+    case MicrotubuleType::MOBILE:
+        partialNeighbours = mobileMicrotubule.getNeighbouringPartialCrosslinkersOf(originLocation, m_linkerType);
+        break;
+    default:
+        throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::updatePossiblePartialHopsNextTo()");
+    }
+
+    for (Crosslinker* p_linker : partialNeighbours)
+    {
+        removePossiblePartialHops(p_linker);
+        addPossiblePartialHops(p_linker, fixedMicrotubule, mobileMicrotubule);
     }
 }
 

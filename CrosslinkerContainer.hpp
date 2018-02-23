@@ -49,6 +49,8 @@ private:
     void updatePossibleConnectionsOppositeTo(Crosslinker*const p_partialCrosslinker, SiteLocation locationConnection,
                                              const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
+    void updatePossiblePartialHopsNextTo(const SiteLocation& originLocation, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule);
+
     void addFullConnection(Crosslinker*const p_newFullCrosslinker, const double mobilePosition, const double latticeSpacing, const double maxStretch);
 
     void removeFullConnection(Crosslinker*const p_oldFullCrosslinker);
@@ -86,6 +88,7 @@ public:
 
     void findPossiblePartialHops(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule);
 
+    // The update functions have two purposes: to add possibilities for the new state of the linker, and to update the possibilities of the surrounding linkers.
     void updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker,
                                                 const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
