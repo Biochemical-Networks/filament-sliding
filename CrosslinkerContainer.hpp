@@ -34,6 +34,8 @@ private:
 
     std::vector<PossiblePartialHop> m_possiblePartialHops;
 
+    std::vector<PossibleFullHop> m_possibleFullHops;
+
     std::vector<FullConnection> m_fullConnections;
 
     // The following functions are used internally; cannot be called by public, m_possibleConnections is only altered through calls to (dis)connect functions, or to findPossibleConnections
@@ -45,6 +47,9 @@ private:
     void addPossiblePartialHops(Crosslinker*const p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule);
 
     void removePossiblePartialHops(Crosslinker*const p_oldPartialCrosslinker);
+
+    void addPossibleFullHop(const FullHopExtremity& newFullExtremity,
+                                const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
     void updatePossibleConnectionsOppositeTo(Crosslinker*const p_partialCrosslinker, SiteLocation locationConnection,
                                              const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
