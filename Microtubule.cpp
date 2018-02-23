@@ -217,6 +217,28 @@ std::vector<Crosslinker*> Microtubule::getPartialCrosslinkersCloseTo(const doubl
     }
 }
 
+std::vector<Crosslinker*> Microtubule::getNeighbouringPartialCrosslinkersOf(const SiteLocation& originLocation, const Crosslinker::Type typeToCheck) const
+{
+    #ifdef MYDEBUG
+    if (originLocation.microtubule != m_type)
+    {
+        throw GeneralException("Microtubule::getNeighbouringPartialCrosslinkersOf() was called on the wrong microtubule.");
+    }
+    #endif // MYDEBUG
+
+    std::vector<Crosslinker*> partialNeighbours;
+
+    if(originLocation.position!=0 && m_sites.at(originLocation.position-1).isPartial() && m_sites.at(originLocation.position-1).whichCrosslinkerIsBound()->getType()==typeToCheck)
+    {
+        partialNeighbours.push_back(m_sites.at(originLocation.position-1).whichCrosslinkerIsBound());
+    }
+    if(originLocation.position!=(m_nSites-1) && m_sites.at(originLocation.position+1).isFree() && m_sites.at(originLocation.position+1).whichCrosslinkerIsBound()->getType()==typeToCheck)
+    {
+        partialNeighbours.push_back(m_sites.at(originLocation.position+1).whichCrosslinkerIsBound());
+    }
+
+    return partialNeighbours;
+}
 
 
 

@@ -58,6 +58,9 @@ public:
 
     std::vector<Crosslinker*> getPartialCrosslinkersCloseTo(const double position, const double maxStretch, const Crosslinker::Type typeToCheck) const;
 
+    // The following function takes a location, since it could be used for finding neighbours of both full or partial linkers
+    std::vector<Crosslinker*> getNeighbouringPartialCrosslinkersOf(const SiteLocation& originLocation, const Crosslinker::Type typeToCheck) const;
+
 };
 
 #endif // MICROTUBULE_HPP
