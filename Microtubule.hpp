@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <vector>
 #include <deque>
+#include <utility>
 
 #include "Input/Input.hpp"
 #include "Site.hpp"
@@ -24,6 +25,8 @@ private:
     std::vector<Site> m_sites; // Vector, because the size never changes, but is only known at run time
 
     std::deque<int32_t> m_freeSitePositions; // Elements are removed often, so std::deque is used. The order of the positions will NOT be preserved.
+
+    std::pair<double,double> getOldAndNewStretchFullHop(const int32_t oldPosition, const int32_t newPosition, const double positionOppositeExtremity) const;
 
 public:
 
@@ -54,7 +57,10 @@ public:
     void addPossibleConnectionsCloseTo(std::vector<PossibleFullConnection>& possibleConnections, Crosslinker* const p_oppositeCrosslinker,
                                        const double position, const double maxStretch) const;
 
-    void addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>& possibleHops, Crosslinker* const p_partialLinker) const;
+    void addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>& possiblePartialHops, Crosslinker* const p_partialLinker) const;
+
+    void addPossibleFullHopsCloseTo(std::vector<PossibleFullHop>& possibleFullHops, const FullHopExtremity& fullLinkerExtremity,
+                                    const double positionOppositeExtremity, const double maxStretch) const;
 
     std::vector<Crosslinker*> getPartialCrosslinkersCloseTo(const double position, const double maxStretch, const Crosslinker::Type typeToCheck) const;
 

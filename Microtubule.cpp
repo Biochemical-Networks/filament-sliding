@@ -4,6 +4,7 @@
 #include <algorithm> // max/min
 #include <cmath> // ceil/floor
 #include <vector>
+#include <utility> // pair
 
 #include "PossibleFullConnection.hpp"
 #include "PossibleHop.hpp"
@@ -191,6 +192,92 @@ void Microtubule::addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>&
     if(partialLocation.position != (m_nSites-1) && m_sites.at(partialLocation.position+1).isFree())
     {
         possiblePartialHops.push_back(PossiblePartialHop{p_partialLinker, SiteLocation{m_type, partialLocation.position+1}});
+    }
+}
+
+// TODO: MAKE THIS THING RETURN A PossibleFullHop, COPY IMPLEMENTATION FROM addPossibleFullHopsCloseTo()
+// positionOppositeExtremity is the position relative to this microtubule
+std::pair<double,double> Microtubule::getOldAndNewStretchFullHop(const int32_t oldPosition, const int32_t newPosition, const double positionOppositeExtremity) const
+{
+    // stretch is mobilePos - fixedPos
+    double oldStretch;
+    double newStretch;
+
+    switch(m_type)
+    {
+    case MicrotubuleType::FIXED:
+        oldStretch = positionOppositeExtremity - oldPosition*m_latticeSpacing;
+        newStretch = positionOppositeExtremity - newPosition*m_latticeSpacing;
+        break;
+    case MicrotubuleType::MOBILE:
+        oldStretch = oldPosition*m_latticeSpacing - positionOppositeExtremity;
+        newStretch = newPosition*m_latticeSpacing - positionOppositeExtremity;
+        break;
+    default:
+        throw GeneralException("Microtubule::getOldAndNewStretchFullHop() encountered a wrong microtubule type");
+    }
+    return std::pair<double,double>{oldStretch, newStretch};
+}
+
+// positionOppositeExtremity is the position relative to this microtubule
+void Microtubule::addPossibleFullHopsCloseTo(std::vector<PossibleFullHop>& possibleFullHops,
+                                             const FullHopExtremity& fullLinkerExtremity,
+                                             const double positionOppositeExtremity,
+                                             const double maxStretch) const
+{
+    if(!fullLinkerExtremity.p_fullLinker->isFull())
+    {
+        throw GeneralException("Microtubule::addPossibleFullHopsCloseTo() encountered a non-full linker.");
+    }
+
+    SiteLocation originLocation = fullLinkerExtremity.p_fullLinker->getOneBoundLocationWhenFullyConnected(fullLinkerExtremity.terminus);
+
+    #ifdef MYDEBUG
+    if (originLocation.microtubule != m_type)
+    {
+        throw GeneralException("Microtubule::addPossibleFullHopsCloseTo() was called on the wrong microtubule.");
+    }
+    #endif // MYDEBUG
+
+    if(originLocation.position!=0 && m_sites.at(originLocation.position-1).isFree())
+    {
+        std::pair<double,double> oldAndNewStretch = getOldAndNewStretchFullHop(originLocation.position, originLocation.position-1, positionOppositeExtremity);
+
+        #ifdef MYDEBUG
+        if (std::abs(oldAndNewStretch.first) >= maxStretch)
+        {
+            throw GeneralException("Microtubule::addPossibleFullHopsCloseTo() encountered a forbidden stretch.");
+        }
+        #endif // MYDEBUG
+
+        if (std::abs(oldAndNewStretch.second) < maxStretch)
+        {
+            possibleFullHops.push_back(PossibleFullHop{fullLinkerExtremity.p_fullLinker,
+                                                       fullLinkerExtremity.terminus,
+                                                       SiteLocation{m_type, originLocation.position-1},
+                                                       oldAndNewStretch.first,
+                                                       oldAndNewStretch.second});
+        }
+    }
+    if(originLocation.position != (m_nSites-1) && m_sites.at(originLocation.position+1).isFree())
+    {
+        std::pair<double,double> oldAndNewStretch = getOldAndNewStretchFullHop(originLocation.position, originLocation.position+1, positionOppositeExtremity);
+
+        #ifdef MYDEBUG
+        if (std::abs(oldAndNewStretch.first) >= maxStretch)
+        {
+            throw GeneralException("Microtubule::addPossibleFullHopsCloseTo() encountered a forbidden stretch.");
+        }
+        #endif // MYDEBUG
+
+        if (std::abs(oldAndNewStretch.second) < maxStretch)
+        {
+            possibleFullHops.push_back(PossibleFullHop{fullLinkerExtremity.p_fullLinker,
+                                                       fullLinkerExtremity.terminus,
+                                                       SiteLocation{m_type, originLocation.position+1},
+                                                       oldAndNewStretch.first,
+                                                       oldAndNewStretch.second});
+        }
     }
 }
 
