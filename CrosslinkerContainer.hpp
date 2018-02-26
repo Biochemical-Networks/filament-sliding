@@ -98,6 +98,8 @@ public:
 
     void findPossiblePartialHops(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule);
 
+    void findPossibleFullHops(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+
     // The update functions have two purposes: to add possibilities for the new state of the linker, and to update the possibilities of the surrounding linkers.
     void updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker,
                                                 const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);

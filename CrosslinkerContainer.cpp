@@ -152,6 +152,20 @@ void CrosslinkerContainer::findPossiblePartialHops(const Microtubule& fixedMicro
     }
 }
 
+void CrosslinkerContainer::findPossibleFullHops(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing)
+{
+    // Empty the container, the following will recalculate the whole vector
+    // The capacity of the vector does probably not change (not defined by standard)
+    m_possibleFullHops.clear();
+
+    // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
+    for(Crosslinker* p_linker : m_fullCrosslinkers)
+    {
+        addPossibleFullHops(FullExtremity{p_linker, Crosslinker::Terminus::HEAD}, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+        addPossibleFullHops(FullExtremity{p_linker, Crosslinker::Terminus::TAIL}, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+    }
+}
+
 /* The following function adds all possible connections of *p_newPartialCrosslinker to m_possibleConnections.
  * It does not finish changing m_possibleConnections:
  * it is possible that the new partial linker also occupies the previously free position of a partial linker on the opposite microtubule.
