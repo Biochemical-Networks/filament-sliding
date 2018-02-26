@@ -224,13 +224,42 @@ void CrosslinkerContainer::removePossiblePartialHops(Crosslinker*const p_oldPart
                                                 }), m_possiblePartialHops.end());
 }
 
-void CrosslinkerContainer::addPossibleFullHop(const FullExtremity& newFullExtremity,
+void CrosslinkerContainer::addPossibleFullHops(const FullExtremity& newFullExtremity,
                         const Microtubule& fixedMicrotubule,
                         const MobileMicrotubule& mobileMicrotubule,
                         const double maxStretch,
                         const double latticeSpacing)
 {
+    SiteLocation originLocation = newFullExtremity.p_fullLinker->getSiteLocationOf(newFullExtremity.terminus);
 
+    Crosslinker::Terminus terminusOppositeExtremity = (newFullExtremity.terminus == Crosslinker::Terminus::HEAD) ? Crosslinker::Terminus::TAIL : Crosslinker::Terminus::HEAD;
+    SiteLocation oppositeLocation = newFullExtremity.p_fullLinker->getSiteLocationOf(terminusOppositeExtremity);
+
+    switch(originLocation.microtubule)
+    {
+    case MicrotubuleType::FIXED:
+        fixedMicrotubule.addPossibleFullHopsCloseTo(m_possibleFullHops, newFullExtremity, oppositeLocation.position*latticeSpacing + mobileMicrotubule.getPosition(), maxStretch);
+        break;
+    case MicrotubuleType::MOBILE:
+        mobileMicrotubule.addPossibleFullHopsCloseTo(m_possibleFullHops, newFullExtremity, oppositeLocation.position*latticeSpacing - mobileMicrotubule.getPosition(), maxStretch);
+        break;
+    default:
+        throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::addPossiblePartialHops()");
+    }
+}
+
+void CrosslinkerContainer::removePossibleFullHops(Crosslinker*const p_oldFullCrosslinker)
+{
+    // Use a lambda expression as a predicate for std::remove_if
+    // erase-remove idiom erases all elements complying to the predicate
+    m_possibleFullHops.erase(std::remove_if(m_possibleFullHops.begin(),m_possibleFullHops.end(),
+                                                // lambda expression, capturing p_oldPartialCrosslinker by value, since it is a pointer
+                                                [p_oldFullCrosslinker](const PossibleFullHop& possibleFullHop)
+                                                {
+                                                    // The identity of a full linker is checked through its pointer (memory location)
+                                                    // This is okay as long as the CrosslinkerContainer class guarantees that m_crosslinkers is never resized.
+                                                    return possibleFullHop.p_fullLinker==p_oldFullCrosslinker;
+                                                }), m_possibleFullHops.end());
 }
 
 void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker,
