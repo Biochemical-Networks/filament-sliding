@@ -105,7 +105,7 @@ int32_t CrosslinkerContainer::getNSitesToBindPartial(const Microtubule& fixedMic
     int32_t nSitesToBindPartial = 0;
 
     // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
-    for(auto p_linker : m_partialCrosslinkers)
+    for(Crosslinker*const p_linker : m_partialCrosslinkers)
     {
         SiteLocation locationConnectedTo = p_linker->getBoundLocationWhenPartiallyConnected();
 
@@ -133,7 +133,7 @@ void CrosslinkerContainer::findPossibleConnections(const Microtubule& fixedMicro
     m_possibleConnections.clear();
 
     // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
-    for(Crosslinker* p_linker : m_partialCrosslinkers)
+    for(Crosslinker*const p_linker : m_partialCrosslinkers)
     {
         addPossibleConnections(p_linker, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
     }
@@ -146,7 +146,7 @@ void CrosslinkerContainer::findPossiblePartialHops(const Microtubule& fixedMicro
     m_possiblePartialHops.clear();
 
     // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
-    for(Crosslinker* p_linker : m_partialCrosslinkers)
+    for(Crosslinker*const p_linker : m_partialCrosslinkers)
     {
         addPossiblePartialHops(p_linker, fixedMicrotubule, mobileMicrotubule);
     }
@@ -159,7 +159,7 @@ void CrosslinkerContainer::findPossibleFullHops(const Microtubule& fixedMicrotub
     m_possibleFullHops.clear();
 
     // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
-    for(Crosslinker* p_linker : m_fullCrosslinkers)
+    for(Crosslinker*const p_linker : m_fullCrosslinkers)
     {
         addPossibleFullHops(FullExtremity{p_linker, Crosslinker::Terminus::HEAD}, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
         addPossibleFullHops(FullExtremity{p_linker, Crosslinker::Terminus::TAIL}, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
@@ -423,7 +423,7 @@ void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const
         throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::updatePossibleConnectionsOppositeTo()");
     }
 
-    for (Crosslinker* p_linker : partialNeighbours)
+    for (Crosslinker*const p_linker : partialNeighbours)
     {
         // p_partialCrosslinker can be one of the linkers, but then this one should have been updated already
         if (p_linker!=p_partialCrosslinker)
@@ -452,7 +452,7 @@ void CrosslinkerContainer::updatePossiblePartialHopsNextTo(const SiteLocation& o
         throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::updatePossiblePartialHopsNextTo()");
     }
 
-    for (Crosslinker* p_linker : partialNeighbours)
+    for (Crosslinker*const p_linker : partialNeighbours)
     {
         removePossiblePartialHops(p_linker);
         addPossiblePartialHops(p_linker, fixedMicrotubule, mobileMicrotubule);
@@ -479,7 +479,7 @@ void CrosslinkerContainer::updatePossibleFullHopsNextTo(const SiteLocation& orig
         throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::updatePossibleFullHopsNextTo()");
     }
 
-    for (FullExtremity fullExtremity: fullNeighbours)
+    for (const FullExtremity& fullExtremity: fullNeighbours)
     {
         removePossibleFullHops(fullExtremity.p_fullLinker);
         addPossibleFullHops(fullExtremity, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
@@ -543,14 +543,14 @@ void CrosslinkerContainer::updateConnectionsAfterMobilePositionChange(const doub
 {
     // This function assumes that the change is possible!
     // Update extension of the full linkers
-    for (FullConnection connection : m_fullConnections)
+    for (FullConnection& connection : m_fullConnections)
     {
         connection.extension += positionChange;
     }
     // Check if the change is allowed by all the current possible connections: if not, then recalculate the possibilities completely
     if (possibleFullConnectionsConformToMobilePositionChange(positionChange, maxStretch))
     {
-        for (PossibleFullConnection connection : m_possibleConnections)
+        for (PossibleFullConnection& connection : m_possibleConnections)
         {
             connection.extension += positionChange;
         }
