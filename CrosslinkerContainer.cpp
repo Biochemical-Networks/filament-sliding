@@ -445,6 +445,33 @@ void CrosslinkerContainer::updatePossiblePartialHopsNextTo(const SiteLocation& o
     }
 }
 
+void CrosslinkerContainer::updatePossibleFullHopsNextTo(const SiteLocation& originLocation,
+                                                        const Microtubule& fixedMicrotubule,
+                                                        const MobileMicrotubule& mobileMicrotubule,
+                                                        const double maxStretch,
+                                                        const double latticeSpacing)
+{
+    std::vector<FullExtremity> fullNeighbours;
+
+    switch(originLocation.microtubule)
+    {
+    case MicrotubuleType::FIXED:
+        fullNeighbours = fixedMicrotubule.getNeighbouringFullCrosslinkersOf(originLocation, m_linkerType);
+        break;
+    case MicrotubuleType::MOBILE:
+        fullNeighbours = mobileMicrotubule.getNeighbouringFullCrosslinkersOf(originLocation, m_linkerType);
+        break;
+    default:
+        throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::updatePossibleFullHopsNextTo()");
+    }
+
+    for (FullExtremity fullExtremity: fullNeighbours)
+    {
+        removePossibleFullHops(fullExtremity.p_fullLinker);
+        addPossibleFullHops(fullExtremity, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+    }
+}
+
 std::pair<double, double> CrosslinkerContainer::movementBordersSetByFullLinkers(const double maxStretch) const
 {
     if(m_fullCrosslinkers.empty())

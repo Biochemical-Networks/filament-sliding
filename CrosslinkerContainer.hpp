@@ -58,6 +58,9 @@ private:
 
     void updatePossiblePartialHopsNextTo(const SiteLocation& originLocation, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule);
 
+    void updatePossibleFullHopsNextTo(const SiteLocation& originLocation,
+                                      const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+
     void addFullConnection(Crosslinker*const p_newFullCrosslinker, const double mobilePosition, const double latticeSpacing, const double maxStretch);
 
     void removeFullConnection(Crosslinker*const p_oldFullCrosslinker);
