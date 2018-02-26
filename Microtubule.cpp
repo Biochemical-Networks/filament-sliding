@@ -195,9 +195,8 @@ void Microtubule::addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>&
     }
 }
 
-// TODO: MAKE THIS THING RETURN A PossibleFullHop, COPY IMPLEMENTATION FROM addPossibleFullHopsCloseTo()
 // positionOppositeExtremity is the position relative to this microtubule
-std::pair<double,double> Microtubule::getOldAndNewStretchFullHop(const int32_t oldPosition, const int32_t newPosition, const double positionOppositeExtremity) const
+std::pair<double,double> Microtubule::getOldAndNewStretchFullHop(const int32_t oldPosition, const int32_t newPosition, const double positionOppositeExtremity, const double maxStretch) const
 {
     // stretch is mobilePos - fixedPos
     double oldStretch;
@@ -216,6 +215,14 @@ std::pair<double,double> Microtubule::getOldAndNewStretchFullHop(const int32_t o
     default:
         throw GeneralException("Microtubule::getOldAndNewStretchFullHop() encountered a wrong microtubule type");
     }
+
+    #ifdef MYDEBUG
+    if (std::abs(oldStretch) >= maxStretch)
+    {
+        throw GeneralException("Microtubule::getOldAndNewStretchFullHop() encountered a forbidden stretch.");
+    }
+    #endif // MYDEBUG
+
     return std::pair<double,double>{oldStretch, newStretch};
 }
 
@@ -241,14 +248,7 @@ void Microtubule::addPossibleFullHopsCloseTo(std::vector<PossibleFullHop>& possi
 
     if(originLocation.position!=0 && m_sites.at(originLocation.position-1).isFree())
     {
-        std::pair<double,double> oldAndNewStretch = getOldAndNewStretchFullHop(originLocation.position, originLocation.position-1, positionOppositeExtremity);
-
-        #ifdef MYDEBUG
-        if (std::abs(oldAndNewStretch.first) >= maxStretch)
-        {
-            throw GeneralException("Microtubule::addPossibleFullHopsCloseTo() encountered a forbidden stretch.");
-        }
-        #endif // MYDEBUG
+        std::pair<double,double> oldAndNewStretch = getOldAndNewStretchFullHop(originLocation.position, originLocation.position-1, positionOppositeExtremity, maxStretch);
 
         if (std::abs(oldAndNewStretch.second) < maxStretch)
         {
@@ -261,14 +261,7 @@ void Microtubule::addPossibleFullHopsCloseTo(std::vector<PossibleFullHop>& possi
     }
     if(originLocation.position != (m_nSites-1) && m_sites.at(originLocation.position+1).isFree())
     {
-        std::pair<double,double> oldAndNewStretch = getOldAndNewStretchFullHop(originLocation.position, originLocation.position+1, positionOppositeExtremity);
-
-        #ifdef MYDEBUG
-        if (std::abs(oldAndNewStretch.first) >= maxStretch)
-        {
-            throw GeneralException("Microtubule::addPossibleFullHopsCloseTo() encountered a forbidden stretch.");
-        }
-        #endif // MYDEBUG
+        std::pair<double,double> oldAndNewStretch = getOldAndNewStretchFullHop(originLocation.position, originLocation.position+1, positionOppositeExtremity, maxStretch);
 
         if (std::abs(oldAndNewStretch.second) < maxStretch)
         {
