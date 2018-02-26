@@ -65,7 +65,9 @@ private:
 
     void removeFullConnection(Crosslinker*const p_oldFullCrosslinker);
 
-    bool partialPossibleConnectionsConformToMobilePositionChange(const double positionChange, const double maxStretch) const;
+    bool possibleFullConnectionsConformToMobilePositionChange(const double positionChange, const double maxStretch) const;
+
+    bool possibleFullHopsConformToMobilePositionChange(const double positionChange, const double maxStretch) const;
 
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker, const Crosslinker::Type linkerType);

@@ -496,7 +496,7 @@ std::pair<double, double> CrosslinkerContainer::movementBordersSetByFullLinkers(
     // Initialise the borders with the first extension, since this is initially both the minimum and the maximum
     double minimumStretch = m_fullConnections.front().extension;
     double maximumStretch = minimumStretch;
-    for (const FullConnection connection : m_fullConnections)
+    for (const FullConnection& connection : m_fullConnections)
     {
         if(connection.extension < minimumStretch)
         {
@@ -511,11 +511,23 @@ std::pair<double, double> CrosslinkerContainer::movementBordersSetByFullLinkers(
     return std::pair<double,double>((-maxStretch-minimumStretch), (maxStretch-maximumStretch));
 }
 
-bool CrosslinkerContainer::partialPossibleConnectionsConformToMobilePositionChange(const double positionChange, const double maxStretch) const
+bool CrosslinkerContainer::possibleFullConnectionsConformToMobilePositionChange(const double positionChange, const double maxStretch) const
 {
-    for (const PossibleFullConnection connection : m_possibleConnections)
+    for (const PossibleFullConnection& connection : m_possibleConnections)
     {
         if(std::abs(connection.extension + positionChange) >= maxStretch)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool CrosslinkerContainer::possibleFullHopsConformToMobilePositionChange(const double positionChange, const double maxStretch) const
+{
+    for (const PossibleFullHop& hop : m_possibleFullHops)
+    {
+        if(std::abs(hop.newExtension + positionChange) >= maxStretch)
         {
             return false;
         }
@@ -536,7 +548,7 @@ void CrosslinkerContainer::updateConnectionsAfterMobilePositionChange(const doub
         connection.extension += positionChange;
     }
     // Check if the change is allowed by all the current possible connections: if not, then recalculate the possibilities completely
-    if (partialPossibleConnectionsConformToMobilePositionChange(positionChange, maxStretch))
+    if (possibleFullConnectionsConformToMobilePositionChange(positionChange, maxStretch))
     {
         for (PossibleFullConnection connection : m_possibleConnections)
         {
