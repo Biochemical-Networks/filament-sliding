@@ -61,13 +61,15 @@ private:
     void updatePossibleFullHopsNextTo(const SiteLocation& originLocation,
                                       const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
-    void addFullConnection(Crosslinker*const p_newFullCrosslinker, const double mobilePosition, const double latticeSpacing, const double maxStretch);
+    void addFullConnection(Crosslinker*const p_newFullCrosslinker, const double mobilePosition, const double maxStretch, const double latticeSpacing);
 
     void removeFullConnection(Crosslinker*const p_oldFullCrosslinker);
 
     bool possibleFullConnectionsConformToMobilePositionChange(const double positionChange, const double maxStretch) const;
 
     bool possibleFullHopsConformToMobilePositionChange(const double positionChange, const double maxStretch) const;
+
+    double myMod(const double x, const double y) const;
 
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker, const Crosslinker::Type linkerType);

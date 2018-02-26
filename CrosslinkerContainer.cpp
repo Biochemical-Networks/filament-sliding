@@ -392,7 +392,7 @@ void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p
     updatePossiblePartialHopsNextTo(locationNewConnection, fixedMicrotubule, mobileMicrotubule);
 
     // Update m_fullConnections:
-    addFullConnection(p_oldPartialCrosslinker, mobileMicrotubule.getPosition(), latticeSpacing, maxStretch);
+    addFullConnection(p_oldPartialCrosslinker, mobileMicrotubule.getPosition(), maxStretch, latticeSpacing);
 }
 
 /* This function updates the possible connections for partials close to locationConnection, on the opposite microtubule.
@@ -535,6 +535,12 @@ bool CrosslinkerContainer::possibleFullHopsConformToMobilePositionChange(const d
     return true;
 }
 
+double CrosslinkerContainer::myMod(const double x, const double y) const
+{
+    // both std::fmod and std::remainder do not give the results I need, need mod(1.1,1) = 0.1, mod(-0.1, 1) = 0.9
+    return x - (std::floor(x/y)*y);
+}
+
 void CrosslinkerContainer::updateConnectionsAfterMobilePositionChange(const double positionChange,
                                                                       const Microtubule& fixedMicrotubule,
                                                                       const MobileMicrotubule& mobileMicrotubule,
@@ -547,7 +553,20 @@ void CrosslinkerContainer::updateConnectionsAfterMobilePositionChange(const doub
     {
         connection.extension += positionChange;
     }
-    // Check if the change is allowed by all the current possible connections: if not, then recalculate the possibilities completely
+
+    // Calculate the boundaries over which possibilities could change.
+    // This is done because possibilities change either through 1) some not possible any more 2) new possibilities. The former can be checked, the latter can only be done through recalculation
+    // Hence, we just always recalculate is the change could make new possibilities available.
+
+    const double currentPosition = mobileMicrotubule.getPosition();
+
+    const double mod1 = myMod(maxStretch, latticeSpacing);
+    const double mod2 = myMod(-maxStretch, latticeSpacing);
+
+
+    const double lowerBorder1 = std::floor((currentPosition-mod1)/latticeSpacing)*latticeSpacing+mod1;
+
+    /*// Check if the change is allowed by all the current possible connections: if not, then recalculate the possibilities completely
     if (possibleFullConnectionsConformToMobilePositionChange(positionChange, maxStretch))
     {
         for (PossibleFullConnection& connection : m_possibleConnections)
@@ -558,10 +577,10 @@ void CrosslinkerContainer::updateConnectionsAfterMobilePositionChange(const doub
     else
     {
         findPossibleConnections(fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
-    }
+    }*/
 }
 
-void CrosslinkerContainer::addFullConnection(Crosslinker*const p_newFullCrosslinker, const double mobilePosition, const double latticeSpacing, const double maxStretch)
+void CrosslinkerContainer::addFullConnection(Crosslinker*const p_newFullCrosslinker, const double mobilePosition, const double maxStretch, const double latticeSpacing)
 {
     SiteLocation headLocation = p_newFullCrosslinker->getOneBoundLocationWhenFullyConnected(Crosslinker::Terminus::HEAD);
     SiteLocation tailLocation = p_newFullCrosslinker->getOneBoundLocationWhenFullyConnected(Crosslinker::Terminus::TAIL);
