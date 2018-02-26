@@ -32,6 +32,8 @@ public:
 
     bool isPartial() const;
 
+    bool isFull() const;
+
     Crosslinker* whichCrosslinkerIsBound() const;
 
 };

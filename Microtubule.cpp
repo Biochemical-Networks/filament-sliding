@@ -228,7 +228,7 @@ std::pair<double,double> Microtubule::getOldAndNewStretchFullHop(const int32_t o
 
 // positionOppositeExtremity is the position relative to this microtubule
 void Microtubule::addPossibleFullHopsCloseTo(std::vector<PossibleFullHop>& possibleFullHops,
-                                             const FullHopExtremity& fullLinkerExtremity,
+                                             const FullExtremity& fullLinkerExtremity,
                                              const double positionOppositeExtremity,
                                              const double maxStretch) const
 {
@@ -324,5 +324,32 @@ std::vector<Crosslinker*> Microtubule::getNeighbouringPartialCrosslinkersOf(cons
     return partialNeighbours;
 }
 
+std::vector<FullExtremity> Microtubule::getNeighbouringFullCrosslinkersOf(const SiteLocation& originLocation, const Crosslinker::Type typeToCheck) const
+{
+    #ifdef MYDEBUG
+    if (originLocation.microtubule != m_type)
+    {
+        throw GeneralException("Microtubule::getNeighbouringFullCrosslinkersOf() was called on the wrong microtubule.");
+    }
+    #endif // MYDEBUG
+
+    std::vector<FullExtremity> fullNeighbours;
+
+    if((originLocation.position!=0) && (m_sites.at(originLocation.position-1).isFull())
+                                    && (m_sites.at(originLocation.position-1).whichCrosslinkerIsBound()->getType()==typeToCheck))
+    {
+        Crosslinker*const p_linker = m_sites.at(originLocation.position-1).whichCrosslinkerIsBound();
+        fullNeighbours.push_back(FullExtremity{p_linker, p_linker->getTerminusOfFullOn(m_type)});
+    }
+
+    if((originLocation.position!=(m_nSites-1)) && (m_sites.at(originLocation.position+1).isFull())
+                                    && (m_sites.at(originLocation.position+1).whichCrosslinkerIsBound()->getType()==typeToCheck))
+    {
+        Crosslinker*const p_linker = m_sites.at(originLocation.position+1).whichCrosslinkerIsBound();
+        fullNeighbours.push_back(FullExtremity{p_linker, p_linker->getTerminusOfFullOn(m_type)});
+    }
+
+    return fullNeighbours;
+}
 
 

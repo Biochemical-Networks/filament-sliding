@@ -43,12 +43,6 @@ public:
 
     Type getType() const;
 
-/*    int32_t getHeadPosition() const;
-    int32_t getTailPosition() const;
-
-    MicrotubuleType getHeadMicrotubuleType() const;
-    MicrotubuleType getTailMicrotubuleType() const;*/
-
     SiteLocation getSiteLocationOf(const Terminus terminus) const;
 
     void connectFromFree(const Terminus terminusToConnect, const SiteLocation connectAt);
@@ -61,12 +55,11 @@ public:
 
     Terminus getFreeTerminusWhenPartiallyConnected() const;
 
+    Terminus getTerminusOfFullOn(const MicrotubuleType microtubule) const;
+
     SiteLocation getBoundLocationWhenPartiallyConnected() const;
 
     SiteLocation getOneBoundLocationWhenFullyConnected(const Crosslinker::Terminus terminus) const;
-
-/*    void setHeadPosition(const int32_t sitePosition);
-    void setTailPosition(const int32_t sitePosition);*/
 
 };
 

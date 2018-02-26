@@ -224,7 +224,7 @@ void CrosslinkerContainer::removePossiblePartialHops(Crosslinker*const p_oldPart
                                                 }), m_possiblePartialHops.end());
 }
 
-void CrosslinkerContainer::addPossibleFullHop(const FullHopExtremity& newFullExtremity,
+void CrosslinkerContainer::addPossibleFullHop(const FullExtremity& newFullExtremity,
                         const Microtubule& fixedMicrotubule,
                         const MobileMicrotubule& mobileMicrotubule,
                         const double maxStretch,

@@ -48,7 +48,7 @@ private:
 
     void removePossiblePartialHops(Crosslinker*const p_oldPartialCrosslinker);
 
-    void addPossibleFullHop(const FullHopExtremity& newFullExtremity,
+    void addPossibleFullHop(const FullExtremity& newFullExtremity,
                                 const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
 
     void updatePossibleConnectionsOppositeTo(Crosslinker*const p_partialCrosslinker, SiteLocation locationConnection,

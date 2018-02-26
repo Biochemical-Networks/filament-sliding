@@ -59,3 +59,8 @@ void Extremity::disconnect()
     }
     m_connected = false;
 }
+
+MicrotubuleType Extremity::getMicrotubuleConnectedTo() const
+{
+    return m_connectedTo;
+}

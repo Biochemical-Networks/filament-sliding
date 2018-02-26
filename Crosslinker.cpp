@@ -40,27 +40,6 @@ Crosslinker::Type Crosslinker::getType() const
     return m_type;
 }
 
-/*
-int32_t Crosslinker::getHeadPosition() const
-{
-    return m_head.getPosition();
-}
-
-int32_t Crosslinker::getTailPosition() const
-{
-    return m_tail.getPosition();
-}
-
-MicrotubuleType Crosslinker::getHeadMicrotubuleType() const
-{
-    return m_head.getMicrotubuleType();
-}
-
-MicrotubuleType Crosslinker::getTailMicrotubuleType() const
-{
-    return m_tail.getMicrotubuleType();
-}*/
-
 SiteLocation Crosslinker::getSiteLocationOf(const Crosslinker::Terminus terminus) const
 {
     // If the specific extremity is not connected, its getSiteLocation will throw
@@ -177,6 +156,29 @@ Crosslinker::Terminus Crosslinker::getFreeTerminusWhenPartiallyConnected() const
     }
 }
 
+Crosslinker::Terminus Crosslinker::getTerminusOfFullOn(const MicrotubuleType microtubule) const
+{
+    #ifdef MYDEBUG
+    if(!isFull())
+    {
+        throw GeneralException("Crosslinker::getTerminusOfFullOn() was called on a non-full linker");
+    }
+    #endif // MYDEBUG
+
+    if(m_head.getMicrotubuleConnectedTo()==microtubule)
+    {
+        return Terminus::HEAD;
+    }
+    else if(m_tail.getMicrotubuleConnectedTo()==microtubule)
+    {
+        return Terminus::TAIL;
+    }
+    else
+    {
+        throw GeneralException("Crosslinker::getTerminusOfFullOn() was called on a linker that was connected to one microtubule twice");
+    }
+}
+
 SiteLocation Crosslinker::getBoundLocationWhenPartiallyConnected() const
 {
     bool partialWithTail = (!m_head.isConnected())&&(m_tail.isConnected());
@@ -216,10 +218,3 @@ SiteLocation Crosslinker::getOneBoundLocationWhenFullyConnected(const Crosslinke
             throw GeneralException("getOneBoundPositionWhenFullyConnected() was passed a wrong Terminus.");
     }
 }
-
-
-
-
-
-
-

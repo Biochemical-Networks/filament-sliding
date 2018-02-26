@@ -50,11 +50,32 @@ bool Site::isPartial() const
     {
         return false;
     }
-    return mp_connectedCrosslinker->isPartial();
+    else
+    {
+        return mp_connectedCrosslinker->isPartial();
+    }
 }
+
+
+bool Site::isFull() const
+{
+    if (m_isFree)
+    {
+        return false;
+    }
+    else
+    {
+        return mp_connectedCrosslinker->isFull();
+    }
+}
+
 
 
 Crosslinker* Site::whichCrosslinkerIsBound() const
 {
+    if (m_isFree)
+    {
+        throw GeneralException("Site::whichCrosslinkerIsBound was called on a free Crosslinker");
+    }
     return mp_connectedCrosslinker;
 }

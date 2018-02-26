@@ -20,7 +20,7 @@ struct PossibleFullHop
     double newExtension; // positionOnMobile - positionOnFixed, should differ exactly one lattice spacing from oldExtension
 };
 
-struct FullHopExtremity
+struct FullExtremity
 {
     Crosslinker* p_fullLinker;
     Crosslinker::Terminus terminus;

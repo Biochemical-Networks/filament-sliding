@@ -59,13 +59,15 @@ public:
 
     void addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>& possiblePartialHops, Crosslinker* const p_partialLinker) const;
 
-    void addPossibleFullHopsCloseTo(std::vector<PossibleFullHop>& possibleFullHops, const FullHopExtremity& fullLinkerExtremity,
+    void addPossibleFullHopsCloseTo(std::vector<PossibleFullHop>& possibleFullHops, const FullExtremity& fullLinkerExtremity,
                                     const double positionOppositeExtremity, const double maxStretch) const;
 
     std::vector<Crosslinker*> getPartialCrosslinkersCloseTo(const double position, const double maxStretch, const Crosslinker::Type typeToCheck) const;
 
-    // The following function takes a location, since it could be used for finding neighbours of both full or partial linkers
+    // The following functions take a location instead of a linker (pointer), since it could be used for finding neighbours of both full or partial linkers
     std::vector<Crosslinker*> getNeighbouringPartialCrosslinkersOf(const SiteLocation& originLocation, const Crosslinker::Type typeToCheck) const;
+
+    std::vector<FullExtremity> getNeighbouringFullCrosslinkersOf(const SiteLocation& originLocation, const Crosslinker::Type typeToCheck) const;
 
 };
 

@@ -24,6 +24,8 @@ public:
     void disconnect();
 
     void changePosition(const SiteLocation siteToConnectTo);
+
+    MicrotubuleType getMicrotubuleConnectedTo() const;
 };
 
 #endif // EXTREMITY_HPP
