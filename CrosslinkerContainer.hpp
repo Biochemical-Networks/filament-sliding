@@ -57,7 +57,7 @@ private:
 
     void removePossiblePartialHops(Crosslinker*const p_oldPartialCrosslinker);
 
-    void addPossibleFullHops(const FullExtremity& newFullExtremity);
+    void addPossibleFullHops(Crosslinker*const p_newFullCrosslinker);
 
     void removePossibleFullHops(Crosslinker*const p_oldFullCrosslinker);
 
@@ -128,6 +128,7 @@ public:
     void resetPossibilities();
 
     // The update functions have two purposes: to add possibilities for the new state of the linker, and to update the possibilities of the surrounding linkers.
+    // They need to be called when any linker goes through the change: when the linker is of a different type, it can still affect the possibilities of linkers of this type
     void updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker);
 
     void updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection);

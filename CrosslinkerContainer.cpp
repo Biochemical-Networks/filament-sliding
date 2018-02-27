@@ -42,8 +42,8 @@ CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers,
         throw GeneralException("An algorithm in the class CrosslinkerContainer uses the IEEE 754 standard to represent positive and negative infinity");
     }
 
-    // Initialise the borders: needed, since even the non-connected microtubules have these imaginary borders, and they are only updated after they exist.
-    findPossibilityBorders();
+    // Borders for the region in which possibilities are valid need to be initialised. Non-connected microtubules have these imaginary borders, and they are only updated after they exist.
+    // However, the mobile needs to have a position first. Therefore, initialisation of the borders happens upon setting an initial position through SystemState.
 }
 
 CrosslinkerContainer::~CrosslinkerContainer()
@@ -176,8 +176,7 @@ void CrosslinkerContainer::findPossibleFullHops()
     // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
     for(Crosslinker*const p_linker : m_fullCrosslinkers)
     {
-        addPossibleFullHops(FullExtremity{p_linker, Crosslinker::Terminus::HEAD});
-        addPossibleFullHops(FullExtremity{p_linker, Crosslinker::Terminus::TAIL});
+        addPossibleFullHops(p_linker); // Adds the possible hops for both extremities of the full linker
     }
 }
 
@@ -251,20 +250,31 @@ void CrosslinkerContainer::removePossiblePartialHops(Crosslinker*const p_oldPart
                                                 }), m_possiblePartialHops.end());
 }
 
-void CrosslinkerContainer::addPossibleFullHops(const FullExtremity& newFullExtremity)
+void CrosslinkerContainer::addPossibleFullHops(Crosslinker*const p_newFullCrosslinker)
 {
-    SiteLocation originLocation = newFullExtremity.p_fullLinker->getSiteLocationOf(newFullExtremity.terminus);
+    SiteLocation headLocation = p_newFullCrosslinker->getSiteLocationOf(Crosslinker::Terminus::HEAD);
+    SiteLocation tailLocation = p_newFullCrosslinker->getSiteLocationOf(Crosslinker::Terminus::TAIL);
 
-    Crosslinker::Terminus terminusOppositeExtremity = (newFullExtremity.terminus == Crosslinker::Terminus::HEAD) ? Crosslinker::Terminus::TAIL : Crosslinker::Terminus::HEAD;
-    SiteLocation oppositeLocation = newFullExtremity.p_fullLinker->getSiteLocationOf(terminusOppositeExtremity);
+    #ifdef MYDEBUG
+    if (headLocation.microtubule == tailLocation.microtubule)
+    {
+        throw GeneralException("CrosslinkerContainer::addPossibleFullHops() encountered a full linker that was doubly connected to a single microtubule.");
+    }
+    #endif // MYDEBUG
 
-    switch(originLocation.microtubule)
+    switch(headLocation.microtubule)
     {
     case MicrotubuleType::FIXED:
-        m_fixedMicrotubule.addPossibleFullHopsCloseTo(m_possibleFullHops, newFullExtremity, oppositeLocation.position*m_latticeSpacing + m_mobileMicrotubule.getPosition(), m_maxStretch);
+        m_fixedMicrotubule.addPossibleFullHopsCloseTo(m_possibleFullHops, FullExtremity{p_newFullCrosslinker, Crosslinker::Terminus::HEAD},
+                                                      tailLocation.position*m_latticeSpacing + m_mobileMicrotubule.getPosition(), m_maxStretch);
+        m_mobileMicrotubule.addPossibleFullHopsCloseTo(m_possibleFullHops, FullExtremity{p_newFullCrosslinker, Crosslinker::Terminus::TAIL},
+                                                      headLocation.position*m_latticeSpacing - m_mobileMicrotubule.getPosition(), m_maxStretch);
         break;
     case MicrotubuleType::MOBILE:
-        m_mobileMicrotubule.addPossibleFullHopsCloseTo(m_possibleFullHops, newFullExtremity, oppositeLocation.position*m_latticeSpacing - m_mobileMicrotubule.getPosition(), m_maxStretch);
+        m_mobileMicrotubule.addPossibleFullHopsCloseTo(m_possibleFullHops, FullExtremity{p_newFullCrosslinker, Crosslinker::Terminus::HEAD},
+                                                       tailLocation.position*m_latticeSpacing - m_mobileMicrotubule.getPosition(), m_maxStretch);
+        m_fixedMicrotubule.addPossibleFullHopsCloseTo(m_possibleFullHops, FullExtremity{p_newFullCrosslinker, Crosslinker::Terminus::TAIL},
+                                                       headLocation.position*m_latticeSpacing + m_mobileMicrotubule.getPosition(), m_maxStretch);
         break;
     default:
         throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::addPossiblePartialHops()");
@@ -307,6 +317,8 @@ void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p
     updatePossibleConnectionsOppositeTo(p_newPartialCrosslinker, locationConnectedTo);
 
     updatePossiblePartialHopsNextTo(locationConnectedTo);
+
+    updatePossibleFullHopsNextTo(locationConnectedTo);
 }
 
 void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection)
@@ -331,6 +343,8 @@ void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p
     updatePossibleConnectionsOppositeTo(p_oldPartialCrosslinker, locationOldConnection);
 
     updatePossiblePartialHopsNextTo(locationOldConnection);
+
+    updatePossibleFullHopsNextTo(locationOldConnection);
 }
 
 void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p_newPartialCrosslinker, const SiteLocation locationOldConnection)
@@ -348,14 +362,18 @@ void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p
         addPossibleConnections(p_newPartialCrosslinker);
 
         addPossiblePartialHops(p_newPartialCrosslinker);
+
+        removePossibleFullHops(p_newPartialCrosslinker);
+
+        // Update m_fullConnections:
+        removeFullConnection(p_newPartialCrosslinker);
     }
 
     updatePossibleConnectionsOppositeTo(p_newPartialCrosslinker, locationOldConnection);
 
     updatePossiblePartialHopsNextTo(locationOldConnection);
 
-    // Update m_fullConnections:
-    removeFullConnection(p_newPartialCrosslinker);
+    updatePossibleFullHopsNextTo(locationOldConnection);
 }
 
 void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationNewConnection)
@@ -375,14 +393,18 @@ void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p
         removePossibleConnections(p_oldPartialCrosslinker);
 
         removePossiblePartialHops(p_oldPartialCrosslinker);
+
+        addPossibleFullHops(p_oldPartialCrosslinker);
+
+        // Update m_fullConnections:
+        addFullConnection(p_oldPartialCrosslinker);
     }
 
     updatePossibleConnectionsOppositeTo(p_oldPartialCrosslinker, locationNewConnection);
 
     updatePossiblePartialHopsNextTo(locationNewConnection);
 
-    // Update m_fullConnections:
-    addFullConnection(p_oldPartialCrosslinker);
+    updatePossibleFullHopsNextTo(locationNewConnection);
 }
 
 /* This function updates the possible connections for partials close to locationConnection, on the opposite microtubule.
@@ -462,8 +484,8 @@ void CrosslinkerContainer::updatePossibleFullHopsNextTo(const SiteLocation& orig
 
     for (const FullExtremity& fullExtremity: fullNeighbours)
     {
-        removePossibleFullHops(fullExtremity.p_fullLinker);
-        addPossibleFullHops(fullExtremity);
+        removePossibleFullHops(fullExtremity.p_fullLinker); // removes the possible hops of both extremities, so
+        addPossibleFullHops(fullExtremity.p_fullLinker); // this adds the possible hops of both extremities again, in the updated configuration
     }
 }
 

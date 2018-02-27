@@ -40,9 +40,14 @@ void SystemState::setMicrotubulePosition(const double initialPosition)
 {
     if (m_nCrosslinkers!=getNFreeCrosslinkers())
     {
-        throw GeneralException("setMicrotubulePosition() was called on a system which has connected linkers");
+        throw GeneralException("SystemState::setMicrotubulePosition() was called on a system which has connected linkers");
     }
     m_mobileMicrotubule.setPosition(initialPosition);
+
+    // since no linkers are connected, the only thing the following function calls do is set the borders of the region within the possibilities are valid
+    m_passiveCrosslinkers.resetPossibilities();
+    m_dualCrosslinkers.resetPossibilities();
+    m_activeCrosslinkers.resetPossibilities();
 }
 
 // The following function assumes that it is possible to connect the crosslinker, otherwise it will throw
@@ -61,7 +66,7 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type,
             p_microtubuleToConnect = &m_mobileMicrotubule;
             break;
         default:
-            throw GeneralException("An incorrect microtubule type was passed to connectCrosslinker");
+            throw GeneralException("An incorrect microtubule type was passed to SystemState::connectFreeCrosslinker");
             break;
     }
 
@@ -82,7 +87,7 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type,
             p_connectingCrosslinker = m_activeCrosslinkers.connectFromFreeToPartial();
             break;
         default:
-            throw GeneralException("An incorrect crosslinker type was passed to connectFreeCrosslinker()");
+            throw GeneralException("An incorrect crosslinker type was passed to SystemState::connectFreeCrosslinker()");
             break;
     }
 
@@ -122,7 +127,7 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
             m_activeCrosslinkers.disconnectFromPartialToFree(disconnectingCrosslinker);
             break;
         default:
-            throw GeneralException("An incorrect crosslinker type was passed to disconnectPartiallyConnectedCrosslinker()");
+            throw GeneralException("An incorrect crosslinker type was passed to SystemState::disconnectPartiallyConnectedCrosslinker()");
             break;
     }
 
@@ -136,7 +141,7 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
             m_mobileMicrotubule.disconnectSite(locationToDisconnectFrom.position);
             break;
         default:
-            throw GeneralException("An incorrect microtubule type was passed to disconnectPartiallyConnectedCrosslinker()");
+            throw GeneralException("An incorrect microtubule type was passed to SystemState::disconnectPartiallyConnectedCrosslinker()");
             break;
     }
 
@@ -168,13 +173,13 @@ void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCr
             positionOnMobileMicrotubule = locationOppositeMicrotubule.position*m_latticeSpacing + m_mobileMicrotubule.getPosition();
             break;
         default:
-            throw GeneralException("An incorrect microtubule type was passed to connectCrosslinker()");
+            throw GeneralException("An incorrect microtubule type was passed to SystemState::connectPartiallyConnectedCrosslinker()");
             break;
     }
 
     if(std::abs(positionOnFixedMicrotubule-positionOnMobileMicrotubule)>=m_maxStretch)
     {
-        throw GeneralException("A full connection attempt was made creating an overstretched crosslinker");
+        throw GeneralException("A full connection attempt was made creating an overstretched crosslinker in SystemState::connectPartiallyConnectedCrosslinker()");
     }
 
     Crosslinker::Terminus terminusToConnect = connectingCrosslinker.getFreeTerminusWhenPartiallyConnected();
@@ -198,7 +203,7 @@ void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCr
             m_activeCrosslinkers.connectFromPartialToFull(connectingCrosslinker);
             break;
         default:
-            throw GeneralException("An incorrect crosslinker type was passed to disconnectPartiallyConnectedCrosslinker()");
+            throw GeneralException("An incorrect crosslinker type was passed to SystemState::connectPartiallyConnectedCrosslinker()");
             break;
     }
 
@@ -232,7 +237,7 @@ void SystemState::disconnectFullyConnectedCrosslinker(Crosslinker& disconnecting
             m_activeCrosslinkers.disconnectFromFullToPartial(disconnectingCrosslinker);
             break;
         default:
-            throw GeneralException("An incorrect crosslinker type was passed to disconnectFullyConnectedCrosslinker()");
+            throw GeneralException("An incorrect crosslinker type was passed to SystemState::disconnectFullyConnectedCrosslinker()");
             break;
     }
 
@@ -247,7 +252,7 @@ void SystemState::disconnectFullyConnectedCrosslinker(Crosslinker& disconnecting
             m_mobileMicrotubule.disconnectSite(locationToDisconnectFrom.position);
             break;
         default:
-            throw GeneralException("An incorrect microtubule type was passed to disconnectFullyConnectedCrosslinker()");
+            throw GeneralException("An incorrect microtubule type was passed to SystemState::disconnectFullyConnectedCrosslinker()");
             break;
     }
 
@@ -306,7 +311,7 @@ int32_t SystemState::getNFreeCrosslinkersOfType(const Crosslinker::Type type) co
             return m_activeCrosslinkers.getNFreeCrosslinkers();
             break;
         default:
-            throw GeneralException("An incorrect crosslinker type was passed to getNFreeCrosslinkersOfType()");
+            throw GeneralException("An incorrect crosslinker type was passed to SystemState::getNFreeCrosslinkersOfType()");
             break;
     }
 }
@@ -325,7 +330,7 @@ int32_t SystemState::getNPartialCrosslinkersOfType(const Crosslinker::Type type)
             return m_activeCrosslinkers.getNPartialCrosslinkers();
             break;
         default:
-            throw GeneralException("An incorrect crosslinker type was passed to getNPartialCrosslinkersOfType()");
+            throw GeneralException("An incorrect crosslinker type was passed to SystemState::getNPartialCrosslinkersOfType()");
             break;
     }
 }
@@ -353,7 +358,7 @@ double SystemState::overlapLength() const
 
     if(overlap <=(-m_maxStretch))
     {
-        throw GeneralException("The overlap disappeared");
+        throw GeneralException("The overlap disappeared according to SystemState::overlapLength()");
     }
     return overlap;
 }
@@ -424,7 +429,7 @@ int32_t SystemState::getFreeSitePosition(const MicrotubuleType microtubuleType, 
             return m_mobileMicrotubule.getFreeSitePosition(whichFreeSite);
             break;
         default:
-            throw GeneralException("An incorrect microtubule type was passed to getFreeSitePosition");
+            throw GeneralException("An incorrect microtubule type was passed to SystemState::getFreeSitePosition()");
             break;
     }
 }
@@ -451,7 +456,7 @@ int32_t SystemState::getNSitesToBindPartial(const Crosslinker::Type type) const
             containerToCheck = &m_activeCrosslinkers;
             break;
         default:
-            throw GeneralException("An incorrect crosslinker type was passed to getNSitesToBindPartial()");
+            throw GeneralException("An incorrect crosslinker type was passed to SystemState::getNSitesToBindPartial()");
             break;
     }
 
@@ -475,7 +480,7 @@ void SystemState::findPossibilities(const Crosslinker::Type type)
             containerToCheck = &m_activeCrosslinkers;
             break;
         default:
-            throw GeneralException("An incorrect crosslinker type was passed to getNSitesToBindPartial()");
+            throw GeneralException("An incorrect crosslinker type was passed to SystemState::findPossibilities()");
             break;
     }
     containerToCheck->resetPossibilities();
