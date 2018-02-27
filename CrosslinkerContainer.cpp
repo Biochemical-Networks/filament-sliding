@@ -495,7 +495,7 @@ double CrosslinkerContainer::myMod(const double x, const double y) const
     return x - (std::floor(x/y)*y);
 }
 
-void CrosslinkerContainer::findBorders()
+void CrosslinkerContainer::findPossibilityBorders()
 {
     const double currentPosition = m_mobileMicrotubule.getPosition();
 
@@ -602,7 +602,7 @@ const std::vector<Crosslinker*>& CrosslinkerContainer::getPartialLinkers() const
 
 void CrosslinkerContainer::resetPossibilities()
 {
-    findBorders();
+    findPossibilityBorders();
 
     findPossibleConnections();
 

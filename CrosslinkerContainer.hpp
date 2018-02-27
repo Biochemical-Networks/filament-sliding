@@ -19,10 +19,10 @@ private:
     std::vector<Crosslinker> m_crosslinkers; // The vector manages existence of the crosslinkers.
 
     // Since this class holds many functions checking which modifications are possible, it needs to know the following quantities often
-    const double m_latticeSpacing;
-    const double m_maxStretch;
     const Microtubule& m_fixedMicrotubule;
     const MobileMicrotubule& m_mobileMicrotubule;
+    const double m_latticeSpacing;
+    const double m_maxStretch;
     const double m_mod1, m_mod2; // These are the points on the lattice (k*latticeSpacing + mod, with k = integer) where possible connections may change
     double m_lowerBorderPossibilities, m_upperBorderPossibilities;
 
@@ -45,7 +45,7 @@ private:
 
     std::vector<PossibleFullHop> m_possibleFullHops;
 
-    std::vector<FullConnection> m_fullConnections;
+    std::vector<FullConnection> m_fullConnections; // These are not possibilities, but actual connections
 
     // The following functions are used internally; cannot be called by public, m_possibleConnections is only altered through calls to (dis)connect functions, or to findPossibleConnections
     void addPossibleConnections(Crosslinker*const p_newPartialCrosslinker);
@@ -60,26 +60,25 @@ private:
 
     void removePossibleFullHops(Crosslinker*const p_oldFullCrosslinker);
 
+    void addFullConnection(Crosslinker*const p_newFullCrosslinker);
+
+    void removeFullConnection(Crosslinker*const p_oldFullCrosslinker);
+
     void updatePossibleConnectionsOppositeTo(Crosslinker*const p_partialCrosslinker, SiteLocation locationConnection);
 
     void updatePossiblePartialHopsNextTo(const SiteLocation& originLocation);
 
     void updatePossibleFullHopsNextTo(const SiteLocation& originLocation);
 
-    void addFullConnection(Crosslinker*const p_newFullCrosslinker);
+    double myMod(const double x, const double y) const; // used in findPossibilityBorders()
 
-    void removeFullConnection(Crosslinker*const p_oldFullCrosslinker);
-
-    double myMod(const double x, const double y) const;
-
-    void findBorders();
+    void findPossibilityBorders();
 
     void findPossibleConnections();
 
     void findPossiblePartialHops();
 
     void findPossibleFullHops();
-
 
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers,
