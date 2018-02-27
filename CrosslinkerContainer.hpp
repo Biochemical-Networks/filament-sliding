@@ -48,6 +48,7 @@ private:
     std::vector<FullConnection> m_fullConnections; // These are not possibilities, but actual connections
 
     // The following functions are used internally; cannot be called by public, m_possibleConnections is only altered through calls to (dis)connect functions, or to findPossibleConnections
+    // add and remove functions are concerned with adding or removing all (possible) connections of a specific crosslinker (extremity).
     void addPossibleConnections(Crosslinker*const p_newPartialCrosslinker);
 
     void removePossibleConnections(Crosslinker*const p_oldPartialCrosslinker);
@@ -64,13 +65,15 @@ private:
 
     void removeFullConnection(Crosslinker*const p_oldFullCrosslinker);
 
+    // The following update functions change the possibilities for partial and full linkers in the surroundings of a site that underwent a change
+
     void updatePossibleConnectionsOppositeTo(Crosslinker*const p_partialCrosslinker, SiteLocation locationConnection);
 
     void updatePossiblePartialHopsNextTo(const SiteLocation& originLocation);
 
     void updatePossibleFullHopsNextTo(const SiteLocation& originLocation);
 
-    double myMod(const double x, const double y) const; // used in findPossibilityBorders()
+    // The findPossible... functions recalculate the possibility vectors
 
     void findPossibilityBorders();
 
@@ -79,6 +82,8 @@ private:
     void findPossiblePartialHops();
 
     void findPossibleFullHops();
+
+    double myMod(const double x, const double y) const; // used in findPossibilityBorders()
 
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers,
@@ -95,6 +100,11 @@ public:
 
     Crosslinker& at(const int32_t position);
 
+    // The following four functions correspond to the reactions free<->partial<->full.
+    // These store the actual changes made, and change the state of the system.
+    // There are four other functions (updateConnectionData functions) that do the updating of possibilities after the system has reached its new state
+    // Notice there are no functions for hopping (nor are there updateConnectionData functions for hopping). This is because a hop is finally implemented as an unbind, rebind sequence.
+    // Still, the possibilities need to be tracked, since hopping is a separate reaction.
     Crosslinker* connectFromFreeToPartial();
 
     void disconnectFromPartialToFree(Crosslinker& crosslinkerToDisconnect);
@@ -109,9 +119,10 @@ public:
     int32_t getNFullCrosslinkers() const;
 
     #ifdef MYDEBUG
-    int32_t getNSitesToBindPartial() const;
+    int32_t getNSitesToBindPartial() const; // Function to test whether algorithm works
     #endif // MYDEBUG
 
+    // Recalculates all possibilities: possible bindings partial->full, possible hops for partials and fulls, and sets the movement boundaries after which possibilities have to be reset again.
     void resetPossibilities();
 
     // The update functions have two purposes: to add possibilities for the new state of the linker, and to update the possibilities of the surrounding linkers.
@@ -123,16 +134,15 @@ public:
 
     void updateConnectionDataFullToPartial(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection);
 
-    std::pair<double, double> movementBordersSetByFullLinkers() const;
+    void updateConnectionDataMobilePositionChange(const double positionChange);
 
-    void updateConnectionsAfterMobilePositionChange(const double positionChange);
+    std::pair<double, double> movementBordersSetByFullLinkers() const;
 
     const std::vector<PossibleFullConnection>& getPossibleConnections() const;
 
     const std::vector<FullConnection>& getFullConnections() const;
 
     const std::vector<Crosslinker*>& getPartialLinkers() const;
-
 
     #ifdef MYDEBUG
     Crosslinker* TESTgetAFullCrosslinker(const int32_t which) const;

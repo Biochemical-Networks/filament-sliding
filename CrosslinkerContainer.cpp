@@ -41,6 +41,9 @@ CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers,
     {
         throw GeneralException("An algorithm in the class CrosslinkerContainer uses the IEEE 754 standard to represent positive and negative infinity");
     }
+
+    // Initialise the borders: needed, since even the non-connected microtubules have these imaginary borders, and they are only updated after they exist.
+    findPossibilityBorders();
 }
 
 CrosslinkerContainer::~CrosslinkerContainer()
@@ -508,7 +511,7 @@ void CrosslinkerContainer::findPossibilityBorders()
     m_upperBorderPossibilities = std::min(upperBorder1, upperBorder2);
 }
 
-void CrosslinkerContainer::updateConnectionsAfterMobilePositionChange(const double positionChange)
+void CrosslinkerContainer::updateConnectionDataMobilePositionChange(const double positionChange)
 {
     // This function assumes that the change is possible and has already happened, in the sense that mobileMicrotubule.position has changed
     // Update extension of the full linkers
