@@ -18,6 +18,12 @@ private:
     Crosslinker::Type m_linkerType;
     std::vector<Crosslinker> m_crosslinkers; // The vector manages existence of the crosslinkers.
 
+    // Since this class holds many functions checking which modifications are possible, it needs to know the following quantities often
+    const double m_latticeSpacing;
+    const double m_maxStretch;
+    const Microtubule& m_fixedMicrotubule;
+    const MobileMicrotubule& m_mobileMicrotubule;
+
     int32_t m_nFreeCrosslinkers;
     // Use pointers to crosslinkers as IDs: THIS IS DANGEROUS! It will break if m_crosslinkers would ever resize, since that invalidates all pointers to its elements.
     // A possible fix for this (if it were required to resize the m_crosslinkers sometimes) would be to store the labels (0,...,nCrosslinkers-1) instead of pointers)
@@ -39,40 +45,42 @@ private:
     std::vector<FullConnection> m_fullConnections;
 
     // The following functions are used internally; cannot be called by public, m_possibleConnections is only altered through calls to (dis)connect functions, or to findPossibleConnections
-    void addPossibleConnections(Crosslinker*const p_newPartialCrosslinker,
-                                const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+    void addPossibleConnections(Crosslinker*const p_newPartialCrosslinker);
 
     void removePossibleConnections(Crosslinker*const p_oldPartialCrosslinker);
 
-    void addPossiblePartialHops(Crosslinker*const p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule);
+    void addPossiblePartialHops(Crosslinker*const p_newPartialCrosslinker);
 
     void removePossiblePartialHops(Crosslinker*const p_oldPartialCrosslinker);
 
-    void addPossibleFullHops(const FullExtremity& newFullExtremity,
-                                const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+    void addPossibleFullHops(const FullExtremity& newFullExtremity);
 
     void removePossibleFullHops(Crosslinker*const p_oldFullCrosslinker);
 
-    void updatePossibleConnectionsOppositeTo(Crosslinker*const p_partialCrosslinker, SiteLocation locationConnection,
-                                             const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+    void updatePossibleConnectionsOppositeTo(Crosslinker*const p_partialCrosslinker, SiteLocation locationConnection);
 
-    void updatePossiblePartialHopsNextTo(const SiteLocation& originLocation, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule);
+    void updatePossiblePartialHopsNextTo(const SiteLocation& originLocation);
 
-    void updatePossibleFullHopsNextTo(const SiteLocation& originLocation,
-                                      const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+    void updatePossibleFullHopsNextTo(const SiteLocation& originLocation);
 
-    void addFullConnection(Crosslinker*const p_newFullCrosslinker, const double mobilePosition, const double maxStretch, const double latticeSpacing);
+    void addFullConnection(Crosslinker*const p_newFullCrosslinker);
 
     void removeFullConnection(Crosslinker*const p_oldFullCrosslinker);
 
-    bool possibleFullConnectionsConformToMobilePositionChange(const double positionChange, const double maxStretch) const;
+    bool possibleFullConnectionsConformToMobilePositionChange(const double positionChange) const;
 
-    bool possibleFullHopsConformToMobilePositionChange(const double positionChange, const double maxStretch) const;
+    bool possibleFullHopsConformToMobilePositionChange(const double positionChange) const;
 
     double myMod(const double x, const double y) const;
 
 public:
-    CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker, const Crosslinker::Type linkerType);
+    CrosslinkerContainer(const int32_t nCrosslinkers,
+                         const Crosslinker& defaultCrosslinker,
+                         const Crosslinker::Type linkerType,
+                         const Microtubule& fixedMicrotubule,
+                         const MobileMicrotubule& mobileMicrotubule,
+                         const double latticeSpacing,
+                         const double maxStretch);
     ~CrosslinkerContainer();
     // Delete the default copy constructor and assignment operator, there is no use for them
     CrosslinkerContainer(const CrosslinkerContainer&) = delete;
@@ -94,33 +102,28 @@ public:
     int32_t getNFullCrosslinkers() const;
 
     #ifdef MYDEBUG
-    int32_t getNSitesToBindPartial(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing) const;
+    int32_t getNSitesToBindPartial() const;
     #endif // MYDEBUG
 
     // Merge findPossibleConnections(), findPossiblePartialHops(), and findPossibleFullHops?
-    void findPossibleConnections(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+    void findPossibleConnections();
 
-    void findPossiblePartialHops(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule);
+    void findPossiblePartialHops();
 
-    void findPossibleFullHops(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+    void findPossibleFullHops();
 
     // The update functions have two purposes: to add possibilities for the new state of the linker, and to update the possibilities of the surrounding linkers.
-    void updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker,
-                                                const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+    void updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker);
 
-    void updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection,
-                                               const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+    void updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection);
 
-    void updateConnectionDataPartialToFull(Crosslinker*const p_newPartialCrosslinker, const SiteLocation locationNewConnection,
-                                                const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+    void updateConnectionDataPartialToFull(Crosslinker*const p_newPartialCrosslinker, const SiteLocation locationNewConnection);
 
-    void updateConnectionDataFullToPartial(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection,
-                                                const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+    void updateConnectionDataFullToPartial(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection);
 
-    std::pair<double, double> movementBordersSetByFullLinkers(const double maxStretch) const;
+    std::pair<double, double> movementBordersSetByFullLinkers() const;
 
-    void updateConnectionsAfterMobilePositionChange(const double positionChange,
-                                                    const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing);
+    void updateConnectionsAfterMobilePositionChange(const double positionChange);
 
     const std::vector<PossibleFullConnection>& getPossibleConnections() const;
 

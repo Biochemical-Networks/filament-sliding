@@ -26,9 +26,9 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
         m_nDualCrosslinkers(nDualCrosslinkers),
         m_nActiveCrosslinkers(nActiveCrosslinkers),
         m_nCrosslinkers(m_nActiveCrosslinkers+m_nDualCrosslinkers+m_nPassiveCrosslinkers),
-        m_passiveCrosslinkers(m_nPassiveCrosslinkers, Crosslinker(Crosslinker::Type::PASSIVE),Crosslinker::Type::PASSIVE),
-        m_dualCrosslinkers(m_nDualCrosslinkers, Crosslinker(Crosslinker::Type::DUAL),Crosslinker::Type::DUAL),
-        m_activeCrosslinkers(m_nActiveCrosslinkers, Crosslinker(Crosslinker::Type::ACTIVE),Crosslinker::Type::ACTIVE)
+        m_passiveCrosslinkers(m_nPassiveCrosslinkers, Crosslinker(Crosslinker::Type::PASSIVE),Crosslinker::Type::PASSIVE, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch),
+        m_dualCrosslinkers(m_nDualCrosslinkers, Crosslinker(Crosslinker::Type::DUAL),Crosslinker::Type::DUAL, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch),
+        m_activeCrosslinkers(m_nActiveCrosslinkers, Crosslinker(Crosslinker::Type::ACTIVE),Crosslinker::Type::ACTIVE, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch)
 {
 }
 
@@ -93,9 +93,9 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type,
     p_microtubuleToConnect->connectSite(locationToConnectTo.position, *p_connectingCrosslinker, terminusToConnect);
 
     // Finally, update the information on possibilities with the new SystemState
-    m_passiveCrosslinkers.updateConnectionDataFreeToPartial(p_connectingCrosslinker, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_dualCrosslinkers.updateConnectionDataFreeToPartial(p_connectingCrosslinker, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_activeCrosslinkers.updateConnectionDataFreeToPartial(p_connectingCrosslinker, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_passiveCrosslinkers.updateConnectionDataFreeToPartial(p_connectingCrosslinker);
+    m_dualCrosslinkers.updateConnectionDataFreeToPartial(p_connectingCrosslinker);
+    m_activeCrosslinkers.updateConnectionDataFreeToPartial(p_connectingCrosslinker);
 
     return *p_connectingCrosslinker; // Such that the caller can use this specific crosslinker immediately
 }
@@ -141,9 +141,9 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
     }
 
     // Finally, update the information on possibilities with the new SystemState
-    m_passiveCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_dualCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_activeCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_passiveCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom);
+    m_dualCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom);
+    m_activeCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom);
 
 }
 
@@ -203,9 +203,9 @@ void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCr
     }
 
     // Finally, update the information on possibilities with the new SystemState
-    m_passiveCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_dualCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_activeCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_passiveCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule);
+    m_dualCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule);
+    m_activeCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule);
 
 }
 
@@ -252,9 +252,9 @@ void SystemState::disconnectFullyConnectedCrosslinker(Crosslinker& disconnecting
     }
 
     // Finally, update the information on possibilities with the new SystemState
-    m_passiveCrosslinkers.updateConnectionDataFullToPartial(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_dualCrosslinkers.updateConnectionDataFullToPartial(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
-    m_activeCrosslinkers.updateConnectionDataFullToPartial(&disconnectingCrosslinker, locationToDisconnectFrom, m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    m_passiveCrosslinkers.updateConnectionDataFullToPartial(&disconnectingCrosslinker, locationToDisconnectFrom);
+    m_dualCrosslinkers.updateConnectionDataFullToPartial(&disconnectingCrosslinker, locationToDisconnectFrom);
+    m_activeCrosslinkers.updateConnectionDataFullToPartial(&disconnectingCrosslinker, locationToDisconnectFrom);
 
 }
 
@@ -280,9 +280,9 @@ void SystemState::update(const double changeMicrotubulePosition)
 
 std::pair<double, double> SystemState::movementBordersSetByFullLinkers() const
 {
-    std::pair<double,double> setByPassive = m_passiveCrosslinkers.movementBordersSetByFullLinkers(m_maxStretch);
-    std::pair<double,double> setByDual = m_dualCrosslinkers.movementBordersSetByFullLinkers(m_maxStretch);
-    std::pair<double,double> setByActive = m_activeCrosslinkers.movementBordersSetByFullLinkers(m_maxStretch);
+    std::pair<double,double> setByPassive = m_passiveCrosslinkers.movementBordersSetByFullLinkers();
+    std::pair<double,double> setByDual = m_dualCrosslinkers.movementBordersSetByFullLinkers();
+    std::pair<double,double> setByActive = m_activeCrosslinkers.movementBordersSetByFullLinkers();
 
     return std::pair<double,double>(std::min({setByPassive.first, setByDual.first, setByActive.first}), std::max({setByPassive.second, setByDual.second, setByActive.second}));
 }
@@ -455,7 +455,7 @@ int32_t SystemState::getNSitesToBindPartial(const Crosslinker::Type type) const
             break;
     }
 
-    return containerToCheck->getNSitesToBindPartial(m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    return containerToCheck->getNSitesToBindPartial();
 }
 #endif // MYDEBUG
 
@@ -478,7 +478,7 @@ void SystemState::findPossibleConnections(const Crosslinker::Type type)
             throw GeneralException("An incorrect crosslinker type was passed to getNSitesToBindPartial()");
             break;
     }
-    containerToCheck->findPossibleConnections(m_fixedMicrotubule, m_mobileMicrotubule, m_maxStretch, m_latticeSpacing);
+    containerToCheck->findPossibleConnections();
 }
 
 const std::vector<PossibleFullConnection>& SystemState::getPossibleConnections(const Crosslinker::Type type) const

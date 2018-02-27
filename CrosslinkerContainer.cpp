@@ -15,9 +15,19 @@
 #include <cmath>
 #include <limits>
 
-CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers, const Crosslinker& defaultCrosslinker, const Crosslinker::Type linkerType)
+CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers,
+                                           const Crosslinker& defaultCrosslinker,
+                                           const Crosslinker::Type linkerType,
+                                           const Microtubule& fixedMicrotubule,
+                                           const MobileMicrotubule& mobileMicrotubule,
+                                           const double latticeSpacing,
+                                           const double maxStretch)
     :   m_linkerType(linkerType),
-        m_crosslinkers(nCrosslinkers, defaultCrosslinker)
+        m_crosslinkers(nCrosslinkers, defaultCrosslinker),
+        m_fixedMicrotubule(fixedMicrotubule),
+        m_mobileMicrotubule(mobileMicrotubule),
+        m_latticeSpacing(latticeSpacing),
+        m_maxStretch(maxStretch)
 {
     // Fill the freeCrosslinkers vector with pointers to all crosslinkers: these are initially free
     for (int32_t i=0; i<nCrosslinkers; ++i)
@@ -98,9 +108,9 @@ int32_t CrosslinkerContainer::getNFullCrosslinkers() const
 }
 
 #ifdef MYDEBUG
-int32_t CrosslinkerContainer::getNSitesToBindPartial(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing) const
+int32_t CrosslinkerContainer::getNSitesToBindPartial() const
 {
-    const double mobilePosition = mobileMicrotubule.getPosition(); // Won't change during the subsequent for-loop
+    const double mobilePosition = m_mobileMicrotubule.getPosition(); // Won't change during the subsequent for-loop
 
     int32_t nSitesToBindPartial = 0;
 
@@ -113,10 +123,10 @@ int32_t CrosslinkerContainer::getNSitesToBindPartial(const Microtubule& fixedMic
         switch(locationConnectedTo.microtubule)
         {
         case MicrotubuleType::FIXED:
-            nSitesToBindPartial += mobileMicrotubule.getNFreeSitesCloseTo(locationConnectedTo.position*latticeSpacing - mobilePosition, maxStretch);
+            nSitesToBindPartial += m_mobileMicrotubule.getNFreeSitesCloseTo(locationConnectedTo.position*m_latticeSpacing - mobilePosition, m_maxStretch);
             break;
         case MicrotubuleType::MOBILE:
-            nSitesToBindPartial += fixedMicrotubule.getNFreeSitesCloseTo(locationConnectedTo.position*latticeSpacing + mobilePosition, maxStretch);
+            nSitesToBindPartial += m_fixedMicrotubule.getNFreeSitesCloseTo(locationConnectedTo.position*m_latticeSpacing + mobilePosition, m_maxStretch);
             break;
         default:
             throw GeneralException("Wrong location stored and encountered in getNSitesToBindPartial()");
@@ -126,7 +136,7 @@ int32_t CrosslinkerContainer::getNSitesToBindPartial(const Microtubule& fixedMic
 }
 #endif // MYDEBUG
 
-void CrosslinkerContainer::findPossibleConnections(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing)
+void CrosslinkerContainer::findPossibleConnections()
 {
     // Empty the container, the following will recalculate the whole vector
     // The capacity of the vector does not change (not defined by standard)
@@ -135,11 +145,11 @@ void CrosslinkerContainer::findPossibleConnections(const Microtubule& fixedMicro
     // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
     for(Crosslinker*const p_linker : m_partialCrosslinkers)
     {
-        addPossibleConnections(p_linker, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+        addPossibleConnections(p_linker);
     }
 }
 
-void CrosslinkerContainer::findPossiblePartialHops(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule)
+void CrosslinkerContainer::findPossiblePartialHops()
 {
     // Empty the container, the following will recalculate the whole vector
     // The capacity of the vector does probably not change (not defined by standard)
@@ -148,11 +158,11 @@ void CrosslinkerContainer::findPossiblePartialHops(const Microtubule& fixedMicro
     // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
     for(Crosslinker*const p_linker : m_partialCrosslinkers)
     {
-        addPossiblePartialHops(p_linker, fixedMicrotubule, mobileMicrotubule);
+        addPossiblePartialHops(p_linker);
     }
 }
 
-void CrosslinkerContainer::findPossibleFullHops(const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule, const double maxStretch, const double latticeSpacing)
+void CrosslinkerContainer::findPossibleFullHops()
 {
     // Empty the container, the following will recalculate the whole vector
     // The capacity of the vector does probably not change (not defined by standard)
@@ -161,8 +171,8 @@ void CrosslinkerContainer::findPossibleFullHops(const Microtubule& fixedMicrotub
     // If there are no partially connected crosslinkers, the for body will not execute, which is how it should be
     for(Crosslinker*const p_linker : m_fullCrosslinkers)
     {
-        addPossibleFullHops(FullExtremity{p_linker, Crosslinker::Terminus::HEAD}, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
-        addPossibleFullHops(FullExtremity{p_linker, Crosslinker::Terminus::TAIL}, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+        addPossibleFullHops(FullExtremity{p_linker, Crosslinker::Terminus::HEAD});
+        addPossibleFullHops(FullExtremity{p_linker, Crosslinker::Terminus::TAIL});
     }
 }
 
@@ -170,11 +180,7 @@ void CrosslinkerContainer::findPossibleFullHops(const Microtubule& fixedMicrotub
  * It does not finish changing m_possibleConnections:
  * it is possible that the new partial linker also occupies the previously free position of a partial linker on the opposite microtubule.
  */
-void CrosslinkerContainer::addPossibleConnections(Crosslinker*const p_newPartialCrosslinker,
-                                                  const Microtubule& fixedMicrotubule,
-                                                  const MobileMicrotubule& mobileMicrotubule,
-                                                  const double maxStretch,
-                                                  const double latticeSpacing)
+void CrosslinkerContainer::addPossibleConnections(Crosslinker*const p_newPartialCrosslinker)
 {
     SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundLocationWhenPartiallyConnected();
     // Check the free sites on the opposite microtubule!
@@ -182,10 +188,12 @@ void CrosslinkerContainer::addPossibleConnections(Crosslinker*const p_newPartial
     switch(locationConnectedTo.microtubule)
     {
     case MicrotubuleType::FIXED:
-        mobileMicrotubule.addPossibleConnectionsCloseTo(m_possibleConnections, p_newPartialCrosslinker, locationConnectedTo.position*latticeSpacing - mobileMicrotubule.getPosition(), maxStretch);
+        m_mobileMicrotubule.addPossibleConnectionsCloseTo(m_possibleConnections, p_newPartialCrosslinker,
+                                                          locationConnectedTo.position*m_latticeSpacing - m_mobileMicrotubule.getPosition(), m_maxStretch);
         break;
     case MicrotubuleType::MOBILE:
-        fixedMicrotubule.addPossibleConnectionsCloseTo(m_possibleConnections, p_newPartialCrosslinker, locationConnectedTo.position*latticeSpacing + mobileMicrotubule.getPosition(), maxStretch);
+        m_fixedMicrotubule.addPossibleConnectionsCloseTo(m_possibleConnections, p_newPartialCrosslinker,
+                                                         locationConnectedTo.position*m_latticeSpacing + m_mobileMicrotubule.getPosition(), m_maxStretch);
         break;
     default:
         throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::addPossibleConnections()");
@@ -207,17 +215,17 @@ void CrosslinkerContainer::removePossibleConnections(Crosslinker*const p_oldPart
 
 }
 
-void CrosslinkerContainer::addPossiblePartialHops(Crosslinker*const p_newPartialCrosslinker, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule)
+void CrosslinkerContainer::addPossiblePartialHops(Crosslinker*const p_newPartialCrosslinker)
 {
     SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundLocationWhenPartiallyConnected();
 
     switch(locationConnectedTo.microtubule)
     {
     case MicrotubuleType::FIXED:
-        fixedMicrotubule.addPossiblePartialHopsCloseTo(m_possiblePartialHops, p_newPartialCrosslinker);
+        m_fixedMicrotubule.addPossiblePartialHopsCloseTo(m_possiblePartialHops, p_newPartialCrosslinker);
         break;
     case MicrotubuleType::MOBILE:
-        mobileMicrotubule.addPossiblePartialHopsCloseTo(m_possiblePartialHops, p_newPartialCrosslinker);
+        m_mobileMicrotubule.addPossiblePartialHopsCloseTo(m_possiblePartialHops, p_newPartialCrosslinker);
         break;
     default:
         throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::addPossiblePartialHops()");
@@ -238,11 +246,7 @@ void CrosslinkerContainer::removePossiblePartialHops(Crosslinker*const p_oldPart
                                                 }), m_possiblePartialHops.end());
 }
 
-void CrosslinkerContainer::addPossibleFullHops(const FullExtremity& newFullExtremity,
-                        const Microtubule& fixedMicrotubule,
-                        const MobileMicrotubule& mobileMicrotubule,
-                        const double maxStretch,
-                        const double latticeSpacing)
+void CrosslinkerContainer::addPossibleFullHops(const FullExtremity& newFullExtremity)
 {
     SiteLocation originLocation = newFullExtremity.p_fullLinker->getSiteLocationOf(newFullExtremity.terminus);
 
@@ -252,10 +256,10 @@ void CrosslinkerContainer::addPossibleFullHops(const FullExtremity& newFullExtre
     switch(originLocation.microtubule)
     {
     case MicrotubuleType::FIXED:
-        fixedMicrotubule.addPossibleFullHopsCloseTo(m_possibleFullHops, newFullExtremity, oppositeLocation.position*latticeSpacing + mobileMicrotubule.getPosition(), maxStretch);
+        m_fixedMicrotubule.addPossibleFullHopsCloseTo(m_possibleFullHops, newFullExtremity, oppositeLocation.position*m_latticeSpacing + m_mobileMicrotubule.getPosition(), m_maxStretch);
         break;
     case MicrotubuleType::MOBILE:
-        mobileMicrotubule.addPossibleFullHopsCloseTo(m_possibleFullHops, newFullExtremity, oppositeLocation.position*latticeSpacing - mobileMicrotubule.getPosition(), maxStretch);
+        m_mobileMicrotubule.addPossibleFullHopsCloseTo(m_possibleFullHops, newFullExtremity, oppositeLocation.position*m_latticeSpacing - m_mobileMicrotubule.getPosition(), m_maxStretch);
         break;
     default:
         throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::addPossiblePartialHops()");
@@ -276,11 +280,7 @@ void CrosslinkerContainer::removePossibleFullHops(Crosslinker*const p_oldFullCro
                                                 }), m_possibleFullHops.end());
 }
 
-void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker,
-                                                                  const Microtubule& fixedMicrotubule,
-                                                                  const MobileMicrotubule& mobileMicrotubule,
-                                                                  const double maxStretch,
-                                                                  const double latticeSpacing)
+void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker)
 {
     if(!(p_newPartialCrosslinker->isPartial()))
     {
@@ -292,24 +292,19 @@ void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p
      */
     if(p_newPartialCrosslinker->getType()==m_linkerType)
     {
-        addPossibleConnections(p_newPartialCrosslinker, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+        addPossibleConnections(p_newPartialCrosslinker);
 
-        addPossiblePartialHops(p_newPartialCrosslinker, fixedMicrotubule, mobileMicrotubule);
+        addPossiblePartialHops(p_newPartialCrosslinker);
     }
 
     SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundLocationWhenPartiallyConnected();
 
-    updatePossibleConnectionsOppositeTo(p_newPartialCrosslinker, locationConnectedTo, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+    updatePossibleConnectionsOppositeTo(p_newPartialCrosslinker, locationConnectedTo);
 
-    updatePossiblePartialHopsNextTo(locationConnectedTo, fixedMicrotubule, mobileMicrotubule);
+    updatePossiblePartialHopsNextTo(locationConnectedTo);
 }
 
-void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker,
-                                                                 const SiteLocation locationOldConnection,
-                                                                 const Microtubule& fixedMicrotubule,
-                                                                 const MobileMicrotubule& mobileMicrotubule,
-                                                                 const double maxStretch,
-                                                                 const double latticeSpacing)
+void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection)
 {
     if(p_oldPartialCrosslinker->isConnected())
     {
@@ -328,17 +323,12 @@ void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p
         removePossiblePartialHops(p_oldPartialCrosslinker);
     }
 
-    updatePossibleConnectionsOppositeTo(p_oldPartialCrosslinker, locationOldConnection, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+    updatePossibleConnectionsOppositeTo(p_oldPartialCrosslinker, locationOldConnection);
 
-    updatePossiblePartialHopsNextTo(locationOldConnection, fixedMicrotubule, mobileMicrotubule);
+    updatePossiblePartialHopsNextTo(locationOldConnection);
 }
 
-void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p_newPartialCrosslinker,
-                                                                  const SiteLocation locationOldConnection,
-                                                                  const Microtubule& fixedMicrotubule,
-                                                                  const MobileMicrotubule& mobileMicrotubule,
-                                                                  const double maxStretch,
-                                                                  const double latticeSpacing)
+void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p_newPartialCrosslinker, const SiteLocation locationOldConnection)
 {
     if(!(p_newPartialCrosslinker->isPartial()))
     {
@@ -350,25 +340,20 @@ void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p
      */
     if(p_newPartialCrosslinker->getType()==m_linkerType)
     {
-        addPossibleConnections(p_newPartialCrosslinker, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+        addPossibleConnections(p_newPartialCrosslinker);
 
-        addPossiblePartialHops(p_newPartialCrosslinker, fixedMicrotubule, mobileMicrotubule);
+        addPossiblePartialHops(p_newPartialCrosslinker);
     }
 
-    updatePossibleConnectionsOppositeTo(p_newPartialCrosslinker, locationOldConnection, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+    updatePossibleConnectionsOppositeTo(p_newPartialCrosslinker, locationOldConnection);
 
-    updatePossiblePartialHopsNextTo(locationOldConnection, fixedMicrotubule, mobileMicrotubule);
+    updatePossiblePartialHopsNextTo(locationOldConnection);
 
     // Update m_fullConnections:
     removeFullConnection(p_newPartialCrosslinker);
 }
 
-void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p_oldPartialCrosslinker,
-                                                                  const SiteLocation locationNewConnection,
-                                                                  const Microtubule& fixedMicrotubule,
-                                                                  const MobileMicrotubule& mobileMicrotubule,
-                                                                  const double maxStretch,
-                                                                  const double latticeSpacing)
+void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationNewConnection)
 {
     if(!(p_oldPartialCrosslinker->isFull()))
     {
@@ -387,23 +372,18 @@ void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p
         removePossiblePartialHops(p_oldPartialCrosslinker);
     }
 
-    updatePossibleConnectionsOppositeTo(p_oldPartialCrosslinker, locationNewConnection, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+    updatePossibleConnectionsOppositeTo(p_oldPartialCrosslinker, locationNewConnection);
 
-    updatePossiblePartialHopsNextTo(locationNewConnection, fixedMicrotubule, mobileMicrotubule);
+    updatePossiblePartialHopsNextTo(locationNewConnection);
 
     // Update m_fullConnections:
-    addFullConnection(p_oldPartialCrosslinker, mobileMicrotubule.getPosition(), maxStretch, latticeSpacing);
+    addFullConnection(p_oldPartialCrosslinker);
 }
 
 /* This function updates the possible connections for partials close to locationConnection, on the opposite microtubule.
  * One (ex-)partial crosslinker is ignored, *p_partialCrosslinker. This usually represents the crosslinker that was just removed or added.
  */
-void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const p_partialCrosslinker,
-                                                                const SiteLocation locationConnection,
-                                                                const Microtubule& fixedMicrotubule,
-                                                                const MobileMicrotubule& mobileMicrotubule,
-                                                                const double maxStretch,
-                                                                const double latticeSpacing)
+void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const p_partialCrosslinker, const SiteLocation locationConnection)
 {
     std::vector<Crosslinker*> partialNeighbours;
 
@@ -412,12 +392,12 @@ void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const
     switch(locationConnection.microtubule)
     {
     case MicrotubuleType::FIXED:
-        positionRelativeToOppositeMicrotubule = locationConnection.position*latticeSpacing - mobileMicrotubule.getPosition();
-        partialNeighbours = mobileMicrotubule.getPartialCrosslinkersCloseTo(positionRelativeToOppositeMicrotubule, maxStretch, m_linkerType);
+        positionRelativeToOppositeMicrotubule = locationConnection.position*m_latticeSpacing - m_mobileMicrotubule.getPosition();
+        partialNeighbours = m_mobileMicrotubule.getPartialCrosslinkersCloseTo(positionRelativeToOppositeMicrotubule, m_maxStretch, m_linkerType);
         break;
     case MicrotubuleType::MOBILE:
-        positionRelativeToOppositeMicrotubule = locationConnection.position*latticeSpacing + mobileMicrotubule.getPosition();
-        partialNeighbours = fixedMicrotubule.getPartialCrosslinkersCloseTo(positionRelativeToOppositeMicrotubule, maxStretch, m_linkerType);
+        positionRelativeToOppositeMicrotubule = locationConnection.position*m_latticeSpacing + m_mobileMicrotubule.getPosition();
+        partialNeighbours = m_fixedMicrotubule.getPartialCrosslinkersCloseTo(positionRelativeToOppositeMicrotubule, m_maxStretch, m_linkerType);
         break;
     default:
         throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::updatePossibleConnectionsOppositeTo()");
@@ -431,22 +411,22 @@ void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const
             // First remove the connections involving the linker, and then add them again, where the possibly newly occupied site is taken into account
             // The linkers are guaranteed to be of the correct type
             removePossibleConnections(p_linker);
-            addPossibleConnections(p_linker, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+            addPossibleConnections(p_linker);
         }
     }
 }
 
-void CrosslinkerContainer::updatePossiblePartialHopsNextTo(const SiteLocation& originLocation, const Microtubule& fixedMicrotubule, const MobileMicrotubule& mobileMicrotubule)
+void CrosslinkerContainer::updatePossiblePartialHopsNextTo(const SiteLocation& originLocation)
 {
     std::vector<Crosslinker*> partialNeighbours;
 
     switch(originLocation.microtubule)
     {
     case MicrotubuleType::FIXED:
-        partialNeighbours = fixedMicrotubule.getNeighbouringPartialCrosslinkersOf(originLocation, m_linkerType);
+        partialNeighbours = m_fixedMicrotubule.getNeighbouringPartialCrosslinkersOf(originLocation, m_linkerType);
         break;
     case MicrotubuleType::MOBILE:
-        partialNeighbours = mobileMicrotubule.getNeighbouringPartialCrosslinkersOf(originLocation, m_linkerType);
+        partialNeighbours = m_mobileMicrotubule.getNeighbouringPartialCrosslinkersOf(originLocation, m_linkerType);
         break;
     default:
         throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::updatePossiblePartialHopsNextTo()");
@@ -455,25 +435,21 @@ void CrosslinkerContainer::updatePossiblePartialHopsNextTo(const SiteLocation& o
     for (Crosslinker*const p_linker : partialNeighbours)
     {
         removePossiblePartialHops(p_linker);
-        addPossiblePartialHops(p_linker, fixedMicrotubule, mobileMicrotubule);
+        addPossiblePartialHops(p_linker);
     }
 }
 
-void CrosslinkerContainer::updatePossibleFullHopsNextTo(const SiteLocation& originLocation,
-                                                        const Microtubule& fixedMicrotubule,
-                                                        const MobileMicrotubule& mobileMicrotubule,
-                                                        const double maxStretch,
-                                                        const double latticeSpacing)
+void CrosslinkerContainer::updatePossibleFullHopsNextTo(const SiteLocation& originLocation)
 {
     std::vector<FullExtremity> fullNeighbours;
 
     switch(originLocation.microtubule)
     {
     case MicrotubuleType::FIXED:
-        fullNeighbours = fixedMicrotubule.getNeighbouringFullCrosslinkersOf(originLocation, m_linkerType);
+        fullNeighbours = m_fixedMicrotubule.getNeighbouringFullCrosslinkersOf(originLocation, m_linkerType);
         break;
     case MicrotubuleType::MOBILE:
-        fullNeighbours = mobileMicrotubule.getNeighbouringFullCrosslinkersOf(originLocation, m_linkerType);
+        fullNeighbours = m_mobileMicrotubule.getNeighbouringFullCrosslinkersOf(originLocation, m_linkerType);
         break;
     default:
         throw GeneralException("Wrong location stored and encountered in CrosslinkerContainer::updatePossibleFullHopsNextTo()");
@@ -482,40 +458,40 @@ void CrosslinkerContainer::updatePossibleFullHopsNextTo(const SiteLocation& orig
     for (const FullExtremity& fullExtremity: fullNeighbours)
     {
         removePossibleFullHops(fullExtremity.p_fullLinker);
-        addPossibleFullHops(fullExtremity, fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
+        addPossibleFullHops(fullExtremity);
     }
 }
 
-std::pair<double, double> CrosslinkerContainer::movementBordersSetByFullLinkers(const double maxStretch) const
+std::pair<double, double> CrosslinkerContainer::movementBordersSetByFullLinkers() const
 {
     if(m_fullCrosslinkers.empty())
     {
         return std::pair<double,double>(-std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
     }
-    // First, find the minimum and maximum stretch
-    // Initialise the borders with the first extension, since this is initially both the minimum and the maximum
-    double minimumStretch = m_fullConnections.front().extension;
-    double maximumStretch = minimumStretch;
+    // First, find the smallest and largest stretch
+    // Initialise the borders with the first extension, since this is initially both the smallest and the largest
+    double smallestStretch = m_fullConnections.front().extension;
+    double largestStretch = smallestStretch;
     for (const FullConnection& connection : m_fullConnections)
     {
-        if(connection.extension < minimumStretch)
+        if(connection.extension < smallestStretch)
         {
-            minimumStretch = connection.extension;
+            smallestStretch = connection.extension;
         }
-        else if(connection.extension > maximumStretch) // The maximum cannot change if the minimum changes
+        else if(connection.extension > largestStretch) // The maximum cannot change if the minimum changes
         {
-            maximumStretch = connection.extension;
+            largestStretch = connection.extension;
         }
     }
 
-    return std::pair<double,double>((-maxStretch-minimumStretch), (maxStretch-maximumStretch));
+    return std::pair<double,double>((-m_maxStretch-smallestStretch), (m_maxStretch-largestStretch));
 }
 
-bool CrosslinkerContainer::possibleFullConnectionsConformToMobilePositionChange(const double positionChange, const double maxStretch) const
+bool CrosslinkerContainer::possibleFullConnectionsConformToMobilePositionChange(const double positionChange) const
 {
     for (const PossibleFullConnection& connection : m_possibleConnections)
     {
-        if(std::abs(connection.extension + positionChange) >= maxStretch)
+        if(std::abs(connection.extension + positionChange) >= m_maxStretch)
         {
             return false;
         }
@@ -523,11 +499,11 @@ bool CrosslinkerContainer::possibleFullConnectionsConformToMobilePositionChange(
     return true;
 }
 
-bool CrosslinkerContainer::possibleFullHopsConformToMobilePositionChange(const double positionChange, const double maxStretch) const
+bool CrosslinkerContainer::possibleFullHopsConformToMobilePositionChange(const double positionChange) const
 {
     for (const PossibleFullHop& hop : m_possibleFullHops)
     {
-        if(std::abs(hop.newExtension + positionChange) >= maxStretch)
+        if(std::abs(hop.newExtension + positionChange) >= m_maxStretch)
         {
             return false;
         }
@@ -541,11 +517,7 @@ double CrosslinkerContainer::myMod(const double x, const double y) const
     return x - (std::floor(x/y)*y);
 }
 
-void CrosslinkerContainer::updateConnectionsAfterMobilePositionChange(const double positionChange,
-                                                                      const Microtubule& fixedMicrotubule,
-                                                                      const MobileMicrotubule& mobileMicrotubule,
-                                                                      const double maxStretch,
-                                                                      const double latticeSpacing)
+void CrosslinkerContainer::updateConnectionsAfterMobilePositionChange(const double positionChange)
 {
     // This function assumes that the change is possible!
     // Update extension of the full linkers
@@ -558,13 +530,13 @@ void CrosslinkerContainer::updateConnectionsAfterMobilePositionChange(const doub
     // This is done because possibilities change either through 1) some not possible any more 2) new possibilities. The former can be checked, the latter can only be done through recalculation
     // Hence, we just always recalculate is the change could make new possibilities available.
 
-    const double currentPosition = mobileMicrotubule.getPosition();
+    const double currentPosition = m_mobileMicrotubule.getPosition();
 
-    const double mod1 = myMod(maxStretch, latticeSpacing);
-    const double mod2 = myMod(-maxStretch, latticeSpacing);
+    const double mod1 = myMod(m_maxStretch, m_latticeSpacing);
+    const double mod2 = myMod(-m_maxStretch, m_latticeSpacing);
 
 
-    const double lowerBorder1 = std::floor((currentPosition-mod1)/latticeSpacing)*latticeSpacing+mod1;
+    const double lowerBorder1 = std::floor((currentPosition-mod1)/m_latticeSpacing)*m_latticeSpacing+mod1;
 
     /*// Check if the change is allowed by all the current possible connections: if not, then recalculate the possibilities completely
     if (possibleFullConnectionsConformToMobilePositionChange(positionChange, maxStretch))
@@ -580,7 +552,7 @@ void CrosslinkerContainer::updateConnectionsAfterMobilePositionChange(const doub
     }*/
 }
 
-void CrosslinkerContainer::addFullConnection(Crosslinker*const p_newFullCrosslinker, const double mobilePosition, const double maxStretch, const double latticeSpacing)
+void CrosslinkerContainer::addFullConnection(Crosslinker*const p_newFullCrosslinker)
 {
     SiteLocation headLocation = p_newFullCrosslinker->getOneBoundLocationWhenFullyConnected(Crosslinker::Terminus::HEAD);
     SiteLocation tailLocation = p_newFullCrosslinker->getOneBoundLocationWhenFullyConnected(Crosslinker::Terminus::TAIL);
@@ -590,16 +562,16 @@ void CrosslinkerContainer::addFullConnection(Crosslinker*const p_newFullCrosslin
     switch(headLocation.microtubule)
     {
     case MicrotubuleType::FIXED:
-        extension = mobilePosition + latticeSpacing*(tailLocation.position - headLocation.position);
+        extension = m_mobileMicrotubule.getPosition() + m_latticeSpacing*(tailLocation.position - headLocation.position);
         break;
     case MicrotubuleType::MOBILE:
-        extension = mobilePosition + latticeSpacing*(headLocation.position - tailLocation.position);
+        extension = m_mobileMicrotubule.getPosition() + m_latticeSpacing*(headLocation.position - tailLocation.position);
         break;
     default:
         throw GeneralException("A wrong microtubule type encountered in addFullConnection()");
     }
 
-    if(std::abs(extension)>=maxStretch)
+    if(std::abs(extension)>=m_maxStretch)
     {
         throw GeneralException("addFullConnection() tried to add a full connection with a disallowed stretch.");
     }
@@ -618,14 +590,7 @@ void CrosslinkerContainer::removeFullConnection(Crosslinker*const p_oldFullCross
                                                 {
                                                     // The identity of a full linker is checked through its pointer (memory location)
                                                     // This is okay as long as the CrosslinkerContainer class guarantees that m_crosslinkers is never resized.
-                                                    if(fullConnection.p_fullLinker==p_oldFullCrosslinker)
-                                                    {
-                                                        return true;
-                                                    }
-                                                    else
-                                                    {
-                                                        return false;
-                                                    }
+                                                    return fullConnection.p_fullLinker==p_oldFullCrosslinker;
                                                 }), m_fullConnections.end());
 
 }
