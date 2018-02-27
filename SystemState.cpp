@@ -459,7 +459,7 @@ int32_t SystemState::getNSitesToBindPartial(const Crosslinker::Type type) const
 }
 #endif // MYDEBUG
 
-void SystemState::findPossibleConnections(const Crosslinker::Type type)
+void SystemState::findPossibilities(const Crosslinker::Type type)
 {
     // Get a pointer to the right container, since each type is stored in a separate container
     CrosslinkerContainer* containerToCheck = nullptr; // Not const, container will be changed
@@ -478,7 +478,7 @@ void SystemState::findPossibleConnections(const Crosslinker::Type type)
             throw GeneralException("An incorrect crosslinker type was passed to getNSitesToBindPartial()");
             break;
     }
-    containerToCheck->findPossibleConnections();
+    containerToCheck->resetPossibilities();
 }
 
 const std::vector<PossibleFullConnection>& SystemState::getPossibleConnections(const Crosslinker::Type type) const

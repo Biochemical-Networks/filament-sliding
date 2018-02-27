@@ -27,7 +27,9 @@ CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers,
         m_fixedMicrotubule(fixedMicrotubule),
         m_mobileMicrotubule(mobileMicrotubule),
         m_latticeSpacing(latticeSpacing),
-        m_maxStretch(maxStretch)
+        m_maxStretch(maxStretch),
+        m_mod1(myMod(m_maxStretch, m_latticeSpacing)),
+        m_mod2(myMod(-m_maxStretch, m_latticeSpacing))
 {
     // Fill the freeCrosslinkers vector with pointers to all crosslinkers: these are initially free
     for (int32_t i=0; i<nCrosslinkers; ++i)
@@ -487,39 +489,28 @@ std::pair<double, double> CrosslinkerContainer::movementBordersSetByFullLinkers(
     return std::pair<double,double>((-m_maxStretch-smallestStretch), (m_maxStretch-largestStretch));
 }
 
-bool CrosslinkerContainer::possibleFullConnectionsConformToMobilePositionChange(const double positionChange) const
-{
-    for (const PossibleFullConnection& connection : m_possibleConnections)
-    {
-        if(std::abs(connection.extension + positionChange) >= m_maxStretch)
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
-bool CrosslinkerContainer::possibleFullHopsConformToMobilePositionChange(const double positionChange) const
-{
-    for (const PossibleFullHop& hop : m_possibleFullHops)
-    {
-        if(std::abs(hop.newExtension + positionChange) >= m_maxStretch)
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
 double CrosslinkerContainer::myMod(const double x, const double y) const
 {
     // both std::fmod and std::remainder do not give the results I need, need mod(1.1,1) = 0.1, mod(-0.1, 1) = 0.9
     return x - (std::floor(x/y)*y);
 }
 
+void CrosslinkerContainer::findBorders()
+{
+    const double currentPosition = m_mobileMicrotubule.getPosition();
+
+    const double lowerBorder1 = std::floor((currentPosition-m_mod1)/m_latticeSpacing)*m_latticeSpacing + m_mod1;
+    const double upperBorder1 = std::ceil((currentPosition-m_mod1)/m_latticeSpacing)*m_latticeSpacing + m_mod1;
+    const double lowerBorder2 = std::floor((currentPosition-m_mod2)/m_latticeSpacing)*m_latticeSpacing + m_mod2;
+    const double upperBorder2 = std::ceil((currentPosition-m_mod2)/m_latticeSpacing)*m_latticeSpacing + m_mod2;
+
+    m_lowerBorderPossibilities = std::max(lowerBorder1, lowerBorder2);
+    m_upperBorderPossibilities = std::min(upperBorder1, upperBorder2);
+}
+
 void CrosslinkerContainer::updateConnectionsAfterMobilePositionChange(const double positionChange)
 {
-    // This function assumes that the change is possible!
+    // This function assumes that the change is possible and has already happened, in the sense that mobileMicrotubule.position has changed
     // Update extension of the full linkers
     for (FullConnection& connection : m_fullConnections)
     {
@@ -530,26 +521,25 @@ void CrosslinkerContainer::updateConnectionsAfterMobilePositionChange(const doub
     // This is done because possibilities change either through 1) some not possible any more 2) new possibilities. The former can be checked, the latter can only be done through recalculation
     // Hence, we just always recalculate is the change could make new possibilities available.
 
-    const double currentPosition = m_mobileMicrotubule.getPosition();
+    double newPosition = m_mobileMicrotubule.getPosition();
 
-    const double mod1 = myMod(m_maxStretch, m_latticeSpacing);
-    const double mod2 = myMod(-m_maxStretch, m_latticeSpacing);
-
-
-    const double lowerBorder1 = std::floor((currentPosition-mod1)/m_latticeSpacing)*m_latticeSpacing+mod1;
-
-    /*// Check if the change is allowed by all the current possible connections: if not, then recalculate the possibilities completely
-    if (possibleFullConnectionsConformToMobilePositionChange(positionChange, maxStretch))
+    if(newPosition>m_lowerBorderPossibilities && newPosition < m_upperBorderPossibilities)
     {
         for (PossibleFullConnection& connection : m_possibleConnections)
         {
             connection.extension += positionChange;
         }
+        for (PossibleFullHop& hop : m_possibleFullHops)
+        {
+            hop.oldExtension += positionChange;
+            hop.newExtension += positionChange;
+        }
     }
     else
     {
-        findPossibleConnections(fixedMicrotubule, mobileMicrotubule, maxStretch, latticeSpacing);
-    }*/
+        // Recalculate all possibilities completely to get rid of outdated ones and include new ones. Also resets the borders
+        resetPossibilities();
+    }
 }
 
 void CrosslinkerContainer::addFullConnection(Crosslinker*const p_newFullCrosslinker)
@@ -610,6 +600,16 @@ const std::vector<Crosslinker*>& CrosslinkerContainer::getPartialLinkers() const
     return m_partialCrosslinkers;
 }
 
+void CrosslinkerContainer::resetPossibilities()
+{
+    findBorders();
+
+    findPossibleConnections();
+
+    findPossiblePartialHops();
+
+    findPossibleFullHops();
+}
 
 #ifdef MYDEBUG
 Crosslinker* CrosslinkerContainer::TESTgetAFullCrosslinker(const int32_t which) const
@@ -617,5 +617,6 @@ Crosslinker* CrosslinkerContainer::TESTgetAFullCrosslinker(const int32_t which) 
     return m_fullCrosslinkers.at(which);
 }
 #endif // MYDEBUG
+
 
 

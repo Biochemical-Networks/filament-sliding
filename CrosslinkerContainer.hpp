@@ -23,6 +23,9 @@ private:
     const double m_maxStretch;
     const Microtubule& m_fixedMicrotubule;
     const MobileMicrotubule& m_mobileMicrotubule;
+    const double m_mod1, m_mod2; // These are the points on the lattice (k*latticeSpacing + mod, with k = integer) where possible connections may change
+    double m_lowerBorderPossibilities, m_upperBorderPossibilities;
+
 
     int32_t m_nFreeCrosslinkers;
     // Use pointers to crosslinkers as IDs: THIS IS DANGEROUS! It will break if m_crosslinkers would ever resize, since that invalidates all pointers to its elements.
@@ -67,11 +70,16 @@ private:
 
     void removeFullConnection(Crosslinker*const p_oldFullCrosslinker);
 
-    bool possibleFullConnectionsConformToMobilePositionChange(const double positionChange) const;
-
-    bool possibleFullHopsConformToMobilePositionChange(const double positionChange) const;
-
     double myMod(const double x, const double y) const;
+
+    void findBorders();
+
+    void findPossibleConnections();
+
+    void findPossiblePartialHops();
+
+    void findPossibleFullHops();
+
 
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers,
@@ -105,12 +113,7 @@ public:
     int32_t getNSitesToBindPartial() const;
     #endif // MYDEBUG
 
-    // Merge findPossibleConnections(), findPossiblePartialHops(), and findPossibleFullHops?
-    void findPossibleConnections();
-
-    void findPossiblePartialHops();
-
-    void findPossibleFullHops();
+    void resetPossibilities();
 
     // The update functions have two purposes: to add possibilities for the new state of the linker, and to update the possibilities of the surrounding linkers.
     void updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker);

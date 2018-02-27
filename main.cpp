@@ -136,7 +136,7 @@ int main()
               << "\nNumber of sites overlap mobile:"<<systemState.getNSitesOverlapMobile()
               <<'\n';
 
-    systemState.findPossibleConnections(Crosslinker::Type::PASSIVE);
+    systemState.findPossibilities(Crosslinker::Type::PASSIVE);
 
     std::cout << systemState.getNSitesToBindPartial(Crosslinker::Type::PASSIVE)<<std::endl;
 

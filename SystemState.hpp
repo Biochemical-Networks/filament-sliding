@@ -108,7 +108,7 @@ public:
     int32_t getNSitesToBindPartial(const Crosslinker::Type type) const;
     #endif // MYDEBUG
 
-    void findPossibleConnections(const Crosslinker::Type type);
+    void findPossibilities(const Crosslinker::Type type);
 
     #ifdef MYDEBUG
     void TESTunbindAFullCrosslinker(const int32_t which, const Crosslinker::Terminus terminusToDisconnect);
