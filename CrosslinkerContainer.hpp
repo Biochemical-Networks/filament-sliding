@@ -73,7 +73,9 @@ private:
 
     void updatePossibleFullHopsNextTo(const SiteLocation& originLocation);
 
-    // The findPossible... functions recalculate the possibility vectors
+    // The findPossible... functions recalculate the possibility vectors,
+    // while the findPossibilityBorders calculates and sets the borders within which the current possibilities are valid.
+    // When the mobileMicrotubule.position leaves the region set by these borders, the possibilities need to be recalculated
 
     void findPossibilityBorders();
 
