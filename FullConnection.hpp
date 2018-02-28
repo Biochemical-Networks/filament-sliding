@@ -2,6 +2,7 @@
 #define FULLCONNECTION_HPP
 
 #include "Crosslinker.hpp"
+#include "MicrotubuleType.hpp"
 
 // Defined struct to group data about a fully connected crosslinker
 struct FullConnection
@@ -11,6 +12,13 @@ struct FullConnection
     double extension;
 };
 
+// Used for checking if possible connections cross existing full connections
+struct FullConnectionLocations
+{
+    Crosslinker* p_fullLinker;
+    SiteLocation locationNextToPartial;
+    SiteLocation locationOppositeToPartial;
+};
 
 
 #endif // FULLCONNECTION_HPP

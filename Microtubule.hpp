@@ -11,6 +11,7 @@
 #include "PossibleFullConnection.hpp"
 #include "PossibleHop.hpp"
 #include "MicrotubuleType.hpp"
+#include "FullConnection.hpp"
 
 class Microtubule
 {
@@ -27,6 +28,10 @@ private:
     std::deque<int32_t> m_freeSitePositions; // Elements are removed often, so std::deque is used. The order of the positions will NOT be preserved.
 
     std::pair<double,double> getOldAndNewStretchFullHop(const int32_t oldPosition, const int32_t newPosition, const double positionOppositeExtremity, const double maxStretch) const;
+
+    void cleanPossibleCrossings(std::vector<PossibleFullConnection>& possibleConnectionsToCheck, const double mobilePosition, const double maxStretch) const;
+
+    std::vector<FullConnectionLocations> getFullCrosslinkersCloseTo(const double position, const double maxStretch) const;
 
 public:
 
