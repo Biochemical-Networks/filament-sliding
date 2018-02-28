@@ -143,6 +143,10 @@ public:
 
     const std::vector<PossibleFullConnection>& getPossibleConnections() const;
 
+    const std::vector<PossiblePartialHop>& getPossiblePartialHops() const;
+
+    const std::vector<PossibleFullHop>& getPossibleFullHops() const;
+
     const std::vector<FullConnection>& getFullConnections() const;
 
     const std::vector<Crosslinker*>& getPartialLinkers() const;

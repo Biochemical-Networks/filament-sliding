@@ -615,6 +615,16 @@ const std::vector<PossibleFullConnection>& CrosslinkerContainer::getPossibleConn
     return m_possibleConnections;
 }
 
+const std::vector<PossiblePartialHop>& CrosslinkerContainer::getPossiblePartialHops() const
+{
+    return m_possiblePartialHops;
+}
+
+const std::vector<PossibleFullHop>& CrosslinkerContainer::getPossibleFullHops() const
+{
+    return m_possibleFullHops;
+}
+
 const std::vector<FullConnection>& CrosslinkerContainer::getFullConnections() const
 {
     return m_fullConnections;

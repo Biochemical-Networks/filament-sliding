@@ -504,6 +504,42 @@ const std::vector<PossibleFullConnection>& SystemState::getPossibleConnections(c
     }
 }
 
+const std::vector<PossiblePartialHop>& SystemState::getPossiblePartialHops(const Crosslinker::Type type) const
+{
+    switch(type)
+    {
+    case Crosslinker::Type::PASSIVE:
+        return m_passiveCrosslinkers.getPossiblePartialHops();
+        break;
+    case Crosslinker::Type::DUAL:
+        return m_dualCrosslinkers.getPossiblePartialHops();
+        break;
+    case Crosslinker::Type::ACTIVE:
+        return m_activeCrosslinkers.getPossiblePartialHops();
+        break;
+    default:
+        throw GeneralException("An incorrect type was passed to SystemState::getPossiblePartialHops()");
+    }
+}
+
+const std::vector<PossibleFullHop>& SystemState::getPossibleFullHops(const Crosslinker::Type type) const
+{
+    switch(type)
+    {
+    case Crosslinker::Type::PASSIVE:
+        return m_passiveCrosslinkers.getPossibleFullHops();
+        break;
+    case Crosslinker::Type::DUAL:
+        return m_dualCrosslinkers.getPossibleFullHops();
+        break;
+    case Crosslinker::Type::ACTIVE:
+        return m_activeCrosslinkers.getPossibleFullHops();
+        break;
+    default:
+        throw GeneralException("An incorrect type was passed to SystemState::getPossibleFullHops()");
+    }
+}
+
 const std::vector<FullConnection>& SystemState::getFullConnections(const Crosslinker::Type type) const
 {
     switch(type)
