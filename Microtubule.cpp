@@ -131,6 +131,7 @@ int32_t Microtubule::getNFreeSitesCloseTo(const double position, const double ma
 void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnection>& possibleConnections,
                                                 Crosslinker* const p_oppositeCrosslinker,
                                                 const double position,
+                                                const double mobilePosition,
                                                 const double maxStretch) const
 {
     if(!p_oppositeCrosslinker->isPartial())
@@ -143,6 +144,7 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
         // Now, we can assume there is at least one site (does not have to be free) within reach
         int32_t lowerSiteLabel = getFirstPositionCloseTo(position, maxStretch);
         int32_t upperSiteLabel = getLastPositionCloseTo(position, maxStretch);
+        std::vector<PossibleFullConnection> newPossibleConnections;
         for (int32_t posToCheck = lowerSiteLabel; posToCheck<=upperSiteLabel; ++posToCheck)
         {
             /* The stretch is defined as the position of the connection on the mobile microtubule,
@@ -173,9 +175,11 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
                 // Check if the new connection proposed does not cross an existing full connection (we disallow that).
                 // For this, make use of the fact that the opposite extremity of that full linker should be within a maxStretch distance compared to the position of the partial linker
 
-                possibleConnections.push_back(PossibleFullConnection{p_oppositeCrosslinker, SiteLocation{m_type, posToCheck}, stretch});
+                newPossibleConnections.push_back(PossibleFullConnection{p_oppositeCrosslinker, SiteLocation{m_type, posToCheck}, stretch});
             }
         }
+        cleanPossibleCrossings(newPossibleConnections, mobilePosition, maxStretch);
+        possibleConnections.insert(possibleConnections.end(), newPossibleConnections.begin(), newPossibleConnections.end());
     }
 }
 
