@@ -495,7 +495,7 @@ std::pair<double, double> CrosslinkerContainer::movementBordersSetByFullLinkers(
     {
         return std::pair<double,double>(-std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
     }
-    // First, find the smallest and largest stretch
+    // First, find the smallest and largest stretch (negative and positive)
     // Initialise the borders with the first extension, since this is initially both the smallest and the largest
     double smallestStretch = m_fullConnections.front().extension;
     double largestStretch = smallestStretch;

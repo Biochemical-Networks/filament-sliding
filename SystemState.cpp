@@ -279,8 +279,12 @@ void SystemState::fullyConnectFreeCrosslinker(const Crosslinker::Type type,
 
 void SystemState::update(const double changeMicrotubulePosition)
 {
-    // TODO: TEST WHETHER THE CHANGE IS ALLOWED GIVEN THE CURRENT STATE OF THE CROSSLINKERS
+    // This method assumes that the change in the microtubule position is allowed by the fully connected crosslinkers
     m_mobileMicrotubule.updatePosition(changeMicrotubulePosition);
+
+    m_passiveCrosslinkers.updateConnectionDataMobilePositionChange(changeMicrotubulePosition);
+    m_dualCrosslinkers.updateConnectionDataMobilePositionChange(changeMicrotubulePosition);
+    m_activeCrosslinkers.updateConnectionDataMobilePositionChange(changeMicrotubulePosition);
 }
 
 std::pair<double, double> SystemState::movementBordersSetByFullLinkers() const
@@ -288,8 +292,8 @@ std::pair<double, double> SystemState::movementBordersSetByFullLinkers() const
     std::pair<double,double> setByPassive = m_passiveCrosslinkers.movementBordersSetByFullLinkers();
     std::pair<double,double> setByDual = m_dualCrosslinkers.movementBordersSetByFullLinkers();
     std::pair<double,double> setByActive = m_activeCrosslinkers.movementBordersSetByFullLinkers();
-
-    return std::pair<double,double>(std::min({setByPassive.first, setByDual.first, setByActive.first}), std::max({setByPassive.second, setByDual.second, setByActive.second}));
+    // max / min, because the most negative movement allowed by the linkers is given by the first restricter
+    return std::pair<double,double>(std::max({setByPassive.first, setByDual.first, setByActive.first}), std::min({setByPassive.second, setByDual.second, setByActive.second}));
 }
 
 double SystemState::getMicrotubulePosition() const
