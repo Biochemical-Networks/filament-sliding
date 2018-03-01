@@ -16,7 +16,7 @@ class BindPartialCrosslinker : public Reaction
 private:
     const Crosslinker::Type m_typeToBind;
 
-    PossibleFullConnection whichToConnect(const SystemState& systemState, RandomGenerator& generator);
+    PossibleFullConnection whichToConnect(const SystemState& systemState, RandomGenerator& generator) const;
 
     std::vector<double> m_individualRates; // store one rate for each member of the CrosslinkerContainer.m_possibleConnections
 

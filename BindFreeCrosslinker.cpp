@@ -24,7 +24,7 @@ void BindFreeCrosslinker::setCurrentRate(const SystemState& systemState)
 }
 
 
-SiteLocation BindFreeCrosslinker::whereToConnect(const SystemState& systemState, RandomGenerator& generator)
+SiteLocation BindFreeCrosslinker::whereToConnect(const SystemState& systemState, RandomGenerator& generator) const
 {
     int32_t nFreeSitesFixed = systemState.getNFreeSitesFixed();
     int32_t nFreeSitesMobile = systemState.getNFreeSitesMobile();

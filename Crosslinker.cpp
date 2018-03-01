@@ -52,7 +52,7 @@ SiteLocation Crosslinker::getSiteLocationOf(const Crosslinker::Terminus terminus
         return m_tail.getSiteLocation();
         break;
     default:
-        throw GeneralException("Wrong terminus passed to getSiteLocationOf()");
+        throw GeneralException("Wrong terminus passed to Crosslinker::getSiteLocationOf()");
         break;
     }
 }
@@ -62,7 +62,7 @@ void Crosslinker::connectFromFree(const Terminus terminusToConnect, const SiteLo
     // Check here whether it is not already connected in some way. Upon connecting an extremity, it is also checked whether those are not connected already.
     if (isConnected())
     {
-        throw GeneralException("An attempt was made to connect a crosslinker that was already connected");
+        throw GeneralException("An attempt was made to connect a crosslinker that was already connected in Crosslinker::connectFromFree()");
     }
     switch(terminusToConnect)
     {
@@ -92,7 +92,7 @@ void Crosslinker::disconnectFromPartialConnection()
     }
     else
     {
-        throw GeneralException("disconnectFromPartialConnection() was called from a crosslinker in a different state");
+        throw GeneralException("Crosslinker::disconnectFromPartialConnection() was called from a crosslinker in a different state");
     }
 
 }
@@ -102,7 +102,7 @@ void Crosslinker::fullyConnectFromPartialConnection(const SiteLocation connectAt
     // Check whether it is not free. It is not necessary to check that it is fully connected, the extremities will take care of that.
     if(!isConnected())
     {
-        throw GeneralException("A free crosslinker was assumed to be partially connected.");
+        throw GeneralException("A free crosslinker was assumed to be partially connected in Crosslinker::fullyConnectFromPartialConnection().");
     }
     else if (m_head.isConnected())
     {
@@ -119,7 +119,7 @@ void Crosslinker::disconnectFromFullConnection(const Terminus terminusToDisconne
     bool fullyConnected = (m_head.isConnected())&&(m_tail.isConnected());
     if(!fullyConnected)
     {
-        throw GeneralException("disconnectFromFullConnection() was called on a crosslinker that is not fully connected");
+        throw GeneralException("Crosslinker::disconnectFromFullConnection() was called on a crosslinker that is not fully connected");
     }
 
     switch(terminusToDisconnect)
@@ -131,7 +131,7 @@ void Crosslinker::disconnectFromFullConnection(const Terminus terminusToDisconne
             m_head.disconnect();
             break;
         default:
-            throw GeneralException("disconnectFromFullConnection() was passed a wrong Terminus.");
+            throw GeneralException("Crosslinker::disconnectFromFullConnection() was passed a wrong Terminus.");
             break;
     }
 }
@@ -148,11 +148,31 @@ Crosslinker::Terminus Crosslinker::getFreeTerminusWhenPartiallyConnected() const
     }
     else if ((m_head.isConnected())&&(m_tail.isConnected()))
     {
-        throw GeneralException("A fully connected crosslinker was assumed to be partially connected");
+        throw GeneralException("A fully connected crosslinker was assumed to be partially connected in Crosslinker::getFreeTerminusWhenPartiallyConnected()");
     }
     else //if ((!m_head.isConnected())&&(!m_tail.isConnected()))
     {
-        throw GeneralException("A free crosslinker was assumed to be partially connected");
+        throw GeneralException("A free crosslinker was assumed to be partially connected in Crosslinker::getFreeTerminusWhenPartiallyConnected()");
+    }
+}
+
+Crosslinker::Terminus Crosslinker::getBoundTerminusWhenPartiallyConnected() const
+{
+    if ((m_head.isConnected())&&(!m_tail.isConnected()))
+    {
+        return Terminus::HEAD;
+    }
+    else if ((!m_head.isConnected())&&(m_tail.isConnected()))
+    {
+        return Terminus::TAIL;
+    }
+    else if ((m_head.isConnected())&&(m_tail.isConnected()))
+    {
+        throw GeneralException("A fully connected crosslinker was assumed to be partially connected in Crosslinker::getBoundTerminusWhenPartiallyConnected()");
+    }
+    else //if ((!m_head.isConnected())&&(!m_tail.isConnected()))
+    {
+        throw GeneralException("A free crosslinker was assumed to be partially connected in Crosslinker::getBoundTerminusWhenPartiallyConnected()");
     }
 }
 
@@ -193,7 +213,7 @@ SiteLocation Crosslinker::getBoundLocationWhenPartiallyConnected() const
     }
     else
     {
-        throw GeneralException("getBoundPositionWhenPartiallyConnected() was called from a crosslinker in a different state");
+        throw GeneralException("Crosslinker::getBoundPositionWhenPartiallyConnected() was called from a crosslinker in a different state");
     }
 }
 
@@ -203,7 +223,7 @@ SiteLocation Crosslinker::getOneBoundLocationWhenFullyConnected(const Crosslinke
 
     if(!fullyConnected)
     {
-        throw GeneralException("getOneBindingPositionWhenFullyConnected() was called on a crosslinker that is not fully connected.");
+        throw GeneralException("Crosslinker::getOneBindingPositionWhenFullyConnected() was called on a crosslinker that is not fully connected.");
     }
 
     switch(terminus)
@@ -215,6 +235,6 @@ SiteLocation Crosslinker::getOneBoundLocationWhenFullyConnected(const Crosslinke
             return m_head.getSiteLocation();
             break;
         default:
-            throw GeneralException("getOneBoundPositionWhenFullyConnected() was passed a wrong Terminus.");
+            throw GeneralException("Crosslinker::getOneBoundPositionWhenFullyConnected() was passed a wrong Terminus.");
     }
 }

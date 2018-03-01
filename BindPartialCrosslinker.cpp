@@ -43,7 +43,7 @@ void BindPartialCrosslinker::setCurrentRate(const SystemState& systemState)
 }
 
 // This function uses the current (individual) rates, make sure they are updated!
-PossibleFullConnection BindPartialCrosslinker::whichToConnect(const SystemState& systemState, RandomGenerator& generator)
+PossibleFullConnection BindPartialCrosslinker::whichToConnect(const SystemState& systemState, RandomGenerator& generator) const
 {
     const std::vector<PossibleFullConnection>& possibleConnections = systemState.getPossibleConnections(m_typeToBind);
 

@@ -13,6 +13,7 @@ enum class HopDirection
 struct PossiblePartialHop
 {
     Crosslinker* p_partialLinker;
+    Crosslinker::Terminus terminusToHop; // Include the terminus, since hop rates for motor termini can be different
     SiteLocation locationToHopTo;
     HopDirection direction;
 };

@@ -14,7 +14,7 @@ class BindFreeCrosslinker : public Reaction
 private:
     const Crosslinker::Type m_typeToBind;
 
-    SiteLocation whereToConnect(const SystemState& systemState, RandomGenerator& generator);
+    SiteLocation whereToConnect(const SystemState& systemState, RandomGenerator& generator) const;
 public:
     BindFreeCrosslinker(const double elementaryRate, const Crosslinker::Type typeToBind);
     ~BindFreeCrosslinker() override;

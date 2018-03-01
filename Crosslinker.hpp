@@ -55,6 +55,8 @@ public:
 
     Terminus getFreeTerminusWhenPartiallyConnected() const;
 
+    Terminus getBoundTerminusWhenPartiallyConnected() const;
+
     Terminus getTerminusOfFullOn(const MicrotubuleType microtubule) const;
 
     SiteLocation getBoundLocationWhenPartiallyConnected() const;

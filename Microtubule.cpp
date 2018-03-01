@@ -191,6 +191,7 @@ void Microtubule::addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>&
     }
 
     SiteLocation partialLocation = p_partialLinker->getBoundLocationWhenPartiallyConnected();
+    Crosslinker::Terminus terminusToHop = p_partialLinker->getBoundTerminusWhenPartiallyConnected();
 
     #ifdef MYDEBUG
     if (partialLocation.microtubule != m_type)
@@ -202,12 +203,12 @@ void Microtubule::addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>&
     if(partialLocation.position!=0 && m_sites.at(partialLocation.position-1).isFree())
     {
         HopDirection direction = (m_type==MicrotubuleType::FIXED)?(HopDirection::BACKWARD):(HopDirection::FORWARD);
-        possiblePartialHops.push_back(PossiblePartialHop{p_partialLinker, SiteLocation{m_type, partialLocation.position-1}, direction});
+        possiblePartialHops.push_back(PossiblePartialHop{p_partialLinker, terminusToHop, SiteLocation{m_type, partialLocation.position-1}, direction});
     }
     if(partialLocation.position != (m_nSites-1) && m_sites.at(partialLocation.position+1).isFree())
     {
         HopDirection direction = (m_type==MicrotubuleType::FIXED)?(HopDirection::FORWARD):(HopDirection::BACKWARD);
-        possiblePartialHops.push_back(PossiblePartialHop{p_partialLinker, SiteLocation{m_type, partialLocation.position+1}, direction});
+        possiblePartialHops.push_back(PossiblePartialHop{p_partialLinker, terminusToHop, SiteLocation{m_type, partialLocation.position+1}, direction});
     }
 }
 
