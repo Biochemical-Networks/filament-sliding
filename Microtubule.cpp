@@ -201,11 +201,13 @@ void Microtubule::addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>&
 
     if(partialLocation.position!=0 && m_sites.at(partialLocation.position-1).isFree())
     {
-        possiblePartialHops.push_back(PossiblePartialHop{p_partialLinker, SiteLocation{m_type, partialLocation.position-1}});
+        HopDirection direction = (m_type==MicrotubuleType::FIXED)?(HopDirection::BACKWARD):(HopDirection::FORWARD);
+        possiblePartialHops.push_back(PossiblePartialHop{p_partialLinker, SiteLocation{m_type, partialLocation.position-1}, direction});
     }
     if(partialLocation.position != (m_nSites-1) && m_sites.at(partialLocation.position+1).isFree())
     {
-        possiblePartialHops.push_back(PossiblePartialHop{p_partialLinker, SiteLocation{m_type, partialLocation.position+1}});
+        HopDirection direction = (m_type==MicrotubuleType::FIXED)?(HopDirection::FORWARD):(HopDirection::BACKWARD);
+        possiblePartialHops.push_back(PossiblePartialHop{p_partialLinker, SiteLocation{m_type, partialLocation.position+1}, direction});
     }
 }
 
@@ -266,9 +268,11 @@ void Microtubule::addPossibleFullHopsCloseTo(std::vector<PossibleFullHop>& possi
 
         if (std::abs(oldAndNewStretch.second) < maxStretch)
         {
+            HopDirection direction = (m_type==MicrotubuleType::FIXED)?(HopDirection::BACKWARD):(HopDirection::FORWARD);
             possibleFullHops.push_back(PossibleFullHop{fullLinkerExtremity.p_fullLinker,
                                                        fullLinkerExtremity.terminus,
                                                        SiteLocation{m_type, originLocation.position-1},
+                                                       direction,
                                                        oldAndNewStretch.first,
                                                        oldAndNewStretch.second});
         }
@@ -279,9 +283,11 @@ void Microtubule::addPossibleFullHopsCloseTo(std::vector<PossibleFullHop>& possi
 
         if (std::abs(oldAndNewStretch.second) < maxStretch)
         {
+            HopDirection direction = (m_type==MicrotubuleType::FIXED)?(HopDirection::FORWARD):(HopDirection::BACKWARD);
             possibleFullHops.push_back(PossibleFullHop{fullLinkerExtremity.p_fullLinker,
                                                        fullLinkerExtremity.terminus,
                                                        SiteLocation{m_type, originLocation.position+1},
+                                                       direction,
                                                        oldAndNewStretch.first,
                                                        oldAndNewStretch.second});
         }
