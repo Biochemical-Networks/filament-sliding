@@ -6,7 +6,10 @@
 #include <vector>
 #include <cmath>
 
-HopPartial::HopPartial(const double elementaryRate, const Crosslinker::Type typeToHop, const double headHopToPlusBiasEnergy, const double tailHopToPlusBiasEnergy)
+HopPartial::HopPartial(const double elementaryRate,
+                       const Crosslinker::Type typeToHop,
+                       const double headHopToPlusBiasEnergy,
+                       const double tailHopToPlusBiasEnergy)
     :   Reaction(elementaryRate),
         m_typeToHop(typeToHop),
         m_headHopToPlusRate(m_elementaryRate*std::exp(headHopToPlusBiasEnergy*0.5)),
