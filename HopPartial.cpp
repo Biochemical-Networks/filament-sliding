@@ -6,16 +6,17 @@
 #include <vector>
 #include <cmath>
 
-HopPartial::HopPartial(const double elementaryRate,
+HopPartial::HopPartial(const double baseRateHead,
+                       const double baseRateTail,
                        const Crosslinker::Type typeToHop,
                        const double headHopToPlusBiasEnergy,
                        const double tailHopToPlusBiasEnergy)
-    :   Reaction(elementaryRate),
+    :   Reaction(std::numeric_limits<double>::quiet_NaN()), // do not use elementaryRate, since there are two separate rates
         m_typeToHop(typeToHop),
-        m_headHopToPlusRate(m_elementaryRate*std::exp(headHopToPlusBiasEnergy*0.5)),
-        m_headHopToMinusRate(m_elementaryRate*std::exp(-headHopToPlusBiasEnergy*0.5)),
-        m_tailHopToPlusRate(m_elementaryRate*std::exp(tailHopToPlusBiasEnergy*0.5)),
-        m_tailHopToMinusRate(m_elementaryRate*std::exp(-tailHopToPlusBiasEnergy*0.5))
+        m_headHopToPlusRate(baseRateHead*std::exp(headHopToPlusBiasEnergy*0.5)),
+        m_headHopToMinusRate(baseRateHead*std::exp(-headHopToPlusBiasEnergy*0.5)),
+        m_tailHopToPlusRate(baseRateTail*std::exp(tailHopToPlusBiasEnergy*0.5)),
+        m_tailHopToMinusRate(baseRateTail*std::exp(-tailHopToPlusBiasEnergy*0.5))
 {
 }
 

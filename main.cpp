@@ -82,6 +82,21 @@ int main()
     double springConstant;
     input.copyParameter("springConstant", springConstant);
 
+    double ratePassivePartialHop;
+    input.copyParameter("ratePassivePartialHop", ratePassivePartialHop);
+
+    double ratePassiveFullHop;
+    input.copyParameter("ratePassiveFullHop", ratePassiveFullHop);
+
+    double baseRateActivePartialHop;
+    input.copyParameter("baseRateActivePartialHop", baseRateActivePartialHop);
+
+    double baseRateActiveFullHop;
+    input.copyParameter("baseRateActiveFullHop", baseRateActiveFullHop);
+
+    double activeHopToPlusBiasEnergy;
+    input.copyParameter("activeHopToPlusBiasEnergy", activeHopToPlusBiasEnergy);
+
     double rateZeroToOneExtremitiesConnected;
     input.copyParameter("rateZeroToOneExtremitiesConnected", rateZeroToOneExtremitiesConnected);
 
@@ -100,6 +115,11 @@ int main()
                           diffusionConstantMicrotubule,
                           springConstant,
                           latticeSpacing,
+                          ratePassivePartialHop,
+                          ratePassiveFullHop,
+                          baseRateActivePartialHop,
+                          baseRateActiveFullHop,
+                          activeHopToPlusBiasEnergy,
                           rateZeroToOneExtremitiesConnected,
                           rateOneToZeroExtremitiesConnected,
                           rateOneToTwoExtremitiesConnected,

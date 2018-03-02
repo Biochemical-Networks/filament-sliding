@@ -42,10 +42,26 @@ ParameterMap::ParameterMap()
     defineParameter("diffusionConstantMicrotubule", 0.1, "micron^(2)*s^(-1)", ">=0");
     defineParameter("springConstant", 1., "kT*micron^(-2)", ">=0");
 
-    // Rates for connecting crosslinkers to the microtubules. The rates from zero to one are per crosslinker in solution per site.
+    // The rates for hopping of passive extremities when the linker is either partially or fully connected
+    defineParameter("ratePassivePartialHop", 1., "s^(-1)", ">=0");
+    defineParameter("ratePassiveFullHop", 1., "s^(-1)", ">=0");
+    // The rates for hopping of active extremities when the linker is either partially or fully connected
+    // are calculated using the following parameters.
+    // baseRate is the geometric mean between the forward and backward rate,
+    // whereas activeHopToPlusBiasEnergy gives the free energy driving a single hop towards the plus tip of the microtubule.
+    // For a minus end walking motor, use a negative bias free energy
+    defineParameter("baseRateActivePartialHop", 1., "s^(-1)", ">=0");
+    defineParameter("baseRateActiveFullHop", 1., "s^(-1)", ">=0");
+    defineParameter("activeHopToPlusBiasEnergy", 1., "kT", "real");
+
+    // Rates for connecting crosslinkers to the microtubules. The rates from zero to one are per crosslinker in solution per microtubule site.
     // So the full rate for connecting to any site is r * #free crosslinkers * # free microtubule sites
-    // Detailed balance is obeyed, because the free energy is the same whether a head or a tail is connected, and whether you fully connect from a head or a tail.
-    // Hence, the free energy difference between the fully connected and free crosslinker does not depend on the path (first head or first tail), and there is no net flux through the cycle.
+    // For unbinding a full linker, the rate is given per linker, not per extremity.
+    // So the rate rateTwoToOneExtremitiesConnected = 2*unbindOneExtremityOfFull.
+    // Detailed balance is obeyed, because the rates are independent of the extremity connecting,
+    // and because forward and backward rates are set such that their ratio always depends on the free energy difference between the two states.
+    // Hence, the free energy difference between the fully connected and free crosslinker does not depend on the path (first head or first tail),
+    // and there is no net flux through the cycle.
     defineParameter("rateZeroToOneExtremitiesConnected", 1.0, "s^(-1)", ">=0");
     defineParameter("rateOneToZeroExtremitiesConnected", 1.0, "s^(-1)", ">=0");
     defineParameter("rateOneToTwoExtremitiesConnected", 1.0, "s^(-1)", ">=0");

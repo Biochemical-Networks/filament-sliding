@@ -1,17 +1,18 @@
 #include "HopFull.hpp"
 
-HopFull::HopFull(const double elementaryRate,
+HopFull::HopFull(const double baseRateHead,
+                 const double baseRateTail,
                  const Crosslinker::Type typeToHop,
                  const double springConstant,
                  const double headHopToPlusBiasEnergy,
                  const double tailHopToPlusBiasEnergy)
-    :   Reaction(elementaryRate),
+    :   Reaction(std::numeric_limits<double>::quiet_NaN()), // Use the base rates instead of the elementaryRate
         m_typeToHop(typeToHop),
         m_springConstant(springConstant),
-        m_headHopToPlusBaseRate(m_elementaryRate*std::exp(headHopToPlusBiasEnergy*0.5)),
-        m_headHopToMinusBaseRate(m_elementaryRate*std::exp(-headHopToPlusBiasEnergy*0.5)),
-        m_tailHopToPlusBaseRate(m_elementaryRate*std::exp(tailHopToPlusBiasEnergy*0.5)),
-        m_tailHopToMinusBaseRate(m_elementaryRate*std::exp(-tailHopToPlusBiasEnergy*0.5))
+        m_headHopToPlusBaseRate(baseRateHead*std::exp(headHopToPlusBiasEnergy*0.5)),
+        m_headHopToMinusBaseRate(baseRateHead*std::exp(-headHopToPlusBiasEnergy*0.5)),
+        m_tailHopToPlusBaseRate(baseRateTail*std::exp(tailHopToPlusBiasEnergy*0.5)),
+        m_tailHopToMinusBaseRate(baseRateTail*std::exp(-tailHopToPlusBiasEnergy*0.5))
 {
 }
 

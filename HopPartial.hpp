@@ -24,7 +24,11 @@ private:
     PossiblePartialHop whichHop(const SystemState& systemState, RandomGenerator& generator) const;
 
 public:
-    HopPartial(const double elementaryRate, const Crosslinker::Type typeToHop, const double headHopToPlusBiasEnergy, const double tailHopToPlusBiasEnergy);
+    HopPartial(const double baseRateHead,
+               const double baseRateTail,
+               const Crosslinker::Type typeToHop,
+               const double headHopToPlusBiasEnergy,
+               const double tailHopToPlusBiasEnergy);
     ~HopPartial() override;
 
     void setCurrentRate(const SystemState& systemState) override;

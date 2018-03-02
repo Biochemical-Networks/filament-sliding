@@ -8,6 +8,8 @@
 #include "BindPartialCrosslinker.hpp"
 #include "UnbindPartialCrosslinker.hpp"
 #include "UnbindFullCrosslinker.hpp"
+#include "HopPartial.hpp"
+#include "HopFull.hpp"
 #include "Crosslinker.hpp"
 
 #include <cstdint>
@@ -25,6 +27,11 @@ Propagator::Propagator(const int32_t nTimeSteps,
                        const double diffusionConstantMicrotubule,
                        const double springConstant,
                        const double latticeSpacing,
+                       const double ratePassivePartialHop,
+                       const double ratePassiveFullHop,
+                       const double baseRateActivePartialHop,
+                       const double baseRateActiveFullHop,
+                       const double activeHopToPlusBiasEnergy,
                        const double rateZeroToOneExtremitiesConnected,
                        const double rateOneToZeroExtremitiesConnected,
                        const double rateOneToTwoExtremitiesConnected,
@@ -36,7 +43,6 @@ Propagator::Propagator(const int32_t nTimeSteps,
         m_springConstant(springConstant),
         m_latticeSpacing(latticeSpacing),
         m_deviationMicrotubule(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep))
-
 {
     // objects in std::initializer_list are inherently const, so std::unique_ptr's copy constructor cannot be used there, and we cannot use this method of initialising m_reactions.
     // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
@@ -54,7 +60,12 @@ Propagator::Propagator(const int32_t nTimeSteps,
     m_reactions["unbindingFullPassiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(rateTwoToOneExtremitiesConnected, Crosslinker::Type::PASSIVE, m_springConstant));
     m_reactions["unbindingFullDualCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(rateTwoToOneExtremitiesConnected, Crosslinker::Type::DUAL, m_springConstant));
     m_reactions["unbindingFullActiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(rateTwoToOneExtremitiesConnected, Crosslinker::Type::ACTIVE, m_springConstant));
-
+    m_reactions["hoppingPartialPassiveCrosslinker"] = std::unique_ptr<Reaction>(new HopPartial(ratePassivePartialHop, ratePassivePartialHop, Crosslinker::Type::PASSIVE, 0.0, 0.0)); // For a passive linker, the bias energy is zero
+    m_reactions["hoppingPartialDualCrosslinker"] = std::unique_ptr<Reaction>(new HopPartial(baseRateActivePartialHop, ratePassivePartialHop, Crosslinker::Type::DUAL, activeHopToPlusBiasEnergy, 0.0));
+    m_reactions["hoppingPartialActiveCrosslinker"] = std::unique_ptr<Reaction>(new HopPartial(baseRateActivePartialHop, baseRateActivePartialHop, Crosslinker::Type::ACTIVE, activeHopToPlusBiasEnergy, activeHopToPlusBiasEnergy));
+    m_reactions["hoppingFullPassiveCrosslinker"] = std::unique_ptr<Reaction>(new HopFull(ratePassiveFullHop, ratePassiveFullHop, Crosslinker::Type::PASSIVE, m_springConstant, 0.0, 0.0));
+    m_reactions["hoppingFullDualCrosslinker"] = std::unique_ptr<Reaction>(new HopFull(baseRateActiveFullHop, ratePassiveFullHop, Crosslinker::Type::DUAL, m_springConstant, activeHopToPlusBiasEnergy, 0.0));
+    m_reactions["hoppingFullActiveCrosslinker"] = std::unique_ptr<Reaction>(new HopFull(baseRateActiveFullHop, baseRateActiveFullHop, Crosslinker::Type::ACTIVE, m_springConstant, activeHopToPlusBiasEnergy, activeHopToPlusBiasEnergy));
     // Have some checks, such that the methods of this class will work properly
     /* The standard deviation of the average microtubule position update should be much smaller (orders of magnitude) smaller than the lattice spacing,
      * since that sets a scale over which force differences definitely emerge. The choice 0.1 is pretty large, but this is a hard maximum limit.

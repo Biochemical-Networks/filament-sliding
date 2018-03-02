@@ -25,8 +25,12 @@ private:
     PossibleFullHop whichHop(const SystemState& systemState, RandomGenerator& generator) const;
 
 public:
-    HopFull(const double elementaryRate, const Crosslinker::Type typeToHop, const double springConstant,
-                const double headHopToPlusBiasEnergy, const double tailHopToPlusBiasEnergy);
+    HopFull(const double baseRateHead,
+            const double baseRateTail,
+            const Crosslinker::Type typeToHop,
+            const double springConstant,
+            const double headHopToPlusBiasEnergy,
+            const double tailHopToPlusBiasEnergy);
     ~HopFull() override;
 
     void setCurrentRate(const SystemState& systemState) override;
