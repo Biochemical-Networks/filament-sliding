@@ -3,7 +3,7 @@
 #include <random>
 
 RandomGenerator::RandomGenerator(const std::string seedString)
-    :   m_distributionProbility(0.0, std::nextafter(1.0, std::numeric_limits<double>::max())) // inclusive interval [0,1]
+    :   m_distributionProbility(std::nextafter(0.0, std::numeric_limits<double>::max()), 1.0) // exclusive interval (0,1)
 {
     std::seed_seq seed(seedString.begin(), seedString.end());
     m_generator.seed(seed);

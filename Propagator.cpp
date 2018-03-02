@@ -153,7 +153,9 @@ void Propagator::performReaction(SystemState& systemState, RandomGenerator& gene
 // Invert the survival probability vs the integrated reaction rate
 void Propagator::setNewReactionRateThreshold(const double probability)
 {
-    m_currentReactionRateThreshold = -std::log(probability)/m_calcTimeStep; // The action threshold is in units of the time step
+    // The action threshold is in units of the time step
+    // If probability is in the exclusive range (0,1), then the threshold is in the range (0, infty)
+    m_currentReactionRateThreshold = -std::log(probability)/m_calcTimeStep;
 }
 
 double Propagator::getTotalAction() const
