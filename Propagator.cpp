@@ -86,7 +86,8 @@ Propagator::~Propagator()
 
 void Propagator::run(SystemState& systemState, RandomGenerator& generator, Output& output)
 {
-    m_currentReactionRateThreshold = getNewReactionRateThreshold(generator.getProbability()); // Initialise the threshold, which is used to decide when a reaction will fire
+    // Initialise the threshold, which is used to decide when a reaction will fire
+    setNewReactionRateThreshold(generator.getProbability());
 
     for (int32_t timeStep = 0; timeStep < m_nTimeSteps; ++timeStep)
     {
@@ -94,11 +95,16 @@ void Propagator::run(SystemState& systemState, RandomGenerator& generator, Outpu
         {
             output.writeMicrotubulePosition(timeStep*m_calcTimeStep, systemState);
         }
+        // First, update the reaction rates and actions, and perform a reaction when the total action surpasses the threshold.
+        // Then, move the mobile microtubule at the end of the time step
+        setRates(systemState);
+        updateAction();
+        if (getTotalAction() > m_currentReactionRateThreshold)
+        {
+            performReaction(systemState, generator);
+        }
 
         moveMicrotubule(systemState, generator);
-
-
-
 
     }
     output.writeMicrotubulePosition(m_nTimeSteps*m_calcTimeStep, systemState); // Write the final state as well. The time it writes at is not equidistant compared to the previous writing times, when probePeriod does not divide nTimeSteps
@@ -134,18 +140,20 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
     }
     while (change<=exclusiveMovementBorders.first || change>=exclusiveMovementBorders.second);
 
-    systemState.update(change);
+    systemState.updateMobilePosition(change);
 }
 
 void Propagator::performReaction(SystemState& systemState, RandomGenerator& generator)
 {
-
+    getReactionToHappen(generator).performReaction(systemState, generator);
+    resetAction();
+    setNewReactionRateThreshold(generator.getProbability());
 }
 
 // Invert the survival probability vs the integrated reaction rate
-double Propagator::getNewReactionRateThreshold(const double probability)
+void Propagator::setNewReactionRateThreshold(const double probability)
 {
-    return -std::log(probability)/m_calcTimeStep;
+    m_currentReactionRateThreshold = -std::log(probability)/m_calcTimeStep; // The action threshold is in units of the time step
 }
 
 double Propagator::getTotalAction() const
@@ -158,7 +166,31 @@ double Propagator::getTotalAction() const
         accumulatedAction += reaction.second->getAction();
     }
 
-    return accumulatedAction;
+    return accumulatedAction; // The actions in the reactions contain the action in units of the time step
+}
+
+void Propagator::updateAction()
+{
+    for(auto& reaction : m_reactions)
+    {
+        reaction.second->updateAction();
+    }
+}
+
+void Propagator::resetAction()
+{
+    for(auto& reaction : m_reactions)
+    {
+        reaction.second->resetAction();
+    }
+}
+
+void Propagator::setRates(const SystemState& systemState)
+{
+    for(auto& reaction : m_reactions)
+    {
+        reaction.second->setCurrentRate(systemState);
+    }
 }
 
 double Propagator::getTotalRate() const
@@ -175,8 +207,7 @@ double Propagator::getTotalRate() const
 
 Reaction& Propagator::getReactionToHappen(RandomGenerator& generator) const
 {
-    double totalRate = getTotalRate();
-    double randomNumber = generator.getUniform(0.0, totalRate);
+    double randomNumber = generator.getUniform(0.0, getTotalRate());
 
     for (const auto& reaction : m_reactions)
     {

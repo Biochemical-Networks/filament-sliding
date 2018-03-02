@@ -34,9 +34,15 @@ private:
 
     void performReaction(SystemState& systemState, RandomGenerator& generator);
 
-    double getNewReactionRateThreshold(const double probability);
+    void setNewReactionRateThreshold(const double probability);
 
     double getTotalAction() const; // The single actions are stored in the Reactions, contained in m_reactions
+
+    void updateAction();
+
+    void resetAction();
+
+    void setRates(const SystemState& systemState);
 
     double getTotalRate() const;
 

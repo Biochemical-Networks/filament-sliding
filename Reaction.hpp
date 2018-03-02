@@ -24,7 +24,8 @@ public:
 
     double getCurrentRate() const;
 
-    void updateAction(); // Action is updated by adding the current rate times the time step size to it. Once the total action of all reactions reaches a (randomly set) plateau value, one fires
+    void updateAction();
+    // Action is updated by adding the current rate times the time step size to it. Once the total action of all reactions reaches a (randomly set) plateau value, one fires
 
     // Pure virtual functions, these have to be present in a reaction, but need to be implemented in the derived classes
     virtual void setCurrentRate(const SystemState& systemState) = 0;

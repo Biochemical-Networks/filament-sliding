@@ -72,7 +72,7 @@ public:
 
     void disconnectFullyConnectedCrosslinker(Crosslinker& crosslinker, const Crosslinker::Terminus terminusToDisconnect);
 
-    void update(const double changeMicrotubulePosition);
+    void updateMobilePosition(const double changeMicrotubulePosition);
 
     std::pair<double, double> movementBordersSetByFullLinkers() const;
 

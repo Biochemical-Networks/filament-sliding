@@ -277,7 +277,7 @@ void SystemState::fullyConnectFreeCrosslinker(const Crosslinker::Type type,
 
 }
 
-void SystemState::update(const double changeMicrotubulePosition)
+void SystemState::updateMobilePosition(const double changeMicrotubulePosition)
 {
     // This method assumes that the change in the microtubule position is allowed by the fully connected crosslinkers
     m_mobileMicrotubule.updatePosition(changeMicrotubulePosition);
