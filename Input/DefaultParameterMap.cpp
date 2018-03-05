@@ -31,12 +31,11 @@ ParameterMap::ParameterMap()
     defineParameter("numberActiveCrosslinkers", 5000, "crosslinkers", ">=0");
     defineParameter("numberDualCrosslinkers", 5000, "crosslinkers", ">=0");
     defineParameter("numberPassiveCrosslinkers", 5000, "crosslinkers", ">=0");
-    defineParameter("fractionOverlapSitesConnected", 1.0, "unitless", ">0");
-    defineParameter("initialCrosslinkerDistribution", "RANDOM", "unitless", "RANDOM,HEADSMOBILE,TAILSMOBILE,TEST"); // Can only hold the values set by Initialiser::InitialCrosslinkerDistribution
 
     // Initial state parameters
     defineParameter("initialPositionMicrotubule", 0., "micron"); // The position of the mobile microtubule relative to the fixed one, where 0. means that the two have the same (left) boundary position
-    defineParameter("numberInitiallyBoundCrosslinkers", 100, "crosslinkers", ">0");
+    defineParameter("fractionOverlapSitesConnected", 1.0, "unitless", ">0");
+    defineParameter("initialCrosslinkerDistribution", "RANDOM", "unitless", "RANDOM,HEADSMOBILE,TAILSMOBILE,TEST"); // Can only hold the values set by Initialiser::InitialCrosslinkerDistribution
 
     // Dynamics parameters
     defineParameter("diffusionConstantMicrotubule", 0.1, "micron^(2)*s^(-1)", ">=0"); // also sets the microtubule mobility via the Einstein relation (units micron^2*(kT)^(-1)*s^(-1))

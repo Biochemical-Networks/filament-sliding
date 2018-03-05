@@ -155,6 +155,9 @@ void Propagator::performReaction(SystemState& systemState, RandomGenerator& gene
     resetAction();
     setNewReactionRateThreshold(generator.getProbability());
     systemState.updateForceAndEnergy();
+    #ifdef MYDEBUG
+    std::cout << "A reaction happened!\n";
+    #endif // MYDEBUG
 }
 
 // Invert the survival probability vs the integrated reaction rate
