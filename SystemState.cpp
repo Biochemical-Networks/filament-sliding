@@ -17,9 +17,11 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
                             const double latticeSpacing,
                             const int32_t nActiveCrosslinkers,
                             const int32_t nDualCrosslinkers,
-                            const int32_t nPassiveCrosslinkers)
+                            const int32_t nPassiveCrosslinkers,
+                            const double springConstant)
     :   m_maxStretch(m_maxStretchPerLatticeSpacing*latticeSpacing),
         m_latticeSpacing(latticeSpacing),
+        m_springConstant(springConstant),
         m_fixedMicrotubule(MicrotubuleType::FIXED, lengthFixedMicrotubule, latticeSpacing),
         m_mobileMicrotubule(lengthMobileMicrotubule, latticeSpacing),
         m_nPassiveCrosslinkers(nPassiveCrosslinkers),
@@ -578,6 +580,47 @@ const std::vector<Crosslinker*>& SystemState::getPartialLinkers(const Crosslinke
     default:
         throw GeneralException("An incorrect type was passed to SystemState::getPartialLinkers()");
     }
+}
+
+void SystemState::updateForceAndEnergy()
+{
+    const std::vector<FullConnection>& passiveFullConnections = getFullConnections(Crosslinker::Type::PASSIVE);
+    const std::vector<FullConnection>& dualFullConnections = getFullConnections(Crosslinker::Type::DUAL);
+    const std::vector<FullConnection>& activeFullConnections = getFullConnections(Crosslinker::Type::ACTIVE);
+
+    double totalExtension = 0;
+    double totalSquaredExtension = 0;
+
+    for(const FullConnection& fullConnection : passiveFullConnections)
+    {
+        totalExtension += fullConnection.extension;
+        totalSquaredExtension += fullConnection.extension*fullConnection.extension;
+    }
+    for(const FullConnection& fullConnection : dualFullConnections)
+    {
+        totalExtension += fullConnection.extension;
+        totalSquaredExtension += fullConnection.extension*fullConnection.extension;
+    }
+    for(const FullConnection& fullConnection : activeFullConnections)
+    {
+        totalExtension += fullConnection.extension;
+        totalSquaredExtension += fullConnection.extension*fullConnection.extension;
+    }
+
+    m_forceMicrotubule = m_springConstant*totalExtension;
+    m_energy = 0.5*m_springConstant*totalSquaredExtension;
+}
+
+double SystemState::getForce() const
+{
+    // call the updateForceAndEnergy function before!
+    return m_forceMicrotubule;
+}
+
+double SystemState::getEnergy() const
+{
+    // call the updateForceAndEnergy function before!
+    return m_energy;
 }
 
 

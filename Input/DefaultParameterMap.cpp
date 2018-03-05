@@ -39,8 +39,9 @@ ParameterMap::ParameterMap()
     defineParameter("numberInitiallyBoundCrosslinkers", 100, "crosslinkers", ">0");
 
     // Dynamics parameters
-    defineParameter("diffusionConstantMicrotubule", 0.1, "micron^(2)*s^(-1)", ">=0");
+    defineParameter("diffusionConstantMicrotubule", 0.1, "micron^(2)*s^(-1)", ">=0"); // also sets the microtubule mobility via the Einstein relation (units micron^2*(kT)^(-1)*s^(-1))
     defineParameter("springConstant", 1., "kT*micron^(-2)", ">=0");
+
 
     // The rates for hopping of passive extremities when the linker is either partially or fully connected
     defineParameter("ratePassivePartialHop", 1., "s^(-1)", ">=0");

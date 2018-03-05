@@ -45,8 +45,11 @@ int main()
     int32_t nPassiveCrosslinkers;
     input.copyParameter("numberPassiveCrosslinkers", nPassiveCrosslinkers);
 
+    double springConstant;
+    input.copyParameter("springConstant", springConstant);
+
     SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing,
-                            nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers);
+                            nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers, springConstant);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for initialising the state.
@@ -78,9 +81,6 @@ int main()
 
     double diffusionConstantMicrotubule;
     input.copyParameter("diffusionConstantMicrotubule", diffusionConstantMicrotubule);
-
-    double springConstant;
-    input.copyParameter("springConstant", springConstant);
 
     double ratePassivePartialHop;
     input.copyParameter("ratePassivePartialHop", ratePassivePartialHop);

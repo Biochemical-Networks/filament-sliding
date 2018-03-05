@@ -101,7 +101,7 @@ void Propagator::run(SystemState& systemState, RandomGenerator& generator, Outpu
         updateAction();
         if (getTotalAction() > m_currentReactionRateThreshold)
         {
-            performReaction(systemState, generator);
+            performReaction(systemState, generator); // also updates the force
         }
 
         moveMicrotubule(systemState, generator);
@@ -130,7 +130,12 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
     do
     {
         // The mean should be proportional to the force (overdamped system)
-        change = generator.getGaussian(0.0, m_deviationMicrotubule);
+        // mean change = mobility*force*timeStep
+        // units:   [timeStep] = s
+        //          [force] = (kT)*micron^(-1)
+        //          [mobility] = micron^(2)*(kT)^(-1)*s^(-1)
+        // In these units, mobility has the same value as the diffusion constant, which has units micron^(2)*s^(-1), and mobility = D/(kT)
+        change = generator.getGaussian(-m_diffusionConstantMicrotubule*systemState.getForce()*m_calcTimeStep, m_deviationMicrotubule);
 
         #ifdef MYDEBUG
         ++trial;
@@ -141,6 +146,7 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
     while (change<=exclusiveMovementBorders.first || change>=exclusiveMovementBorders.second);
 
     systemState.updateMobilePosition(change);
+    systemState.updateForceAndEnergy();
 }
 
 void Propagator::performReaction(SystemState& systemState, RandomGenerator& generator)
@@ -148,6 +154,7 @@ void Propagator::performReaction(SystemState& systemState, RandomGenerator& gene
     getReactionToHappen(generator).performReaction(systemState, generator);
     resetAction();
     setNewReactionRateThreshold(generator.getProbability());
+    systemState.updateForceAndEnergy();
 }
 
 // Invert the survival probability vs the integrated reaction rate

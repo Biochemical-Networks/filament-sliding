@@ -27,6 +27,8 @@ private:
     const double m_maxStretch; // To be defined in terms of the lattice spacing and m_maxStretchPerLatticeSpacing
     const double m_latticeSpacing;
 
+    const double m_springConstant;
+
     Microtubule m_fixedMicrotubule;
     MobileMicrotubule m_mobileMicrotubule;
 
@@ -49,7 +51,8 @@ public:
                 const double latticeSpacing,
                 const int32_t nActiveCrosslinkers,
                 const int32_t nDualCrosslinkers,
-                const int32_t nPassiveCrosslinkers);
+                const int32_t nPassiveCrosslinkers,
+                const double springConstant);
     ~SystemState();
 
     SystemState(const SystemState&) = delete;
@@ -109,6 +112,12 @@ public:
     #endif // MYDEBUG
 
     void findPossibilities(const Crosslinker::Type type);
+
+    void updateForceAndEnergy();
+
+    double getForce() const;
+
+    double getEnergy() const;
 
     #ifdef MYDEBUG
     void TESTunbindAFullCrosslinker(const int32_t which, const Crosslinker::Terminus terminusToDisconnect);
