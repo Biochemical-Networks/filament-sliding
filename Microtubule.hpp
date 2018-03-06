@@ -13,6 +13,13 @@
 #include "MicrotubuleType.hpp"
 #include "FullConnection.hpp"
 
+/* The microtubule class holds data about the microtubule, such as the length, lattice spacing etc. Further, it contains
+ * all Sites on the microtubule. There are functions to find the closest sites next to a specific location.
+ * Also, it keeps track of the remaining free sites, such that we know where crosslinkers can bind.
+ * Finally, it has functions for adding possible connections or hops, since it knows which sites are free, and it can find and remove which
+ * possible full connections cross existing full connections.
+ */
+
 class Microtubule
 {
 private:

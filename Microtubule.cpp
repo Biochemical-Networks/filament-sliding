@@ -18,7 +18,7 @@ Microtubule::Microtubule(const MicrotubuleType type, const double length, const 
     :   m_type(type),
         m_length(length),
         m_latticeSpacing(latticeSpacing),
-        m_nSites(static_cast<int32_t>(std::floor(m_length/m_latticeSpacing))+1), // Choose such that microtubule always starts and ends with a site. The
+        m_nSites(static_cast<int32_t>(std::floor(m_length/m_latticeSpacing))+1), // Choose such that microtubule always starts and ends with a site
         m_nFreeSites(m_nSites),
         m_sites(m_nSites, Site(true)), // Create a copy of Site which is free (isFree=true), and copy it into the vector
         m_freeSitePositions(m_nSites) // Set the number of sites, but fill it in the body of the constructor
@@ -32,34 +32,40 @@ Microtubule::~Microtubule()
 
 void Microtubule::connectSite(const int32_t sitePosition, Crosslinker& crosslinkerToConnect, const Crosslinker::Terminus terminusToConnect)
 {
+    #ifdef MYDEBUG
     try
     {
+    #endif // MYDEBUG
         m_sites.at(sitePosition).connectCrosslinker(crosslinkerToConnect, terminusToConnect);
 
         m_freeSitePositions.erase(std::remove(m_freeSitePositions.begin(), m_freeSitePositions.end(), sitePosition), m_freeSitePositions.end()); // Erase-remove idiom
         --m_nFreeSites;
-
+    #ifdef MYDEBUG
     }
     catch(std::out_of_range)
     {
         throw GeneralException("The sitePosition given to Microtubule::connectSite() does not exist");
     }
+    #endif // MYDEBUG
 }
 
 void Microtubule::disconnectSite(const int32_t sitePosition)
 {
+    #ifdef MYDEBUG
     try
     {
+    #endif // MYDEBUG
         m_sites.at(sitePosition).disconnectCrosslinker();
 
         m_freeSitePositions.push_back(sitePosition);
         ++m_nFreeSites;
-
+    #ifdef MYDEBUG
     }
     catch(std::out_of_range)
     {
         throw GeneralException("The sitePosition given to Microtubule::disconnectSite() does not exist");
     }
+    #endif // MYDEBUG
 }
 
 
@@ -85,16 +91,23 @@ int32_t Microtubule::getNFreeSites() const
 
 int32_t Microtubule::getFreeSitePosition(const int32_t whichFreeSite) const
 {
+    #ifdef MYDEBUG
+    if (whichFreeSite<0 || whichFreeSite >= m_nFreeSites)
+    {
+        throw GeneralException("Microtubule::getFreeSitePosition() was called with an invalid parameter");
+    }
+    #endif // MYDEBUG
     return m_freeSitePositions.at(whichFreeSite);
 }
 
 // The function floor((x-maxStretch)/latticeSpacing+1) returns the first point that is within a distance of maxStretch from x, excluding the exact distance of maxStretch.
-// Given A<C, min(max(A,B),C) = { A if B<=A, B if A<=B<=C, C if B>=C }. (By the way, if A<C, then min(max(A,B),C)=max(A,min(B,C)) )
+// The function ceil((x+maxStretch)/latticeSpacing-1) returns the last point that is within a distance of maxStretch from x, excluding the exact distance of maxStretch.
+// Given A<=C, min(max(A,B),C) = { A if B<=A, B if A<=B<=C, C if B>=C }. (By the way, if A<=C, then min(max(A,B),C)=max(A,min(B,C)) )
 int32_t Microtubule::getFirstPositionCloseTo(const double position, const double maxStretch) const
 {
     int32_t estimatedSite = static_cast <int32_t> (std::floor( (position-maxStretch)/m_latticeSpacing+1));
     // The first position cannot be smaller than 0, and not bigger than (NSites-1), since counting starts at 0
-    return std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_nSites-1);
+    return std::min(std::max(static_cast <int32_t> (0), estimatedSite),m_nSites-1); // m_nSites >=1, so this is always good
 }
 
 int32_t Microtubule::getLastPositionCloseTo(const double position, const double maxStretch) const
@@ -134,10 +147,16 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
                                                 const double mobilePosition,
                                                 const double maxStretch) const
 {
+    #ifdef MYDEBUG
     if(!p_oppositeCrosslinker->isPartial())
     {
         throw GeneralException("Microtubule::addPossibleConnectionsCloseTo() encountered a non-partial linker.");
     }
+    if(p_oppositeCrosslinker->getBoundLocationWhenPartiallyConnected().microtubule == m_type)
+    {
+        throw GeneralException("Microtubule::addPossibleConnectionsCloseTo() was called for a crosslinker on the same microtubule");
+    }
+    #endif // MYDEBUG
 
     if (!(position<=-maxStretch||position >= m_length + maxStretch)) // Definitely no sites close if there is no microtubule there
     {
@@ -147,10 +166,9 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
         std::vector<PossibleFullConnection> newPossibleConnections;
         for (int32_t posToCheck = lowerSiteLabel; posToCheck<=upperSiteLabel; ++posToCheck)
         {
-            /* The stretch is defined as the position of the connection on the mobile microtubule,
-             * minus the position on the fixed microtubule. The sign matters!
-             * This is done such that the stretch can be easily updated after a change in the microtubule position
-             */
+            // The stretch is defined as the position of the connection on the mobile microtubule,
+            // minus the position on the fixed microtubule. The sign matters!
+            // This is done such that the stretch can be easily updated after a change in the microtubule position, and the force can be easily calculated
             if(m_sites.at(posToCheck).isFree())
             {
                 double stretch;
@@ -185,10 +203,12 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
 
 void Microtubule::addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>& possiblePartialHops, Crosslinker* const p_partialLinker) const
 {
+    #ifdef MYDEBUG
     if(!p_partialLinker->isPartial())
     {
         throw GeneralException("Microtubule::addPossiblePartialHopsCloseTo() encountered a non-partial linker.");
     }
+    #endif // MYDEBUG
 
     SiteLocation partialLocation = p_partialLinker->getBoundLocationWhenPartiallyConnected();
     Crosslinker::Terminus terminusToHop = p_partialLinker->getBoundTerminusWhenPartiallyConnected();
@@ -200,6 +220,8 @@ void Microtubule::addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>&
     }
     #endif // MYDEBUG
 
+    // For the fixed microtubule, the plus tip is at (m_nSites-1), the minus tip is at 0. For the mobile microtubule this is opposite: plus @ 0, minus @ (m_nSites-1)
+    // The hop direction is forward when towards the plus tip, and backwards otherwise
     if(partialLocation.position!=0 && m_sites.at(partialLocation.position-1).isFree())
     {
         HopDirection direction = (m_type==MicrotubuleType::FIXED)?(HopDirection::BACKWARD):(HopDirection::FORWARD);
@@ -238,6 +260,7 @@ std::pair<double,double> Microtubule::getOldAndNewStretchFullHop(const int32_t o
     {
         throw GeneralException("Microtubule::getOldAndNewStretchFullHop() encountered a forbidden stretch.");
     }
+    // The user that calls this function has to decide whether to accept the new stretch, a forbidden newStretch that is returned is taken as a signal that the hop is not possible
     #endif // MYDEBUG
 
     return std::pair<double,double>{oldStretch, newStretch};
@@ -311,6 +334,14 @@ void Microtubule::cleanPossibleCrossings(std::vector<PossibleFullConnection>& po
 
         // Store the partial linker and its position now, since there is assumed to be only one partial linker
         Crosslinker*const p_thisPartialLinker = possibleConnectionsToCheck.front().p_partialLinker;
+
+        #ifdef MYDEBUG
+        if(!p_thisPartialLinker->isPartial())
+        {
+            throw GeneralException("Microtubule::cleanPossibleCrossings() encountered a non-partial linker");
+        }
+        #endif // MYDEBUG
+
         const SiteLocation locationPartialLinker = p_thisPartialLinker->getBoundLocationWhenPartiallyConnected();
 
         #ifdef MYDEBUG
@@ -342,6 +373,16 @@ void Microtubule::cleanPossibleCrossings(std::vector<PossibleFullConnection>& po
 
         std::vector<FullConnectionLocations> fullConnections = getFullCrosslinkersCloseTo(positionPartialLinker, maxStretch);
 
+        #ifdef MYDEBUG
+        for(const FullConnectionLocations& fullConnection : fullConnections)
+        {
+            if(fullConnection.locationNextToPartial.microtubule != locationPartialLinker.microtubule || fullConnection.locationOppositeToPartial.microtubule == locationPartialLinker.microtubule)
+            {
+                throw GeneralException("Microtubule::cleanPossibleCrossings() encountered something fishy in fullConnections");
+            }
+        }
+        #endif // MYDEBUG
+
         // erase-remove idiom erasing all possibleConnections from possibleConnectionsToCheck that have a full linker in the surroundings that crosses the possibleConnection
         possibleConnectionsToCheck.erase(std::remove_if(possibleConnectionsToCheck.begin(),possibleConnectionsToCheck.end(),
                                                 // lambda expression
@@ -349,6 +390,7 @@ void Microtubule::cleanPossibleCrossings(std::vector<PossibleFullConnection>& po
                                                 {
                                                     for(const FullConnectionLocations& fullConnection : fullConnections)
                                                     {
+                                                        // Compare the integers labeling the sites on each microtubule with each other
                                                         if ((locationPartialLinker.position < fullConnection.locationNextToPartial.position) &&
                                                             (possibleConnection.location.position > fullConnection.locationOppositeToPartial.position))
                                                         {
@@ -365,7 +407,7 @@ void Microtubule::cleanPossibleCrossings(std::vector<PossibleFullConnection>& po
     }
 }
 
-// position relative to this microtubule
+// position relative to this microtubule. Should return knowing that a partial linker is opposite to this microtubule.
 std::vector<FullConnectionLocations> Microtubule::getFullCrosslinkersCloseTo(const double position, const double maxStretch) const
 {
     if (position<=-maxStretch||position >= m_length + maxStretch) // No sites close to a point outside of the microtubule
