@@ -11,10 +11,9 @@
 class Site
 {
 private:
-
     bool m_isFree; // Focus on free, not occupied, because we need to ask whether we can move there (fully equivalent otherwise)
 
-
+    // know which crosslinker is occupying the site if it is occupied:
     Crosslinker *mp_connectedCrosslinker;
     Crosslinker::Terminus m_connectedTerminus;
 

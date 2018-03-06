@@ -16,10 +16,12 @@ Site::~Site()
 
 void Site::connectCrosslinker(Crosslinker& crosslinkerToConnect, const Crosslinker::Terminus terminusToConnect)
 {
+    #ifdef MYDEBUG
     if (!m_isFree)
     {
-        throw GeneralException("Site::connectCrosslinker tried to connect a crosslinker that was already connected");
+        throw GeneralException("Site::connectCrosslinker() tried to connect a crosslinker that was already connected");
     }
+    #endif // MYDEBUG
 
     mp_connectedCrosslinker = &crosslinkerToConnect; // Store the address of the connected crosslinker
     m_connectedTerminus = terminusToConnect;
@@ -29,10 +31,12 @@ void Site::connectCrosslinker(Crosslinker& crosslinkerToConnect, const Crosslink
 
 void Site::disconnectCrosslinker()
 {
+    #ifdef MYDEBUG
     if (m_isFree)
     {
-        throw GeneralException("Site::disconnectCrosslinker tried to disconnect a crosslinker that was not connected");
+        throw GeneralException("Site::disconnectCrosslinker() tried to disconnect a crosslinker that was not connected");
     }
+    #endif // MYDEBUG
 
     mp_connectedCrosslinker = nullptr;
 
@@ -41,11 +45,25 @@ void Site::disconnectCrosslinker()
 
 bool Site::isFree() const
 {
+    #ifdef MYDEBUG
+    if (m_isFree && mp_connectedCrosslinker!=nullptr)
+    {
+        throw GeneralException("Site::isFree() was called while something was wrong");
+    }
+    #endif // MYDEBUG
+
     return m_isFree;
 }
 
 bool Site::isPartial() const
 {
+    #ifdef MYDEBUG
+    if (m_isFree && mp_connectedCrosslinker!=nullptr)
+    {
+        throw GeneralException("Site::isPartial() was called while something was wrong");
+    }
+    #endif // MYDEBUG
+
     if (m_isFree)
     {
         return false;
@@ -59,6 +77,13 @@ bool Site::isPartial() const
 
 bool Site::isFull() const
 {
+    #ifdef MYDEBUG
+    if (m_isFree && mp_connectedCrosslinker!=nullptr)
+    {
+        throw GeneralException("Site::isFull() was called while something was wrong");
+    }
+    #endif // MYDEBUG
+
     if (m_isFree)
     {
         return false;
@@ -73,9 +98,11 @@ bool Site::isFull() const
 
 Crosslinker* Site::whichCrosslinkerIsBound() const
 {
+    #ifdef MYDEBUG
     if (m_isFree)
     {
-        throw GeneralException("Site::whichCrosslinkerIsBound was called on a free Crosslinker");
+        throw GeneralException("Site::whichCrosslinkerIsBound() was called on a free Crosslinker");
     }
+    #endif // MYDEBUG
     return mp_connectedCrosslinker;
 }
