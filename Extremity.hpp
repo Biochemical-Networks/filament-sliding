@@ -4,6 +4,10 @@
 #include <cstdint>
 #include "MicrotubuleType.hpp"
 
+/* Represents one end (head or tail) of a crosslinker.
+ * It keeps track if and where it is connected.
+ */
+
 class Extremity
 {
 private:
