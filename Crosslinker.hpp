@@ -5,6 +5,9 @@
 #include "Extremity.hpp"
 #include "MicrotubuleType.hpp"
 
+/* A Crosslinker, having a type and two Extremities, is used to store data about if and where it is connected,
+ * which terminus (or extremity) is connected to a microtubule, and whether is is fully or partially connected.
+ */
 
 class Crosslinker
 {
@@ -35,7 +38,7 @@ public:
 
     bool isConnected() const;
 
-    bool isFree() const;
+    bool isFree() const; // The negation of isConnected(). isConnected() is legacy, isFree() was added to create symmetry with isPartial() and isFull()
 
     bool isPartial() const;
 

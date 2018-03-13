@@ -42,7 +42,13 @@ Crosslinker::Type Crosslinker::getType() const
 
 SiteLocation Crosslinker::getSiteLocationOf(const Crosslinker::Terminus terminus) const
 {
-    // If the specific extremity is not connected, its getSiteLocation will throw
+    #ifdef MYDEBUG
+    if (isFree())
+    {
+        throw GeneralException("Crosslinker::getSiteLocationOf() was called on a free linker");
+    }
+    #endif // MYDEBUG
+
     switch(terminus)
     {
     case Crosslinker::Terminus::HEAD:
@@ -60,10 +66,13 @@ SiteLocation Crosslinker::getSiteLocationOf(const Crosslinker::Terminus terminus
 void Crosslinker::connectFromFree(const Terminus terminusToConnect, const SiteLocation connectAt)
 {
     // Check here whether it is not already connected in some way. Upon connecting an extremity, it is also checked whether those are not connected already.
+    #ifdef MYDEBUG
     if (isConnected())
     {
         throw GeneralException("An attempt was made to connect a crosslinker that was already connected in Crosslinker::connectFromFree()");
     }
+    #endif // MYDEBUG
+
     switch(terminusToConnect)
     {
         case Crosslinker::Terminus::HEAD:
@@ -80,31 +89,33 @@ void Crosslinker::connectFromFree(const Terminus terminusToConnect, const SiteLo
 
 void Crosslinker::disconnectFromPartialConnection()
 {
-    bool partialWithTail = (!m_head.isConnected())&&(m_tail.isConnected());
-    bool partialWithHead = (m_head.isConnected())&&(!m_tail.isConnected());
-    if(partialWithTail)
-    {
-        m_tail.disconnect();
-    }
-    else if(partialWithHead)
-    {
-        m_head.disconnect();
-    }
-    else
+    #ifdef MYDEBUG
+    if (!isPartial())
     {
         throw GeneralException("Crosslinker::disconnectFromPartialConnection() was called from a crosslinker in a different state");
     }
+    #endif // MYDEBUG
 
+    if(m_tail.isConnected())
+    {
+        m_tail.disconnect();
+    }
+    else
+    {
+        m_head.disconnect();
+    }
 }
 
 void Crosslinker::fullyConnectFromPartialConnection(const SiteLocation connectAt)
 {
-    // Check whether it is not free. It is not necessary to check that it is fully connected, the extremities will take care of that.
-    if(!isConnected())
+    #ifdef MYDEBUG
+    if(!isPartial())
     {
-        throw GeneralException("A free crosslinker was assumed to be partially connected in Crosslinker::fullyConnectFromPartialConnection().");
+        throw GeneralException("Crosslinker::fullyConnectFromPartialConnection() was called on a non-partial linker.");
     }
-    else if (m_head.isConnected())
+    #endif // MYDEBUG
+
+    if (m_head.isConnected())
     {
         m_tail.connect(connectAt);
     }
@@ -116,11 +127,12 @@ void Crosslinker::fullyConnectFromPartialConnection(const SiteLocation connectAt
 
 void Crosslinker::disconnectFromFullConnection(const Terminus terminusToDisconnect)
 {
-    bool fullyConnected = (m_head.isConnected())&&(m_tail.isConnected());
-    if(!fullyConnected)
+    #ifdef MYDEBUG
+    if(!isFull())
     {
         throw GeneralException("Crosslinker::disconnectFromFullConnection() was called on a crosslinker that is not fully connected");
     }
+    #endif // MYDEBUG
 
     switch(terminusToDisconnect)
     {
@@ -138,41 +150,39 @@ void Crosslinker::disconnectFromFullConnection(const Terminus terminusToDisconne
 
 Crosslinker::Terminus Crosslinker::getFreeTerminusWhenPartiallyConnected() const
 {
-    if ((m_head.isConnected())&&(!m_tail.isConnected()))
+    #ifdef MYDEBUG
+    if(!isPartial())
+    {
+        throw GeneralException("Crosslinker::getFreeTerminusWhenPartiallyConnected() was called on a non-partial");
+    }
+    #endif // MYDEBUG
+
+    if (m_head.isConnected())
     {
         return Terminus::TAIL;
     }
-    else if ((!m_head.isConnected())&&(m_tail.isConnected()))
+    else
     {
         return Terminus::HEAD;
-    }
-    else if ((m_head.isConnected())&&(m_tail.isConnected()))
-    {
-        throw GeneralException("A fully connected crosslinker was assumed to be partially connected in Crosslinker::getFreeTerminusWhenPartiallyConnected()");
-    }
-    else //if ((!m_head.isConnected())&&(!m_tail.isConnected()))
-    {
-        throw GeneralException("A free crosslinker was assumed to be partially connected in Crosslinker::getFreeTerminusWhenPartiallyConnected()");
     }
 }
 
 Crosslinker::Terminus Crosslinker::getBoundTerminusWhenPartiallyConnected() const
 {
-    if ((m_head.isConnected())&&(!m_tail.isConnected()))
+    #ifdef MYDEBUG
+    if(!isPartial())
+    {
+        throw GeneralException("Crosslinker::getBoundTerminusWhenPartiallyConnected() was called on a non-partial");
+    }
+    #endif // MYDEBUG
+
+    if (m_head.isConnected())
     {
         return Terminus::HEAD;
     }
-    else if ((!m_head.isConnected())&&(m_tail.isConnected()))
+    else
     {
         return Terminus::TAIL;
-    }
-    else if ((m_head.isConnected())&&(m_tail.isConnected()))
-    {
-        throw GeneralException("A fully connected crosslinker was assumed to be partially connected in Crosslinker::getBoundTerminusWhenPartiallyConnected()");
-    }
-    else //if ((!m_head.isConnected())&&(!m_tail.isConnected()))
-    {
-        throw GeneralException("A free crosslinker was assumed to be partially connected in Crosslinker::getBoundTerminusWhenPartiallyConnected()");
     }
 }
 
@@ -183,48 +193,49 @@ Crosslinker::Terminus Crosslinker::getTerminusOfFullOn(const MicrotubuleType mic
     {
         throw GeneralException("Crosslinker::getTerminusOfFullOn() was called on a non-full linker");
     }
+    else if(m_tail.getMicrotubuleConnectedTo() == m_head.getMicrotubuleConnectedTo())
+    {
+        throw GeneralException("Crosslinker::getTerminusOfFullOn() was called on a linker that was connected to one microtubule twice");
+    }
     #endif // MYDEBUG
 
     if(m_head.getMicrotubuleConnectedTo()==microtubule)
     {
         return Terminus::HEAD;
     }
-    else if(m_tail.getMicrotubuleConnectedTo()==microtubule)
-    {
-        return Terminus::TAIL;
-    }
     else
     {
-        throw GeneralException("Crosslinker::getTerminusOfFullOn() was called on a linker that was connected to one microtubule twice");
+        return Terminus::TAIL;
     }
 }
 
 SiteLocation Crosslinker::getBoundLocationWhenPartiallyConnected() const
 {
-    bool partialWithTail = (!m_head.isConnected())&&(m_tail.isConnected());
-    bool partialWithHead = (m_head.isConnected())&&(!m_tail.isConnected());
-    if(partialWithTail)
+    #ifdef MYDEBUG
+    if(!isPartial())
+    {
+        throw GeneralException("Crosslinker::getBoundLocationWhenPartiallyConnected() was called on a non-partial");
+    }
+    #endif // MYDEBUG
+
+    if(m_tail.isConnected())
     {
         return m_tail.getSiteLocation();
     }
-    else if(partialWithHead)
-    {
-        return m_head.getSiteLocation();
-    }
     else
     {
-        throw GeneralException("Crosslinker::getBoundPositionWhenPartiallyConnected() was called from a crosslinker in a different state");
+        return m_head.getSiteLocation();
     }
 }
 
 SiteLocation Crosslinker::getOneBoundLocationWhenFullyConnected(const Crosslinker::Terminus terminus) const
 {
-    bool fullyConnected = (m_head.isConnected())&&(m_tail.isConnected());
-
-    if(!fullyConnected)
+    #ifdef MYDEBUG
+    if(!isFull())
     {
-        throw GeneralException("Crosslinker::getOneBindingPositionWhenFullyConnected() was called on a crosslinker that is not fully connected.");
+        throw GeneralException("Crosslinker::getOneBoundLocationWhenFullyConnected() was called on a non-full");
     }
+    #endif // MYDEBUG
 
     switch(terminus)
     {
