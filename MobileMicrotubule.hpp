@@ -13,6 +13,7 @@ private:
     double m_position;
 public:
     MobileMicrotubule(const double length, const double latticeSpacing, const double initialPosition = 0.);
+    // Default value such that it is possible to create a MobileMicrotubule without setting the initial position explicitly.
     virtual ~MobileMicrotubule();
 
     void setPosition(const double initialPosition);
