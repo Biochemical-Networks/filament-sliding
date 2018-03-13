@@ -429,6 +429,8 @@ std::vector<FullConnectionLocations> Microtubule::getFullCrosslinkersCloseTo(con
                 SiteLocation tailLocation = p_fullLinker->getOneBoundLocationWhenFullyConnected(Crosslinker::Terminus::TAIL);
 
                 // this function has been called on microtubule opposite of a partial linker. Hence, m_type gives the type of the opposite microtubule relative to the partial
+                // definition: struct FullConnectionLocations{Crosslinker* p_fullLinker; SiteLocation locationNextToPartial; SiteLocation locationOppositeToPartial;};
+                // we (m_type) are opposite to a partial linker, and we are finding the full connections close to that partial
                 if(headLocation.microtubule==m_type)
                 {
                     fullsCloseby.push_back(FullConnectionLocations{p_fullLinker, tailLocation, headLocation});
@@ -443,6 +445,7 @@ std::vector<FullConnectionLocations> Microtubule::getFullCrosslinkersCloseTo(con
     }
 }
 
+// position relative to this microtubule. Only finds the partials of type typeToCheck on this microtubule.
 std::vector<Crosslinker*> Microtubule::getPartialCrosslinkersCloseTo(const double position, const double maxStretch, const Crosslinker::Type typeToCheck) const
 {
     if (position<=-maxStretch||position >= m_length + maxStretch) // No sites close to a point outside of the microtubule
@@ -466,6 +469,7 @@ std::vector<Crosslinker*> Microtubule::getPartialCrosslinkersCloseTo(const doubl
     }
 }
 
+// Finds the nearest neighbour partial linkers (relative to originLocation) of type typeToCheck.
 std::vector<Crosslinker*> Microtubule::getNeighbouringPartialCrosslinkersOf(const SiteLocation& originLocation, const Crosslinker::Type typeToCheck) const
 {
     #ifdef MYDEBUG
@@ -493,6 +497,7 @@ std::vector<Crosslinker*> Microtubule::getNeighbouringPartialCrosslinkersOf(cons
     return partialNeighbours;
 }
 
+// Finds the nearest neighbour (relative to originLocation) full linker extremities of type typeToCheck.
 std::vector<FullExtremity> Microtubule::getNeighbouringFullCrosslinkersOf(const SiteLocation& originLocation, const Crosslinker::Type typeToCheck) const
 {
     #ifdef MYDEBUG
