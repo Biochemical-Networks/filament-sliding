@@ -76,18 +76,39 @@ Crosslinker* CrosslinkerContainer::connectFromFreeToPartial()
 
 void CrosslinkerContainer::disconnectFromPartialToFree(Crosslinker& crosslinkerToDisconnect)
 {
+    #ifdef MYDEBUG
+    if(!crosslinkerToDisconnect.isPartial())
+    {
+        throw GeneralException("CrosslinkerContainer::disconnectFromPartialToFree() was called on a non-partial linker.");
+    }
+    #endif // MYDEBUG
+
     m_partialCrosslinkers.erase(std::remove(m_partialCrosslinkers.begin(), m_partialCrosslinkers.end(), &crosslinkerToDisconnect));
     m_freeCrosslinkers.push_back(&crosslinkerToDisconnect);
 }
 
 void CrosslinkerContainer::connectFromPartialToFull(Crosslinker& crosslinkerToConnect)
 {
+    #ifdef MYDEBUG
+    if(!crosslinkerToConnect.isPartial())
+    {
+        throw GeneralException("CrosslinkerContainer::connectFromPartialToFull() was called on a non-partial linker.");
+    }
+    #endif // MYDEBUG
+
     m_partialCrosslinkers.erase(std::remove(m_partialCrosslinkers.begin(), m_partialCrosslinkers.end(), &crosslinkerToConnect));
     m_fullCrosslinkers.push_back(&crosslinkerToConnect);
 }
 
 void CrosslinkerContainer::disconnectFromFullToPartial(Crosslinker& crosslinkerToDisconnect)
 {
+    #ifdef MYDEBUG
+    if(!crosslinkerToDisconnect.isFull())
+    {
+        throw GeneralException("CrosslinkerContainer::disconnectFromFullToPartial() was called on a non-full linker.");
+    }
+    #endif // MYDEBUG
+
     m_fullCrosslinkers.erase(std::remove(m_fullCrosslinkers.begin(), m_fullCrosslinkers.end(), &crosslinkerToDisconnect));
     m_partialCrosslinkers.push_back(&crosslinkerToDisconnect);
 }

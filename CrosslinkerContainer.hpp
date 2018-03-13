@@ -12,24 +12,33 @@
 #include <vector>
 #include <utility> // for std::pair
 
+/* CrosslinkerContainer has two main functions:
+ * First, it holds the Crosslinkers of one type, and actively changes their state when called to do so through (dis)connect methods.
+ * Second, it finds and stores information about the possible reactions that could happen.
+ * The latter is done through reset and update functions, and these have to be called explicitly after the system has changed,
+ * because a change in e.g. one crosslinker can cause changes to the possibilities in all types of crosslinkers, in each connecting configuration.
+ */
+
 class CrosslinkerContainer
 {
 private:
     Crosslinker::Type m_linkerType;
-    std::vector<Crosslinker> m_crosslinkers; // The vector manages existence of the crosslinkers.
+    std::vector<Crosslinker> m_crosslinkers; // The vector manages existence of the crosslinkers. In the current version at least, do not resize this
 
     // Since this class holds many functions checking which modifications are possible, it needs to know the following quantities often
     const Microtubule& m_fixedMicrotubule;
     const MobileMicrotubule& m_mobileMicrotubule;
     const double m_latticeSpacing;
     const double m_maxStretch;
-    const double m_mod1, m_mod2; // These are the points on the lattice (k*latticeSpacing + mod, with k = integer) where possible connections may change
-    double m_lowerBorderPossibilities, m_upperBorderPossibilities;
+    // The following are the points on the lattice (k*latticeSpacing + mod, with k = integer) where possible connections may change when the mobile microtubule moves past it
+    const double m_mod1, m_mod2;
+    double m_lowerBorderPossibilities, m_upperBorderPossibilities; // These are the borders for the mobile position between which the current possibilities remain valid
 
 
     int32_t m_nFreeCrosslinkers;
     // Use pointers to crosslinkers as IDs: THIS IS DANGEROUS! It will break if m_crosslinkers would ever resize, since that invalidates all pointers to its elements.
-    // A possible fix for this (if it were required to resize the m_crosslinkers sometimes) would be to store the labels (0,...,nCrosslinkers-1) instead of pointers)
+    // A possible fix for this (if it were required to resize the m_crosslinkers sometimes) would be to store the labels (0,...,nCrosslinkers-1) instead of pointers).
+    // Not the case for now
     std::vector<Crosslinker*> m_freeCrosslinkers;
     std::vector<Crosslinker*> m_partialCrosslinkers;
     std::vector<Crosslinker*> m_fullCrosslinkers;
@@ -57,7 +66,7 @@ private:
 
     void removePossiblePartialHops(Crosslinker*const p_oldPartialCrosslinker);
 
-    void addPossibleFullHops(Crosslinker*const p_newFullCrosslinker);
+    void addPossibleFullHops(Crosslinker*const p_newFullCrosslinker); // Hops are implemented as a combined unbinding-binding event, so the possibilities are updated through an unbinding
 
     void removePossibleFullHops(Crosslinker*const p_oldFullCrosslinker);
 
