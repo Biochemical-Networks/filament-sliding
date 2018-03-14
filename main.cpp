@@ -15,6 +15,10 @@
 
 int main()
 {
+    #ifdef MYDEBUG
+    std::cout<< "You are running the MYDEBUG version of the program.\n";
+    #endif // MYDEBUG
+
     Clock clock; // Counts time from creation to destruction
     Input input; // Read the input file, ask to create a default one when anything is wrong with it (e.g. nonexistent)
 
@@ -143,7 +147,7 @@ int main()
     propagator.run(systemState, generator, output);
 
 
-    // TEST
+    /*// TEST
     #ifdef MYDEBUG
 
     // MAKE SURE THAT THE MICROTUBULE POSITION IS NOT CHANGED BEFORE: THIS WILL NOT TAKE INTO ACCOUNT THE CROSSLINKERS YET
@@ -166,7 +170,7 @@ int main()
     std::cout << systemState.getNSitesToBindPartial(Crosslinker::Type::PASSIVE)<<std::endl;
 
     #endif // MYDEBUG
-    // END_TEST
+    // END_TEST*/
 
     return 0;
 }
