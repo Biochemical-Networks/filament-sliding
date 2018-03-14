@@ -272,10 +272,12 @@ void Microtubule::addPossibleFullHopsCloseTo(std::vector<PossibleFullHop>& possi
                                              const double positionOppositeExtremity,
                                              const double maxStretch) const
 {
+    #ifdef MYDEBUG
     if(!fullLinkerExtremity.p_fullLinker->isFull())
     {
         throw GeneralException("Microtubule::addPossibleFullHopsCloseTo() encountered a non-full linker.");
     }
+    #endif // MYDEBUG
 
     SiteLocation originLocation = fullLinkerExtremity.p_fullLinker->getOneBoundLocationWhenFullyConnected(fullLinkerExtremity.terminus);
 

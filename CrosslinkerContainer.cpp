@@ -318,13 +318,19 @@ void CrosslinkerContainer::removePossibleFullHops(Crosslinker*const p_oldFullCro
 
 void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker)
 {
+    #ifdef MYDEBUG
     if(!(p_newPartialCrosslinker->isPartial()))
     {
         throw GeneralException("CrosslinkerContainer::updateConnectionDataFreeToPartial() was called on a crosslinker that is not partial.");
     }
+    #endif // MYDEBUG
+
     /* Two types of connections are changed:
      * connections from the new partial crosslinker to the opposite microtubule are added,
-     * and old possible connections to the free site are removed
+     * and old possible connections to the free site are removed.
+     * Only data related to this linker type (this container) are changed, and this function needs to be called for each container separately,
+     * after a binding event of any linker type.
+     * The linker should be available
      */
     if(p_newPartialCrosslinker->getType()==m_linkerType)
     {
@@ -334,7 +340,7 @@ void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p
     }
 
     SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundLocationWhenPartiallyConnected();
-
+    // Remove the old possibilities relating the free (now occupied) site
     updatePossibleConnectionsOppositeTo(p_newPartialCrosslinker, locationConnectedTo);
 
     updatePossiblePartialHopsNextTo(locationConnectedTo);
@@ -344,10 +350,12 @@ void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p
 
 void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection)
 {
+    #ifdef MYDEBUG
     if(p_oldPartialCrosslinker->isConnected())
     {
         throw GeneralException("CrosslinkerContainer::updateConnectionDataPartialToFree() was called on a crosslinker that is not free.");
     }
+    #endif // MYDEBUG
 
     /* Two types of connections are changed:
      * connections from the old partial crosslinker to the opposite microtubule are removed,
@@ -370,13 +378,17 @@ void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p
 
 void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p_newPartialCrosslinker, const SiteLocation locationOldConnection)
 {
+    #ifdef MYDEBUG
     if(!(p_newPartialCrosslinker->isPartial()))
     {
         throw GeneralException("CrosslinkerContainer::updateConnectionDataFullToPartial() was called on a crosslinker that is not partial.");
     }
+    #endif // MYDEBUG
+
     /* Two types of connections are changed:
      * connections from the new partial crosslinker to the opposite microtubule are added,
-     * and possible connections to the newly freed site are added
+     * and possible connections to the newly freed site are added.
+     * Further, possible full hops are removed, and the actual full connection is removed from the connection data.
      */
     if(p_newPartialCrosslinker->getType()==m_linkerType)
     {
@@ -386,7 +398,7 @@ void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p
 
         removePossibleFullHops(p_newPartialCrosslinker);
 
-        // Update m_fullConnections:
+        // Update m_fullConnections, which holds the current connections, not possibilities
         removeFullConnection(p_newPartialCrosslinker);
     }
 
@@ -399,14 +411,18 @@ void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p
 
 void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationNewConnection)
 {
+    #ifdef MYDEBUG
     if(!(p_oldPartialCrosslinker->isFull()))
     {
-        throw GeneralException("updateConnectionDataPartialToFull was called on a crosslinker that is not full.");
+        throw GeneralException("CrosslinkerContainer::updateConnectionDataPartialToFull() was called on a crosslinker that is not full.");
     }
+    #endif // MYDEBUG
 
     /* Two types of connections are changed:
      * connections from the old partial crosslinker to the opposite microtubule are removed,
-     * and old possible connections to the newly occupied site are removed
+     * and old possible connections to the newly occupied site are removed.
+     * Then, possible hops are removed for the partial and added for the two full sites.
+     * Finally, the new full conncetion is added to the current connection data.
      */
 
     if(p_oldPartialCrosslinker->getType() == m_linkerType)
@@ -429,10 +445,11 @@ void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p
 }
 
 /* This function updates the possible connections for partials close to locationConnection, on the opposite microtubule.
- * One (ex-)partial crosslinker is ignored, *p_partialCrosslinker. This usually represents the crosslinker that was just removed or added.
+ * One (ex-)partial crosslinker is ignored, *p_changedCrosslinker. This represents the crosslinker that was just removed or added.
  */
-void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const p_partialCrosslinker, const SiteLocation locationConnection)
+void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const p_changedCrosslinker, const SiteLocation locationConnection)
 {
+    // p_changedCrosslinker can be partial when it was just bound, or free or full when it was previously partial
     std::vector<Crosslinker*> partialNeighbours;
 
     double positionRelativeToOppositeMicrotubule;
@@ -453,11 +470,11 @@ void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const
 
     for (Crosslinker*const p_linker : partialNeighbours)
     {
-        // p_partialCrosslinker can be one of the linkers, but then this one should have been updated already
-        if (p_linker!=p_partialCrosslinker)
+        // p_changedCrosslinker can be one of the linkers, but then this one should have been updated already
+        if (p_linker!=p_changedCrosslinker)
         {
             // First remove the connections involving the linker, and then add them again, where the possibly newly occupied site is taken into account
-            // The linkers are guaranteed to be of the correct type
+            // The linkers are guaranteed to be of the correct type (the same as held in this container)
             removePossibleConnections(p_linker);
             addPossibleConnections(p_linker);
         }
@@ -510,6 +527,7 @@ void CrosslinkerContainer::updatePossibleFullHopsNextTo(const SiteLocation& orig
     }
 }
 
+// Gives the upper and lower bounds to the possible change in mobile microtubule position
 std::pair<double, double> CrosslinkerContainer::movementBordersSetByFullLinkers() const
 {
     if(m_fullCrosslinkers.empty())
@@ -569,7 +587,7 @@ void CrosslinkerContainer::updateConnectionDataMobilePositionChange(const double
 
     double newPosition = m_mobileMicrotubule.getPosition();
 
-    if(newPosition>m_lowerBorderPossibilities && newPosition < m_upperBorderPossibilities)
+    if(newPosition>m_lowerBorderPossibilities && newPosition < m_upperBorderPossibilities) // is in the region where the connection data is valid:
     {
         for (PossibleFullConnection& connection : m_possibleConnections)
         {
@@ -590,8 +608,22 @@ void CrosslinkerContainer::updateConnectionDataMobilePositionChange(const double
 
 void CrosslinkerContainer::addFullConnection(Crosslinker*const p_newFullCrosslinker)
 {
+    #ifdef MYDEBUG
+    if(!p_newFullCrosslinker->isFull())
+    {
+        throw GeneralException("CrosslinkerContainer::addFullConnection() was called with a crosslinker that is not fully connected");
+    }
+    #endif // MYDEBUG
+
     SiteLocation headLocation = p_newFullCrosslinker->getOneBoundLocationWhenFullyConnected(Crosslinker::Terminus::HEAD);
     SiteLocation tailLocation = p_newFullCrosslinker->getOneBoundLocationWhenFullyConnected(Crosslinker::Terminus::TAIL);
+
+    #ifdef MYDEBUG
+    if(headLocation.microtubule == tailLocation.microtubule)
+    {
+        throw GeneralException("CrosslinkerContainer::addFullConnection() was called with a crosslinker that was doubly connected to one microtubule");
+    }
+    #endif // MYDEBUG
 
     double extension;
 
@@ -607,10 +639,12 @@ void CrosslinkerContainer::addFullConnection(Crosslinker*const p_newFullCrosslin
         throw GeneralException("A wrong microtubule type encountered in CrosslinkerContainer::addFullConnection()");
     }
 
+    #ifdef MYDEBUG
     if(std::abs(extension)>=m_maxStretch)
     {
         throw GeneralException("CrosslinkerContainer::addFullConnection() tried to add a full connection with a disallowed stretch.");
     }
+    #endif // MYDEBUG
 
     m_fullConnections.push_back(FullConnection{p_newFullCrosslinker, extension});
 
