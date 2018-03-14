@@ -40,10 +40,13 @@ SystemState::~SystemState()
 
 void SystemState::setMicrotubulePosition(const double initialPosition)
 {
+    #ifdef MYDEBUG
     if (m_nCrosslinkers!=getNFreeCrosslinkers())
     {
         throw GeneralException("SystemState::setMicrotubulePosition() was called on a system which has connected linkers");
     }
+    #endif // MYDEBUG
+
     m_mobileMicrotubule.setPosition(initialPosition);
 
     // since no linkers are connected, the only thing the following function calls do is set the borders of the region within the possibilities are valid
@@ -72,7 +75,7 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type,
             break;
     }
 
-    Crosslinker* p_connectingCrosslinker;
+    Crosslinker* p_connectingCrosslinker = nullptr;
 
     // Now, the members containing all crosslinkers of each type are called to connect a free crosslinker in their administration, and to return a pointer to the one that it connected.
     // Then, the pointer can be used to connect the crosslinker in its own administration as well.
@@ -109,12 +112,16 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type,
 
 void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnectingCrosslinker)
 {
+    #ifdef MYDEBUG
+    if(!disconnectingCrosslinker.isPartial())
+    {
+        throw GeneralException("SystemState::disconnectPartiallyConnectedCrosslinker() was called on a non-partial linker");
+    }
+    #endif // MYDEBUG
+
     SiteLocation locationToDisconnectFrom = disconnectingCrosslinker.getBoundLocationWhenPartiallyConnected();
 
     Crosslinker::Type type = disconnectingCrosslinker.getType();
-
-    // Disconnect in administration of crosslinker
-    disconnectingCrosslinker.disconnectFromPartialConnection();
 
     // Disconnect in administration of crosslinker container
     switch(type)
@@ -132,6 +139,9 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
             throw GeneralException("An incorrect crosslinker type was passed to SystemState::disconnectPartiallyConnectedCrosslinker()");
             break;
     }
+
+    // Disconnect in administration of crosslinker
+    disconnectingCrosslinker.disconnectFromPartialConnection();
 
     // Disconnect in administration of microtubule
     switch(locationToDisconnectFrom.microtubule)
@@ -156,21 +166,31 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
 
 void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCrosslinker, const SiteLocation locationOppositeMicrotubule)
 {
-    // Test whether the connection is not outside of the range set by m_maxStretch
+    #ifdef MYDEBUG
+    if(!connectingCrosslinker.isPartial())
+    {
+        throw GeneralException("SystemState::connectPartiallyConnectedCrosslinker() was called on a non-partial linker");
+    }
+
     SiteLocation locationThisMicrotubule = connectingCrosslinker.getBoundLocationWhenPartiallyConnected();
+
+    if(locationThisMicrotubule.microtubule == locationOppositeMicrotubule.microtubule)
+    {
+        throw GeneralException("SystemState::connectPartiallyConnectedCrosslinker() was asked to connect a crosslinker twice to one microtubule");
+    }
+
+    // Test whether the connection is not outside of the range set by m_maxStretch
+    // position is calculated relative to the fixed microtubule, because we want to calculate the total stretch for the check
     double positionOnFixedMicrotubule;
     double positionOnMobileMicrotubule;
 
-    Microtubule *p_microtubuleToConnect = nullptr;
     switch(locationOppositeMicrotubule.microtubule)
     {
         case MicrotubuleType::FIXED:
-            p_microtubuleToConnect = &m_fixedMicrotubule;
             positionOnFixedMicrotubule = locationOppositeMicrotubule.position*m_latticeSpacing;
             positionOnMobileMicrotubule = locationThisMicrotubule.position*m_latticeSpacing + m_mobileMicrotubule.getPosition();
             break;
         case MicrotubuleType::MOBILE:
-            p_microtubuleToConnect = &m_mobileMicrotubule;
             positionOnFixedMicrotubule = locationThisMicrotubule.position*m_latticeSpacing;
             positionOnMobileMicrotubule = locationOppositeMicrotubule.position*m_latticeSpacing + m_mobileMicrotubule.getPosition();
             break;
@@ -183,14 +203,23 @@ void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCr
     {
         throw GeneralException("A full connection attempt was made creating an overstretched crosslinker in SystemState::connectPartiallyConnectedCrosslinker()");
     }
+    #endif // MYDEBUG
+
+    Microtubule *p_microtubuleToConnect = nullptr;
+    switch(locationOppositeMicrotubule.microtubule)
+    {
+        case MicrotubuleType::FIXED:
+            p_microtubuleToConnect = &m_fixedMicrotubule;
+            break;
+        case MicrotubuleType::MOBILE:
+            p_microtubuleToConnect = &m_mobileMicrotubule;
+            break;
+        default:
+            throw GeneralException("An incorrect microtubule type was passed to SystemState::connectPartiallyConnectedCrosslinker()");
+            break;
+    }
 
     Crosslinker::Terminus terminusToConnect = connectingCrosslinker.getFreeTerminusWhenPartiallyConnected();
-
-    // Connect in administration of crosslinker
-    connectingCrosslinker.fullyConnectFromPartialConnection(locationOppositeMicrotubule);
-
-    // Connect in administration of microtubule
-    p_microtubuleToConnect->connectSite(locationOppositeMicrotubule.position, connectingCrosslinker, terminusToConnect);
 
     // Connect in administration of crosslinker container
     switch(connectingCrosslinker.getType())
@@ -209,6 +238,12 @@ void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCr
             break;
     }
 
+    // Connect in administration of crosslinker
+    connectingCrosslinker.fullyConnectFromPartialConnection(locationOppositeMicrotubule);
+
+    // Connect in administration of microtubule
+    p_microtubuleToConnect->connectSite(locationOppositeMicrotubule.position, connectingCrosslinker, terminusToConnect);
+
     // Finally, update the information on possibilities with the new SystemState
     m_passiveCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule);
     m_dualCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule);
@@ -218,13 +253,17 @@ void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCr
 
 void SystemState::disconnectFullyConnectedCrosslinker(Crosslinker& disconnectingCrosslinker, const Crosslinker::Terminus terminusToDisconnect)
 {
+    #ifdef MYDEBUG
+    if(!disconnectingCrosslinker.isFull())
+    {
+        throw GeneralException("SystemState::disconnectFullyConnectedCrosslinker() was called on a non-full linker");
+    }
+    #endif // MYDEBUG
+
     // Retrieve the microtubule and position on that microtubule where the crosslinker is connected
     SiteLocation locationToDisconnectFrom = disconnectingCrosslinker.getOneBoundLocationWhenFullyConnected(terminusToDisconnect);
 
     Crosslinker::Type type = disconnectingCrosslinker.getType();
-
-    // Disconnect in administration of crosslinker
-    disconnectingCrosslinker.disconnectFromFullConnection(terminusToDisconnect);
 
     // Disconnect in administration of crosslinker container
     switch(type)
@@ -242,6 +281,9 @@ void SystemState::disconnectFullyConnectedCrosslinker(Crosslinker& disconnecting
             throw GeneralException("An incorrect crosslinker type was passed to SystemState::disconnectFullyConnectedCrosslinker()");
             break;
     }
+
+    // Disconnect in administration of crosslinker
+    disconnectingCrosslinker.disconnectFromFullConnection(terminusToDisconnect);
 
     // Disconnect in administration of microtubule
     // Microtubules only keep track whether sites are free or occupied, and which crosslinker is connected to where.
@@ -289,6 +331,7 @@ void SystemState::updateMobilePosition(const double changeMicrotubulePosition)
     m_activeCrosslinkers.updateConnectionDataMobilePositionChange(changeMicrotubulePosition);
 }
 
+// Gives the upper and lower bounds to the possible change in mobile microtubule position
 std::pair<double, double> SystemState::movementBordersSetByFullLinkers() const
 {
     std::pair<double,double> setByPassive = m_passiveCrosslinkers.movementBordersSetByFullLinkers();
@@ -362,6 +405,7 @@ double SystemState::overlapLength() const
     // Returns a negative value if there is no overlap
     double overlap = endOverlap()-beginningOverlap();
 
+    // Leave this test: if the microtubule ever moves into an unbound configuration and drifts away, we should know about it
     if(overlap <=(-m_maxStretch))
     {
         throw GeneralException("The overlap disappeared according to SystemState::overlapLength()");
@@ -399,14 +443,12 @@ int32_t SystemState::lastSiteOverlapMobile() const
 
 int32_t SystemState::getNSitesOverlapFixed() const
 {
-    int32_t nSites = lastSiteOverlapFixed()-firstSiteOverlapFixed()+1;
-    return nSites;
+    return lastSiteOverlapFixed()-firstSiteOverlapFixed()+1;
 }
 
 int32_t SystemState::getNSitesOverlapMobile() const
 {
-    int32_t nSites = lastSiteOverlapMobile()-firstSiteOverlapMobile()+1;
-    return nSites;
+    return lastSiteOverlapMobile()-firstSiteOverlapMobile()+1;
 }
 
 int32_t SystemState::getNFreeSites() const
@@ -607,7 +649,8 @@ void SystemState::updateForceAndEnergy()
         totalSquaredExtension += fullConnection.extension*fullConnection.extension;
     }
 
-    m_forceMicrotubule = m_springConstant*totalExtension;
+    // Force has a minus sign: a positively expanded linker pulls the mobile microtubule to negative values
+    m_forceMicrotubule = -m_springConstant*totalExtension;
     m_energy = 0.5*m_springConstant*totalSquaredExtension;
 }
 

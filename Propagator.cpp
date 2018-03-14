@@ -135,7 +135,7 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
         //          [force] = (kT)*micron^(-1)
         //          [mobility] = micron^(2)*(kT)^(-1)*s^(-1)
         // In these units, mobility has the same value as the diffusion constant, which has units micron^(2)*s^(-1), and mobility = D/(kT)
-        change = generator.getGaussian(-m_diffusionConstantMicrotubule*systemState.getForce()*m_calcTimeStep, m_deviationMicrotubule);
+        change = generator.getGaussian(m_diffusionConstantMicrotubule*systemState.getForce()*m_calcTimeStep, m_deviationMicrotubule);
 
         #ifdef MYDEBUG
         ++trial;

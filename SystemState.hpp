@@ -14,7 +14,11 @@
 #include <utility>
 #include <vector>
 
-// SystemState methods allow the SystemState to be changed; they do not provide the rules by which it is changed
+/* SystemState is a class that keeps track of the current state of the system, and manages the existence of Microtubules and Crosslinkers through its members.
+ * SystemState methods allow the SystemState to be changed; they do not provide the rules by which it is changed.
+ * Additionally, it gives the force that is on the mobile microtubule, and keeps track of the possible reactions that can happen for certain (un)bindings and hoppings.
+ * The latter happens through the CrosslinkerContainers.
+ */
 
 class SystemState
 {
