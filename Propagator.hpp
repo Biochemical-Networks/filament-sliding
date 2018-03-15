@@ -60,10 +60,11 @@ public:
                const double baseRateActivePartialHop,
                const double baseRateActiveFullHop,
                const double activeHopToPlusBiasEnergy,
-               const double rateZeroToOneExtremitiesConnected,
-               const double rateOneToZeroExtremitiesConnected,
-               const double rateOneToTwoExtremitiesConnected,
-               const double rateTwoToOneExtremitiesConnected);
+               const double baseRateZeroToOneExtremitiesConnected,
+               const double baseRateOneToZeroExtremitiesConnected,
+               const double baseRateOneToTwoExtremitiesConnected,
+               const double baseRateTwoToOneExtremitiesConnected,
+               const double headBindingBiasEnergy);
     ~Propagator();
 
     Propagator(const Propagator&) = delete;

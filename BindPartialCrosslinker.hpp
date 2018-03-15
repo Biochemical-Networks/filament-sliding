@@ -11,6 +11,10 @@
 #include <cstdint>
 #include <vector>
 
+/* The Reaction that binds a partial linker such that it becomes fully connected.
+ * This class needs to decide where the free linker connects, and only reports the total binding rate to the public.
+ */
+
 class BindPartialCrosslinker : public Reaction
 {
 private:

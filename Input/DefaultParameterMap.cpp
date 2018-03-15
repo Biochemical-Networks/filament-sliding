@@ -55,37 +55,29 @@ ParameterMap::ParameterMap()
     defineParameter("activeHopToPlusBiasEnergy", 1., "kT", "real");
 
     // Rates for connecting crosslinkers to the microtubules. The rates from zero to one are per crosslinker in solution per microtubule site.
-    // So the full rate for connecting to any site is r * #free crosslinkers * # free microtubule sites
+    // So the full rate for connecting to any site is baseRateZeroToOneExtremitiesConnected * #free crosslinkers * # free microtubule sites
     // For unbinding a full linker, the rate is given per linker, not per extremity.
-    // So the rate rateTwoToOneExtremitiesConnected = 2*unbindOneExtremityOfFull.
-    // Detailed balance is obeyed, because the rates are independent of the extremity connecting,
-    // and because forward and backward rates are set such that their ratio always depends on the free energy difference between the two states.
+    // So the rate baseRateTwoToOneExtremitiesConnected = unbindHeadOfFull+unbindTailOfFull. (1)
+    // Similarly, baseRateZeroToOneExtremitiesConnected = bindHeadOfFree+bindTailOfFree. (2)
+    // The other rates coming from a partially connected linker are also per linker, and then automatically per extremity. Hence,
+    // baseRateOneToZeroExtremitiesConnected = 0.5*(unbindHeadOfPartial + unbindTailOfPartial) (3)
+    // baseRateOneToTwoExtremitiesConnected = 0.5*(bindHeadOfPartial + bindTailOfPartial) (4)
+    // Then, four energy equations exist:
+    // bindHeadOfFree/unbindHeadOfPartial = baseRateZeroToOneExtremitiesConnected/(2*baseRateOneToZeroExtremitiesConnected)*exp(headBindingBiasEnergy) (5)
+    // bindTailOfFree/unbindTailOfPartial = baseRateZeroToOneExtremitiesConnected/(2*baseRateOneToZeroExtremitiesConnected)*exp(-headBindingBiasEnergy) (6)
+    // bindHeadOfPartial/unbindHeadOfPartial = 2*baseRateOneToTwoExtremitiesConnected/baseRateTwoToOneExtremitiesConnected *exp(headBindingBiasEnergy) (7)
+    // bindTailOfPartial/unbindTailOfPartial = 2*baseRateOneToTwoExtremitiesConnected/baseRateTwoToOneExtremitiesConnected *exp(-headBindingBiasEnergy) (8)
+    // There are eight equations for the eight (un)bind... rates, so a unique solution is found.
+    // Detailed balance is obeyed because forward and backward rates are set such that their ratio always depends on the free energy difference between the two states.
     // Hence, the free energy difference between the fully connected and free crosslinker does not depend on the path (first head or first tail),
     // and there is no net flux through the cycle.
-    defineParameter("rateZeroToOneExtremitiesConnected", 1.0, "s^(-1)", ">=0");
-    defineParameter("rateOneToZeroExtremitiesConnected", 1.0, "s^(-1)", ">=0");
-    defineParameter("rateOneToTwoExtremitiesConnected", 1.0, "s^(-1)", ">=0");
-    defineParameter("rateTwoToOneExtremitiesConnected", 1.0, "s^(-1)", ">=0");
-
-/*    // For if the rates should be different for different types. Notice that much can be achieved by setting different rates for
-    defineParameter("rateZeroToOneConnectedPassive", 1.0, "s^(-1)", ">=0");
-    defineParameter("rateOneToZeroConnectedPassive", 1.0, "s^(-1)", ">=0");
-    defineParameter("rateOneToTwoConnectedPassive", 1.0, "s^(-1)", ">=0");
-    defineParameter("rateTwoToOneConnectedPassive", 1.0, "s^(-1)", ">=0");
-    // Detailed balance is obeyed, because the free energy is the same whether a head or a tail is connected, and whether you fully connect from a head or a tail.
-    // Hence, the free energy difference between the fully connected and free crosslinker does not depend on the path, and there is no net flux through the cycle.
-
-    defineParameter("rateZeroToHeadConnectedDual", 1.0, "s^(-1)", ">=0");
-    defineParameter("rateHeadToZeroConnectedDual", 1.0, "s^(-1)", ">=0");
-    defineParameter("rateZeroToTailConnectedDual", 1.0, "s^(-1)", ">=0");
-    defineParameter("rateTailToZeroConnectedDual", 1.0, "s^(-1)", ">=0");
-    defineParameter("rateHeadToTwoConnectedDual", 1.0, "s^(-1)", ">=0");
-    defineParameter("rateTwoToHeadConnectedDual", 1.0, "s^(-1)", ">=0");
-    defineParameter("rateTailToTwoConnectedDual", 1.0, "s^(-1)", ">=0");
-    // rateTailToTwoConnectedDual is set by the other 7 rates, using detailed balance
-
-    defineParameter("rateZeroToOneConnectedActive", 1.0, "s^(-1)", ">=0");
-    defineParameter("rateOneToZeroConnectedActive", 1.0, "s^(-1)", ">=0");
-    defineParameter("rateOneToTwoConnectedActive", 1.0, "s^(-1)", ">=0");
-    defineParameter("rateTwoToOneConnectedActive", 1.0, "s^(-1)", ">=0");*/
+    // Normally this sets only one of the eight degrees of freedom (the rates), but we only have five degrees of freedom to set.
+    // This is because we assume that the transitions to and from a HEAD state are similar to the transitions to and from a TAIL state.
+    // Specifically, we let the base rates equal each other, and only make them differ through a bias energy; there is no difference in the energy barriers.
+    // For more information, including solutions to the equations, see the document "Crosslink_Mapping_Binding_Rates_Bias_Energy.pdf"
+    defineParameter("baseRateZeroToOneExtremitiesConnected", 1.0, "s^(-1)", ">=0");
+    defineParameter("baseRateOneToZeroExtremitiesConnected", 1.0, "s^(-1)", ">=0");
+    defineParameter("baseRateOneToTwoExtremitiesConnected", 1.0, "s^(-1)", ">=0");
+    defineParameter("baseRateTwoToOneExtremitiesConnected", 1.0, "s^(-1)", ">=0");
+    defineParameter("headBindingBiasEnergy", 0.0, "kT", "real");
 }

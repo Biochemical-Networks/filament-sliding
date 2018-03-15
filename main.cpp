@@ -101,17 +101,20 @@ int main()
     double activeHopToPlusBiasEnergy;
     input.copyParameter("activeHopToPlusBiasEnergy", activeHopToPlusBiasEnergy);
 
-    double rateZeroToOneExtremitiesConnected;
-    input.copyParameter("rateZeroToOneExtremitiesConnected", rateZeroToOneExtremitiesConnected);
+    double baseRateZeroToOneExtremitiesConnected;
+    input.copyParameter("baseRateZeroToOneExtremitiesConnected", baseRateZeroToOneExtremitiesConnected);
 
-    double rateOneToZeroExtremitiesConnected;
-    input.copyParameter("rateOneToZeroExtremitiesConnected", rateOneToZeroExtremitiesConnected);
+    double baseRateOneToZeroExtremitiesConnected;
+    input.copyParameter("baseRateOneToZeroExtremitiesConnected", baseRateOneToZeroExtremitiesConnected);
 
-    double rateOneToTwoExtremitiesConnected;
-    input.copyParameter("rateOneToTwoExtremitiesConnected", rateOneToTwoExtremitiesConnected);
+    double baseRateOneToTwoExtremitiesConnected;
+    input.copyParameter("baseRateOneToTwoExtremitiesConnected", baseRateOneToTwoExtremitiesConnected);
 
-    double rateTwoToOneExtremitiesConnected;
-    input.copyParameter("rateTwoToOneExtremitiesConnected", rateTwoToOneExtremitiesConnected);
+    double baseRateTwoToOneExtremitiesConnected;
+    input.copyParameter("baseRateTwoToOneExtremitiesConnected", baseRateTwoToOneExtremitiesConnected);
+
+    double headBindingBiasEnergy;
+    input.copyParameter("headBindingBiasEnergy", headBindingBiasEnergy);
 
     Propagator propagator(nTimeSteps,
                           calcTimeStep,
@@ -124,10 +127,11 @@ int main()
                           baseRateActivePartialHop,
                           baseRateActiveFullHop,
                           activeHopToPlusBiasEnergy,
-                          rateZeroToOneExtremitiesConnected,
-                          rateOneToZeroExtremitiesConnected,
-                          rateOneToTwoExtremitiesConnected,
-                          rateTwoToOneExtremitiesConnected);
+                          baseRateZeroToOneExtremitiesConnected,
+                          baseRateOneToZeroExtremitiesConnected,
+                          baseRateOneToTwoExtremitiesConnected,
+                          baseRateTwoToOneExtremitiesConnected,
+                          headBindingBiasEnergy);
 
     //-----------------------------------------------------------------------------------------------------
     // Set the random number generator
