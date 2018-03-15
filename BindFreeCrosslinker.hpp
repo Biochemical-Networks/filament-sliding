@@ -22,7 +22,7 @@ private:
 
     SiteLocation whereToConnect(const SystemState& systemState, RandomGenerator& generator) const;
 public:
-    BindFreeCrosslinker(const double rateOneLinkerToOneSite, const Crosslinker::Type typeToBind);
+    BindFreeCrosslinker(const double rateOneLinkerToOneSite, const Crosslinker::Type typeToBind, const double headBiasEnergy);
     ~BindFreeCrosslinker() override;
 
     void setCurrentRate(const SystemState& systemState) override;

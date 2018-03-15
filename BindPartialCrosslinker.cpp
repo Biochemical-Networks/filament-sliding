@@ -13,9 +13,12 @@
 #include <cmath> // exp
 #include <cstddef> // size_t
 
-BindPartialCrosslinker::BindPartialCrosslinker(const double elementaryRate, const Crosslinker::Type typeToBind, const double springConstant)
-    :   Reaction(elementaryRate),
+BindPartialCrosslinker::BindPartialCrosslinker(const double rateOneTerminusToOneSite, const Crosslinker::Type typeToBind, const double headBiasEnergy, const double springConstant)
+    :   Reaction(),
+        m_rateOneTerminusToOneSite(rateOneTerminusToOneSite),
         m_typeToBind(typeToBind),
+        m_headBindingFactor(2/(1+std::exp(-headBiasEnergy))),
+        m_tailBindingFactor(2-m_headBindingFactor),
         m_springConstant(springConstant)
 {
 }
@@ -35,7 +38,8 @@ void BindPartialCrosslinker::setCurrentRate(const SystemState& systemState)
     for(const PossibleFullConnection& possibleConnection : possibleConnections)
     {
         // spread the effect of extension evenly over connecting and disconnecting: rate scales with exp(-k x^2 / (4 k_B T))
-        const double rate = m_elementaryRate*std::exp(-m_springConstant*possibleConnection.extension*possibleConnection.extension*0.25);
+        const double rate = m_rateOneLinkerToOneSite*std::exp(-m_springConstant*possibleConnection.extension*possibleConnection.extension*0.25);
+        rate *= (possibleConnection.p_partialLinker->getFreeTerminusWhenPartiallyConnected()==Crosslinker::Terminus::HEAD)?m_headBindingFactor:m_tailBindingFactor;
         m_individualRates.push_back(rate);
         sum += rate;
     }
@@ -47,6 +51,7 @@ PossibleFullConnection BindPartialCrosslinker::whichToConnect(const SystemState&
 {
     const std::vector<PossibleFullConnection>& possibleConnections = systemState.getPossibleConnections(m_typeToBind);
 
+    #ifdef MYDEBUG
     if (possibleConnections.empty())
     {
         throw GeneralException("BindPartialCrosslinker::whichToConnect() was not able to disconnect a linker");
@@ -55,6 +60,7 @@ PossibleFullConnection BindPartialCrosslinker::whichToConnect(const SystemState&
     {
         throw GeneralException("BindPartialCrosslinker::whichToConnect() was called with an outdated vector");
     }
+    #endif // MYDEBUG
 
     // Choose the connection with a probability proportional to its rate
     const double eventIdentifyingRate = generator.getUniform(0,m_currentRate);
