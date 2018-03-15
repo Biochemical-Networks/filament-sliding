@@ -21,7 +21,7 @@ private:
     const double m_rateOneTerminusToOneSite;
     const Crosslinker::Type m_typeToBind;
     // The following gives the factor with which the rate needs to be multiplied when it involves binding the head (tail).
-    const double m_headBindingFactor; // Equals 2/(1+exp(-headBindingBiasEnergy) = 2*prob_head_binds. tailBindingFactor = 2-m_headBindingFactor
+    const double m_headBindingFactor; // Equals 2/(1+exp(-headBindingBiasEnergy)) = 2*prob_head_binds. m_tailBindingFactor = 2-m_headBindingFactor
     const double m_tailBindingFactor;
 
     PossibleFullConnection whichToConnect(const SystemState& systemState, RandomGenerator& generator) const;

@@ -7,9 +7,12 @@
 
 #include <vector>
 
-UnbindPartialCrosslinker::UnbindPartialCrosslinker(const double elementaryRate, const Crosslinker::Type typeToUnbind)
-    :   Reaction(elementaryRate),
-        m_typeToUnbind(typeToUnbind)
+UnbindPartialCrosslinker::UnbindPartialCrosslinker(const double rateOneTerminusDisconnects, const Crosslinker::Type typeToUnbind, const double headBiasEnergy)
+    :   Reaction(),
+        m_rateOneTerminusDisconnects(rateOneTerminusDisconnects),
+        m_typeToUnbind(typeToUnbind),
+        m_headUnbindingFactor(2/(1+std::exp(headBiasEnergy))),
+        m_tailUnbindingFactor(2-m_headUnbindingFactor)
 {
 }
 
