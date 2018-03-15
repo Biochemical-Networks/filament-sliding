@@ -1,7 +1,6 @@
 #include "Reaction.hpp"
 
-Reaction::Reaction(const double elementaryRate)
-    :   m_elementaryRate(elementaryRate)
+Reaction::Reaction()
 {
     resetAction(); // set initial action to zero
 }
@@ -23,6 +22,8 @@ double Reaction::getAction() const
 
 void Reaction::updateAction()
 {
+    // We let the action have the same units as the rate (s^-1), since this doesn't require constant multiplication with the time step.
+    // Hence, when calculating a threshold for the action, we do need to take the time step into account
     m_action += m_currentRate;
 }
 
