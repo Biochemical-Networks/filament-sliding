@@ -38,7 +38,7 @@ void BindPartialCrosslinker::setCurrentRate(const SystemState& systemState)
     for(const PossibleFullConnection& possibleConnection : possibleConnections)
     {
         // spread the effect of extension evenly over connecting and disconnecting: rate scales with exp(-k x^2 / (4 k_B T))
-        const double rate = m_rateOneLinkerToOneSite*std::exp(-m_springConstant*possibleConnection.extension*possibleConnection.extension*0.25);
+        double rate = m_rateOneTerminusToOneSite*std::exp(-m_springConstant*possibleConnection.extension*possibleConnection.extension*0.25);
         rate *= (possibleConnection.p_partialLinker->getFreeTerminusWhenPartiallyConnected()==Crosslinker::Terminus::HEAD)?m_headBindingFactor:m_tailBindingFactor;
         m_individualRates.push_back(rate);
         sum += rate;
