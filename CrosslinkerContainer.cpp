@@ -29,11 +29,10 @@ CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers,
         m_latticeSpacing(latticeSpacing),
         m_maxStretch(maxStretch),
         m_mod1(myMod(m_maxStretch, m_latticeSpacing)),
-        m_mod2(myMod(-m_maxStretch, m_latticeSpacing)),
-        m_nPartialsBoundWithHead(0)
+        m_mod2(myMod(-m_maxStretch, m_latticeSpacing))
 {
     #ifdef MYDEBUG
-    // The number of partials is initially set to zero, so the crosslinkers should not be connected yet.
+    // The number of partials and fulls is initially assumed to be zero, so the crosslinkers should not be connected yet.
     if(!defaultCrosslinker.isFree())
     {
         throw GeneralException("The CrosslinkerContainer constructor was initialised with non-free linkers, where this will be assumed.")
@@ -349,7 +348,11 @@ void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p
 
         if (p_newPartialCrosslinker->getBoundTerminusWhenPartiallyConnected()==Crosslinker::Terminus::HEAD)
         {
-            ++m_nPartialsBoundWithHead;
+            m_partialCrosslinkersBoundWithHead.push_back(p_newPartialCrosslinker);
+        }
+        else
+        {
+            m_partialCrosslinkersBoundWithTail.push_back(p_newPartialCrosslinker);
         }
     }
 
@@ -386,7 +389,13 @@ void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p
 
         if (terminusDisconnected==Crosslinker::Terminus::HEAD)
         {
-            --m_nPartialsBoundWithHead;
+            m_partialCrosslinkersBoundWithHead.erase(std::remove(m_partialCrosslinkersBoundWithHead.begin(), m_partialCrosslinkersBoundWithHead.end(), p_oldPartialCrosslinker),
+                                                     m_partialCrosslinkersBoundWithHead.end());
+        }
+        else
+        {
+            m_partialCrosslinkersBoundWithTail.erase(std::remove(m_partialCrosslinkersBoundWithTail.begin(), m_partialCrosslinkersBoundWithTail.end(), p_oldPartialCrosslinker),
+                                                     m_partialCrosslinkersBoundWithTail.end());
         }
     }
 
@@ -421,7 +430,11 @@ void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p
 
         if (p_oldFullCrosslinker->getBoundTerminusWhenPartiallyConnected()==Crosslinker::Terminus::HEAD)
         {
-            ++m_nPartialsBoundWithHead;
+            m_partialCrosslinkersBoundWithHead.push_back(p_oldFullCrosslinker);
+        }
+        else
+        {
+            m_partialCrosslinkersBoundWithTail.push_back(p_oldFullCrosslinker);
         }
 
         // Update m_fullConnections, which holds the current connections, not possibilities
@@ -464,7 +477,13 @@ void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p
         // When the tail connects, then the linker used to be a partial with the head connected.
         if (terminusConnected==Crosslinker::Terminus::TAIL)
         {
-            --m_nPartialsBoundWithHead;
+            m_partialCrosslinkersBoundWithHead.erase(std::remove(m_partialCrosslinkersBoundWithHead.begin(), m_partialCrosslinkersBoundWithHead.end(), p_newFullCrosslinker),
+                                                     m_partialCrosslinkersBoundWithHead.end());
+        }
+        else
+        {
+            m_partialCrosslinkersBoundWithTail.erase(std::remove(m_partialCrosslinkersBoundWithTail.begin(), m_partialCrosslinkersBoundWithTail.end(), p_newFullCrosslinker),
+                                                     m_partialCrosslinkersBoundWithTail.end());
         }
 
         // Update m_fullConnections:
@@ -738,13 +757,23 @@ void CrosslinkerContainer::resetPossibilities()
 std::pair<int32_t,int32_t> CrosslinkerContainer::getNPartialsBoundWithHeadAndTail() const
 {
     #ifdef MYDEBUG
-    if (m_nPartialsBoundWithHead<0 || m_nPartialsBoundWithHead > m_partialCrosslinkers.size())
+    if (m_partialCrosslinkersBoundWithHead.size() + m_partialCrosslinkersBoundWithTail.size() != m_partialCrosslinkers.size())
     {
-        throw GeneralException("CrosslinkerContainer::getNPartialsBoundWithHead() saw an impossible m_nPartialsBoundWithHead");
+        throw GeneralException("CrosslinkerContainer::getNPartialsBoundWithHead() saw an impossible number of partial crosslinkers");
     }
     #endif // MYDEBUG
 
-    return std::pair<int32_t,int32_t>(m_nPartialsBoundWithHead, m_partialCrosslinkers.size()-m_nPartialsBoundWithHead);
+    return std::pair<int32_t,int32_t>(m_partialCrosslinkersBoundWithHead.size(), m_partialCrosslinkersBoundWithTail.size());
+}
+
+const std::vector<Crosslinker*>& CrosslinkerContainer::getPartialCrosslinkersBoundWithHead() const
+{
+    return m_partialCrosslinkersBoundWithHead;
+}
+
+const std::vector<Crosslinker*>& CrosslinkerContainer::getPartialCrosslinkersBoundWithTail() const
+{
+    return m_partialCrosslinkersBoundWithTail;
 }
 
 #ifdef MYDEBUG

@@ -40,8 +40,9 @@ private:
     std::vector<Crosslinker*> m_freeCrosslinkers;
     std::vector<Crosslinker*> m_partialCrosslinkers;
     std::vector<Crosslinker*> m_fullCrosslinkers;
-    // Keep track of the number of partial linkers that is bound by the head (through the size of m_partialCrosslinkers, this also gives the number bound by the tail).
-    int32_t m_nPartialsBoundWithHead;
+    // Keep track of the partial linkers that are bound by the head or tail.
+    std::vector<Crosslinker*> m_partialCrosslinkersBoundWithHead;
+    std::vector<Crosslinker*> m_partialCrosslinkersBoundWithTail;
 
     // Stores all possible connections such that the search needs to be done once every time step
     // Needs to be updated dynamically.  After MT diffusion, it can completely change
@@ -161,6 +162,10 @@ public:
     const std::vector<Crosslinker*>& getPartialLinkers() const;
 
     std::pair<int32_t,int32_t> getNPartialsBoundWithHeadAndTail() const;
+
+    const std::vector<Crosslinker*>& getPartialCrosslinkersBoundWithHead() const;
+
+    const std::vector<Crosslinker*>& getPartialCrosslinkersBoundWithTail() const;
 
     #ifdef MYDEBUG
     Crosslinker* TESTgetAFullCrosslinker(const int32_t which) const;

@@ -647,6 +647,42 @@ const std::vector<Crosslinker*>& SystemState::getPartialLinkers(const Crosslinke
     }
 }
 
+const std::vector<Crosslinker*>& SystemState::getPartialLinkersBoundWithHead(const Crosslinker::Type type) const
+{
+    switch(type)
+    {
+    case Crosslinker::Type::PASSIVE:
+        return m_passiveCrosslinkers.getPartialCrosslinkersBoundWithHead();
+        break;
+    case Crosslinker::Type::DUAL:
+        return m_dualCrosslinkers.getPartialCrosslinkersBoundWithHead();
+        break;
+    case Crosslinker::Type::ACTIVE:
+        return m_activeCrosslinkers.getPartialCrosslinkersBoundWithHead();
+        break;
+    default:
+        throw GeneralException("An incorrect type was passed to SystemState::getPartialLinkersBoundWithHead()");
+    }
+}
+
+const std::vector<Crosslinker*>& SystemState::getPartialLinkersBoundWithTail(const Crosslinker::Type type) const
+{
+    switch(type)
+    {
+    case Crosslinker::Type::PASSIVE:
+        return m_passiveCrosslinkers.getPartialCrosslinkersBoundWithTail();
+        break;
+    case Crosslinker::Type::DUAL:
+        return m_dualCrosslinkers.getPartialCrosslinkersBoundWithTail();
+        break;
+    case Crosslinker::Type::ACTIVE:
+        return m_activeCrosslinkers.getPartialCrosslinkersBoundWithTail();
+        break;
+    default:
+        throw GeneralException("An incorrect type was passed to SystemState::getPartialLinkersBoundWithTail()");
+    }
+}
+
 void SystemState::updateForceAndEnergy()
 {
     const std::vector<FullConnection>& passiveFullConnections = getFullConnections(Crosslinker::Type::PASSIVE);
