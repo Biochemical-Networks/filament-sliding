@@ -3,6 +3,10 @@
 
 #include "Reaction.hpp"
 
+/* The Reaction that hops one of the connected termini of a fully connected linker to either side.
+ * The head and tail can have a bias to hop in a specific direction on the polarised microtubule.
+ * This class needs to decide which of all possible hops is performed, and only reports the total hopping rate of all full linkers of this type to the public.
+ */
 
 class HopFull : public Reaction
 {
@@ -22,7 +26,7 @@ private:
 
     double getBaseRateToHop(const Crosslinker::Terminus terminusToHop, const HopDirection directionToHop) const;
 
-    PossibleFullHop whichHop(const SystemState& systemState, RandomGenerator& generator) const;
+    const PossibleFullHop& whichHop(const SystemState& systemState, RandomGenerator& generator) const;
 
 public:
     HopFull(const double baseRateHead,

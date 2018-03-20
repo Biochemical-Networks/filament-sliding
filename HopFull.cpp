@@ -1,12 +1,16 @@
 #include "HopFull.hpp"
 
+#include <cmath> // exp
+#include <vector>
+#include <cstddef> // size_t
+
 HopFull::HopFull(const double baseRateHead,
                  const double baseRateTail,
                  const Crosslinker::Type typeToHop,
                  const double springConstant,
                  const double headHopToPlusBiasEnergy,
                  const double tailHopToPlusBiasEnergy)
-    :   Reaction(std::numeric_limits<double>::quiet_NaN()), // Use the base rates instead of the elementaryRate
+    :   Reaction(), // Use the base rates instead of the elementaryRate
         m_typeToHop(typeToHop),
         m_springConstant(springConstant),
         m_headHopToPlusBaseRate(baseRateHead*std::exp(headHopToPlusBiasEnergy*0.5)),
@@ -69,10 +73,11 @@ double HopFull::getBaseRateToHop(const Crosslinker::Terminus terminusToHop, cons
     }
 }
 
-PossibleFullHop HopFull::whichHop(const SystemState& systemState, RandomGenerator& generator) const
+const PossibleFullHop& HopFull::whichHop(const SystemState& systemState, RandomGenerator& generator) const
 {
     const std::vector<PossibleFullHop>& possibleFullHops = systemState.getPossibleFullHops(m_typeToHop);
 
+    #ifdef MYDEBUG
     if (possibleFullHops.empty())
     {
         throw GeneralException("HopFull::whichHop() did not have possibilities");
@@ -81,6 +86,7 @@ PossibleFullHop HopFull::whichHop(const SystemState& systemState, RandomGenerato
     {
         throw GeneralException("HopFull::whichHop() was called with an outdated vector");
     }
+    #endif // MYDEBUG
 
     // Choose the connection with a probability proportional to its rate
     const double eventIdentifyingRate = generator.getUniform(0,m_currentRate);
