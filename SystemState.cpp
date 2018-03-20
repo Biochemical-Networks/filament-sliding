@@ -123,6 +123,8 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
 
     Crosslinker::Type type = disconnectingCrosslinker.getType();
 
+    const Crosslinker::Terminus disconnectingTerminus = disconnectingCrosslinker.getBoundTerminusWhenPartiallyConnected();
+
     // Disconnect in administration of crosslinker container
     switch(type)
     {
@@ -157,10 +159,11 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
             break;
     }
 
+
     // Finally, update the information on possibilities with the new SystemState
-    m_passiveCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom);
-    m_dualCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom);
-    m_activeCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom);
+    m_passiveCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom, disconnectingTerminus);
+    m_dualCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom, disconnectingTerminus);
+    m_activeCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom, disconnectingTerminus);
 
 }
 
@@ -245,9 +248,9 @@ void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCr
     p_microtubuleToConnect->connectSite(locationOppositeMicrotubule.position, connectingCrosslinker, terminusToConnect);
 
     // Finally, update the information on possibilities with the new SystemState
-    m_passiveCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule);
-    m_dualCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule);
-    m_activeCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule);
+    m_passiveCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule, terminusToConnect);
+    m_dualCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule, terminusToConnect);
+    m_activeCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule, terminusToConnect);
 
 }
 
