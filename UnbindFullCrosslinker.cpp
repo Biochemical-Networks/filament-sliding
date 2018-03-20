@@ -6,9 +6,11 @@
 
 #include <vector>
 
-UnbindFullCrosslinker::UnbindFullCrosslinker(const double elementaryRate, const Crosslinker::Type typeToUnbind, const double springConstant)
-    :   Reaction(elementaryRate),
+UnbindFullCrosslinker::UnbindFullCrosslinker(const double rateOneLinkerUnbinds, const Crosslinker::Type typeToUnbind, const double headBiasEnergy, const double springConstant)
+    :   Reaction(),
+        m_rateOneLinkerUnbinds(rateOneLinkerUnbinds),
         m_typeToUnbind(typeToUnbind),
+        m_probHeadUnbinds(1/(1+std::exp(-headBiasEnergy))), // headBiasEnergy should have units of (k_B T)
         m_springConstant(springConstant)
 {
 }
@@ -26,7 +28,8 @@ void UnbindFullCrosslinker::setCurrentRate(const SystemState& systemState)
     for(const FullConnection& fullConnection : fullConnections)
     {
         // spread the effect of extension evenly over connecting and disconnecting: rate scales with exp(k x^2 / (4 k_B T))
-        const double rate = m_elementaryRate*std::exp(-m_springConstant*fullConnection.extension*fullConnection.extension*0.25);
+        // Give the rate of unbinding this crosslinker: which terminus is unbound is decided upon performing the actual event.
+        const double rate = m_rateOneLinkerUnbinds*std::exp(m_springConstant*fullConnection.extension*fullConnection.extension*0.25);
         m_individualRates.push_back(rate);
         sum += rate;
     }
@@ -37,10 +40,7 @@ void UnbindFullCrosslinker::performReaction(SystemState& systemState, RandomGene
 {
     FullConnection connectionToDisconnect = whichToDisconnect(systemState, generator);
 
-    // The following can be changed when there are different binding affinities for the head and tail of a crosslinker.
-    // Now, the binding affinities are assumed to be equal.
-    double probHeadUnbinds = 0.5;
-    Crosslinker::Terminus terminusToDisconnect = ((generator.getBernoulli(probHeadUnbinds))?(Crosslinker::Terminus::HEAD):(Crosslinker::Terminus::TAIL));
+    Crosslinker::Terminus terminusToDisconnect = ((generator.getBernoulli(m_probHeadUnbinds))?(Crosslinker::Terminus::HEAD):(Crosslinker::Terminus::TAIL));
 
     systemState.disconnectFullyConnectedCrosslinker(*connectionToDisconnect.p_fullLinker, terminusToDisconnect);
 }
@@ -49,6 +49,7 @@ FullConnection UnbindFullCrosslinker::whichToDisconnect(SystemState& systemState
 {
     const std::vector<FullConnection>& fullConnections = systemState.getFullConnections(m_typeToUnbind);
 
+    #ifdef MYDEBUG
     if (fullConnections.empty())
     {
         throw GeneralException("UnbindFullCrosslinker::whichToDisconnect() was not able to disconnect a linker");
@@ -57,6 +58,7 @@ FullConnection UnbindFullCrosslinker::whichToDisconnect(SystemState& systemState
     {
         throw GeneralException("UnbindFullCrosslinker::whichToDisconnect() was called with an outdated vector");
     }
+    #endif // MYDEBUG
 
     // Choose the connection with a probability proportional to its rate
     const double eventIdentifyingRate = generator.getUniform(0,m_currentRate);
