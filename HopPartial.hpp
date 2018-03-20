@@ -4,6 +4,10 @@
 #include "Reaction.hpp"
 #include "Crosslinker.hpp"
 
+/* The Reaction that hops the connected terminus of a partially connected linker to either side.
+ * The head and tail can have a bias to hop in a specific direction on the polarised microtubule.
+ * This class needs to decide which of all possible hops is performed, and only reports the total hopping rate of all partial linkers of this type to the public.
+ */
 
 class HopPartial : public Reaction
 {

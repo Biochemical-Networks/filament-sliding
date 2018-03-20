@@ -4,14 +4,15 @@
 #include "PossibleHop.hpp"
 
 #include <vector>
-#include <cmath>
+#include <cmath> // exp
+#include <cstddef> // size_t
 
 HopPartial::HopPartial(const double baseRateHead,
                        const double baseRateTail,
                        const Crosslinker::Type typeToHop,
                        const double headHopToPlusBiasEnergy,
                        const double tailHopToPlusBiasEnergy)
-    :   Reaction(std::numeric_limits<double>::quiet_NaN()), // do not use elementaryRate, since there are two separate rates
+    :   Reaction(),
         m_typeToHop(typeToHop),
         m_headHopToPlusRate(baseRateHead*std::exp(headHopToPlusBiasEnergy*0.5)),
         m_headHopToMinusRate(baseRateHead*std::exp(-headHopToPlusBiasEnergy*0.5)),
@@ -69,6 +70,7 @@ PossiblePartialHop HopPartial::whichHop(const SystemState& systemState, RandomGe
 {
     const std::vector<PossiblePartialHop>& possiblePartialHops = systemState.getPossiblePartialHops(m_typeToHop);
 
+    #ifdef MYDEBUG
     if (possiblePartialHops.empty())
     {
         throw GeneralException("HopPartial::whichHop() did not have possibilities");
@@ -77,6 +79,7 @@ PossiblePartialHop HopPartial::whichHop(const SystemState& systemState, RandomGe
     {
         throw GeneralException("HopPartial::whichHop() was called with an outdated vector");
     }
+    #endif // MYDEBUG
 
     // Choose the connection with a probability proportional to its rate
     const double eventIdentifyingRate = generator.getUniform(0,m_currentRate);
@@ -96,6 +99,7 @@ void HopPartial::performReaction(SystemState& systemState, RandomGenerator& gene
 {
     PossiblePartialHop hopToMake = whichHop(systemState, generator);
 
+    // Implement the hop as a combination of binding and unbinding
     systemState.disconnectPartiallyConnectedCrosslinker(*hopToMake.p_partialLinker);
     systemState.connectFreeCrosslinker(m_typeToHop, hopToMake.terminusToHop, hopToMake.locationToHopTo);
 }
