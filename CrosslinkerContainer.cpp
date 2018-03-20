@@ -29,8 +29,17 @@ CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers,
         m_latticeSpacing(latticeSpacing),
         m_maxStretch(maxStretch),
         m_mod1(myMod(m_maxStretch, m_latticeSpacing)),
-        m_mod2(myMod(-m_maxStretch, m_latticeSpacing))
+        m_mod2(myMod(-m_maxStretch, m_latticeSpacing)),
+        m_nPartialsBoundWithHead(0)
 {
+    #ifdef MYDEBUG
+    // The number of partials is initially set to zero, so the crosslinkers should not be connected yet.
+    if(!defaultCrosslinker.isFree())
+    {
+        throw GeneralException("The CrosslinkerContainer constructor was initialised with non-free linkers, where this will be assumed.")
+    }
+    #endif // MYDEBUG
+
     // Fill the freeCrosslinkers vector with pointers to all crosslinkers: these are initially free
     for (int32_t i=0; i<nCrosslinkers; ++i)
     {
@@ -337,6 +346,11 @@ void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p
         addPossibleConnections(p_newPartialCrosslinker);
 
         addPossiblePartialHops(p_newPartialCrosslinker);
+
+        if (p_newPartialCrosslinker->getBoundTerminusWhenPartiallyConnected()==Crosslinker::Terminus::HEAD)
+        {
+            ++m_nPartialsBoundWithHead;
+        }
     }
 
     SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundLocationWhenPartiallyConnected();
@@ -348,7 +362,9 @@ void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p
     updatePossibleFullHopsNextTo(locationConnectedTo);
 }
 
-void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection)
+void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker,
+                                                             const SiteLocation locationOldConnection,
+                                                             const Crosslinker::Terminus terminusDisconnected)
 {
     #ifdef MYDEBUG
     if(p_oldPartialCrosslinker->isConnected())
@@ -367,6 +383,11 @@ void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p
         removePossibleConnections(p_oldPartialCrosslinker);
 
         removePossiblePartialHops(p_oldPartialCrosslinker);
+
+        if (terminusDisconnected==Crosslinker::Terminus::HEAD)
+        {
+            --m_nPartialsBoundWithHead;
+        }
     }
 
     updatePossibleConnectionsOppositeTo(p_oldPartialCrosslinker, locationOldConnection);
@@ -376,10 +397,10 @@ void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p
     updatePossibleFullHopsNextTo(locationOldConnection);
 }
 
-void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p_newPartialCrosslinker, const SiteLocation locationOldConnection)
+void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p_oldFullCrosslinker, const SiteLocation locationOldConnection)
 {
     #ifdef MYDEBUG
-    if(!(p_newPartialCrosslinker->isPartial()))
+    if(!(p_oldFullCrosslinker->isPartial()))
     {
         throw GeneralException("CrosslinkerContainer::updateConnectionDataFullToPartial() was called on a crosslinker that is not partial.");
     }
@@ -390,29 +411,36 @@ void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p
      * and possible connections to the newly freed site are added.
      * Further, possible full hops are removed, and the actual full connection is removed from the connection data.
      */
-    if(p_newPartialCrosslinker->getType()==m_linkerType)
+    if(p_oldFullCrosslinker->getType()==m_linkerType)
     {
-        addPossibleConnections(p_newPartialCrosslinker);
+        addPossibleConnections(p_oldFullCrosslinker);
 
-        addPossiblePartialHops(p_newPartialCrosslinker);
+        addPossiblePartialHops(p_oldFullCrosslinker);
 
-        removePossibleFullHops(p_newPartialCrosslinker);
+        removePossibleFullHops(p_oldFullCrosslinker);
+
+        if (p_oldFullCrosslinker->getBoundTerminusWhenPartiallyConnected()==Crosslinker::Terminus::HEAD)
+        {
+            ++m_nPartialsBoundWithHead;
+        }
 
         // Update m_fullConnections, which holds the current connections, not possibilities
-        removeFullConnection(p_newPartialCrosslinker);
+        removeFullConnection(p_oldFullCrosslinker);
     }
 
-    updatePossibleConnectionsOppositeTo(p_newPartialCrosslinker, locationOldConnection);
+    updatePossibleConnectionsOppositeTo(p_oldFullCrosslinker, locationOldConnection);
 
     updatePossiblePartialHopsNextTo(locationOldConnection);
 
     updatePossibleFullHopsNextTo(locationOldConnection);
 }
 
-void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationNewConnection)
+void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p_newFullCrosslinker,
+                                                             const SiteLocation locationNewConnection,
+                                                             const Crosslinker::Terminus terminusConnected)
 {
     #ifdef MYDEBUG
-    if(!(p_oldPartialCrosslinker->isFull()))
+    if(!(p_newFullCrosslinker->isFull()))
     {
         throw GeneralException("CrosslinkerContainer::updateConnectionDataPartialToFull() was called on a crosslinker that is not full.");
     }
@@ -425,19 +453,25 @@ void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p
      * Finally, the new full conncetion is added to the current connection data.
      */
 
-    if(p_oldPartialCrosslinker->getType() == m_linkerType)
+    if(p_newFullCrosslinker->getType() == m_linkerType)
     {
-        removePossibleConnections(p_oldPartialCrosslinker);
+        removePossibleConnections(p_newFullCrosslinker);
 
-        removePossiblePartialHops(p_oldPartialCrosslinker);
+        removePossiblePartialHops(p_newFullCrosslinker);
 
-        addPossibleFullHops(p_oldPartialCrosslinker);
+        addPossibleFullHops(p_newFullCrosslinker);
+
+        // When the tail connects, then the linker used to be a partial with the head connected.
+        if (terminusConnected==Crosslinker::Terminus::TAIL)
+        {
+            --m_nPartialsBoundWithHead;
+        }
 
         // Update m_fullConnections:
-        addFullConnection(p_oldPartialCrosslinker);
+        addFullConnection(p_newFullCrosslinker);
     }
 
-    updatePossibleConnectionsOppositeTo(p_oldPartialCrosslinker, locationNewConnection);
+    updatePossibleConnectionsOppositeTo(p_newFullCrosslinker, locationNewConnection);
 
     updatePossiblePartialHopsNextTo(locationNewConnection);
 
@@ -699,6 +733,30 @@ void CrosslinkerContainer::resetPossibilities()
     findPossiblePartialHops();
 
     findPossibleFullHops();
+}
+
+int32_t CrosslinkerContainer::getNPartialsBoundWithHead() const
+{
+    #ifdef MYDEBUG
+    if (m_nPartialsBoundWithHead<0 || m_nPartialsBoundWithHead > m_partialCrosslinkers.size())
+    {
+        throw GeneralException("CrosslinkerContainer::getNPartialsBoundWithHead() saw an impossible m_nPartialsBoundWithHead");
+    }
+    #endif // MYDEBUG
+
+    return m_nPartialsBoundWithHead;
+}
+
+int32_t CrosslinkerContainer::getNPartialsBoundWithTail() const
+{
+    #ifdef MYDEBUG
+    if (m_nPartialsBoundWithHead<0 || m_nPartialsBoundWithHead > m_partialCrosslinkers.size())
+    {
+        throw GeneralException("CrosslinkerContainer::getNPartialsBoundWithTail() saw an impossible m_nPartialsBoundWithHead");
+    }
+    #endif // MYDEBUG
+
+    return m_partialCrosslinkers.size() - m_nPartialsBoundWithHead;
 }
 
 #ifdef MYDEBUG

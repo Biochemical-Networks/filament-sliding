@@ -34,14 +34,14 @@ private:
     const double m_mod1, m_mod2;
     double m_lowerBorderPossibilities, m_upperBorderPossibilities; // These are the borders for the mobile position between which the current possibilities remain valid
 
-
-    int32_t m_nFreeCrosslinkers;
     // Use pointers to crosslinkers as IDs: THIS IS DANGEROUS! It will break if m_crosslinkers would ever resize, since that invalidates all pointers to its elements.
     // A possible fix for this (if it were required to resize the m_crosslinkers sometimes) would be to store the labels (0,...,nCrosslinkers-1) instead of pointers).
     // Not the case for now
     std::vector<Crosslinker*> m_freeCrosslinkers;
     std::vector<Crosslinker*> m_partialCrosslinkers;
     std::vector<Crosslinker*> m_fullCrosslinkers;
+    // Keep track of the number of partial linkers that is bound by the head (through the size of m_partialCrosslinkers, this also gives the number bound by the tail).
+    int32_t m_nPartialsBoundWithHead;
 
     // Stores all possible connections such that the search needs to be done once every time step
     // Needs to be updated dynamically.  After MT diffusion, it can completely change
@@ -140,11 +140,11 @@ public:
     // They need to be called when any linker goes through the change: when the linker is of a different type, it can still affect the possibilities of linkers of this type
     void updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker);
 
-    void updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection);
+    void updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection, const Crosslinker::Terminus terminusDisconnected);
 
-    void updateConnectionDataPartialToFull(Crosslinker*const p_newPartialCrosslinker, const SiteLocation locationNewConnection);
+    void updateConnectionDataPartialToFull(Crosslinker*const p_newFullCrosslinker, const SiteLocation locationNewConnection, const Crosslinker::Terminus terminusConnected);
 
-    void updateConnectionDataFullToPartial(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection);
+    void updateConnectionDataFullToPartial(Crosslinker*const p_oldFullCrosslinker, const SiteLocation locationOldConnection);
 
     void updateConnectionDataMobilePositionChange(const double positionChange);
 
@@ -159,6 +159,10 @@ public:
     const std::vector<FullConnection>& getFullConnections() const;
 
     const std::vector<Crosslinker*>& getPartialLinkers() const;
+
+    int32_t getNPartialsBoundWithHead() const;
+
+    int32_t getNPartialsBoundWithTail() const;
 
     #ifdef MYDEBUG
     Crosslinker* TESTgetAFullCrosslinker(const int32_t which) const;
