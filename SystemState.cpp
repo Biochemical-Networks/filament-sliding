@@ -10,6 +10,7 @@
 #include <algorithm> // max/min
 #include <cmath> // ceil/floor/abs
 #include <deque>
+#include <utility> // pair
 
 
 SystemState::SystemState(const double lengthMobileMicrotubule,
@@ -383,6 +384,25 @@ int32_t SystemState::getNPartialCrosslinkersOfType(const Crosslinker::Type type)
             break;
         default:
             throw GeneralException("An incorrect crosslinker type was passed to SystemState::getNPartialCrosslinkersOfType()");
+            break;
+    }
+}
+
+std::pair<int32_t,int32_t> SystemState::getNPartialCrosslinkersBoundWithHeadAndTailOfType(const Crosslinker::Type type) const
+{
+    switch(type)
+    {
+        case Crosslinker::Type::PASSIVE:
+            return m_passiveCrosslinkers.getNPartialsBoundWithHeadAndTail();
+            break;
+        case Crosslinker::Type::DUAL:
+            return m_dualCrosslinkers.getNPartialsBoundWithHeadAndTail();
+            break;
+        case Crosslinker::Type::ACTIVE:
+            return m_activeCrosslinkers.getNPartialsBoundWithHeadAndTail();
+            break;
+        default:
+            throw GeneralException("An incorrect crosslinker type was passed to SystemState::getNPartialCrosslinkersBoundWithHeadAndTailOfType()");
             break;
     }
 }

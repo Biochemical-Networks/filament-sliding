@@ -735,7 +735,7 @@ void CrosslinkerContainer::resetPossibilities()
     findPossibleFullHops();
 }
 
-int32_t CrosslinkerContainer::getNPartialsBoundWithHead() const
+std::pair<int32_t,int32_t> CrosslinkerContainer::getNPartialsBoundWithHeadAndTail() const
 {
     #ifdef MYDEBUG
     if (m_nPartialsBoundWithHead<0 || m_nPartialsBoundWithHead > m_partialCrosslinkers.size())
@@ -744,19 +744,7 @@ int32_t CrosslinkerContainer::getNPartialsBoundWithHead() const
     }
     #endif // MYDEBUG
 
-    return m_nPartialsBoundWithHead;
-}
-
-int32_t CrosslinkerContainer::getNPartialsBoundWithTail() const
-{
-    #ifdef MYDEBUG
-    if (m_nPartialsBoundWithHead<0 || m_nPartialsBoundWithHead > m_partialCrosslinkers.size())
-    {
-        throw GeneralException("CrosslinkerContainer::getNPartialsBoundWithTail() saw an impossible m_nPartialsBoundWithHead");
-    }
-    #endif // MYDEBUG
-
-    return m_partialCrosslinkers.size() - m_nPartialsBoundWithHead;
+    return std::pair<int32_t,int32_t>(m_nPartialsBoundWithHead, m_partialCrosslinkers.size()-m_nPartialsBoundWithHead);
 }
 
 #ifdef MYDEBUG

@@ -89,6 +89,7 @@ public:
     int32_t getNFreeCrosslinkers() const;
 
     int32_t getNPartialCrosslinkersOfType(const Crosslinker::Type type) const;
+    std::pair<int32_t,int32_t> getNPartialCrosslinkersBoundWithHeadAndTailOfType(const Crosslinker::Type type) const;
 
     double beginningOverlap() const;
     double endOverlap() const;

@@ -160,9 +160,7 @@ public:
 
     const std::vector<Crosslinker*>& getPartialLinkers() const;
 
-    int32_t getNPartialsBoundWithHead() const;
-
-    int32_t getNPartialsBoundWithTail() const;
+    std::pair<int32_t,int32_t> getNPartialsBoundWithHeadAndTail() const;
 
     #ifdef MYDEBUG
     Crosslinker* TESTgetAFullCrosslinker(const int32_t which) const;
