@@ -155,7 +155,9 @@ void Propagator::performReaction(SystemState& systemState, RandomGenerator& gene
     setNewReactionRateThreshold(generator.getProbability());
     systemState.updateForceAndEnergy();
     #ifdef MYDEBUG
-    std::cout << "A reaction happened\n";
+    static int32_t numberOfReactions = 1;
+    ++numberOfReactions;
+    std::cout << "A reaction happened, so far we've seen "<< numberOfReactions << " reactions.\n";
     #endif // MYDEBUG
 }
 
