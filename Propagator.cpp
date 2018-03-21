@@ -49,31 +49,30 @@ Propagator::Propagator(const int32_t nTimeSteps,
     // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
     // Use pointers, because m_reactions contains Reactions, while we want to store objects of a class inherited from Reaction
     // Make sure that the specific reaction has been included in this file
-    m_reactions["bindingFreePassiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(rateZeroToOneExtremitiesConnected, Crosslinker::Type::PASSIVE));
-    m_reactions["bindingFreeDualCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(rateZeroToOneExtremitiesConnected, Crosslinker::Type::DUAL));
-    m_reactions["bindingFreeActiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(rateZeroToOneExtremitiesConnected, Crosslinker::Type::ACTIVE));
-    m_reactions["bindingPartialPassiveCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(rateOneToTwoExtremitiesConnected, Crosslinker::Type::PASSIVE, m_springConstant));
-    m_reactions["bindingPartialDualCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(rateOneToTwoExtremitiesConnected, Crosslinker::Type::DUAL, m_springConstant));
-    m_reactions["bindingPartialActiveCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(rateOneToTwoExtremitiesConnected, Crosslinker::Type::ACTIVE, m_springConstant));
-    m_reactions["unbindingPartialPassiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(rateOneToZeroExtremitiesConnected, Crosslinker::Type::PASSIVE));
-    m_reactions["unbindingPartialDualCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(rateOneToZeroExtremitiesConnected, Crosslinker::Type::DUAL));
-    m_reactions["unbindingPartialActiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(rateOneToZeroExtremitiesConnected, Crosslinker::Type::ACTIVE));
-    m_reactions["unbindingFullPassiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(rateTwoToOneExtremitiesConnected, Crosslinker::Type::PASSIVE, m_springConstant));
-    m_reactions["unbindingFullDualCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(rateTwoToOneExtremitiesConnected, Crosslinker::Type::DUAL, m_springConstant));
-    m_reactions["unbindingFullActiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(rateTwoToOneExtremitiesConnected, Crosslinker::Type::ACTIVE, m_springConstant));
+    m_reactions["bindingFreePassiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(baseRateZeroToOneExtremitiesConnected, Crosslinker::Type::PASSIVE, headBindingBiasEnergy));
+    m_reactions["bindingFreeDualCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(baseRateZeroToOneExtremitiesConnected, Crosslinker::Type::DUAL, headBindingBiasEnergy));
+    m_reactions["bindingFreeActiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(baseRateZeroToOneExtremitiesConnected, Crosslinker::Type::ACTIVE, headBindingBiasEnergy));
+    m_reactions["bindingPartialPassiveCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(baseRateOneToTwoExtremitiesConnected, Crosslinker::Type::PASSIVE, headBindingBiasEnergy, m_springConstant));
+    m_reactions["bindingPartialDualCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(baseRateOneToTwoExtremitiesConnected, Crosslinker::Type::DUAL, headBindingBiasEnergy, m_springConstant));
+    m_reactions["bindingPartialActiveCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(baseRateOneToTwoExtremitiesConnected, Crosslinker::Type::ACTIVE, headBindingBiasEnergy, m_springConstant));
+    m_reactions["unbindingPartialPassiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(baseRateOneToZeroExtremitiesConnected, Crosslinker::Type::PASSIVE, headBindingBiasEnergy));
+    m_reactions["unbindingPartialDualCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(baseRateOneToZeroExtremitiesConnected, Crosslinker::Type::DUAL, headBindingBiasEnergy));
+    m_reactions["unbindingPartialActiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(baseRateOneToZeroExtremitiesConnected, Crosslinker::Type::ACTIVE, headBindingBiasEnergy));
+    m_reactions["unbindingFullPassiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(baseRateTwoToOneExtremitiesConnected, Crosslinker::Type::PASSIVE, headBindingBiasEnergy, m_springConstant));
+    m_reactions["unbindingFullDualCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(baseRateTwoToOneExtremitiesConnected, Crosslinker::Type::DUAL, headBindingBiasEnergy, m_springConstant));
+    m_reactions["unbindingFullActiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(baseRateTwoToOneExtremitiesConnected, Crosslinker::Type::ACTIVE, headBindingBiasEnergy, m_springConstant));
     m_reactions["hoppingPartialPassiveCrosslinker"] = std::unique_ptr<Reaction>(new HopPartial(ratePassivePartialHop, ratePassivePartialHop, Crosslinker::Type::PASSIVE, 0.0, 0.0)); // For a passive linker, the bias energy is zero
     m_reactions["hoppingPartialDualCrosslinker"] = std::unique_ptr<Reaction>(new HopPartial(baseRateActivePartialHop, ratePassivePartialHop, Crosslinker::Type::DUAL, activeHopToPlusBiasEnergy, 0.0));
     m_reactions["hoppingPartialActiveCrosslinker"] = std::unique_ptr<Reaction>(new HopPartial(baseRateActivePartialHop, baseRateActivePartialHop, Crosslinker::Type::ACTIVE, activeHopToPlusBiasEnergy, activeHopToPlusBiasEnergy));
     m_reactions["hoppingFullPassiveCrosslinker"] = std::unique_ptr<Reaction>(new HopFull(ratePassiveFullHop, ratePassiveFullHop, Crosslinker::Type::PASSIVE, m_springConstant, 0.0, 0.0));
     m_reactions["hoppingFullDualCrosslinker"] = std::unique_ptr<Reaction>(new HopFull(baseRateActiveFullHop, ratePassiveFullHop, Crosslinker::Type::DUAL, m_springConstant, activeHopToPlusBiasEnergy, 0.0));
     m_reactions["hoppingFullActiveCrosslinker"] = std::unique_ptr<Reaction>(new HopFull(baseRateActiveFullHop, baseRateActiveFullHop, Crosslinker::Type::ACTIVE, m_springConstant, activeHopToPlusBiasEnergy, activeHopToPlusBiasEnergy));
-    // Have some checks, such that the methods of this class will work properly
-    /* The standard deviation of the average microtubule position update should be much smaller (orders of magnitude) smaller than the lattice spacing,
-     * since that sets a scale over which force differences definitely emerge. The choice 0.1 is pretty large, but this is a hard maximum limit.
-     */
-    if(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep)>(0.1*m_latticeSpacing))
+
+    // The standard deviation of the average microtubule position update should be much smaller (orders of magnitude smaller) than the lattice spacing,
+    // since that sets a scale over which force differences definitely emerge. The choice 0.1 is pretty large, but this is a hard maximum limit.
+    if(m_deviationMicrotubule>(0.1*m_latticeSpacing))
     {
-        throw GeneralException("The time step is too large to allow for the approximate microtubule movement to be trustworthy");
+        throw GeneralException("The time step is too large to allow for the approximate microtubule movement to be trustworthy. See Propagator constructor");
     }
 }
 
@@ -81,9 +80,8 @@ Propagator::~Propagator()
 {
 }
 
-/* The reaction rate is integrated discretely over the time steps, and leads to a reaction when this accumulated reaction rate (or action) comes above a certain threshold.
- * The threshold is set by inverting the survival probability: map probabilities to survival times. Then, draw a random probability to get the survival time.
- */
+// The reaction rate is integrated discretely over the time steps, and leads to a reaction when this accumulated reaction rate (or action) comes above a certain threshold.
+// The threshold is set by inverting the survival probability: map probabilities to survival times. Then, draw a random probability to get the survival time.
 
 void Propagator::run(SystemState& systemState, RandomGenerator& generator, Output& output)
 {
@@ -102,7 +100,7 @@ void Propagator::run(SystemState& systemState, RandomGenerator& generator, Outpu
         updateAction();
         if (getTotalAction() > m_currentReactionRateThreshold)
         {
-            performReaction(systemState, generator); // also updates the force
+            performReaction(systemState, generator); // also updates the force and action
         }
 
         moveMicrotubule(systemState, generator);
@@ -116,7 +114,7 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
     std::pair<double,double> exclusiveMovementBorders = systemState.movementBordersSetByFullLinkers();
     double change;
     /* Ask the generator to propose a change to update the position of the microtubule.
-     * Repeat until the proposed change is within the allowed range set by the full linkers, which have a maximum stretch.
+     * Repeat until the proposed change is within the allowed range of movement set by the full linkers, which have a maximum stretch.
      * The repetition should not happen too often: this means that the time step cannot be too big.
      * For a maxStretch of 1.5 latticeSpacing, there is a guaranteed open interval of possible changes of the size of one lattice spacing.
      * For time steps small enough, such that the usually proposed changes are small, this function will not repeat often, even for very stretched conformations.
@@ -157,7 +155,7 @@ void Propagator::performReaction(SystemState& systemState, RandomGenerator& gene
     setNewReactionRateThreshold(generator.getProbability());
     systemState.updateForceAndEnergy();
     #ifdef MYDEBUG
-    std::cout << "YEEEEEEEEEEEEEEESSSSSSSSSSSSSSSSSS!!!! A reaction happened!\n";
+    std::cout << "A reaction happened\n";
     #endif // MYDEBUG
 }
 
@@ -165,7 +163,7 @@ void Propagator::performReaction(SystemState& systemState, RandomGenerator& gene
 void Propagator::setNewReactionRateThreshold(const double probability)
 {
     // The action threshold is in units of the time step
-    // If probability is in the exclusive range (0,1), then the threshold is in the range (0, infty)
+    // If probability is in the open interval (0,1), then the threshold is in the range (0, infty)
     m_currentReactionRateThreshold = -std::log(probability)/m_calcTimeStep;
 }
 
@@ -220,12 +218,14 @@ double Propagator::getTotalRate() const
 
 Reaction& Propagator::getReactionToHappen(RandomGenerator& generator) const
 {
-    double randomNumber = generator.getUniform(0.0, getTotalRate());
+    double randomNumber = generator.getUniform(0.0, getTotalRate()); // uses interval [0,totalRate)
 
     for (const auto& reaction : m_reactions)
     {
         randomNumber -= reaction.second->getCurrentRate();
-        if (randomNumber < 0.0) // randomNumber is strictly smaller than the upper bound totalAccumulatedAction, so subtracting the total upper bound after the for loop will definitely make it lower than 0.0
+        // If the randomNumber falls exactly on the border between two reactions, the later one is chosen. Since 0 is an option, this does not bias any reaction
+        // randomNumber is strictly smaller than the upper bound totalAccumulatedAction, so subtracting the total upper bound after the for loop will definitely make it lower than 0.0
+        if (randomNumber < 0.0)
         {
             return *reaction.second;
         }

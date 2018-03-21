@@ -3,14 +3,22 @@
 
 #include <cstdint>
 #include <string>
-#include <vector>
+#include <unordered_map>
+#include <memory> // std::unique_ptr
 
 #include "SystemState.hpp"
 #include "RandomGenerator.hpp"
 #include "Output.hpp"
 #include "Reaction.hpp"
 
-#include <memory>
+/* Propagator takes a SystemState, which is properly initialised, and propagates its dynamics.
+ * In the process, it can report about the current SystemState, for example about the microtubule position.
+ * The class owns the reactions that are possible, and decides which reaction happens when.
+ * The dynamics is cut up into time steps for the dynamics of the mobile microtubule movement,
+ * since the continuity of the diffusion does not allow for an exact computational model.
+ * In contrast, the reactions are modelled using Kinetic Monte Carlo, with dynamic rates integrated over time giving an "action".
+ * Here, it is assumed that rates are invariant during a time step.
+ */
 
 class Propagator
 {
@@ -24,7 +32,7 @@ private:
 
     const double m_deviationMicrotubule; // sqrt(2 D t), with t the time step size and D the diffusion constant of the microtubule. Stored to prevent this calculation every time step
 
-    double m_currentReactionRateThreshold;
+    double m_currentReactionRateThreshold; // units s^(-1), so in terms of the (accumulated) rate
 
     // Store pointers to Reactions in the map m_reactions, because we want to store instances of inherited classes in there. That would not be possible with just the objects.
     // std::unique_ptr deletes the thing it is pointing to when going out of scope, meaning that we don't have to worry about memory leaks
