@@ -35,7 +35,7 @@ CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers,
     // The number of partials and fulls is initially assumed to be zero, so the crosslinkers should not be connected yet.
     if(!defaultCrosslinker.isFree())
     {
-        throw GeneralException("The CrosslinkerContainer constructor was initialised with non-free linkers, where this will be assumed.")
+        throw GeneralException("The CrosslinkerContainer constructor was initialised with non-free linkers, where this will be assumed.");
     }
     #endif // MYDEBUG
 

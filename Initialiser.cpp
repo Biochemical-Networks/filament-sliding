@@ -7,16 +7,18 @@
 #include "Extremity.hpp"
 
 #include <cstdint>
-#include <numeric>
-#include <algorithm>
-#include <cmath>
+#include <numeric> // std::iota
+#include <algorithm> // std::shuffle, std::max_element, std::min
+#include <cmath> // std::ceil
 #include <vector>
+#include <iterator> // std::distance
 
 Initialiser::Initialiser(const double initialPositionMicrotubule, const double fractionOverlapSitesConnected, const std::string initialCrosslinkerDistributionString)
     :   m_initialPositionMicrotubule(initialPositionMicrotubule),
         m_fractionOverlapSitesConnected(fractionOverlapSitesConnected)
 {
     // Translate the string to an enum object Initialiser::InitialCrosslinkerDistribution
+    // switch statements do not work with strings
 
     if (initialCrosslinkerDistributionString=="RANDOM")
     {
@@ -36,7 +38,7 @@ Initialiser::Initialiser(const double initialPositionMicrotubule, const double f
     }
     else
     {
-        throw GeneralException("The given initialCrosslinkerDistributionString does not hold a recognised value.");
+        throw GeneralException("In the Initialiser constructor, the given initialCrosslinkerDistributionString does not hold a recognised value.");
     }
 }
 
@@ -54,12 +56,12 @@ void Initialiser::initialise(SystemState& systemState, RandomGenerator& generato
 
 void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerator& generator)
 {
-    int32_t nSitesOverlapFixed = systemState.getNSitesOverlapFixed();
-    int32_t nSitesOverlapMobile = systemState.getNSitesOverlapMobile();
-    // std::cout << "nSitesOverlapFixed: " << nSitesOverlapFixed << " nSitesOverlapMobile: " << nSitesOverlapMobile << '\n'; // TEST OKAY
+    const int32_t nSitesOverlapFixed = systemState.getNSitesOverlapFixed();
+    const int32_t nSitesOverlapMobile = systemState.getNSitesOverlapMobile();
+    // std::cout << "nSitesOverlapFixed: " << nSitesOverlapFixed << " nSitesOverlapMobile: " << nSitesOverlapMobile << '\n';
 
-    int32_t nSitesOverlap; // If Fixed and Mobile are equal, then use that number. Can be different when one microtubule is completely overlapping with the other, then use the shortest
-    (nSitesOverlapFixed < nSitesOverlapMobile) ? (nSitesOverlap = nSitesOverlapFixed) : (nSitesOverlap = nSitesOverlapMobile);
+    // nSitesOverlapFixed and nSitesOverlapMobile can be different when one microtubule is completely overlapping with the other, then use the shortest
+    const int32_t nSitesOverlap = std::min(nSitesOverlapFixed, nSitesOverlapMobile);
 
     std::vector<int32_t> positionsToConnect(nSitesOverlap);
     std::iota(positionsToConnect.begin(), positionsToConnect.end(), 0); // Fill vector with 0, 1, ..., n-1, such that you have a list of all positions
@@ -75,14 +77,14 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
             // Passives are connected first, then duals, then actives
             break;
         default:
-            throw GeneralException("Caller of initialiseCrosslinkers() asked for an unsupported initial crosslinker distribution");
+            throw GeneralException("Caller of Initialiser::initialiseCrosslinkers() asked for an unsupported initial crosslinker distribution");
             break;
     }
 
-
+    // The following takes the ceiling, since we would always like to have at least one crosslinker to connect in case there is a finite m_fractionOverlapSitesConnected
     int32_t nSitesToConnect = static_cast<int32_t> (std::ceil(m_fractionOverlapSitesConnected * nSitesOverlap));
 
-    if (nSitesToConnect > nSitesOverlap) // Check whether nothing went wrong in the conversion from double to int
+    if (nSitesToConnect > nSitesOverlap) // Make sure nothing went wrong in the conversion from double to int
     {
         nSitesToConnect = nSitesOverlap;
     }
@@ -93,7 +95,7 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     {
         if (nFreeCrosslinkers < nSitesToConnect)
         {
-            throw GeneralException("The number of free crosslinkers is lower than the initial number of crosslinkers needed for achieving a well connected system. \nContinue with the actual number of crosslinkers.");
+            throw GeneralException("In Initialiser::initialiseCrosslinkers(), the number of free crosslinkers is lower than the initial number of crosslinkers needed for achieving a well connected system. \nContinue with the actual number of crosslinkers.");
         }
     }
     catch(GeneralException)
@@ -124,6 +126,10 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     int32_t firstSiteOverlapFixed = systemState.firstSiteOverlapFixed();
     int32_t firstSiteOverlapMobile = systemState.firstSiteOverlapMobile();
 
+    // Crosslinkers will usually be initialised in a highly stretched state;
+    // The first site in the overlap of the mobile microtubule can be a distance maxStretch from that of the fixed microtubule.
+    // Therefore, the program should be allowed to run at least for a little while for the system to assume an equilibrium distribution.
+    // The crosslinkers will never cross each other, since they are ordered in the same way on the fixed and mobile microtubules
     for (int32_t i = 0; i<nPassiveCrosslinkersToConnect; ++connectedSoFar, ++i)
     {
         systemState.fullyConnectFreeCrosslinker(Crosslinker::Type::PASSIVE,
@@ -148,10 +154,12 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
                                               firstSiteOverlapMobile+positionsToConnect.at(connectedSoFar));
     }
 
+    #ifdef MYDEBUG
     if (connectedSoFar != nSitesToConnect)
     {
-        throw GeneralException("Something went wrong in the initialiser: the number of connected crosslinkers failed to equal the number of sites to connect");
+        throw GeneralException("Something went wrong in Initialiser::initialiseCrosslinkers(), the number of connected crosslinkers failed to equal the number of sites to connect");
     }
+    #endif // MYDEBUG
 
 }
 
@@ -166,7 +174,7 @@ void Initialiser::nCrosslinkersEachTypeToConnect(int32_t& nPassiveCrosslinkersTo
 {
     /* To calculate the number of connected crosslinkers to assign to each type,
      * first use integer division. In this setup, e.g. 0 <= remainderPassiveCrosslinkers < nFreeCrosslinkers.
-     * Since the fractions are floored to integers, the resulting number of connected crosslinkers is always lower than nSitesToConnect.
+     * Since the fractions are floored to integers, the resulting number of connected crosslinkers is always lower than or equal to nSitesToConnect.
      * To make up for the loss, assign the remaining crosslinkers to the largest remainders.
      */
     nPassiveCrosslinkersToConnect = (nFreePassiveCrosslinkers*nSitesToConnect) / nFreeCrosslinkers;
@@ -201,7 +209,7 @@ void Initialiser::nCrosslinkersEachTypeToConnect(int32_t& nPassiveCrosslinkersTo
                 ++nActiveCrosslinkersToConnect;
                 break;
             default:
-                throw GeneralException("The iterator in Initialiser::initialiseCrosslinkersRandom() returned a nonexistent position");
+                throw GeneralException("The iterator in Initialiser::nCrosslinkersEachTypeToConnect() returned a nonexistent position");
                 break;
         }
     }
@@ -223,7 +231,7 @@ Crosslinker::Terminus Initialiser::terminusToConnectToFixedMicrotubule(RandomGen
         case InitialCrosslinkerDistribution::TEST:
             return Crosslinker::Terminus::TAIL;
         default:
-            throw GeneralException("Caller asked for an unsupported initial crosslinker distribution");
+            throw GeneralException("Caller of Initialiser::terminusToConnectToFixedMicrotubule() asked for an unsupported initial crosslinker distribution");
             break;
     }
 }

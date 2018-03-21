@@ -8,6 +8,10 @@
 
 #include <string>
 
+/* Initialiser is the classed used for setting the initial SystemState.
+ * For example, it sets the initial numbers and locations of bound crosslinkers.
+ */
+
 class Initialiser
 {
 public:
