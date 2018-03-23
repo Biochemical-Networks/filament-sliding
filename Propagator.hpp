@@ -56,6 +56,8 @@ private:
 
     Reaction& getReactionToHappen(RandomGenerator& generator) const;
 
+    void advanceTimeStep(SystemState& systemState, RandomGenerator& generator);
+
 public:
     Propagator(const int32_t nTimeSteps,
                const double calcTimeStep,

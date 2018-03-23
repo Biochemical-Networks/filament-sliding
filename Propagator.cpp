@@ -94,19 +94,24 @@ void Propagator::run(SystemState& systemState, RandomGenerator& generator, Outpu
         {
             output.writeMicrotubulePosition(timeStep*m_calcTimeStep, systemState);
         }
-        // First, update the reaction rates and actions, and perform a reaction when the total action surpasses the threshold.
-        // Then, move the mobile microtubule at the end of the time step
-        setRates(systemState);
-        updateAction();
-        if (getTotalAction() > m_currentReactionRateThreshold)
-        {
-            performReaction(systemState, generator); // also updates the force and action
-        }
 
-        moveMicrotubule(systemState, generator);
+        advanceTimeStep(systemState, generator);
 
     }
     output.writeMicrotubulePosition(m_nTimeSteps*m_calcTimeStep, systemState); // Write the final state as well. The time it writes at is not equidistant compared to the previous writing times, when probePeriod does not divide nTimeSteps
+}
+
+void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& generator)
+{
+    // First, update the reaction rates and actions, and perform a reaction when the total action surpasses the threshold.
+    // Then, move the mobile microtubule at the end of the time step
+    setRates(systemState);
+    updateAction();
+    if (getTotalAction() > m_currentReactionRateThreshold)
+    {
+        performReaction(systemState, generator); // also updates the force and action
+    }
+    moveMicrotubule(systemState, generator);
 }
 
 void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& generator)
