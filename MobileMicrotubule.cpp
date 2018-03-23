@@ -3,11 +3,18 @@
 
 #include <cmath>
 
+#ifdef MYDEBUG
+#include <iostream>
+#endif
+
 MobileMicrotubule::MobileMicrotubule(const double length, const double latticeSpacing, const double initialPosition)
     :   Microtubule(MicrotubuleType::MOBILE, length, latticeSpacing),
         m_position(initialPosition)
 {
-    m_currentAttractorPosition = static_cast<int32_t>(std::round(initialPosition/m_latticeSpacing));
+    m_currentAttractorPosition = static_cast<int32_t>(std::round(m_position/m_latticeSpacing));
+    #ifdef MYDEBUG
+    std::cout << "Position: " << m_position << ", Attractor position: " << m_currentAttractorPosition << '\n';
+    #endif // MYDEBUG
 }
 
 MobileMicrotubule::~MobileMicrotubule()
@@ -27,6 +34,11 @@ double MobileMicrotubule::getPosition() const
 void MobileMicrotubule::setPosition(const double initialPosition)
 {
     m_position = initialPosition;
+
+    m_currentAttractorPosition = static_cast<int32_t>(std::round(m_position/m_latticeSpacing));
+    #ifdef MYDEBUG
+    std::cout << "Position: " << m_position << ", Attractor position: " << m_currentAttractorPosition << '\n';
+    #endif // MYDEBUG
 }
 
 bool MobileMicrotubule::barrierCrossed()

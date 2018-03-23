@@ -17,20 +17,20 @@ ParameterMap::ParameterMap()
      */
     // Run parameters
     defineParameter("runName", "run", "unitless"); // The code relies on this parameter being called "runName"
-    defineParameter("numberEquilibrationBlocks", 50, "blocks", ">=0");
-    defineParameter("numberRunBlocks", 100, "blocks", ">=0");
+    defineParameter("numberEquilibrationBlocks", 1, "blocks", ">=0");
+    defineParameter("numberRunBlocks", 0, "blocks", ">=0");
     defineParameter("calcTimeStep", 1.e-7, "s", ">0");
     defineParameter("numberTimeSteps", 1000, "steps", ">=0");
-    defineParameter("probePeriod", 10, "steps", ">0");
+    defineParameter("probePeriod", 10000, "steps", ">0");
 
     // General state parameters
-    defineParameter("lengthMobileMicrotubule", 50., "micron", ">0");
-    defineParameter("lengthFixedMicrotubule", 50., "micron", ">0");
+    defineParameter("lengthMobileMicrotubule", 1., "micron", ">0");
+    defineParameter("lengthFixedMicrotubule", 1., "micron", ">0");
     defineParameter("latticeSpacing", 8.e-3, "micron", ">0");
 
-    defineParameter("numberActiveCrosslinkers", 5000, "crosslinkers", ">=0");
-    defineParameter("numberDualCrosslinkers", 5000, "crosslinkers", ">=0");
-    defineParameter("numberPassiveCrosslinkers", 5000, "crosslinkers", ">=0");
+    defineParameter("numberActiveCrosslinkers", 1000, "crosslinkers", ">=0");
+    defineParameter("numberDualCrosslinkers", 1000, "crosslinkers", ">=0");
+    defineParameter("numberPassiveCrosslinkers", 1000, "crosslinkers", ">=0");
 
     // Initial state parameters
     defineParameter("initialPositionMicrotubule", 0., "micron"); // The position of the mobile microtubule relative to the fixed one, where 0. means that the two have the same (left) boundary position
@@ -38,20 +38,20 @@ ParameterMap::ParameterMap()
     defineParameter("initialCrosslinkerDistribution", "RANDOM", "unitless", "RANDOM,HEADSMOBILE,TAILSMOBILE,TEST"); // Can only hold the values set by Initialiser::InitialCrosslinkerDistribution
 
     // Dynamics parameters
-    defineParameter("diffusionConstantMicrotubule", 0.1, "micron^(2)*s^(-1)", ">=0"); // also sets the microtubule mobility via the Einstein relation (units micron^2*(kT)^(-1)*s^(-1))
-    defineParameter("springConstant", 1., "kT*micron^(-2)", ">=0");
+    defineParameter("diffusionConstantMicrotubule", 0.01, "micron^(2)*s^(-1)", ">=0"); // also sets the microtubule mobility via the Einstein relation (units micron^2*(kT)^(-1)*s^(-1))
+    defineParameter("springConstant", 1.1e5, "kT*micron^(-2)", ">=0");
 
 
     // The rates for hopping of passive extremities when the linker is either partially or fully connected
-    defineParameter("ratePassivePartialHop", 1., "s^(-1)", ">=0");
-    defineParameter("ratePassiveFullHop", 1., "s^(-1)", ">=0");
+    defineParameter("ratePassivePartialHop", 1562.5, "s^(-1)", ">=0");
+    defineParameter("ratePassiveFullHop", 1562.5, "s^(-1)", ">=0");
     // The rates for hopping of active extremities when the linker is either partially or fully connected
     // are calculated using the following parameters.
     // baseRate is the geometric mean between the forward and backward rate,
     // whereas activeHopToPlusBiasEnergy gives the free energy driving a single hop towards the plus tip of the microtubule.
     // For a minus end walking motor, use a negative bias free energy
-    defineParameter("baseRateActivePartialHop", 1., "s^(-1)", ">=0");
-    defineParameter("baseRateActiveFullHop", 1., "s^(-1)", ">=0");
+    defineParameter("baseRateActivePartialHop", 1562.5, "s^(-1)", ">=0");
+    defineParameter("baseRateActiveFullHop", 1562.5, "s^(-1)", ">=0");
     defineParameter("activeHopToPlusBiasEnergy", 1., "kT", "real");
 
     // Rates for connecting crosslinkers to the microtubules. The rates from zero to one are per crosslinker in solution per microtubule site.
@@ -75,9 +75,9 @@ ParameterMap::ParameterMap()
     // This is because we assume that the transitions to and from a HEAD state are similar to the transitions to and from a TAIL state.
     // Specifically, we let the base rates equal each other, and only make them differ through a bias energy; there is no difference in the energy barriers.
     // For more information, including solutions to the equations, see the document "Crosslink_Mapping_Binding_Rates_Bias_Energy.pdf"
-    defineParameter("baseRateZeroToOneExtremitiesConnected", 1.0, "s^(-1)", ">=0");
-    defineParameter("baseRateOneToZeroExtremitiesConnected", 1.0, "s^(-1)", ">=0");
-    defineParameter("baseRateOneToTwoExtremitiesConnected", 1.0, "s^(-1)", ">=0");
-    defineParameter("baseRateTwoToOneExtremitiesConnected", 1.0, "s^(-1)", ">=0");
+    defineParameter("baseRateZeroToOneExtremitiesConnected", 0.0, "s^(-1)", ">=0");
+    defineParameter("baseRateOneToZeroExtremitiesConnected", 0.0, "s^(-1)", ">=0");
+    defineParameter("baseRateOneToTwoExtremitiesConnected", 0.0, "s^(-1)", ">=0");
+    defineParameter("baseRateTwoToOneExtremitiesConnected", 0.0, "s^(-1)", ">=0");
     defineParameter("headBindingBiasEnergy", 0.0, "kT", "real");
 }
