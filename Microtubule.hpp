@@ -25,7 +25,9 @@ class Microtubule
 private:
     const MicrotubuleType m_type;
     const double m_length;
+protected: // such that MobileMicrotubule can access it
     const double m_latticeSpacing;
+private:
     const int32_t m_nSites;
 
     // Choose to focus on free instead of occupied sites, since functions may ask if the site is free, not if it is occupied (otherwise completely equivalent of course)
