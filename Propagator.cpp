@@ -97,6 +97,12 @@ void Propagator::run(SystemState& systemState, RandomGenerator& generator, Outpu
 
         advanceTimeStep(systemState, generator);
 
+        // Check if a barrier crossing took place
+        if(systemState.barrierCrossed())
+        {
+            output.writeBarrierCrossingTime(timeStep * m_calcTimeStep);
+        }
+
     }
     output.writeMicrotubulePosition(m_nTimeSteps*m_calcTimeStep, systemState); // Write the final state as well. The time it writes at is not equidistant compared to the previous writing times, when probePeriod does not divide nTimeSteps
 }

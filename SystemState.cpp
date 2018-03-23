@@ -335,6 +335,11 @@ void SystemState::updateMobilePosition(const double changeMicrotubulePosition)
     m_activeCrosslinkers.updateConnectionDataMobilePositionChange(changeMicrotubulePosition);
 }
 
+bool SystemState::barrierCrossed()
+{
+    return m_mobileMicrotubule.barrierCrossed();
+}
+
 // Gives the upper and lower bounds to the possible change in mobile microtubule position
 std::pair<double, double> SystemState::movementBordersSetByFullLinkers() const
 {
