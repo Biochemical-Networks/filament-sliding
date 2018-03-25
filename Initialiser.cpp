@@ -6,6 +6,7 @@
 #include "Crosslinker.hpp"
 #include "Extremity.hpp"
 
+#include <string>
 #include <cstdint>
 #include <numeric> // std::iota
 #include <algorithm> // std::shuffle, std::max_element, std::min
@@ -95,7 +96,14 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     {
         if (nFreeCrosslinkers < nSitesToConnect)
         {
-            throw GeneralException("In Initialiser::initialiseCrosslinkers(), the number of free crosslinkers is lower than the initial number of crosslinkers needed for achieving a well connected system. \nContinue with the actual number of crosslinkers.");
+            std::string numberOfFreeCrosslinkers = std::to_string(nFreeCrosslinkers);
+            std::string desiredNumberOfCrosslinkers = std::to_string(nSitesToConnect);
+            throw GeneralException("In Initialiser::initialiseCrosslinkers(), the number of free crosslinkers is "
+                                   +numberOfFreeCrosslinkers
+                                   +", lower than the initial number of crosslinkers needed, "
+                                   +desiredNumberOfCrosslinkers
+                                   +", for achieving a well connected system. "
+                                   +"\nContinue with the actual number of crosslinkers.");
         }
     }
     catch(GeneralException)
