@@ -8,6 +8,11 @@ and diffuse between the microtubules. We use this dynamics to study the movement
 which can move under influence of passive diffusion or external forces, and to quantify the friction between
 the filaments caused by the crosslinkers.
 
+### HOW TO COMPILE ###
+
+I have created the executables using CodeBlocks and g++. Make sure to run "addGitHash.sh" before every compile (include it in the build process).
+When compiling on a system where git is not available, this should first be broken out of the Log class.
+
 ### HOW TO RUN ###
 
 Set the parameter values in the file named parameters.txt (different name can be set by passing it to the constructor of Input).
@@ -31,7 +36,7 @@ then there are propagators, which define the rules of the dynamics, and act on t
 
 * Visualise the system using OpenGL
 
-* Add more output methods 
+* Add more output methods
 
 ### AUTHOR ###
 
