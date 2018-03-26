@@ -2,6 +2,7 @@
 #define OUPUT_HPP
 
 #include <fstream>
+#include <string>
 
 #include "SystemState.hpp"
 

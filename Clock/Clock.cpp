@@ -7,7 +7,7 @@ Clock::Clock() : m_constructionTime(std::chrono::steady_clock::now())
 {
 }
 
-double Clock::now()
+double Clock::now() const
 {
     std::chrono::steady_clock::time_point currentTime{std::chrono::steady_clock::now()};
     double elapsedTime = std::chrono::duration<double>(currentTime - m_constructionTime).count(); // Counts seconds by default

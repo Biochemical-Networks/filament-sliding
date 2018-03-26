@@ -10,7 +10,7 @@ private:
 public:
     Clock();
     ~Clock();
-    double now();
+    double now() const;
 };
 
 #endif // CLOCK_HPP
