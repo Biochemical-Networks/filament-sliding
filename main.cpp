@@ -40,6 +40,9 @@ int main()
     double latticeSpacing;
     input.copyParameter("latticeSpacing", latticeSpacing);
 
+    double maximumStretchPerLatticeSpacing;
+    input.copyParameter("maximumStretch", maximumStretchPerLatticeSpacing);
+
     int32_t nActiveCrosslinkers;
     input.copyParameter("numberActiveCrosslinkers", nActiveCrosslinkers);
 
@@ -52,7 +55,7 @@ int main()
     double springConstant;
     input.copyParameter("springConstant", springConstant);
 
-    SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing,
+    SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing, maximumStretchPerLatticeSpacing,
                             nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers, springConstant);
 
     //-----------------------------------------------------------------------------------------------------
