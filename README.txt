@@ -30,14 +30,6 @@ Further, I chose to keep concepts quite separated in the design of the program:
 there is a system state, which stores the current state and defines how the state can change;
 then there are propagators, which define the rules of the dynamics, and act on the system state.
 
-### TO DO ###
-
-* Discuss whether it is necessary to check if there are not too many reactions that could happen in one time step, and should it be made possible to have several reactions in that time step?
-
-* Visualise the system using OpenGL
-
-* Add more output methods
-
 ### AUTHOR ###
 
 Harmen Wierenga
