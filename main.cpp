@@ -5,6 +5,7 @@
 #include "Propagator.hpp"
 #include "RandomGenerator.hpp"
 #include "Output.hpp"
+#include "Log.hpp"
 
 #include <iostream>
 #include <cstdint>
@@ -18,7 +19,6 @@ int main()
     #ifdef MYDEBUG
     std::cout<< "You are running the MYDEBUG version of the program.\n";
     #endif // MYDEBUG
-
     Clock clock; // Counts time from creation to destruction
     Input input; // Read the input file, ask to create a default one when anything is wrong with it (e.g. nonexistent)
 
@@ -28,6 +28,8 @@ int main()
     // Get the name of the current run
 
     std::string runName = input.getRunName(); // copyParameter("runName", runName) would give the runName as it is in the input file, while this is the unique version
+
+    Log log(runName, clock);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for defining the general systemState.
@@ -39,6 +41,9 @@ int main()
 
     double latticeSpacing;
     input.copyParameter("latticeSpacing", latticeSpacing);
+
+    double maximumStretchPerLatticeSpacing;
+    input.copyParameter("maximumStretch", maximumStretchPerLatticeSpacing);
 
     int32_t nActiveCrosslinkers;
     input.copyParameter("numberActiveCrosslinkers", nActiveCrosslinkers);
@@ -52,7 +57,7 @@ int main()
     double springConstant;
     input.copyParameter("springConstant", springConstant);
 
-    SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing,
+    SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing, maximumStretchPerLatticeSpacing,
                             nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers, springConstant);
 
     //-----------------------------------------------------------------------------------------------------

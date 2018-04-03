@@ -27,6 +27,7 @@ ParameterMap::ParameterMap()
     defineParameter("lengthMobileMicrotubule", 1., "micron", ">0");
     defineParameter("lengthFixedMicrotubule", 1., "micron", ">0");
     defineParameter("latticeSpacing", 8.e-3, "micron", ">0");
+    defineParameter("maximumStretch", 1.499999999999999, "latticeSpacing", ">0");
 
     defineParameter("numberActiveCrosslinkers", 1000, "crosslinkers", ">=0");
     defineParameter("numberDualCrosslinkers", 1000, "crosslinkers", ">=0");

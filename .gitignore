@@ -23,3 +23,6 @@ gmon.out
 
 # No test files
 testRun*.txt
+
+# Do not include the GitHashWhenCompiled.hpp file, since it changes often
+GitHashWhenCompiled.hpp

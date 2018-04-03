@@ -10,7 +10,6 @@
 #include "FullConnection.hpp"
 
 #include <cstdint>
-#include <cmath>
 #include <utility>
 #include <vector>
 
@@ -26,8 +25,8 @@ private:
     // With a stretch < 1.5 lattice spacing, there are maximally 3 types of stretch at a time (at exactly 1.5, there could be 4).
     // The number is defined smaller than 1.5 to be sure that there are never 4 states possible, in which the state could become locked.
     // 15 decimals seems to be the precision
-    constexpr static double m_maxStretchPerLatticeSpacing=1.499999999999999;
-    constexpr static int32_t m_maxNumberOfCloseSites = static_cast<int32_t> (std::ceil(2*m_maxStretchPerLatticeSpacing));
+    const double m_maxStretchPerLatticeSpacing;
+    const int32_t m_maxNumberOfCloseSites;
     const double m_maxStretch; // To be defined in terms of the lattice spacing and m_maxStretchPerLatticeSpacing
     const double m_latticeSpacing;
 
@@ -53,6 +52,7 @@ public:
     SystemState(const double lengthMobileMicrotubule,
                 const double lengthFixedMicrotubule,
                 const double latticeSpacing,
+                const double maxStretchPerLatticeSpacing,
                 const int32_t nActiveCrosslinkers,
                 const int32_t nDualCrosslinkers,
                 const int32_t nPassiveCrosslinkers,
