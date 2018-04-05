@@ -12,6 +12,11 @@ the filaments caused by the crosslinkers.
 
 I have created the executables using CodeBlocks and g++. Make sure to run "addGitHash.sh" before every compile (include it in the build process).
 When compiling on a system where git is not available, this should first be broken out of the Log class.
+In Code::Blocks, do this automatically before each compilation by adding "./addGitHash.sh" to the Pre-build steps in Project->Build Options->Pre/post build steps.
+Then, make sure the project dependencies are set to ".git/HEAD" and ".git/index"
+
+To create a debug version of the code, define MYDEBUG as a variable. This is done in g++ by adding the "-DDEBUG" flag.
+In Code::Blocks, go to Project->Build Options->Debug->Compiler Settings-> #defines, and add MYDEBUG as a variable.
 
 ### HOW TO RUN ###
 
