@@ -23,6 +23,8 @@
 class Propagator
 {
 private:
+    const int32_t m_nEquilibrationBlocks;
+    const int32_t m_nRunBlocks;
     const int32_t m_nTimeSteps;
     const double m_calcTimeStep;
     const int32_t m_probePeriod; // Holds the number of time steps that are between two probes of the system, meaning that data will be written every so many time steps
@@ -59,7 +61,9 @@ private:
     void advanceTimeStep(SystemState& systemState, RandomGenerator& generator);
 
 public:
-    Propagator(const int32_t nTimeSteps,
+    Propagator(const int32_t numberEquilibrationBlocks,
+               const int32_t numberRunBlocks,
+               const int32_t nTimeSteps,
                const double calcTimeStep,
                const int32_t probePeriod,
                const double diffusionConstantMicrotubule,

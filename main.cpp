@@ -79,8 +79,14 @@ int main()
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the propagator
 
+    int32_t numberEquilibrationBlocks;
+    input.copyParameter("numberEquilibrationBlocks", numberEquilibrationBlocks);
+
+    int32_t numberRunBlocks;
+    input.copyParameter("numberRunBlocks", numberRunBlocks);
+
     int32_t nTimeSteps;
-    input.copyParameter("numberTimeSteps", nTimeSteps);
+    input.copyParameter("timeStepsPerBlock", nTimeSteps);
 
     double calcTimeStep;
     input.copyParameter("calcTimeStep", calcTimeStep);
@@ -121,7 +127,9 @@ int main()
     double headBindingBiasEnergy;
     input.copyParameter("headBindingBiasEnergy", headBindingBiasEnergy);
 
-    Propagator propagator(nTimeSteps,
+    Propagator propagator(numberEquilibrationBlocks,
+                          numberRunBlocks,
+                          nTimeSteps,
                           calcTimeStep,
                           probePeriod,
                           diffusionConstantMicrotubule,

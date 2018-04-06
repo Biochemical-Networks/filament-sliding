@@ -21,7 +21,9 @@
 
 
 
-Propagator::Propagator(const int32_t nTimeSteps,
+Propagator::Propagator(const int32_t numberEquilibrationBlocks,
+                       const int32_t numberRunBlocks,
+                       const int32_t nTimeSteps,
                        const double calcTimeStep,
                        const int32_t probePeriod,
                        const double diffusionConstantMicrotubule,
@@ -37,7 +39,9 @@ Propagator::Propagator(const int32_t nTimeSteps,
                        const double baseRateOneToTwoExtremitiesConnected,
                        const double baseRateTwoToOneExtremitiesConnected,
                        const double headBindingBiasEnergy)
-    :   m_nTimeSteps(nTimeSteps),
+    :   m_nEquilibrationBlocks(numberEquilibrationBlocks),
+        m_nRunBlocks(numberRunBlocks),
+        m_nTimeSteps(nTimeSteps),
         m_calcTimeStep(calcTimeStep),
         m_probePeriod(probePeriod),
         m_diffusionConstantMicrotubule(diffusionConstantMicrotubule),
