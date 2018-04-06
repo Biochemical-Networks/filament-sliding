@@ -1,6 +1,7 @@
 #include "Output.hpp"
 #include <string>
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <iomanip> // For std::setw()
 
@@ -28,4 +29,15 @@ void Output::writeMicrotubulePosition(const double time, const SystemState& syst
 void Output::writeBarrierCrossingTime(const double time)
 {
     m_barrierCrossingTimeFile << std::setw(m_collumnWidth) << time << '\n';
+}
+
+void Output::newBlock(const int32_t blockNumber)
+{
+    // make a single message that can be passed to all output files
+    // std::ostringstream::ate (at end) makes sure that << appends new parts at the end of the message
+    std::ostringstream message(std::ostringstream::ate);
+    message.str("A new block starts. This has block number: ");
+    message << blockNumber << '\n';
+    m_microtubulePositionFile << message.str();
+    m_barrierCrossingTimeFile << message.str();
 }
