@@ -39,10 +39,16 @@ double Statistics::getMean() const
 
 double Statistics::getVariance() const
 {
-    if(m_numberOfSamples<=1)
+    if(m_empty||m_numberOfSamples<=1)
     {
         throw GeneralException("Statistics::getVariance was called with insufficient samples");
     }
     const double n = static_cast<double>(m_numberOfSamples);
     return (m_accumulatedSquaredDifference-m_accumulatedDifference*m_accumulatedDifference/n)/(n-1);
+}
+
+
+bool Statistics::isEmpty() const
+{
+    return m_empty;
 }

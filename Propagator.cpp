@@ -48,7 +48,8 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_diffusionConstantMicrotubule(diffusionConstantMicrotubule),
         m_springConstant(springConstant),
         m_latticeSpacing(latticeSpacing),
-        m_deviationMicrotubule(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep))
+        m_deviationMicrotubule(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep)),
+        m_currentTime(-m_nEquilibrationBlocks*m_nTimeSteps*m_calcTimeStep) // time 0 is the start of the run blocks
 {
     // objects in std::initializer_list are inherently const, so std::unique_ptr's copy constructor cannot be used there, and we cannot use this method of initialising m_reactions.
     // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
@@ -96,18 +97,16 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
     {
         if (timeStep%m_probePeriod==0)
         {
-            if(writeOutput){output.writeMicrotubulePosition(timeStep*m_calcTimeStep, systemState);}
+            if(writeOutput){output.writeMicrotubulePosition(m_currentTime, systemState);}
         }
         advanceTimeStep(systemState, generator);
 
         // Check if a barrier crossing took place
         if(systemState.barrierCrossed())
         {
-            if(writeOutput){output.writeBarrierCrossingTime(timeStep * m_calcTimeStep);}
+            if(writeOutput){output.writeBarrierCrossingTime(m_currentTime);}
         }
     }
-    // Write the final state as well. The time it writes at is not equidistant compared to the previous writing times, when probePeriod does not divide nTimeSteps
-    if(writeOutput){output.writeMicrotubulePosition(m_nTimeSteps*m_calcTimeStep, systemState);}
 }
 
 void Propagator::equilibrate(SystemState& systemState, RandomGenerator& generator, Output& output)
@@ -139,6 +138,7 @@ void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& gene
         performReaction(systemState, generator); // also updates the force and action
     }
     moveMicrotubule(systemState, generator);
+    m_currentTime+=m_calcTimeStep;
 }
 
 void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& generator)

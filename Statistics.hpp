@@ -6,7 +6,7 @@
 class Statistics
 {
 private:
-    int32_t m_numberOfSamples;
+    int64_t m_numberOfSamples; // 64 bit, could hold many steps (nRunBlocks*nStepsPerBlock/probePeriod)
     double m_firstValue; // Always subtract the first value to prevent catastrophic cancellation
     bool m_empty;
     double m_accumulatedDifference;
@@ -19,6 +19,8 @@ public:
 
     double getMean() const;
     double getVariance() const;
+
+    bool isEmpty() const;
 };
 
 #endif // STATISTICS_HPP
