@@ -17,8 +17,8 @@ ParameterMap::ParameterMap()
      */
     // Run parameters
     defineParameter("runName", "run", "unitless"); // The code relies on this parameter being called "runName"
-    defineParameter("numberEquilibrationBlocks", 1, "blocks", ">=0");
-    defineParameter("numberRunBlocks", 0, "blocks", ">=0");
+    defineParameter("numberEquilibrationBlocks", 0, "blocks", ">=0");
+    defineParameter("numberRunBlocks", 1, "blocks", ">=0");
     defineParameter("calcTimeStep", 1.e-7, "s", ">0");
     defineParameter("timeStepsPerBlock", 1000, "steps", ">=0");
     defineParameter("probePeriod", 10000, "steps", ">0");

@@ -38,7 +38,8 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const double baseRateOneToZeroExtremitiesConnected,
                        const double baseRateOneToTwoExtremitiesConnected,
                        const double baseRateTwoToOneExtremitiesConnected,
-                       const double headBindingBiasEnergy)
+                       const double headBindingBiasEnergy,
+                       RandomGenerator& generator)
     :   m_nEquilibrationBlocks(numberEquilibrationBlocks),
         m_nRunBlocks(numberRunBlocks),
         m_nTimeSteps(nTimeSteps),
@@ -78,37 +79,53 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
     {
         throw GeneralException("The time step is too large to allow for the approximate microtubule movement to be trustworthy. See Propagator constructor");
     }
+
+    // Initialise the threshold, which is used to decide when a reaction will fire
+    // The reaction rate is integrated discretely over the time steps, and leads to a reaction when this accumulated reaction rate (or action) comes above a certain threshold.
+    // The threshold is set by inverting the survival probability: map probabilities to survival times. Then, draw a random probability to get the survival time.
+    setNewReactionRateThreshold(generator.getProbability());
 }
 
 Propagator::~Propagator()
 {
 }
 
-// The reaction rate is integrated discretely over the time steps, and leads to a reaction when this accumulated reaction rate (or action) comes above a certain threshold.
-// The threshold is set by inverting the survival probability: map probabilities to survival times. Then, draw a random probability to get the survival time.
-
-void Propagator::run(SystemState& systemState, RandomGenerator& generator, Output& output)
+void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& generator, Output& output, const bool writeOutput)
 {
-    // Initialise the threshold, which is used to decide when a reaction will fire
-    setNewReactionRateThreshold(generator.getProbability());
-
     for (int32_t timeStep = 0; timeStep < m_nTimeSteps; ++timeStep)
     {
         if (timeStep%m_probePeriod==0)
         {
-            output.writeMicrotubulePosition(timeStep*m_calcTimeStep, systemState);
+            if(writeOutput){output.writeMicrotubulePosition(timeStep*m_calcTimeStep, systemState);}
         }
-
         advanceTimeStep(systemState, generator);
 
         // Check if a barrier crossing took place
         if(systemState.barrierCrossed())
         {
-            output.writeBarrierCrossingTime(timeStep * m_calcTimeStep);
+            if(writeOutput){output.writeBarrierCrossingTime(timeStep * m_calcTimeStep);}
         }
-
     }
-    output.writeMicrotubulePosition(m_nTimeSteps*m_calcTimeStep, systemState); // Write the final state as well. The time it writes at is not equidistant compared to the previous writing times, when probePeriod does not divide nTimeSteps
+    // Write the final state as well. The time it writes at is not equidistant compared to the previous writing times, when probePeriod does not divide nTimeSteps
+    if(writeOutput){output.writeMicrotubulePosition(m_nTimeSteps*m_calcTimeStep, systemState);}
+}
+
+void Propagator::equilibrate(SystemState& systemState, RandomGenerator& generator, Output& output)
+{
+    constexpr bool writeOutput = false;
+    for(int32_t blockNumber = 0; blockNumber < m_nEquilibrationBlocks; ++blockNumber)
+    {
+        propagateBlock(systemState, generator, output, writeOutput);
+    }
+}
+
+void Propagator::run(SystemState& systemState, RandomGenerator& generator, Output& output)
+{
+    constexpr bool writeOutput = true;
+    for(int32_t blockNumber = 0; blockNumber < m_nRunBlocks; ++blockNumber)
+    {
+        propagateBlock(systemState, generator, output, writeOutput);
+    }
 }
 
 void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& generator)

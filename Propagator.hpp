@@ -60,6 +60,8 @@ private:
 
     void advanceTimeStep(SystemState& systemState, RandomGenerator& generator);
 
+    void propagateBlock(SystemState& systemState, RandomGenerator& generator, Output& output, const bool writeOutput);
+
 public:
     Propagator(const int32_t numberEquilibrationBlocks,
                const int32_t numberRunBlocks,
@@ -78,7 +80,8 @@ public:
                const double baseRateOneToZeroExtremitiesConnected,
                const double baseRateOneToTwoExtremitiesConnected,
                const double baseRateTwoToOneExtremitiesConnected,
-               const double headBindingBiasEnergy);
+               const double headBindingBiasEnergy,
+               RandomGenerator& generator);
     ~Propagator();
 
     Propagator(const Propagator&) = delete;
@@ -86,7 +89,7 @@ public:
 
     // Enter the SystemState as a reference into the run function, such that the propagator can propagate it.
     void run(SystemState& systemState, RandomGenerator& generator, Output& output);
-
+    void equilibrate(SystemState& systemState, RandomGenerator& generator, Output& output);
 };
 
 #endif // PROPAGATOR_HPP

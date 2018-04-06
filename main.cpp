@@ -32,6 +32,16 @@ int main()
     Log log(runName, clock);
 
     //-----------------------------------------------------------------------------------------------------
+    // Set the random number generator
+
+    RandomGenerator generator(runName); // Seed with the runName, which is unique
+
+    //-----------------------------------------------------------------------------------------------------
+    // Create the output class
+
+    Output output(runName);
+
+    //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for defining the general systemState.
     double lengthMobileMicrotubule;
     input.copyParameter("lengthMobileMicrotubule", lengthMobileMicrotubule);
@@ -144,17 +154,8 @@ int main()
                           baseRateOneToZeroExtremitiesConnected,
                           baseRateOneToTwoExtremitiesConnected,
                           baseRateTwoToOneExtremitiesConnected,
-                          headBindingBiasEnergy);
-
-    //-----------------------------------------------------------------------------------------------------
-    // Set the random number generator
-
-    RandomGenerator generator(runName); // Seed with the runName, which is unique
-
-    //-----------------------------------------------------------------------------------------------------
-    // Create the output class
-
-    Output output(runName);
+                          headBindingBiasEnergy,
+                          generator);
 
     //=====================================================================================================
     // Using the objects created so far, perform the actions
