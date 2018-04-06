@@ -6,12 +6,10 @@ TO DO FOR CROSSLINKER INDUCED MT FRICTION
 
 * Add algorithm (extra program or bash script?) for doing several runs with several parameter sets
 
-* Perform runs with different maximum stretches, find the (logarithm of the rate) vs. (free energy barrier height) plots, 
+* Perform runs with different maximum stretches, find the (logarithm of the rate) vs. (free energy barrier height) plots,
 and investigate for which maximum stretch the slope is closest to -1; i.e., r = r0 exp(-s F/kT) has the best fit for s=1.
 
 * Study reaction rate theory: does the prefactor depend on the number of linkers, or on the length of the microtubule?
-
-* Discuss whether it is necessary to check if there are not too many reactions that could happen in one time step, and should it be made possible to have several reactions in that time step?
 
 * Visualise the system using OpenGL
 
