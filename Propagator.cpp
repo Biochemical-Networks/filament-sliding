@@ -123,6 +123,7 @@ void Propagator::run(SystemState& systemState, RandomGenerator& generator, Outpu
     constexpr bool writeOutput = true;
     for(int32_t blockNumber = 0; blockNumber < m_nRunBlocks; ++blockNumber)
     {
+        output.newBlock(blockNumber+1);
         propagateBlock(systemState, generator, output, writeOutput);
     }
 }
