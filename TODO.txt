@@ -2,8 +2,6 @@ TO DO FOR CROSSLINKER INDUCED MT FRICTION
 
 * Check that PR's program gives the same results as my program when maxStretch >> latticeSpacing
 
-* Add algorithm to program to find the rate (average waiting time)
-
 * Add algorithm (extra program or bash script?) for doing several runs with several parameter sets
 
 * Perform runs with different maximum stretches, find the (logarithm of the rate) vs. (free energy barrier height) plots,
