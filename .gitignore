@@ -14,7 +14,9 @@ obj/
 # No files that are generated as output.
 *microtubule_position.txt
 *times_barrier_crossings.txt
+*statistical_analysis.txt
 *.log.txt
+
 
 # No files used by gprof
 gmon.out
