@@ -17,8 +17,10 @@ public:
 
     void addValue(const double value);
 
+    int64_t getNumberOfSamples() const;
     double getMean() const;
     double getVariance() const;
+    double getSEM() const;
 
     bool isEmpty() const;
 };

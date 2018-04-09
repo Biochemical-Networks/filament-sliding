@@ -17,8 +17,11 @@ private:
     std::ofstream m_microtubulePositionFile;
     std::ofstream m_barrierCrossingTimeFile;
 
+    std::ofstream m_statisticalAnalysisFile;
+
     const int m_collumnWidth = 40;
 
+    // Gather statistics:
     Statistics m_crossingTimeStatistics;
     double m_lastCrossingTime; // Necessary, since we want statistics on the time interval between the previous and next crossing
 public:

@@ -2,6 +2,7 @@
 #include "GeneralException/GeneralException.hpp"
 
 #include <cstdint>
+#include <cmath>
 
 Statistics::Statistics()
     :   m_numberOfSamples(0),
@@ -28,6 +29,11 @@ void Statistics::addValue(const double value)
     m_accumulatedSquaredDifference += difference*difference;
 }
 
+int64_t Statistics::getNumberOfSamples() const
+{
+    return m_numberOfSamples;
+}
+
 double Statistics::getMean() const
 {
     if(m_empty)
@@ -45,6 +51,12 @@ double Statistics::getVariance() const
     }
     const double n = static_cast<double>(m_numberOfSamples);
     return (m_accumulatedSquaredDifference-m_accumulatedDifference*m_accumulatedDifference/n)/(n-1);
+}
+
+double Statistics::getSEM() const
+{
+    double variance = getVariance();
+    return std::sqrt(variance/static_cast<double>(m_numberOfSamples));
 }
 
 

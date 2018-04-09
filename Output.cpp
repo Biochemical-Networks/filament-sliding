@@ -10,6 +10,7 @@
 Output::Output(const std::string &runName)
     :   m_microtubulePositionFile((runName+".microtubule_position.txt").c_str()),
         m_barrierCrossingTimeFile((runName+".times_barrier_crossings.txt").c_str()),
+        m_statisticalAnalysisFile((runName+".statistical_analysis.txt").c_str()),
         m_lastCrossingTime(0) // Time 0 indicates the beginning of the run blocks, after which we start writing data
 {
     m_microtubulePositionFile << std::setw(m_collumnWidth) << "TIME"
@@ -17,10 +18,21 @@ Output::Output(const std::string &runName)
 
     m_barrierCrossingTimeFile << std::setw(m_collumnWidth) << "TIME CROSSING"
         << std::setw(m_collumnWidth) << "INTERVAL BETWEEN CROSSES"  << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth
+
+    m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "RANDOM VARIABLE"
+        << std::setw(m_collumnWidth) << "NUMBER OF SAMPLES"
+        << std::setw(m_collumnWidth) << "MEAN"
+        << std::setw(m_collumnWidth) << "VARIANCE"
+        << std::setw(m_collumnWidth) << "STANDARD ERROR OF THE MEAN" << '\n';
 }
 
 Output::~Output()
 {
+    m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "BARRIER CROSSING TIME"
+        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getNumberOfSamples()
+        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getMean()
+        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getVariance()
+        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getSEM() << '\n';
 }
 
 void Output::writeMicrotubulePosition(const double time, const SystemState& systemState) // Non-const, stream is changed
