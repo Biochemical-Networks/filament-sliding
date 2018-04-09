@@ -162,6 +162,8 @@ int main()
 
     initialiser.initialise(systemState, generator);
 
+    propagator.equilibrate(systemState, generator, output);
+
     propagator.run(systemState, generator, output);
 
 
