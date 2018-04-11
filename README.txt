@@ -20,7 +20,10 @@ To create a debug version of the code, define MYDEBUG as a variable. This is don
 In Code::Blocks, go to Project->Build Options->Debug->Compiler Settings-> #defines, and add MYDEBUG as a variable.
 
 The project uses the GNU Scientific Library (GSL) for some special functions. For this, make sure that the GSL is installed,
-and that the compiler knows where to find it.
+and that the compiler and linker know where to find it.
+If the libraries are installed in the default location, finding them should be automatic.
+The linker needs the options -lgsl -lgslcblas -lm, which can be added in Code::Blocks by adding gsl, gslcblas and m to:
+Project->Build Options->CrossLink->linker settings-> add
 
 ### HOW TO RUN ###
 

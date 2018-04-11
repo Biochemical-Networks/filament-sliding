@@ -6,6 +6,7 @@
 #include "PossibleFullConnection.hpp"
 #include "Microtubule.hpp"
 #include "MobileMicrotubule.hpp"
+#include "MathematicalFunctions.hpp"
 
 #include <stdexcept>
 #include <cstdint>
@@ -28,8 +29,8 @@ CrosslinkerContainer::CrosslinkerContainer(const int32_t nCrosslinkers,
         m_mobileMicrotubule(mobileMicrotubule),
         m_latticeSpacing(latticeSpacing),
         m_maxStretch(maxStretch),
-        m_mod1(myMod(m_maxStretch, m_latticeSpacing)),
-        m_mod2(myMod(-m_maxStretch, m_latticeSpacing))
+        m_mod1(MathematicalFunctions::mod(m_maxStretch, m_latticeSpacing)),
+        m_mod2(MathematicalFunctions::mod(-m_maxStretch, m_latticeSpacing))
 {
     #ifdef MYDEBUG
     // The number of partials and fulls is initially assumed to be zero, so the crosslinkers should not be connected yet.
@@ -604,12 +605,6 @@ std::pair<double, double> CrosslinkerContainer::movementBordersSetByFullLinkers(
     }
 
     return std::pair<double,double>((-m_maxStretch-smallestStretch), (m_maxStretch-largestStretch));
-}
-
-double CrosslinkerContainer::myMod(const double x, const double y) const
-{
-    // both std::fmod and std::remainder do not give the results I need, need mod(1.1,1) = 0.1, mod(-0.1, 1) = 0.9
-    return x - (std::floor(x/y)*y);
 }
 
 void CrosslinkerContainer::findPossibilityBorders()

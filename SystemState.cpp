@@ -6,6 +6,7 @@
 #include "CrosslinkerContainer.hpp"
 #include "MicrotubuleType.hpp"
 #include "PossibleFullConnection.hpp"
+#include "MathematicalFunctions.hpp"
 
 #include <algorithm> // max/min
 #include <cmath> // ceil/floor/abs
@@ -422,7 +423,16 @@ std::pair<int32_t,int32_t> SystemState::getNPartialCrosslinkersBoundWithHeadAndT
 
 int32_t SystemState::getNFreeCrosslinkers() const
 {
-    return m_passiveCrosslinkers.getNFreeCrosslinkers() + m_dualCrosslinkers.getNFreeCrosslinkers() + m_activeCrosslinkers.getNFreeCrosslinkers();
+    return m_passiveCrosslinkers.getNFreeCrosslinkers()
+        + m_dualCrosslinkers.getNFreeCrosslinkers()
+        + m_activeCrosslinkers.getNFreeCrosslinkers();
+}
+
+int32_t SystemState::getNFullCrosslinkers() const
+{
+    return m_passiveCrosslinkers.getNFullCrosslinkers()
+        + m_dualCrosslinkers.getNFullCrosslinkers()
+        + m_activeCrosslinkers.getNFullCrosslinkers();
 }
 
 double SystemState::beginningOverlap() const
@@ -724,6 +734,9 @@ void SystemState::updateForceAndEnergy()
     // Force has a minus sign: a positively expanded linker pulls the mobile microtubule to negative values
     m_forceMicrotubule = -m_springConstant*totalExtension;
     m_energy = 0.5*m_springConstant*totalSquaredExtension;
+
+    // Recalculate the external force every time step, since it can change depending on the position of the microtubule
+    m_forceMicrotubule += findExternalForce();
 }
 
 double SystemState::getForce() const
@@ -736,6 +749,28 @@ double SystemState::getEnergy() const
 {
     // call the updateForceAndEnergy function before!
     return m_energy;
+}
+
+double SystemState::findExternalForce() const
+{
+    double externalForce = 0;
+    if(m_addTheoreticalCounterForce)
+    {
+        const double position = MathematicalFunctions::mod(m_mobileMicrotubule.getPosition(),m_latticeSpacing);
+        const double positionFraction = position/m_latticeSpacing;
+        const double nSitesMobileMicrotubule = static_cast<double>(m_mobileMicrotubule.getNSites());
+        const double nFullLinkers = static_cast<double>(getNFullCrosslinkers());
+
+        // First, calculate the energetic part:
+        externalForce += m_springConstant*nFullLinkers*(0.5*m_latticeSpacing-position);
+        // and then the entropic part:
+        externalForce += nFullLinkers/m_latticeSpacing
+            *(gsl_sf_psi(nSitesMobileMicrotubule-positionFraction*nFullLinkers+1)
+                -gsl_sf_psi((1-positionFraction)*nFullLinkers+1)
+                -gsl_sf_psi(nSitesMobileMicrotubule-(1-positionFraction)*nFullLinkers+1)
+                +gsl_sf_psi(positionFraction*nFullLinkers+1));
+    }
+    return externalForce;
 }
 
 

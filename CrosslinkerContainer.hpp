@@ -95,8 +95,6 @@ private:
 
     void findPossibleFullHops();
 
-    double myMod(const double x, const double y) const; // used in findPossibilityBorders()
-
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers,
                          const Crosslinker& defaultCrosslinker,

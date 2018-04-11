@@ -51,6 +51,8 @@ private:
 
     const bool m_addTheoreticalCounterForce;
 
+    double findExternalForce() const;
+
 public:
     SystemState(const double lengthMobileMicrotubule,
                 const double lengthFixedMicrotubule,
@@ -96,6 +98,8 @@ public:
 
     int32_t getNPartialCrosslinkersOfType(const Crosslinker::Type type) const;
     std::pair<int32_t,int32_t> getNPartialCrosslinkersBoundWithHeadAndTailOfType(const Crosslinker::Type type) const;
+
+    int32_t getNFullCrosslinkers() const;
 
     double beginningOverlap() const;
     double endOverlap() const;
