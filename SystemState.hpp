@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <utility>
 #include <vector>
+#include <string>
 
 /* SystemState is a class that keeps track of the current state of the system, and manages the existence of Microtubules and Crosslinkers through its members.
  * SystemState methods allow the SystemState to be changed; they do not provide the rules by which it is changed.
@@ -56,7 +57,8 @@ public:
                 const int32_t nActiveCrosslinkers,
                 const int32_t nDualCrosslinkers,
                 const int32_t nPassiveCrosslinkers,
-                const double springConstant);
+                const double springConstant,
+                const std::string addTheoreticalCounterForce);
     ~SystemState();
 
     SystemState(const SystemState&) = delete;

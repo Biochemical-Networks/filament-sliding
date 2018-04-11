@@ -81,4 +81,8 @@ ParameterMap::ParameterMap()
     defineParameter("baseRateOneToTwoExtremitiesConnected", 0.0, "s^(-1)", ">=0");
     defineParameter("baseRateTwoToOneExtremitiesConnected", 0.0, "s^(-1)", ">=0");
     defineParameter("headBindingBiasEnergy", 0.0, "kT", "real");
+
+    // Parameters to turn analysis on or off
+    defineParameter("addTheoreticalCounterForce", "FALSE", "unitless", "TRUE,FALSE");
+    defineParameter("samplePositionalDistribution", "FALSE", "unitless", "TRUE,FALSE");
 }

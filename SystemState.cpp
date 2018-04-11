@@ -11,6 +11,7 @@
 #include <cmath> // ceil/floor/abs
 #include <deque>
 #include <utility> // pair
+#include <string>
 
 
 SystemState::SystemState(const double lengthMobileMicrotubule,
@@ -20,7 +21,8 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
                             const int32_t nActiveCrosslinkers,
                             const int32_t nDualCrosslinkers,
                             const int32_t nPassiveCrosslinkers,
-                            const double springConstant)
+                            const double springConstant,
+                            const std::string addTheoreticalCounterForce)
     :   m_maxStretchPerLatticeSpacing(maxStretchPerLatticeSpacing),
         m_maxNumberOfCloseSites(static_cast<int32_t> (std::ceil(2*m_maxStretchPerLatticeSpacing))),
         m_maxStretch(m_maxStretchPerLatticeSpacing*latticeSpacing),

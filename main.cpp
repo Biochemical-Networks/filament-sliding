@@ -67,8 +67,11 @@ int main()
     double springConstant;
     input.copyParameter("springConstant", springConstant);
 
+    std::string addTheoreticalCounterForce;
+    input.copyParameter("addTheoreticalCounterForce", addTheoreticalCounterForce);
+
     SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing, maximumStretchPerLatticeSpacing,
-                            nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers, springConstant);
+                            nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers, springConstant, addTheoreticalCounterForce);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for initialising the state.
