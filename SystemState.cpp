@@ -13,6 +13,8 @@
 #include <utility> // pair
 #include <string>
 
+#include <gsl/gsl_sf_psi.h>
+
 
 SystemState::SystemState(const double lengthMobileMicrotubule,
                             const double lengthFixedMicrotubule,
@@ -36,7 +38,8 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
         m_nCrosslinkers(m_nActiveCrosslinkers+m_nDualCrosslinkers+m_nPassiveCrosslinkers),
         m_passiveCrosslinkers(m_nPassiveCrosslinkers, Crosslinker(Crosslinker::Type::PASSIVE),Crosslinker::Type::PASSIVE, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch),
         m_dualCrosslinkers(m_nDualCrosslinkers, Crosslinker(Crosslinker::Type::DUAL),Crosslinker::Type::DUAL, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch),
-        m_activeCrosslinkers(m_nActiveCrosslinkers, Crosslinker(Crosslinker::Type::ACTIVE),Crosslinker::Type::ACTIVE, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch)
+        m_activeCrosslinkers(m_nActiveCrosslinkers, Crosslinker(Crosslinker::Type::ACTIVE),Crosslinker::Type::ACTIVE, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch),
+        m_addTheoreticalCounterForce(addTheoreticalCounterForce=="TRUE") // Whenever it is not true, assume it is false
 {
 }
 

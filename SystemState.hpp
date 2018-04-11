@@ -49,6 +49,8 @@ private:
     double m_forceMicrotubule;
     double m_energy;
 
+    const bool m_addTheoreticalCounterForce;
+
 public:
     SystemState(const double lengthMobileMicrotubule,
                 const double lengthFixedMicrotubule,

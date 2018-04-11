@@ -19,6 +19,9 @@ Log.cpp depend on GitHashWhenCompiled.hpp, a recompile of Log will happen and th
 To create a debug version of the code, define MYDEBUG as a variable. This is done in g++ by adding the "-DDEBUG" flag.
 In Code::Blocks, go to Project->Build Options->Debug->Compiler Settings-> #defines, and add MYDEBUG as a variable.
 
+The project uses the GNU Scientific Library (GSL) for some special functions. For this, make sure that the GSL is installed,
+and that the compiler knows where to find it.
+
 ### HOW TO RUN ###
 
 Set the parameter values in the file named parameters.txt (different name can be set by passing it to the constructor of Input).
