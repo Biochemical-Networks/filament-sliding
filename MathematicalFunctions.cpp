@@ -22,10 +22,10 @@ int32_t MathematicalFunctions::intFloor(const double arg)
 
 int32_t MathematicalFunctions::alternativeIntCeil(const double arg)
 {
-    return ++intFloor(arg);
+    return intFloor(arg)+1;
 }
 
 int32_t MathematicalFunctions::alternativeIntFloor(const double arg)
 {
-    return --intCeil(arg);
+    return intCeil(arg)-1;
 }
