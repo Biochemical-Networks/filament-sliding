@@ -1,6 +1,7 @@
 TO DO FOR CROSSLINKER INDUCED MT FRICTION
 
 * Add an external force to the program, and add methods to sample the position of the mobile microtubule.
+Now, I made the program depend on GSL, but we can derive simple equations for the differences between psi (digamma) functions, involving a sum over fractions.
 
 * Add algorithm (extra program or bash script?) for doing several runs with several parameter sets
 
