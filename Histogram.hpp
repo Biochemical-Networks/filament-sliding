@@ -3,6 +3,8 @@
 
 #include <cstdint>
 #include <vector>
+#include <iostream>
+#include <utility>
 
 #include "Statistics.hpp"
 
@@ -14,29 +16,26 @@
  * but should not be quantified from the histogram.
  */
 
-class Histogram
+class Histogram : public Statistics
 {
 private:
     const double m_binSize;
     const double m_lowestValue;
     const int32_t m_numberOfBins; // excludes the two outermost bins, which represent values that lie outside of the bins representing values from lowestValue to highestValue
     const double m_highestValue; // holds the true highest value, usually not the one that was passed to the constructor
-    std::vector<int64_t> m_bins;
+    std::vector<int64_t> m_bins; // The number of samples can be large, therefore use 64 bit integers
 
-    Statistics m_distributionStatistics;
+    std::pair<double,double> calculateBinBounds(const int32_t binNumber) const;
 
 public:
     Histogram(const double binSize, const double lowestValue, const double highestValue);
-    ~Histogram();
+    ~Histogram() override;
 
-    void addDataPoint(const double value);
+    void addValue(const double value); // redefine behaviour of Statistics::addValue
 
-    int64_t getNumberOfSamples() const;
-    double getMean() const;
-    double getVariance() const;
-    double getSEM() const;
-
-
+    friend std::ostream& operator<< (std::ostream &out, const Histogram &histogram);
 };
+
+std::ostream& operator<< (std::ostream &out, const Histogram &histogram);
 
 #endif // HISTOGRAM_HPP

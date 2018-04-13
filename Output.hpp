@@ -19,7 +19,7 @@ private:
 
     std::ofstream m_statisticalAnalysisFile;
 
-    const int m_collumnWidth = 40;
+    const int m_collumnWidth;
 
     // Gather statistics:
     Statistics m_crossingTimeStatistics;

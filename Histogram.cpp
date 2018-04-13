@@ -2,6 +2,13 @@
 #include "MathematicalFunctions.hpp"
 #include "Statistics.hpp"
 #include "GeneralException/GeneralException.hpp"
+#include "OutputParameters.hpp"
+
+#include <string>
+#include <iostream>
+#include <utility>
+#include <limits>
+#include <iomanip>
 
 Histogram::Histogram(const double binSize, const double lowestValue, const double highestValue)
     :   m_binSize(binSize),
@@ -22,8 +29,10 @@ Histogram::~Histogram()
 {
 }
 
-void Histogram::addDataPoint(const double value)
+void Histogram::addValue(const double value)
 {
+    Statistics::addValue(value); // First call the functionality of Statistics::addValue(), and then add more functionality
+
     int32_t binNumber;
 
     if(value < m_lowestValue)
@@ -40,25 +49,44 @@ void Histogram::addDataPoint(const double value)
     }
 
     ++m_bins.at(binNumber);
-
-    m_distributionStatistics.addValue(value);
 }
 
-int64_t Histogram::getNumberOfSamples() const
+std::pair<double,double> Histogram::calculateBinBounds(const int32_t binNumber) const
 {
-    return m_distributionStatistics.getNumberOfSamples();
-}
-double Histogram::getMean() const
-{
-    return m_distributionStatistics.getMean();
+    #ifdef MYDEBUG
+    if(binNumber<0 || binNumber > m_numberOfBins+1)
+    {
+        throw GeneralException("Histogram::calculateBinBounds(): binNumber is out of range.");
+    }
+    #endif // MYDEBUG
+
+    if(binNumber==0)
+    {
+        return std::pair<double,double>(-std::numeric_limits<double>::infinity(), m_lowestValue);
+    }
+    else if(binNumber == m_numberOfBins+1)
+    {
+        return std::pair<double,double>(m_highestValue, std::numeric_limits<double>::infinity());
+    }
+    else
+    {
+        const double lowerBoundBin = static_cast<double>(binNumber-1)*m_binSize + m_lowestValue;
+        return std::pair<double,double>(lowerBoundBin, lowerBoundBin+m_binSize);
+    }
 }
 
-double Histogram::getVariance() const
+std::ostream& operator<< (std::ostream &out, const Histogram &histogram)
 {
-    return m_distributionStatistics.getVariance();
-}
+    for(uint32_t binNumber=0; binNumber < histogram.m_bins.size(); ++binNumber)
+    {
+        const std::pair<double,double> binBounds = histogram.calculateBinBounds(binNumber);
+        std::string binWidthMessage = "Bin from "
+            + ((binBounds.first==-std::numeric_limits<double>::infinity())?"-\u221E":std::to_string(binBounds.first)) // unicode for infinity sign
+            + " to "
+            + ((binBounds.second==std::numeric_limits<double>::infinity())?"\u221E":std::to_string(binBounds.second));
 
-double Histogram::getSEM() const
-{
-    return m_distributionStatistics.getSEM();
+        out << std::setw(OutputParameters::collumnWidth) << binWidthMessage
+            << std::setw(OutputParameters::collumnWidth) << static_cast<long double>(histogram.m_bins.at(binNumber))/static_cast<long double>(histogram.getNumberOfSamples()) << '\n';
+    }
+    return out;
 }

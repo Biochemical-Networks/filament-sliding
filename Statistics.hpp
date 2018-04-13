@@ -13,7 +13,7 @@ private:
     double m_accumulatedSquaredDifference;
 public:
     Statistics();
-    ~Statistics();
+    virtual ~Statistics();
 
     void addValue(const double value);
 

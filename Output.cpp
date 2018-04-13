@@ -6,11 +6,13 @@
 #include <iomanip> // For std::setw()
 
 #include "SystemState.hpp"
+#include "OutputParameters.hpp"
 
 Output::Output(const std::string &runName)
     :   m_microtubulePositionFile((runName+".microtubule_position.txt").c_str()),
         m_barrierCrossingTimeFile((runName+".times_barrier_crossings.txt").c_str()),
         m_statisticalAnalysisFile((runName+".statistical_analysis.txt").c_str()),
+        m_collumnWidth(OutputParameters::collumnWidth),
         m_lastCrossingTime(0) // Time 0 indicates the beginning of the run blocks, after which we start writing data
 {
     m_microtubulePositionFile << std::left
