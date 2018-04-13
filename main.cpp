@@ -39,7 +39,11 @@ int main()
     //-----------------------------------------------------------------------------------------------------
     // Create the output class
 
-    Output output(runName);
+    std::string samplePositionalDistributionString;
+    input.copyParameter("samplePositionalDistribution", samplePositionalDistributionString);
+    const bool samplePositionalDistribution = (samplePositionalDistributionString == "TRUE"); // Whenever it is not TRUE, assume it is false
+
+    Output output(runName, samplePositionalDistribution);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for defining the general systemState.
@@ -67,8 +71,9 @@ int main()
     double springConstant;
     input.copyParameter("springConstant", springConstant);
 
-    std::string addTheoreticalCounterForce;
-    input.copyParameter("addTheoreticalCounterForce", addTheoreticalCounterForce);
+    std::string addTheoreticalCounterForceString;
+    input.copyParameter("addTheoreticalCounterForce", addTheoreticalCounterForceString);
+    const bool addTheoreticalCounterForce = (addTheoreticalCounterForceString == "TRUE"); // Whenever it is not TRUE, assume it is false
 
     SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing, maximumStretchPerLatticeSpacing,
                             nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers, springConstant, addTheoreticalCounterForce);

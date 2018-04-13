@@ -86,6 +86,7 @@ std::ostream& operator<< (std::ostream &out, const Histogram &histogram)
             + ((binBounds.second==std::numeric_limits<double>::infinity())?"\u221E":std::to_string(binBounds.second));
 
         out << std::setw(OutputParameters::collumnWidth) << binWidthMessage
+            << std::setw(OutputParameters::collumnWidth) << histogram.m_bins.at(binNumber)
             << std::setw(OutputParameters::collumnWidth) << static_cast<long double>(histogram.m_bins.at(binNumber))/static_cast<long double>(histogram.getNumberOfSamples()) << '\n';
     }
     return out;

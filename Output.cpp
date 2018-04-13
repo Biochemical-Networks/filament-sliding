@@ -8,12 +8,13 @@
 #include "SystemState.hpp"
 #include "OutputParameters.hpp"
 
-Output::Output(const std::string &runName)
+Output::Output(const std::string &runName, const bool writePositionalDistribution)
     :   m_microtubulePositionFile((runName+".microtubule_position.txt").c_str()),
         m_barrierCrossingTimeFile((runName+".times_barrier_crossings.txt").c_str()),
         m_statisticalAnalysisFile((runName+".statistical_analysis.txt").c_str()),
         m_collumnWidth(OutputParameters::collumnWidth),
-        m_lastCrossingTime(0) // Time 0 indicates the beginning of the run blocks, after which we start writing data
+        m_lastCrossingTime(0), // Time 0 indicates the beginning of the run blocks, after which we start writing data
+        m_writePositionalDistribution(writePositionalDistribution)
 {
     m_microtubulePositionFile << std::left
         << std::setw(m_collumnWidth) << "TIME"
@@ -29,6 +30,15 @@ Output::Output(const std::string &runName)
         << std::setw(m_collumnWidth) << "MEAN"
         << std::setw(m_collumnWidth) << "VARIANCE"
         << std::setw(m_collumnWidth) << "STANDARD ERROR OF THE MEAN" << '\n';
+
+    if(m_writePositionalDistribution)
+    {
+        m_positionalHistogramFile.open((runName+".positional_histogram.txt").c_str());
+        m_statisticalAnalysisFile << std::left
+            << std::setw(m_collumnWidth) << "BIN BOUNDS"
+            << std::setw(m_collumnWidth) << "NUMBER OF SAMPLES"
+            << std::setw(m_collumnWidth) << "FRACTION OF SAMPLES" << '\n';
+    }
 }
 
 Output::~Output()

@@ -62,7 +62,7 @@ public:
                 const int32_t nDualCrosslinkers,
                 const int32_t nPassiveCrosslinkers,
                 const double springConstant,
-                const std::string addTheoreticalCounterForce);
+                const bool addTheoreticalCounterForce);
     ~SystemState();
 
     SystemState(const SystemState&) = delete;

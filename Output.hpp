@@ -16,6 +16,7 @@ class Output
 private:
     std::ofstream m_microtubulePositionFile;
     std::ofstream m_barrierCrossingTimeFile;
+    std::ofstream m_positionalHistogramFile;
 
     std::ofstream m_statisticalAnalysisFile;
 
@@ -24,8 +25,10 @@ private:
     // Gather statistics:
     Statistics m_crossingTimeStatistics;
     double m_lastCrossingTime; // Necessary, since we want statistics on the time interval between the previous and next crossing
+
+    const bool m_writePositionalDistribution;
 public:
-    Output(const std::string &runName);
+    Output(const std::string &runName, const bool writePositionalDistribution);
     ~Output();
 
     void newBlock(const int32_t blockNumber);

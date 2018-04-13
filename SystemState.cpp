@@ -25,7 +25,7 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
                             const int32_t nDualCrosslinkers,
                             const int32_t nPassiveCrosslinkers,
                             const double springConstant,
-                            const std::string addTheoreticalCounterForce)
+                            const bool addTheoreticalCounterForce)
     :   m_maxStretchPerLatticeSpacing(maxStretchPerLatticeSpacing),
         m_maxNumberOfCloseSites(static_cast<int32_t> (std::ceil(2*m_maxStretchPerLatticeSpacing))),
         m_maxStretch(m_maxStretchPerLatticeSpacing*latticeSpacing),
@@ -40,7 +40,7 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
         m_passiveCrosslinkers(m_nPassiveCrosslinkers, Crosslinker(Crosslinker::Type::PASSIVE),Crosslinker::Type::PASSIVE, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch),
         m_dualCrosslinkers(m_nDualCrosslinkers, Crosslinker(Crosslinker::Type::DUAL),Crosslinker::Type::DUAL, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch),
         m_activeCrosslinkers(m_nActiveCrosslinkers, Crosslinker(Crosslinker::Type::ACTIVE),Crosslinker::Type::ACTIVE, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch),
-        m_addTheoreticalCounterForce(addTheoreticalCounterForce=="TRUE") // Whenever it is not true, assume it is false
+        m_addTheoreticalCounterForce(addTheoreticalCounterForce)
 {
 }
 
