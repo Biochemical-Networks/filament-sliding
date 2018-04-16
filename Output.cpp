@@ -85,13 +85,16 @@ void Output::newBlock(const int32_t blockNumber)
 
 void Output::finishWriting()
 {
-    m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "BARRIER CROSSING TIME"
-        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getNumberOfSamples()
-        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getMean()
-        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getVariance()
-        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getSEM() << '\n';
+    if(m_crossingTimeStatistics.canReportStatistics())
+    {
+        m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "BARRIER CROSSING TIME"
+            << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getNumberOfSamples()
+            << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getMean()
+            << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getVariance()
+            << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getSEM() << '\n';
+    }
 
-    if(m_writePositionalDistribution)
+    if(m_writePositionalDistribution&&m_positionalHistogram.canReportStatistics())
     {
         m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "REMAINDER TOP MICROTUBULE POSITION"
             << std::setw(m_collumnWidth) << m_positionalHistogram.getNumberOfSamples()

@@ -45,10 +45,13 @@ double Statistics::getMean() const
 
 double Statistics::getVariance() const
 {
-    if(m_empty||m_numberOfSamples<=1)
+    #ifdef MYDEBUG
+    if(canReportStatistics())
     {
         throw GeneralException("Statistics::getVariance was called with insufficient samples");
     }
+    #endif // MYDEBUG
+
     const double n = static_cast<double>(m_numberOfSamples);
     return (m_accumulatedSquaredDifference-m_accumulatedDifference*m_accumulatedDifference/n)/(n-1);
 }
@@ -60,7 +63,7 @@ double Statistics::getSEM() const
 }
 
 
-bool Statistics::isEmpty() const
+bool Statistics::canReportStatistics() const
 {
-    return m_empty;
+    return (m_empty||m_numberOfSamples<=1);
 }

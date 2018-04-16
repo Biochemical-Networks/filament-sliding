@@ -22,7 +22,7 @@ public:
     double getVariance() const;
     double getSEM() const;
 
-    bool isEmpty() const;
+    bool canReportStatistics() const;
 };
 
 #endif // STATISTICS_HPP
