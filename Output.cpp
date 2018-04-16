@@ -39,6 +39,7 @@ Output::Output(const std::string &runName,
 
     if(m_writePositionalDistribution)
     {
+        // Only open the file here, not in the constructor initialization list, since the file should only be created if m_writePositionalDistribution is set to true.
         m_positionalHistogramFile.open((runName+".positional_histogram.txt").c_str());
         m_statisticalAnalysisFile << std::left
             << std::setw(m_collumnWidth) << "BIN BOUNDS"
@@ -97,5 +98,7 @@ void Output::finishWriting()
             << std::setw(m_collumnWidth) << m_positionalHistogram.getMean()
             << std::setw(m_collumnWidth) << m_positionalHistogram.getVariance()
             << std::setw(m_collumnWidth) << m_positionalHistogram.getSEM() << '\n';
+
+        m_positionalHistogramFile << m_positionalHistogram;
     }
 }

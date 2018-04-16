@@ -12,5 +12,3 @@ and investigate for which maximum stretch the slope is closest to -1; i.e., r = 
 
 * Visualise the system using OpenGL
 
-* Add more output methods
-
