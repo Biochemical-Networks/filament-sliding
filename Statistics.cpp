@@ -46,7 +46,7 @@ double Statistics::getMean() const
 double Statistics::getVariance() const
 {
     #ifdef MYDEBUG
-    if(canReportStatistics())
+    if(!canReportStatistics())
     {
         throw GeneralException("Statistics::getVariance was called with insufficient samples");
     }
@@ -65,5 +65,5 @@ double Statistics::getSEM() const
 
 bool Statistics::canReportStatistics() const
 {
-    return (m_empty||m_numberOfSamples<=1);
+    return (m_numberOfSamples>1);
 }
