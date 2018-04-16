@@ -7,14 +7,20 @@
 
 #include "SystemState.hpp"
 #include "OutputParameters.hpp"
+#include "Histogram.hpp"
 
-Output::Output(const std::string &runName, const bool writePositionalDistribution)
+Output::Output(const std::string &runName,
+               const bool writePositionalDistribution,
+               const double positionalHistogramBinSize,
+               const double positionalHistogramLowestValue,
+               const double positionalHistogramHighestValue)
     :   m_microtubulePositionFile((runName+".microtubule_position.txt").c_str()),
         m_barrierCrossingTimeFile((runName+".times_barrier_crossings.txt").c_str()),
         m_statisticalAnalysisFile((runName+".statistical_analysis.txt").c_str()),
         m_collumnWidth(OutputParameters::collumnWidth),
         m_lastCrossingTime(0), // Time 0 indicates the beginning of the run blocks, after which we start writing data
-        m_writePositionalDistribution(writePositionalDistribution)
+        m_writePositionalDistribution(writePositionalDistribution),
+        m_positionalHistogram(positionalHistogramBinSize, positionalHistogramLowestValue, positionalHistogramHighestValue)
 {
     m_microtubulePositionFile << std::left
         << std::setw(m_collumnWidth) << "TIME"
@@ -43,16 +49,17 @@ Output::Output(const std::string &runName, const bool writePositionalDistributio
 
 Output::~Output()
 {
-    m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "BARRIER CROSSING TIME"
-        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getNumberOfSamples()
-        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getMean()
-        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getVariance()
-        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getSEM() << '\n';
+    finishWriting();
 }
 
 void Output::writeMicrotubulePosition(const double time, const SystemState& systemState) // Non-const, stream is changed
 {
     m_microtubulePositionFile << std::setw(m_collumnWidth) << time << std::setw(m_collumnWidth) << systemState.getMicrotubulePosition() << '\n';
+}
+
+void Output::addMicrotubulePositionRemainder(const double remainder)
+{
+    m_positionalHistogram.addValue(remainder);
 }
 
 void Output::writeBarrierCrossingTime(const double time)
@@ -73,4 +80,22 @@ void Output::newBlock(const int32_t blockNumber)
     message << blockNumber << '\n';
     m_microtubulePositionFile << message.str();
     m_barrierCrossingTimeFile << message.str();
+}
+
+void Output::finishWriting()
+{
+    m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "BARRIER CROSSING TIME"
+        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getNumberOfSamples()
+        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getMean()
+        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getVariance()
+        << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getSEM() << '\n';
+
+    if(m_writePositionalDistribution)
+    {
+        m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "REMAINDER TOP MICROTUBULE POSITION"
+            << std::setw(m_collumnWidth) << m_positionalHistogram.getNumberOfSamples()
+            << std::setw(m_collumnWidth) << m_positionalHistogram.getMean()
+            << std::setw(m_collumnWidth) << m_positionalHistogram.getVariance()
+            << std::setw(m_collumnWidth) << m_positionalHistogram.getSEM() << '\n';
+    }
 }

@@ -43,7 +43,16 @@ int main()
     input.copyParameter("samplePositionalDistribution", samplePositionalDistributionString);
     const bool samplePositionalDistribution = (samplePositionalDistributionString == "TRUE"); // Whenever it is not TRUE, assume it is false
 
-    Output output(runName, samplePositionalDistribution);
+    double positionalHistogramBinSize;
+    input.copyParameter("positionalHistogramBinSize", positionalHistogramBinSize);
+
+    double positionalHistogramLowestValue;
+    input.copyParameter("positionalHistogramLowestValue", positionalHistogramLowestValue);
+
+    double positionalHistogramHighestValue;
+    input.copyParameter("positionalHistogramHighestValue", positionalHistogramHighestValue);
+
+    Output output(runName, samplePositionalDistribution, positionalHistogramBinSize, positionalHistogramLowestValue, positionalHistogramHighestValue);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for defining the general systemState.
@@ -163,7 +172,8 @@ int main()
                           baseRateOneToTwoExtremitiesConnected,
                           baseRateTwoToOneExtremitiesConnected,
                           headBindingBiasEnergy,
-                          generator);
+                          generator,
+                          samplePositionalDistribution);
 
     //=====================================================================================================
     // Using the objects created so far, perform the actions
@@ -175,30 +185,6 @@ int main()
     propagator.run(systemState, generator, output);
 
 
-    /*// TEST
-    #ifdef MYDEBUG
-
-    // MAKE SURE THAT THE MICROTUBULE POSITION IS NOT CHANGED BEFORE: THIS WILL NOT TAKE INTO ACCOUNT THE CROSSLINKERS YET
-    // To this end, comment out the propagate part
-    std::cout << "Overlap:\nFirst site fixed:"<<systemState.firstSiteOverlapFixed()
-              << "\nLast site fixed:"<<systemState.lastSiteOverlapFixed()
-              << "\nFirst site mobile:"<<systemState.firstSiteOverlapMobile()
-              << "\nLast site mobile:"<<systemState.lastSiteOverlapMobile()
-              << "\nNumber of sites overlap fixed:"<<systemState.getNSitesOverlapFixed()
-              << "\nNumber of sites overlap mobile:"<<systemState.getNSitesOverlapMobile()
-              <<'\n';
-
-    systemState.findPossibilities(Crosslinker::Type::PASSIVE);
-
-    std::cout << systemState.getNSitesToBindPartial(Crosslinker::Type::PASSIVE)<<std::endl;
-
-    systemState.TESTunbindAFullCrosslinker(0, Crosslinker::Terminus::TAIL);
-    systemState.TESTunbindAFullCrosslinker(1, Crosslinker::Terminus::TAIL);
-
-    std::cout << systemState.getNSitesToBindPartial(Crosslinker::Type::PASSIVE)<<std::endl;
-
-    #endif // MYDEBUG
-    // END_TEST*/
 
     return 0;
 }

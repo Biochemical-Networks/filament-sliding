@@ -37,6 +37,8 @@ private:
     double m_currentTime; // Time 0 is at the beginning of the run blocks: the equilibration blocks simulate negative time
     double m_currentReactionRateThreshold; // units s^(-1), so in terms of the (accumulated) rate
 
+    const bool m_samplePositionalDistribution;
+
     // Store pointers to Reactions in the map m_reactions, because we want to store instances of inherited classes in there. That would not be possible with just the objects.
     // std::unique_ptr deletes the thing it is pointing to when going out of scope, meaning that we don't have to worry about memory leaks
     std::unordered_map<std::string, std::unique_ptr<Reaction>> m_reactions;
@@ -82,7 +84,8 @@ public:
                const double baseRateOneToTwoExtremitiesConnected,
                const double baseRateTwoToOneExtremitiesConnected,
                const double headBindingBiasEnergy,
-               RandomGenerator& generator);
+               RandomGenerator& generator,
+               const bool samplePositionalDistribution);
     ~Propagator();
 
     Propagator(const Propagator&) = delete;

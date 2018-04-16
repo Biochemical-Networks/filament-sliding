@@ -11,6 +11,7 @@
 #include "HopPartial.hpp"
 #include "HopFull.hpp"
 #include "Crosslinker.hpp"
+#include "MathematicalFunctions.hpp"
 
 #include <cstdint>
 #include <string>
@@ -39,7 +40,8 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const double baseRateOneToTwoExtremitiesConnected,
                        const double baseRateTwoToOneExtremitiesConnected,
                        const double headBindingBiasEnergy,
-                       RandomGenerator& generator)
+                       RandomGenerator& generator,
+                       const bool samplePositionalDistribution)
     :   m_nEquilibrationBlocks(numberEquilibrationBlocks),
         m_nRunBlocks(numberRunBlocks),
         m_nTimeSteps(nTimeSteps),
@@ -49,7 +51,8 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_springConstant(springConstant),
         m_latticeSpacing(latticeSpacing),
         m_deviationMicrotubule(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep)),
-        m_currentTime(-m_nEquilibrationBlocks*m_nTimeSteps*m_calcTimeStep) // time 0 is the start of the run blocks
+        m_currentTime(-m_nEquilibrationBlocks*m_nTimeSteps*m_calcTimeStep), // time 0 is the start of the run blocks
+        m_samplePositionalDistribution(samplePositionalDistribution)
 {
     // objects in std::initializer_list are inherently const, so std::unique_ptr's copy constructor cannot be used there, and we cannot use this method of initialising m_reactions.
     // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
@@ -95,16 +98,25 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
 {
     for (int32_t timeStep = 0; timeStep < m_nTimeSteps; ++timeStep)
     {
-        if (timeStep%m_probePeriod==0)
+        if(writeOutput)
         {
-            if(writeOutput){output.writeMicrotubulePosition(m_currentTime, systemState);}
+            if(timeStep%m_probePeriod==0)
+            {
+                output.writeMicrotubulePosition(m_currentTime, systemState);
+            }
+            // Add the microtubule positions more often than the m_probePeriod, since it is not directly written to a file (not slow), and it requires much data.
+            if(m_samplePositionalDistribution)
+            {
+                output.addMicrotubulePositionRemainder(MathematicalFunctions::mod(systemState.getMicrotubulePosition(), m_latticeSpacing));
+            }
         }
+
         advanceTimeStep(systemState, generator);
 
         // Check if a barrier crossing took place
         if(systemState.barrierCrossed())
         {
-            if(writeOutput){output.writeBarrierCrossingTime(m_currentTime);}
+                if(writeOutput){output.writeBarrierCrossingTime(m_currentTime);}
         }
     }
 }
