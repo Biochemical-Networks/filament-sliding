@@ -45,7 +45,7 @@ void Histogram::addValue(const double value)
     }
     else
     {
-        binNumber = MathematicalFunctions::intFloor(value-m_lowestValue/m_binSize)+1; // +1 for the extremum bin
+        binNumber = MathematicalFunctions::intFloor((value-m_lowestValue)/m_binSize)+1; // +1 for the extremum bin
     }
 
     ++m_bins.at(binNumber);
