@@ -81,9 +81,9 @@ std::ostream& operator<< (std::ostream &out, const Histogram &histogram)
     {
         const std::pair<double,double> binBounds = histogram.calculateBinBounds(binNumber);
         std::string binWidthMessage = "Bin from "
-            + ((binBounds.first==-std::numeric_limits<double>::infinity())?"-\u221E":std::to_string(binBounds.first)) // unicode for infinity sign
+            + ((binBounds.first==-std::numeric_limits<double>::infinity())?"-infinity":std::to_string(binBounds.first))
             + " to "
-            + ((binBounds.second==std::numeric_limits<double>::infinity())?"\u221E":std::to_string(binBounds.second));
+            + ((binBounds.second==std::numeric_limits<double>::infinity())?"infinity":std::to_string(binBounds.second));
 
         out << std::setw(OutputParameters::collumnWidth) << binWidthMessage
             << std::setw(OutputParameters::collumnWidth) << histogram.m_bins.at(binNumber)

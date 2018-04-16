@@ -31,6 +31,22 @@ Set the parameter values in the file named parameters.txt (different name can be
 If there is an unexpected or missing parameter, or the formatting of the parameters is wrong, the user will be asked to create a default input file.
 Run the program by executing the CrossLink executable.
 
+### OUTPUT ###
+
+The program will always create a log file which shows the run time, the git hash of the program that created the data, and error messages or other std::out or
+std::err messages that the program send.
+
+Then, the microtubule_position file reports the position of the mobile microtubule every probePeriod time steps.
+
+The times_barrier_crossings file lists all times and intervals between the times that a free energy barrier has been crossed.
+
+Statistical_analysis can report statistics on those barrier crossing times, if there are enough samples (>1),
+and can also report on positional remainders within a lattice spacing, if the parameter samplePositionalDistribution is set to TRUE.
+
+In the latter case, another file called positional_histogram is created, binning the numbers of times that a certain position was found within a bin.
+
+Finally, the input file is copied and stored for future reference and reproducability.
+
 ### CHOICES ###
 
 I chose to keep all units to be SI units throughout the program, and not use non-dimensionalised units.
