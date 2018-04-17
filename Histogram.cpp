@@ -80,12 +80,9 @@ std::ostream& operator<< (std::ostream &out, const Histogram &histogram)
     for(uint32_t binNumber=0; binNumber < histogram.m_bins.size(); ++binNumber)
     {
         const std::pair<double,double> binBounds = histogram.calculateBinBounds(binNumber);
-        std::string binWidthMessage = "Bin from "
-            + ((binBounds.first==-std::numeric_limits<double>::infinity())?"-infinity":std::to_string(binBounds.first))
-            + " to "
-            + ((binBounds.second==std::numeric_limits<double>::infinity())?"infinity":std::to_string(binBounds.second));
 
-        out << std::setw(OutputParameters::collumnWidth) << binWidthMessage
+        out << std::setw(OutputParameters::collumnWidth) << ((binBounds.first==-std::numeric_limits<double>::infinity())?"-infinity":std::to_string(binBounds.first))
+            << std::setw(OutputParameters::collumnWidth) << ((binBounds.second==std::numeric_limits<double>::infinity())?"infinity":std::to_string(binBounds.second))
             << std::setw(OutputParameters::collumnWidth) << histogram.m_bins.at(binNumber)
             << std::setw(OutputParameters::collumnWidth) << static_cast<long double>(histogram.m_bins.at(binNumber))/static_cast<long double>(histogram.getNumberOfSamples()) << '\n';
     }

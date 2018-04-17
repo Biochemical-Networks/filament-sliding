@@ -42,7 +42,8 @@ Output::Output(const std::string &runName,
         // Only open the file here, not in the constructor initialization list, since the file should only be created if m_writePositionalDistribution is set to true.
         m_positionalHistogramFile.open((runName+".positional_histogram.txt").c_str());
         m_positionalHistogramFile << std::left
-            << std::setw(m_collumnWidth) << "BIN BOUNDS"
+            << std::setw(m_collumnWidth) << "LOWER BIN BOUND"
+            << std::setw(m_collumnWidth) << "UPPER BIN BOUND"
             << std::setw(m_collumnWidth) << "NUMBER OF SAMPLES"
             << std::setw(m_collumnWidth) << "FRACTION OF SAMPLES" << '\n';
     }
