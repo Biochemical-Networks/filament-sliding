@@ -6,7 +6,7 @@
 
 #include <SFML/Graphics.hpp>
 
-Graphics::Graphics(const std::string runName, Propagator& propagator, const int32_t timeStepsDisplayInterval)
+Graphics::Graphics(const std::string& runName, Propagator& propagator, const int32_t timeStepsDisplayInterval)
     :   m_window(sf::VideoMode(m_windowWidth, m_windowHeight), "Crosslink: "+runName), // The window title is "Crosslink: "+runName
         m_propagator(propagator),
         m_timeStepsDisplayInterval(timeStepsDisplayInterval)
