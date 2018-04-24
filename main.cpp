@@ -154,6 +154,10 @@ int main()
     double headBindingBiasEnergy;
     input.copyParameter("headBindingBiasEnergy", headBindingBiasEnergy);
 
+    std::string graphicsString;
+    input.copyParameter("graphics", graphicsString);
+    const bool graphics = (graphicsString == "TRUE");
+
     Propagator propagator(numberEquilibrationBlocks,
                           numberRunBlocks,
                           nTimeSteps,
