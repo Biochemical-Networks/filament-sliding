@@ -63,7 +63,7 @@ private:
 
     void advanceTimeStep(SystemState& systemState, RandomGenerator& generator);
 
-    void propagateBlock(SystemState& systemState, RandomGenerator& generator, Output& output, const bool writeOutput);
+    void propagateBlock(SystemState& systemState, RandomGenerator& generator, Output& output, const bool writeOutput, const int32_t nTimeSteps);
 
 public:
     Propagator(const int32_t numberEquilibrationBlocks,
@@ -94,6 +94,7 @@ public:
     // Enter the SystemState as a reference into the run function, such that the propagator can propagate it.
     void run(SystemState& systemState, RandomGenerator& generator, Output& output);
     void equilibrate(SystemState& systemState, RandomGenerator& generator, Output& output);
+    void propagateGraphicsInterval(SystemState& systemState, RandomGenerator& generator, Output& output, const int32_t nTimeStepsInterval);
 };
 
 #endif // PROPAGATOR_HPP

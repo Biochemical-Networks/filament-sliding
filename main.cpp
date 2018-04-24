@@ -6,6 +6,7 @@
 #include "RandomGenerator.hpp"
 #include "Output.hpp"
 #include "Log.hpp"
+#include "Graphics.hpp"
 
 #include <iostream>
 #include <cstdint>
@@ -154,10 +155,6 @@ int main()
     double headBindingBiasEnergy;
     input.copyParameter("headBindingBiasEnergy", headBindingBiasEnergy);
 
-    std::string graphicsString;
-    input.copyParameter("graphics", graphicsString);
-    const bool graphics = (graphicsString == "TRUE");
-
     Propagator propagator(numberEquilibrationBlocks,
                           numberRunBlocks,
                           nTimeSteps,
@@ -179,16 +176,33 @@ int main()
                           generator,
                           samplePositionalDistribution);
 
+    //-----------------------------------------------------------------------------------------------------
+    // Get the parameters needed for setting the Graphics
+
+    std::string showGraphicsString;
+    input.copyParameter("showGraphics", showGraphicsString);
+    const bool showGraphics = (showGraphicsString == "TRUE");
+
+    int32_t timeStepsDisplayInterval;
+    input.copyParameter("timeStepsDisplayInterval", timeStepsDisplayInterval);
+
     //=====================================================================================================
     // Using the objects created so far, perform the actions
 
-    initialiser.initialise(systemState, generator);
+    initialiser.initialise(systemState, generator); // initialise the system state
 
-    propagator.equilibrate(systemState, generator, output);
+    propagator.equilibrate(systemState, generator, output); // run the dynamics for a certain time such that an equilibrium distribution can be reached (not guaranteed to be done)
 
-    propagator.run(systemState, generator, output);
+    if(showGraphics)
+    {
+        Graphics graphics(runName, propagator, timeStepsDisplayInterval);
 
-
+        graphics.performMainLoop(systemState, generator, output);
+    }
+    else
+    {
+        propagator.run(systemState, generator, output);
+    }
 
     return 0;
 }

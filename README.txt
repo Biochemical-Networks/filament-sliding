@@ -25,6 +25,11 @@ If the libraries are installed in the default location, finding them should be a
 The linker needs the options -lgsl -lgslcblas -lm, which can be added in Code::Blocks by adding gsl, gslcblas and m to:
 Project->Build Options->CrossLink->linker settings-> add
 
+For creating graphics, the program uses the Simple and Fast Multimedia Library (SFML), which uses OpenGL.
+The linker needs the options -lsfml-graphics -lsfml-window -lsfml-system, which can be added in
+Code::Blocks by adding sfml-graphics sfml-window sfml-system to:
+Project->Build Options->CrossLink->linker settings-> add
+
 ### HOW TO RUN ###
 
 Set the parameter values in the file named parameters.txt (different name can be set by passing it to the constructor of Input).

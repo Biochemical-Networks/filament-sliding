@@ -88,5 +88,6 @@ ParameterMap::ParameterMap()
     defineParameter("positionalHistogramBinSize", 8.e-3, "micron", ">=0");
     defineParameter("positionalHistogramLowestValue", 0.0, "micron", "real");
     defineParameter("positionalHistogramHighestValue", 8.e-3, "micron", "real");
-    defineParameter("graphics", "FALSE", "unitless", "TRUE,FALSE");
+    defineParameter("showGraphics", "FALSE", "unitless", "TRUE,FALSE");
+    defineParameter("timeStepsDisplayInterval", 20000, "steps", ">=0");
 }

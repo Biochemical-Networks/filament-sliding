@@ -94,9 +94,9 @@ Propagator::~Propagator()
 {
 }
 
-void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& generator, Output& output, const bool writeOutput)
+void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& generator, Output& output, const bool writeOutput, const int32_t nTimeSteps)
 {
-    for (int32_t timeStep = 0; timeStep < m_nTimeSteps; ++timeStep)
+    for (int32_t timeStep = 0; timeStep < nTimeSteps; ++timeStep)
     {
         if(writeOutput)
         {
@@ -126,7 +126,7 @@ void Propagator::equilibrate(SystemState& systemState, RandomGenerator& generato
     constexpr bool writeOutput = false;
     for(int32_t blockNumber = 0; blockNumber < m_nEquilibrationBlocks; ++blockNumber)
     {
-        propagateBlock(systemState, generator, output, writeOutput);
+        propagateBlock(systemState, generator, output, writeOutput, m_nTimeSteps);
     }
 }
 
@@ -136,8 +136,17 @@ void Propagator::run(SystemState& systemState, RandomGenerator& generator, Outpu
     for(int32_t blockNumber = 0; blockNumber < m_nRunBlocks; ++blockNumber)
     {
         output.newBlock(blockNumber+1);
-        propagateBlock(systemState, generator, output, writeOutput);
+        propagateBlock(systemState, generator, output, writeOutput, m_nTimeSteps);
     }
+}
+
+void Propagator::propagateGraphicsInterval(SystemState& systemState, RandomGenerator& generator, Output& output, const int32_t nTimeStepsInterval)
+{
+    constexpr bool writeOutput = true;
+    static int32_t intervalNumber = 0;
+    ++intervalNumber;
+    output.newBlock(intervalNumber);
+    propagateBlock(systemState, generator, output, writeOutput, nTimeStepsInterval);
 }
 
 void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& generator)
