@@ -32,6 +32,8 @@ void Graphics::performMainLoop(SystemState& systemState, RandomGenerator& genera
 
         m_window.clear(m_backGroundColour);
 
+        draw(systemState);
+
         m_window.display();
     }
 }
