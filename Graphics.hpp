@@ -28,8 +28,13 @@ private:
     const float m_circleRadius = 20.f;
     const float m_lineLength = 50.f;
     const float m_lineThickness = 10.f;
-    const float m_distanceBetweenMicrotubules = 100.f;
     const float m_screenBorderThickness = 10.f;
+    const float m_trueLatticeSpacing;
+    const float m_trueInitialPosition;
+    const float m_graphicsLatticeSpacing;
+    const float m_mobileMicrotubuleY;
+    const float m_fixedMicrotubuleY;
+    const float m_fixedMicrotubuleX;
 
     SystemState& m_systemState;
     Propagator& m_propagator;
@@ -44,6 +49,8 @@ private:
     void drawPartialLinkers();
 
     void drawFullLinkers();
+
+    float calculateMobileMicrotubuleX() const;
 
 public:
     Graphics(const std::string& runName, SystemState& systemState, Propagator& propagator, const int32_t timeStepsDisplayInterval);

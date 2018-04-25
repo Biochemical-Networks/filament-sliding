@@ -155,6 +155,8 @@ public:
     const std::vector<Crosslinker*>& getPartialLinkersBoundWithTail(const Crosslinker::Type type) const;
 
     int32_t getNSites(const MicrotubuleType microtubule) const;
+
+    double getLatticeSpacing() const;
 };
 
 #endif // SYSTEMSTATE_HPP

@@ -13,10 +13,17 @@ Graphics::Graphics(const std::string& runName, SystemState& systemState, Propaga
         m_systemState(systemState),
         m_propagator(propagator),
         m_timeStepsDisplayInterval(timeStepsDisplayInterval),
+        m_trueLatticeSpacing(static_cast<float>(systemState.getLatticeSpacing())),
+        m_trueInitialPosition(static_cast<float>(systemState.getMicrotubulePosition())),
+        m_graphicsLatticeSpacing(m_lineLength+2*m_circleRadius),
+        m_mobileMicrotubuleY(static_cast<float>(m_windowHeight)/3),
+        m_fixedMicrotubuleY(2*m_mobileMicrotubuleY),
+        m_fixedMicrotubuleX(-(m_trueInitialPosition/m_trueLatticeSpacing-1.f)*m_graphicsLatticeSpacing+m_screenBorderThickness),
         m_mobileMicrotubule(systemState.getNSites(MicrotubuleType::MOBILE), m_circleRadius, m_lineLength, m_lineThickness),
         m_fixedMicrotubule(systemState.getNSites(MicrotubuleType::FIXED), m_circleRadius, m_lineLength, m_lineThickness)
 {
-
+    m_mobileMicrotubule.setPosition(calculateMobileMicrotubuleX(), m_mobileMicrotubuleY);
+    m_fixedMicrotubule.setPosition(m_fixedMicrotubuleX, m_fixedMicrotubuleY);
 }
 
 Graphics::~Graphics()
@@ -61,3 +68,7 @@ void Graphics::drawFullLinkers()
 
 }
 
+float Graphics::calculateMobileMicrotubuleX() const
+{
+    return ((static_cast<float>(m_systemState.getMicrotubulePosition())-m_trueInitialPosition)/m_trueLatticeSpacing+1.f)*m_graphicsLatticeSpacing+m_screenBorderThickness;
+}

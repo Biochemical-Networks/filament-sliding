@@ -817,3 +817,7 @@ void SystemState::TESTunbindAFullCrosslinker(const int32_t which, const Crosslin
 }
 #endif //MYDEBUG
 
+double SystemState::getLatticeSpacing() const
+{
+    return m_latticeSpacing;
+}
