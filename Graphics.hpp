@@ -12,6 +12,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <cstdint>
+#include <vector>
 
 class Graphics
 {
@@ -28,7 +29,8 @@ private:
     const float m_circleRadius = 20.f;
     const float m_lineLength = 50.f;
     const float m_lineThickness = 10.f;
-    const float m_screenBorderThickness = 10.f;
+    const float m_distanceBetweenMicrotubules = 100.f;
+    const float m_screenBorderThickness = 30.f;
     const float m_trueLatticeSpacing;
     const float m_trueInitialPosition;
     const float m_graphicsLatticeSpacing;
@@ -44,6 +46,9 @@ private:
     MicrotubuleGraphic m_mobileMicrotubule;
     MicrotubuleGraphic m_fixedMicrotubule;
 
+    std::vector<PartialCrosslinkerGraphic> m_partialCrosslinkers;
+    std::vector<FullCrosslinkerGraphic> m_fullCrosslinkers;
+
     void draw();
 
     void drawPartialLinkers();
@@ -51,6 +56,8 @@ private:
     void drawFullLinkers();
 
     float calculateMobileMicrotubuleX() const;
+
+    void update();
 
 public:
     Graphics(const std::string& runName, SystemState& systemState, Propagator& propagator, const int32_t timeStepsDisplayInterval);
