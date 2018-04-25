@@ -195,9 +195,9 @@ int main()
 
     if(showGraphics)
     {
-        Graphics graphics(runName, propagator, timeStepsDisplayInterval);
+        Graphics graphics(runName, systemState, propagator, timeStepsDisplayInterval);
 
-        graphics.performMainLoop(systemState, generator, output);
+        graphics.performMainLoop(generator, output);
     }
     else
     {

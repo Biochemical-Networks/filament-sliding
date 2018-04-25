@@ -153,6 +153,8 @@ public:
     const std::vector<Crosslinker*>& getPartialLinkersBoundWithHead(const Crosslinker::Type type) const;
 
     const std::vector<Crosslinker*>& getPartialLinkersBoundWithTail(const Crosslinker::Type type) const;
+
+    int32_t getNSites(const MicrotubuleType microtubule) const;
 };
 
 #endif // SYSTEMSTATE_HPP

@@ -81,7 +81,7 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type,
             p_microtubuleToConnect = &m_mobileMicrotubule;
             break;
         default:
-            throw GeneralException("An incorrect microtubule type was passed to SystemState::connectFreeCrosslinker");
+            throw GeneralException("An incorrect microtubule type was passed to SystemState::connectFreeCrosslinker()");
             break;
     }
 
@@ -792,6 +792,21 @@ double SystemState::findExternalForce() const
     return externalForce;
 }
 
+int32_t SystemState::getNSites(const MicrotubuleType microtubule) const
+{
+    switch(microtubule)
+    {
+        case MicrotubuleType::FIXED:
+            return m_fixedMicrotubule.getNSites();
+            break;
+        case MicrotubuleType::MOBILE:
+            return m_mobileMicrotubule.getNSites();
+            break;
+        default:
+            throw GeneralException("An incorrect microtubule type was passed to SystemState::getNSites()");
+            break;
+    }
+}
 
 #ifdef MYDEBUG
 void SystemState::TESTunbindAFullCrosslinker(const int32_t which, const Crosslinker::Terminus terminusToDisconnect)
