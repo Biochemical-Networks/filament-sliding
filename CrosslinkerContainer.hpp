@@ -159,6 +159,8 @@ public:
 
     const std::vector<Crosslinker*>& getPartialLinkers() const;
 
+    const std::vector<Crosslinker*>& getFullLinkers() const;
+
     std::pair<int32_t,int32_t> getNPartialsBoundWithHeadAndTail() const;
 
     const std::vector<Crosslinker*>& getPartialCrosslinkersBoundWithHead() const;

@@ -148,6 +148,8 @@ public:
 
     const std::vector<Crosslinker*>& getPartialLinkers(const Crosslinker::Type type) const;
 
+    const std::vector<Crosslinker*>& getFullLinkers(const Crosslinker::Type type) const;
+
     const std::vector<Crosslinker*>& getPartialLinkersBoundWithHead(const Crosslinker::Type type) const;
 
     const std::vector<Crosslinker*>& getPartialLinkersBoundWithTail(const Crosslinker::Type type) const;

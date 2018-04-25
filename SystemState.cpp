@@ -670,6 +670,25 @@ const std::vector<Crosslinker*>& SystemState::getPartialLinkers(const Crosslinke
     }
 }
 
+const std::vector<Crosslinker*>& SystemState::getFullLinkers(const Crosslinker::Type type) const
+{
+    switch(type)
+    {
+    case Crosslinker::Type::PASSIVE:
+        return m_passiveCrosslinkers.getFullLinkers();
+        break;
+    case Crosslinker::Type::DUAL:
+        return m_dualCrosslinkers.getFullLinkers();
+        break;
+    case Crosslinker::Type::ACTIVE:
+        return m_activeCrosslinkers.getFullLinkers();
+        break;
+    default:
+        throw GeneralException("An incorrect type was passed to SystemState::getFullLinkers()");
+    }
+}
+
+
 const std::vector<Crosslinker*>& SystemState::getPartialLinkersBoundWithHead(const Crosslinker::Type type) const
 {
     switch(type)

@@ -3,6 +3,7 @@
 #include "RandomGenerator.hpp"
 #include "Output.hpp"
 #include "Propagator.hpp"
+#include "Crosslinker.hpp" // For Crosslinker::Type
 
 #include <SFML/Graphics.hpp>
 

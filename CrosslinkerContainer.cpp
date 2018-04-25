@@ -738,6 +738,11 @@ const std::vector<Crosslinker*>& CrosslinkerContainer::getPartialLinkers() const
     return m_partialCrosslinkers;
 }
 
+const std::vector<Crosslinker*>& CrosslinkerContainer::getFullLinkers() const
+{
+    return m_fullCrosslinkers;
+}
+
 void CrosslinkerContainer::resetPossibilities()
 {
     findPossibilityBorders();
