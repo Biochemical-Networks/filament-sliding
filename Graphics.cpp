@@ -5,6 +5,7 @@
 #include "Propagator.hpp"
 #include "Crosslinker.hpp" // For Crosslinker::Type
 #include "MicrotubuleType.hpp"
+#include "GeneralException/GeneralException.hpp"
 
 #include <SFML/Graphics.hpp>
 
@@ -70,22 +71,44 @@ void Graphics::update()
 
     m_partialCrosslinkers.clear();
 
-    for(Crosslinker* p_linker : m_systemState.getPartialLinkers(Crosslinker::Type::PASSIVE))
+    updatePartialCrosslinkers(Crosslinker::Type::PASSIVE);
+    updatePartialCrosslinkers(Crosslinker::Type::DUAL);
+    updatePartialCrosslinkers(Crosslinker::Type::ACTIVE);
+}
+
+void Graphics::updatePartialCrosslinkers(const Crosslinker::Type type)
+{
+    for(Crosslinker* p_linker : m_systemState.getPartialLinkers(type))
     {
-        m_partialCrosslinkers.push_back(PartialCrosslinkerGraphic(m_circleRadius-m_lineThickness, m_lineThickness, 0.5f*m_distanceBetweenMicrotubules, false));
+        bool boundWithMotor;
+        switch(type)
+        {
+        case Crosslinker::Type::PASSIVE:
+            boundWithMotor = false;
+            break;
+        case Crosslinker::Type::DUAL:
+            boundWithMotor = (p_linker->getBoundTerminusWhenPartiallyConnected() == Crosslinker::Terminus::HEAD);
+            break;
+        case Crosslinker::Type::ACTIVE:
+            boundWithMotor = true;
+            break;
+        default:
+            throw GeneralException("Graphics::updatePartialCrosslinkers() encountered a wrong linker type.");
+            break;
+        }
+
         SiteLocation boundLocation = p_linker->getBoundLocationWhenPartiallyConnected();
+        m_partialCrosslinkers.push_back(PartialCrosslinkerGraphic(m_circleRadius-m_lineThickness, m_lineThickness, 0.5f*m_distanceBetweenMicrotubules, boundWithMotor));
+
         if(boundLocation.microtubule == MicrotubuleType::FIXED)
         {
-            std::cout << "Fixed: " << boundLocation.position << '\n';
             m_partialCrosslinkers.back().rotate(180.f); // by default, it is pointing downwards
             m_partialCrosslinkers.back().setPosition(m_fixedMicrotubuleX+m_graphicsLatticeSpacing*boundLocation.position, m_fixedMicrotubuleY);
         }
         else
         {
-            std::cout << "Mobile: " << boundLocation.position << '\n';
             m_partialCrosslinkers.back().setPosition(calculateMobileMicrotubuleX()+m_graphicsLatticeSpacing*boundLocation.position, m_mobileMicrotubuleY);
         }
-
     }
 }
 
@@ -96,7 +119,6 @@ void Graphics::draw()
 
     for(PartialCrosslinkerGraphic& linker : m_partialCrosslinkers)
     {
-        std::cout << "YES!\n";
         m_window.draw(linker);
     }
 }

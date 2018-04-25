@@ -195,8 +195,6 @@ int main()
 
     if(showGraphics)
     {
-
-        systemState.TESTunbindAFullCrosslinker(0, Crosslinker::Terminus::HEAD);
         Graphics graphics(runName, systemState, propagator, timeStepsDisplayInterval);
 
         graphics.performMainLoop(generator, output);

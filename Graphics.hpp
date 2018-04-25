@@ -58,6 +58,7 @@ private:
     float calculateMobileMicrotubuleX() const;
 
     void update();
+    void updatePartialCrosslinkers(const Crosslinker::Type type);
 
 public:
     Graphics(const std::string& runName, SystemState& systemState, Propagator& propagator, const int32_t timeStepsDisplayInterval);

@@ -135,7 +135,7 @@ public:
     double getEnergy() const;
 
     #ifdef MYDEBUG
-    void TESTunbindAFullCrosslinker(const int32_t which, const Crosslinker::Terminus terminusToDisconnect);
+    void TESTunbindAFullCrosslinker(const int32_t which, const Crosslinker::Terminus terminusToDisconnect, const Crosslinker::Type typeToDisconnect);
     #endif // MYDEBUG
 
     const std::vector<PossibleFullConnection>& getPossibleConnections(const Crosslinker::Type type) const;
