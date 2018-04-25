@@ -17,10 +17,9 @@
 class Graphics
 {
 private:
-    // The window parameters. The parameters should be declared before the RenderWindow!
+    // The window parameters. The parameters should be declared before the RenderWindow and the X and Y positions!
     const unsigned int m_windowWidth = 1000; // pixels
     const unsigned int m_windowHeight = 600; // pixels
-    sf::RenderWindow m_window;
 
     // Colours:
     const sf::Color m_backGroundColour = sf::Color::White;
@@ -49,6 +48,9 @@ private:
     std::vector<PartialCrosslinkerGraphic> m_partialCrosslinkers;
     std::vector<FullCrosslinkerGraphic> m_fullCrosslinkers;
 
+    sf::RenderWindow m_window;
+    sf::View m_view;
+
     void draw();
 
     void drawPartialLinkers();
@@ -59,6 +61,7 @@ private:
 
     void update();
     void updatePartialCrosslinkers(const Crosslinker::Type type);
+    void updateFullCrosslinkers(const Crosslinker::Type type);
 
 public:
     Graphics(const std::string& runName, SystemState& systemState, Propagator& propagator, const int32_t timeStepsDisplayInterval);

@@ -8,10 +8,10 @@
 #include "GeneralException/GeneralException.hpp"
 
 #include <SFML/Graphics.hpp>
+#include <algorithm>
 
 Graphics::Graphics(const std::string& runName, SystemState& systemState, Propagator& propagator, const int32_t timeStepsDisplayInterval)
-    :   m_window(sf::VideoMode(m_windowWidth, m_windowHeight), "Crosslink: "+runName), // The window title is "Crosslink: "+runName
-        m_trueLatticeSpacing(static_cast<float>(systemState.getLatticeSpacing())),
+    :   m_trueLatticeSpacing(static_cast<float>(systemState.getLatticeSpacing())),
         m_trueInitialPosition(static_cast<float>(systemState.getMicrotubulePosition())),
         m_graphicsLatticeSpacing(m_lineLength+2*m_circleRadius),
         m_mobileMicrotubuleY((static_cast<float>(m_windowHeight)-m_distanceBetweenMicrotubules)*0.5f),
@@ -23,6 +23,16 @@ Graphics::Graphics(const std::string& runName, SystemState& systemState, Propaga
         m_mobileMicrotubule(systemState.getNSites(MicrotubuleType::MOBILE), m_circleRadius, m_lineLength, m_lineThickness),
         m_fixedMicrotubule(systemState.getNSites(MicrotubuleType::FIXED), m_circleRadius, m_lineLength, m_lineThickness)
 {
+    const float windowWidth = std::max({static_cast<float>(m_windowWidth),
+                                        systemState.getNSites(MicrotubuleType::MOBILE)*m_graphicsLatticeSpacing + 2*m_screenBorderThickness,
+                                        systemState.getNSites(MicrotubuleType::FIXED)*m_graphicsLatticeSpacing + 2*m_screenBorderThickness});
+    m_window.create(sf::VideoMode(windowWidth, m_windowHeight), "Crosslink: "+runName); // The window title is "Crosslink: "+runName
+
+    m_view.setCenter(sf::Vector2f(0.5f*windowWidth, 0.5f*m_windowHeight));
+    m_view.setSize(sf::Vector2f(m_windowWidth, m_windowHeight));
+
+    m_window.setView(m_view);
+
     m_mobileMicrotubule.setPosition(calculateMobileMicrotubuleX(), m_mobileMicrotubuleY);
     m_fixedMicrotubule.setPosition(m_fixedMicrotubuleX, m_fixedMicrotubuleY);
 
@@ -74,6 +84,13 @@ void Graphics::update()
     updatePartialCrosslinkers(Crosslinker::Type::PASSIVE);
     updatePartialCrosslinkers(Crosslinker::Type::DUAL);
     updatePartialCrosslinkers(Crosslinker::Type::ACTIVE);
+
+    m_fullCrosslinkers.clear();
+
+    updateFullCrosslinkers(Crosslinker::Type::PASSIVE);
+    updateFullCrosslinkers(Crosslinker::Type::DUAL);
+    updateFullCrosslinkers(Crosslinker::Type::ACTIVE);
+
 }
 
 void Graphics::updatePartialCrosslinkers(const Crosslinker::Type type)
@@ -97,7 +114,7 @@ void Graphics::updatePartialCrosslinkers(const Crosslinker::Type type)
             break;
         }
 
-        SiteLocation boundLocation = p_linker->getBoundLocationWhenPartiallyConnected();
+        const SiteLocation boundLocation = p_linker->getBoundLocationWhenPartiallyConnected();
         m_partialCrosslinkers.push_back(PartialCrosslinkerGraphic(m_circleRadius-m_lineThickness, m_lineThickness, 0.5f*m_distanceBetweenMicrotubules, boundWithMotor));
 
         if(boundLocation.microtubule == MicrotubuleType::FIXED)
@@ -112,25 +129,80 @@ void Graphics::updatePartialCrosslinkers(const Crosslinker::Type type)
     }
 }
 
+void Graphics::updateFullCrosslinkers(const Crosslinker::Type type)
+{
+    for(Crosslinker* p_linker : m_systemState.getFullLinkers(type))
+    {
+    // THE FOLLOWING IS BULLSHIT, COPIED FROM THE PARTIAL VERSION!!!!
+        bool fixedTerminusActive;
+        bool mobileTerminusActive;
+        switch(type)
+        {
+        case Crosslinker::Type::PASSIVE:
+            fixedTerminusActive = mobileTerminusActive = false;
+            break;
+        case Crosslinker::Type::DUAL:
+            mobileTerminusActive = (p_linker->getTerminusOfFullOn(MicrotubuleType::MOBILE) == Crosslinker::Terminus::HEAD);
+            fixedTerminusActive = !mobileTerminusActive;
+            break;
+        case Crosslinker::Type::ACTIVE:
+            fixedTerminusActive = mobileTerminusActive = true;
+            break;
+        default:
+            throw GeneralException("Graphics::updateFullCrosslinkers() encountered a wrong linker type.");
+            break;
+        }
+
+        const SiteLocation headLocation = p_linker->getOneBoundLocationWhenFullyConnected(Crosslinker::Terminus::HEAD);
+        const SiteLocation tailLocation = p_linker->getOneBoundLocationWhenFullyConnected(Crosslinker::Terminus::TAIL);
+
+        sf::Vector2f fixedPosition;
+        sf::Vector2f mobilePosition;
+
+        if(headLocation.microtubule == MicrotubuleType::FIXED)
+        {
+            fixedPosition = sf::Vector2f(m_fixedMicrotubuleX + m_graphicsLatticeSpacing*headLocation.position, m_fixedMicrotubuleY);
+            mobilePosition = sf::Vector2f(calculateMobileMicrotubuleX() + m_graphicsLatticeSpacing*tailLocation.position, m_mobileMicrotubuleY);
+        }
+        else
+        {
+            fixedPosition = sf::Vector2f(m_fixedMicrotubuleX + m_graphicsLatticeSpacing*tailLocation.position, m_fixedMicrotubuleY);
+            mobilePosition = sf::Vector2f(calculateMobileMicrotubuleX() + m_graphicsLatticeSpacing*headLocation.position, m_mobileMicrotubuleY);
+        }
+
+        m_fullCrosslinkers.push_back(FullCrosslinkerGraphic(m_circleRadius-m_lineThickness,
+                                                                   m_lineThickness,
+                                                                   mobileTerminusActive,
+                                                                   fixedTerminusActive,
+                                                                   mobilePosition,
+                                                                   fixedPosition));
+    }
+}
+
 void Graphics::draw()
 {
     m_window.draw(m_mobileMicrotubule);
     m_window.draw(m_fixedMicrotubule);
 
+    drawPartialLinkers();
+
+    drawFullLinkers();
+}
+
+void Graphics::drawPartialLinkers()
+{
     for(PartialCrosslinkerGraphic& linker : m_partialCrosslinkers)
     {
         m_window.draw(linker);
     }
 }
 
-void Graphics::drawPartialLinkers()
-{
-
-}
-
 void Graphics::drawFullLinkers()
 {
-
+    for(FullCrosslinkerGraphic& linker : m_fullCrosslinkers)
+    {
+        m_window.draw(linker);
+    }
 }
 
 float Graphics::calculateMobileMicrotubuleX() const

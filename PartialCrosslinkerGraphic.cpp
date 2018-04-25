@@ -1,7 +1,7 @@
 #include "PartialCrosslinkerGraphic.hpp"
 #include <SFML/Graphics.hpp>
 
-PartialCrosslinkerGraphic::PartialCrosslinkerGraphic(const float circleRadius, const float lineThickness, const float springLength, const bool boundHeadActive)
+PartialCrosslinkerGraphic::PartialCrosslinkerGraphic(const float circleRadius, const float lineThickness, const float springLength, const bool boundTerminusActive)
     :   m_circleRadius(circleRadius),
         m_lineThickness(lineThickness),
         m_springLength(springLength),
@@ -9,7 +9,7 @@ PartialCrosslinkerGraphic::PartialCrosslinkerGraphic(const float circleRadius, c
         m_spring(sf::Vector2f(lineThickness, springLength)) // A (thin) bar with four corners
 {
     m_terminus.setOrigin(circleRadius,circleRadius);
-    m_terminus.setFillColor(boundHeadActive?m_activeTerminusColor:m_passiveTerminusColor);
+    m_terminus.setFillColor(boundTerminusActive?m_activeTerminusColor:m_passiveTerminusColor);
     m_spring.setOrigin(0.5f*lineThickness, 0.f);
     m_spring.setFillColor(m_springColor);
 }
