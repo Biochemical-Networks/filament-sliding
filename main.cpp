@@ -186,6 +186,9 @@ int main()
     int32_t timeStepsDisplayInterval;
     input.copyParameter("timeStepsDisplayInterval", timeStepsDisplayInterval);
 
+    int32_t updateDelayInMilliseconds;
+    input.copyParameter("updateDelayInMilliseconds", updateDelayInMilliseconds);
+
     //=====================================================================================================
     // Using the objects created so far, perform the actions
 
@@ -195,7 +198,7 @@ int main()
 
     if(showGraphics)
     {
-        Graphics graphics(runName, systemState, propagator, timeStepsDisplayInterval);
+        Graphics graphics(runName, systemState, propagator, timeStepsDisplayInterval, updateDelayInMilliseconds);
 
         graphics.performMainLoop(generator, output);
     }

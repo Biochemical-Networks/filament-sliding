@@ -9,7 +9,7 @@
 
 #include <SFML/Graphics.hpp>
 
-Graphics::Graphics(const std::string& runName, SystemState& systemState, Propagator& propagator, const int32_t timeStepsDisplayInterval)
+Graphics::Graphics(const std::string& runName, SystemState& systemState, Propagator& propagator, const int32_t timeStepsDisplayInterval, const int32_t updateDelayInMilliseconds)
     :   m_trueLatticeSpacing(static_cast<float>(systemState.getLatticeSpacing())),
         m_trueInitialPosition(static_cast<float>(systemState.getMicrotubulePosition())),
         m_graphicsLatticeSpacing(m_lineLength+2*m_circleRadius),
@@ -18,6 +18,7 @@ Graphics::Graphics(const std::string& runName, SystemState& systemState, Propaga
         m_fixedMicrotubuleX(m_screenBorderThickness),
         m_systemState(systemState),
         m_propagator(propagator),
+        m_updateDelay(sf::milliseconds(updateDelayInMilliseconds)),
         m_timeStepsDisplayInterval(timeStepsDisplayInterval),
         m_mobileMicrotubule(systemState.getNSites(MicrotubuleType::MOBILE), m_circleRadius, m_lineLength, m_lineThickness, m_circlePointCount),
         m_fixedMicrotubule(systemState.getNSites(MicrotubuleType::FIXED), m_circleRadius, m_lineLength, m_lineThickness, m_circlePointCount)
@@ -55,6 +56,8 @@ Graphics::~Graphics()
 
 void Graphics::performMainLoop(RandomGenerator& generator, Output& output)
 {
+    sf::Clock clock; // starts the clock
+
     while (m_window.isOpen())
     {
         sf::Event event;
@@ -72,15 +75,25 @@ void Graphics::performMainLoop(RandomGenerator& generator, Output& output)
                 m_view.reset(visibleArea);
                 m_window.setView(m_view);
             }
+            else if(event.type == sf::Event::MouseWheelMoved)
+            {
+                m_view.zoom(1.f+event.mouseWheel.delta*0.1f);
+                m_window.setView(m_view);
+            }
         }
 
-        m_propagator.propagateGraphicsInterval(m_systemState, generator, output, m_timeStepsDisplayInterval);
+        if(clock.getElapsedTime() > m_updateDelay)
+        {
+            m_propagator.propagateGraphicsInterval(m_systemState, generator, output, m_timeStepsDisplayInterval);
 
-        update();
+            update(); // updates the shapes that are stored in the Graphics class
+
+            clock.restart();
+        }
 
         m_window.clear(m_backGroundColour);
 
-        draw();
+        draw(); // draws the shapes
 
         m_window.display();
     }

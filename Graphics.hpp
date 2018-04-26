@@ -19,7 +19,7 @@ class Graphics
 private:
     // The window parameters. The parameters should be declared before the RenderWindow and the X and Y positions!
     const unsigned int m_windowWidth = 1000; // pixels
-    const unsigned int m_windowHeight = 600; // pixels
+    const unsigned int m_windowHeight = 800; // pixels
 
     // Colours:
     const sf::Color m_backGroundColour = sf::Color::White;
@@ -28,7 +28,7 @@ private:
     const float m_circleRadius = 20.f;
     const float m_lineLength = 50.f;
     const float m_lineThickness = 10.f;
-    const float m_distanceBetweenMicrotubules = 100.f;
+    const float m_distanceBetweenMicrotubules = 150.f;
     const float m_screenBorderThickness = 30.f;
     const std::size_t m_circlePointCount = 50;
     const float m_trueLatticeSpacing;
@@ -40,6 +40,9 @@ private:
 
     SystemState& m_systemState;
     Propagator& m_propagator;
+
+    // Update strategy:
+    const sf::Time m_updateDelay;
     const int32_t m_timeStepsDisplayInterval;
 
     // Store the actual graphics in the end; these need to have all dimensions defined
@@ -66,7 +69,7 @@ private:
     void updateFullCrosslinkers(const Crosslinker::Type type);
 
 public:
-    Graphics(const std::string& runName, SystemState& systemState, Propagator& propagator, const int32_t timeStepsDisplayInterval);
+    Graphics(const std::string& runName, SystemState& systemState, Propagator& propagator, const int32_t timeStepsDisplayInterval, const int32_t updateDelayInMilliseconds);
     ~Graphics();
 
     void performMainLoop(RandomGenerator& generator, Output& output);
