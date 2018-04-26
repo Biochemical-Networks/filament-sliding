@@ -48,6 +48,7 @@ private:
     std::vector<PartialCrosslinkerGraphic> m_partialCrosslinkers;
     std::vector<FullCrosslinkerGraphic> m_fullCrosslinkers;
 
+    sf::ContextSettings m_contextSettings;
     sf::RenderWindow m_window;
     sf::View m_view;
 

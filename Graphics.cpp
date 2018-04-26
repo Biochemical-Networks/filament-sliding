@@ -8,7 +8,6 @@
 #include "GeneralException/GeneralException.hpp"
 
 #include <SFML/Graphics.hpp>
-#include <algorithm>
 
 Graphics::Graphics(const std::string& runName, SystemState& systemState, Propagator& propagator, const int32_t timeStepsDisplayInterval)
     :   m_trueLatticeSpacing(static_cast<float>(systemState.getLatticeSpacing())),
@@ -23,13 +22,18 @@ Graphics::Graphics(const std::string& runName, SystemState& systemState, Propaga
         m_mobileMicrotubule(systemState.getNSites(MicrotubuleType::MOBILE), m_circleRadius, m_lineLength, m_lineThickness),
         m_fixedMicrotubule(systemState.getNSites(MicrotubuleType::FIXED), m_circleRadius, m_lineLength, m_lineThickness)
 {
-    const float windowWidth = std::max({static_cast<float>(m_windowWidth),
-                                        systemState.getNSites(MicrotubuleType::MOBILE)*m_graphicsLatticeSpacing + 2*m_screenBorderThickness,
-                                        systemState.getNSites(MicrotubuleType::FIXED)*m_graphicsLatticeSpacing + 2*m_screenBorderThickness});
-    m_window.create(sf::VideoMode(windowWidth, m_windowHeight), "Crosslink: "+runName); // The window title is "Crosslink: "+runName
+    //const float worldWidth = std::max({static_cast<float>(m_windowWidth),
+    //                                    systemState.getNSites(MicrotubuleType::MOBILE)*m_graphicsLatticeSpacing + 2*m_screenBorderThickness,
+    //                                    systemState.getNSites(MicrotubuleType::FIXED)*m_graphicsLatticeSpacing + 2*m_screenBorderThickness});
 
-    m_view.setCenter(sf::Vector2f(0.5f*windowWidth, 0.5f*m_windowHeight));
-    m_view.setSize(sf::Vector2f(m_windowWidth, m_windowHeight));
+    const float centreOverlap = static_cast<float>((systemState.beginningOverlap()+0.5*systemState.overlapLength())/systemState.getLatticeSpacing())*m_graphicsLatticeSpacing;
+
+    m_contextSettings.antialiasingLevel = 8;
+
+    m_window.create(sf::VideoMode(m_windowWidth, m_windowHeight), "Crosslink: "+runName, sf::Style::Default, m_contextSettings); // The window title is "Crosslink: "+runName
+
+    m_view = m_window.getDefaultView();
+    m_view.setCenter(sf::Vector2f(centreOverlap, 0.5f*m_windowHeight));
 
     m_window.setView(m_view);
 

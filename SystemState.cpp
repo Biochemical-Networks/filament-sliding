@@ -437,7 +437,7 @@ int32_t SystemState::getNFullCrosslinkers() const
 
 double SystemState::beginningOverlap() const
 {
-    // 0.0 is the position of the beginning of the fixed microtubule
+    // 0.0 is the position of the minus end of the fixed microtubule (the origin)
     return std::max(0.0, m_mobileMicrotubule.getPosition());
 }
 

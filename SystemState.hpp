@@ -101,6 +101,7 @@ public:
 
     int32_t getNFullCrosslinkers() const;
 
+    // The following functions return the position of the overlap as measured from the origin at the beginning of the fixed microtubule
     double beginningOverlap() const;
     double endOverlap() const;
     double overlapLength() const;
