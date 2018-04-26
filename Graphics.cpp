@@ -187,6 +187,7 @@ void Graphics::handleEvent(const sf::Event& event)
         switch(event.key.code)
         {
         case sf::Keyboard::Escape:
+        case sf::Keyboard::Q:
             m_window.close();
             return;
             break;

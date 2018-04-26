@@ -36,6 +36,16 @@ Set the parameter values in the file named parameters.txt (different name can be
 If there is an unexpected or missing parameter, or the formatting of the parameters is wrong, the user will be asked to create a default input file.
 Run the program by executing the CrossLink executable.
 
+## GRAPHICS CONTROLS ###
+
+Close window: Escape, Q
+Toggle run/pause: P, Pause
+Propagate one step when paused: Space/T
+Zoom in/out: mouse wheel, arrows up/down, W/S
+Move view left/right: arrows left/right, A/D
+Change distance between microtubules: +/-
+Change distance between nodes: PageUp/PageDown
+
 ### OUTPUT ###
 
 The program will always create a log file which shows the run time, the git hash of the program that created the data, and error messages or other std::out or
