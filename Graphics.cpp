@@ -65,6 +65,13 @@ void Graphics::performMainLoop(RandomGenerator& generator, Output& output)
                 m_window.close();
                 return;
             }
+            else if (event.type == sf::Event::Resized)
+            {
+                // update the view to the new size of the window
+                sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+                m_view.reset(visibleArea);
+                m_window.setView(m_view);
+            }
         }
 
         m_propagator.propagateGraphicsInterval(m_systemState, generator, output, m_timeStepsDisplayInterval);
