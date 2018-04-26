@@ -26,20 +26,20 @@ private:
 
     // Dimensions drawings:
     const float m_circleRadius = 20.f;
-    const float m_lineLength = 50.f;
     const float m_lineThickness = 10.f;
-    const float m_distanceBetweenMicrotubules = 200.f;
     const float m_screenBorderThickness = 30.f;
     const std::size_t m_circlePointCount = 50;
     const float m_trueLatticeSpacing;
     const float m_trueInitialPosition;
-    const float m_graphicsLatticeSpacing;
-    const float m_mobileMicrotubuleY;
-    const float m_fixedMicrotubuleY;
     const float m_fixedMicrotubuleX;
+
+    float m_lineLength;
+    float m_distanceBetweenMicrotubules;
 
     SystemState& m_systemState;
     Propagator& m_propagator;
+    RandomGenerator& m_generator;
+    Output& m_output;
 
     // Update strategy:
     const sf::Time m_updateDelay;
@@ -49,6 +49,8 @@ private:
     // Movement speed:
     const float m_moveStepSize = 10.f; // if a button is pressed, the window moves by this amount each main loop iteration. The larger the number, the faster the movement
     const float m_scrollStepSize = 0.1f; // 0 < s < 1
+    const float m_keyPressedScaleStep = 0.01f;
+    const float m_keyPressedStepSize = 0.1f; // 0 < s < 1
 
     // Store the actual graphics in the end; these need to have all dimensions defined
     MicrotubuleGraphic m_mobileMicrotubule;
@@ -68,20 +70,32 @@ private:
     void drawFullLinkers();
 
     float calculateMobileMicrotubuleX() const;
+    float calculateMobileMicrotubuleY() const;
+    float calculateFixedMicrotubuleY() const;
+
+    float calculateGraphicsLatticeSpacing() const;
 
     void update();
     void updatePartialCrosslinkers(const Crosslinker::Type type);
     void updateFullCrosslinkers(const Crosslinker::Type type);
 
-    void propagateGraphicsStep(RandomGenerator& generator, Output& output);
+    void propagateGraphicsStep();
 
-    void checkForWindowMovement();
+    void handleContinuousKeyPresses();
+
+    void handleEvent(const sf::Event& event);
 
 public:
-    Graphics(const std::string& runName, SystemState& systemState, Propagator& propagator, const int32_t timeStepsDisplayInterval, const int32_t updateDelayInMilliseconds);
+    Graphics(const std::string& runName,
+             SystemState& systemState,
+             Propagator& propagator,
+             RandomGenerator& generator,
+             Output& output,
+             const int32_t timeStepsDisplayInterval,
+             const int32_t updateDelayInMilliseconds);
     ~Graphics();
 
-    void performMainLoop(RandomGenerator& generator, Output& output);
+    void performMainLoop();
 };
 
 #endif // GRAPHICS_HPP

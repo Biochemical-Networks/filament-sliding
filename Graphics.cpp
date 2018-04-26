@@ -9,15 +9,22 @@
 
 #include <SFML/Graphics.hpp>
 
-Graphics::Graphics(const std::string& runName, SystemState& systemState, Propagator& propagator, const int32_t timeStepsDisplayInterval, const int32_t updateDelayInMilliseconds)
+Graphics::Graphics(const std::string& runName,
+                   SystemState& systemState,
+                   Propagator& propagator,
+                   RandomGenerator& generator,
+                   Output& output,
+                   const int32_t timeStepsDisplayInterval,
+                   const int32_t updateDelayInMilliseconds)
     :   m_trueLatticeSpacing(static_cast<float>(systemState.getLatticeSpacing())),
         m_trueInitialPosition(static_cast<float>(systemState.getMicrotubulePosition())),
-        m_graphicsLatticeSpacing(m_lineLength+2*m_circleRadius),
-        m_mobileMicrotubuleY((static_cast<float>(m_windowHeight)-m_distanceBetweenMicrotubules)*0.5f),
-        m_fixedMicrotubuleY((static_cast<float>(m_windowHeight)+m_distanceBetweenMicrotubules)*0.5f),
         m_fixedMicrotubuleX(m_screenBorderThickness),
+        m_lineLength(50.f),
+        m_distanceBetweenMicrotubules(200.f),
         m_systemState(systemState),
         m_propagator(propagator),
+        m_generator(generator),
+        m_output(output),
         m_updateDelay(sf::milliseconds(updateDelayInMilliseconds)),
         m_timeStepsDisplayInterval(timeStepsDisplayInterval),
         m_pause(true), // make the system pause initially
@@ -25,10 +32,10 @@ Graphics::Graphics(const std::string& runName, SystemState& systemState, Propaga
         m_fixedMicrotubule(systemState.getNSites(MicrotubuleType::FIXED), m_circleRadius, m_lineLength, m_lineThickness, m_circlePointCount)
 {
     //const float worldWidth = std::max({static_cast<float>(m_windowWidth),
-    //                                    systemState.getNSites(MicrotubuleType::MOBILE)*m_graphicsLatticeSpacing + 2*m_screenBorderThickness,
-    //                                    systemState.getNSites(MicrotubuleType::FIXED)*m_graphicsLatticeSpacing + 2*m_screenBorderThickness});
+    //                                    systemState.getNSites(MicrotubuleType::MOBILE)*calculateGraphicsLatticeSpacing() + 2*m_screenBorderThickness,
+    //                                    systemState.getNSites(MicrotubuleType::FIXED)*calculateGraphicsLatticeSpacing() + 2*m_screenBorderThickness});
 
-    const float centreOverlap = static_cast<float>((systemState.beginningOverlap()+0.5*systemState.overlapLength())/systemState.getLatticeSpacing())*m_graphicsLatticeSpacing;
+    const float centreOverlap = static_cast<float>((systemState.beginningOverlap()+0.5*systemState.overlapLength())/systemState.getLatticeSpacing())*calculateGraphicsLatticeSpacing();
 
     m_contextSettings.antialiasingLevel = 8;
 
@@ -39,8 +46,7 @@ Graphics::Graphics(const std::string& runName, SystemState& systemState, Propaga
 
     m_window.setView(m_view);
 
-    m_mobileMicrotubule.setPosition(calculateMobileMicrotubuleX(), m_mobileMicrotubuleY);
-    m_fixedMicrotubule.setPosition(m_fixedMicrotubuleX, m_fixedMicrotubuleY);
+    update(); // Set all graphical entities, including the microtubules, at the right positions etc.
 
     // Reserve the space once, since this may prevent many initial reallocations. However, after these calls, the vectors change capacity automatically
     m_partialCrosslinkers.reserve(systemState.getPartialLinkers(Crosslinker::Type::PASSIVE).size()
@@ -55,57 +61,18 @@ Graphics::~Graphics()
 {
 }
 
-void Graphics::performMainLoop(RandomGenerator& generator, Output& output)
+void Graphics::performMainLoop()
 {
     sf::Clock clock; // starts the clock
 
     while (m_window.isOpen())
     {
-        checkForWindowMovement();
+        handleContinuousKeyPresses();
 
         sf::Event event;
         while (m_window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
-            {
-                m_window.close();
-                return;
-            }
-            else if (event.type == sf::Event::Resized)
-            {
-                // update the view to the new size of the window
-                sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
-                m_view.reset(visibleArea);
-                m_window.setView(m_view);
-            }
-            else if(event.type == sf::Event::MouseWheelScrolled)
-            {
-                m_view.zoom(std::max(1.f-event.mouseWheelScroll.delta*m_scrollStepSize,m_scrollStepSize));
-                m_window.setView(m_view);
-            }
-            else if(event.type == sf::Event::KeyReleased)
-            {
-                switch(event.key.code)
-                {
-                case sf::Keyboard::Escape:
-                    m_window.close();
-                    return;
-                    break;
-                case sf::Keyboard::P:
-                case sf::Keyboard::Pause:
-                    m_pause = !m_pause;
-                    break;
-                case sf::Keyboard::T:
-                case sf::Keyboard::Space:
-                    if(m_pause)
-                    {
-                        propagateGraphicsStep(generator, output);
-                    }
-                    break;
-                default:
-                    break;
-                }
-            }
+            handleEvent(event);
         }
 
         if(!m_pause && clock.getElapsedTime() > m_updateDelay)
@@ -113,7 +80,7 @@ void Graphics::performMainLoop(RandomGenerator& generator, Output& output)
             // Restart the clock before the update: the time to propagate should be part of the delay, not extra
             clock.restart();
 
-            propagateGraphicsStep(generator, output);
+            propagateGraphicsStep();
         }
 
         m_window.clear(m_backGroundColour);
@@ -124,7 +91,7 @@ void Graphics::performMainLoop(RandomGenerator& generator, Output& output)
     }
 }
 
-void Graphics::checkForWindowMovement()
+void Graphics::handleContinuousKeyPresses()
 {
     const bool left = sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A);
     const bool right = sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D);
@@ -145,20 +112,110 @@ void Graphics::checkForWindowMovement()
     if (zoomIn && !zoomOut)
     {
 
-        m_view.zoom(1.f-0.1f*m_scrollStepSize); // the arrows work much faster than the scrolling, therefore we use the factor 0.1
+        m_view.zoom(1.f-m_keyPressedScaleStep); // the arrows work much faster than the scrolling, therefore we use the factor 0.1
         m_window.setView(m_view);
     }
     else if (zoomOut && !zoomIn)
     {
 
-        m_view.zoom(1.f+0.1f*m_scrollStepSize); // the arrows work much faster than the scrolling, therefore we use the factor 0.1
+        m_view.zoom(1.f+m_keyPressedScaleStep); // the arrows work much faster than the scrolling, therefore we use the factor 0.1
         m_window.setView(m_view);
+    }
+
+    const bool increaseDistance = sf::Keyboard::isKeyPressed(sf::Keyboard::Add);
+    const bool decreaseDistance = sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract);
+
+    if (increaseDistance && !decreaseDistance)
+    {
+        m_distanceBetweenMicrotubules += m_keyPressedStepSize;
+
+        update();
+    }
+    else if (decreaseDistance && !increaseDistance)
+    {
+
+        m_distanceBetweenMicrotubules -= m_keyPressedStepSize;
+
+        update();
+    }
+
+    const bool increaseLatticeSpacing = sf::Keyboard::isKeyPressed(sf::Keyboard::PageUp);
+    const bool decreaseLatticeSpacing = sf::Keyboard::isKeyPressed(sf::Keyboard::PageDown);
+
+    if (increaseLatticeSpacing && !decreaseLatticeSpacing)
+    {
+        m_lineLength += m_keyPressedStepSize;
+
+        m_mobileMicrotubule.setLineLength(m_lineLength);
+        m_fixedMicrotubule.setLineLength(m_lineLength);
+
+        update();
+    }
+    else if (decreaseLatticeSpacing && !increaseLatticeSpacing)
+    {
+
+        m_lineLength -= m_keyPressedStepSize;
+
+        m_mobileMicrotubule.setLineLength(m_lineLength);
+        m_fixedMicrotubule.setLineLength(m_lineLength);
+
+        update();
+    }
+}
+
+void Graphics::handleEvent(const sf::Event& event)
+{
+    if (event.type == sf::Event::Closed)
+    {
+        m_window.close();
+        return;
+    }
+    else if (event.type == sf::Event::Resized)
+    {
+        // update the view to the new size of the window
+        sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+        m_view.reset(visibleArea);
+        m_window.setView(m_view);
+    }
+    else if(event.type == sf::Event::MouseWheelScrolled)
+    {
+        m_view.zoom(std::max(1.f-event.mouseWheelScroll.delta*m_scrollStepSize,m_scrollStepSize));
+        m_window.setView(m_view);
+    }
+    else if(event.type == sf::Event::KeyReleased)
+    {
+        switch(event.key.code)
+        {
+        case sf::Keyboard::Escape:
+            m_window.close();
+            return;
+            break;
+        case sf::Keyboard::P:
+        case sf::Keyboard::Pause:
+            m_pause = !m_pause;
+            break;
+        case sf::Keyboard::T:
+        case sf::Keyboard::Space:
+            if(m_pause)
+            {
+                propagateGraphicsStep();
+            }
+            break;
+        default:
+            break;
+        }
     }
 }
 
 void Graphics::update()
 {
-    m_mobileMicrotubule.setPosition(calculateMobileMicrotubuleX(), m_mobileMicrotubuleY);
+    // update the internal positions
+    m_mobileMicrotubule.updatePositions();
+    m_fixedMicrotubule.updatePositions();
+
+    // update the global positions of the microtubules
+    m_mobileMicrotubule.setPosition(calculateMobileMicrotubuleX(), calculateMobileMicrotubuleY());
+    m_fixedMicrotubule.setPosition(m_fixedMicrotubuleX, calculateFixedMicrotubuleY());
 
     m_partialCrosslinkers.clear();
 
@@ -174,9 +231,9 @@ void Graphics::update()
 
 }
 
-void Graphics::propagateGraphicsStep(RandomGenerator& generator, Output& output)
+void Graphics::propagateGraphicsStep()
 {
-    m_propagator.propagateGraphicsInterval(m_systemState, generator, output, m_timeStepsDisplayInterval);
+    m_propagator.propagateGraphicsInterval(m_systemState, m_generator, m_output, m_timeStepsDisplayInterval);
 
     update(); // updates the shapes that are stored in the Graphics class
 }
@@ -212,11 +269,11 @@ void Graphics::updatePartialCrosslinkers(const Crosslinker::Type type)
         if(boundLocation.microtubule == MicrotubuleType::FIXED)
         {
             m_partialCrosslinkers.back().rotate(180.f); // by default, it is pointing downwards
-            m_partialCrosslinkers.back().setPosition(m_fixedMicrotubuleX+m_graphicsLatticeSpacing*boundLocation.position, m_fixedMicrotubuleY);
+            m_partialCrosslinkers.back().setPosition(m_fixedMicrotubuleX+calculateGraphicsLatticeSpacing()*boundLocation.position, calculateFixedMicrotubuleY());
         }
         else
         {
-            m_partialCrosslinkers.back().setPosition(calculateMobileMicrotubuleX()+m_graphicsLatticeSpacing*boundLocation.position, m_mobileMicrotubuleY);
+            m_partialCrosslinkers.back().setPosition(calculateMobileMicrotubuleX()+calculateGraphicsLatticeSpacing()*boundLocation.position, calculateMobileMicrotubuleY());
         }
     }
 }
@@ -253,13 +310,13 @@ void Graphics::updateFullCrosslinkers(const Crosslinker::Type type)
 
         if(headLocation.microtubule == MicrotubuleType::FIXED)
         {
-            fixedPosition = sf::Vector2f(m_fixedMicrotubuleX + m_graphicsLatticeSpacing*headLocation.position, m_fixedMicrotubuleY);
-            mobilePosition = sf::Vector2f(calculateMobileMicrotubuleX() + m_graphicsLatticeSpacing*tailLocation.position, m_mobileMicrotubuleY);
+            fixedPosition = sf::Vector2f(m_fixedMicrotubuleX + calculateGraphicsLatticeSpacing()*headLocation.position, calculateFixedMicrotubuleY());
+            mobilePosition = sf::Vector2f(calculateMobileMicrotubuleX() + calculateGraphicsLatticeSpacing()*tailLocation.position, calculateMobileMicrotubuleY());
         }
         else
         {
-            fixedPosition = sf::Vector2f(m_fixedMicrotubuleX + m_graphicsLatticeSpacing*tailLocation.position, m_fixedMicrotubuleY);
-            mobilePosition = sf::Vector2f(calculateMobileMicrotubuleX() + m_graphicsLatticeSpacing*headLocation.position, m_mobileMicrotubuleY);
+            fixedPosition = sf::Vector2f(m_fixedMicrotubuleX + calculateGraphicsLatticeSpacing()*tailLocation.position, calculateFixedMicrotubuleY());
+            mobilePosition = sf::Vector2f(calculateMobileMicrotubuleX() + calculateGraphicsLatticeSpacing()*headLocation.position, calculateMobileMicrotubuleY());
         }
 
         m_fullCrosslinkers.push_back(FullCrosslinkerGraphic(m_circleRadius-m_lineThickness,
@@ -300,5 +357,20 @@ void Graphics::drawFullLinkers()
 
 float Graphics::calculateMobileMicrotubuleX() const
 {
-    return static_cast<float>(m_systemState.getMicrotubulePosition())/m_trueLatticeSpacing*m_graphicsLatticeSpacing+m_screenBorderThickness;
+    return static_cast<float>(m_systemState.getMicrotubulePosition())/m_trueLatticeSpacing*calculateGraphicsLatticeSpacing()+m_screenBorderThickness;
+}
+
+float Graphics::calculateMobileMicrotubuleY() const
+{
+    return (static_cast<float>(m_windowHeight)-m_distanceBetweenMicrotubules)*0.5f;
+}
+
+float Graphics::calculateFixedMicrotubuleY() const
+{
+    return (static_cast<float>(m_windowHeight)+m_distanceBetweenMicrotubules)*0.5f;
+}
+
+float Graphics::calculateGraphicsLatticeSpacing() const
+{
+    return m_lineLength+2*m_circleRadius;
 }

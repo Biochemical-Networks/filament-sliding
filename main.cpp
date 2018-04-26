@@ -198,9 +198,9 @@ int main()
 
     if(showGraphics)
     {
-        Graphics graphics(runName, systemState, propagator, timeStepsDisplayInterval, updateDelayInMilliseconds);
+        Graphics graphics(runName, systemState, propagator, generator, output, timeStepsDisplayInterval, updateDelayInMilliseconds);
 
-        graphics.performMainLoop(generator, output);
+        graphics.performMainLoop();
     }
     else
     {
