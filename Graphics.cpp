@@ -20,6 +20,7 @@ Graphics::Graphics(const std::string& runName, SystemState& systemState, Propaga
         m_propagator(propagator),
         m_updateDelay(sf::milliseconds(updateDelayInMilliseconds)),
         m_timeStepsDisplayInterval(timeStepsDisplayInterval),
+        m_pause(true), // make the system pause initially
         m_mobileMicrotubule(systemState.getNSites(MicrotubuleType::MOBILE), m_circleRadius, m_lineLength, m_lineThickness, m_circlePointCount),
         m_fixedMicrotubule(systemState.getNSites(MicrotubuleType::FIXED), m_circleRadius, m_lineLength, m_lineThickness, m_circlePointCount)
 {
@@ -60,6 +61,8 @@ void Graphics::performMainLoop(RandomGenerator& generator, Output& output)
 
     while (m_window.isOpen())
     {
+        checkForWindowMovement();
+
         sf::Event event;
         while (m_window.pollEvent(event))
         {
@@ -75,20 +78,42 @@ void Graphics::performMainLoop(RandomGenerator& generator, Output& output)
                 m_view.reset(visibleArea);
                 m_window.setView(m_view);
             }
-            else if(event.type == sf::Event::MouseWheelMoved)
+            else if(event.type == sf::Event::MouseWheelScrolled)
             {
-                m_view.zoom(1.f+event.mouseWheel.delta*0.1f);
+                m_view.zoom(std::max(1.f-event.mouseWheelScroll.delta*m_scrollStepSize,m_scrollStepSize));
                 m_window.setView(m_view);
+            }
+            else if(event.type == sf::Event::KeyReleased)
+            {
+                switch(event.key.code)
+                {
+                case sf::Keyboard::Escape:
+                    m_window.close();
+                    return;
+                    break;
+                case sf::Keyboard::P:
+                case sf::Keyboard::Pause:
+                    m_pause = !m_pause;
+                    break;
+                case sf::Keyboard::T:
+                case sf::Keyboard::Space:
+                    if(m_pause)
+                    {
+                        propagateGraphicsStep(generator, output);
+                    }
+                    break;
+                default:
+                    break;
+                }
             }
         }
 
-        if(clock.getElapsedTime() > m_updateDelay)
+        if(!m_pause && clock.getElapsedTime() > m_updateDelay)
         {
-            m_propagator.propagateGraphicsInterval(m_systemState, generator, output, m_timeStepsDisplayInterval);
-
-            update(); // updates the shapes that are stored in the Graphics class
-
+            // Restart the clock before the update: the time to propagate should be part of the delay, not extra
             clock.restart();
+
+            propagateGraphicsStep(generator, output);
         }
 
         m_window.clear(m_backGroundColour);
@@ -96,6 +121,38 @@ void Graphics::performMainLoop(RandomGenerator& generator, Output& output)
         draw(); // draws the shapes
 
         m_window.display();
+    }
+}
+
+void Graphics::checkForWindowMovement()
+{
+    const bool left = sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A);
+    const bool right = sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D);
+    if (left && !right)
+    {
+        m_view.move(-m_moveStepSize,0);
+        m_window.setView(m_view);
+    }
+    else if (right && !left)
+    {
+        m_view.move(m_moveStepSize,0);
+        m_window.setView(m_view);
+    }
+
+    const bool zoomIn = sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W);
+    const bool zoomOut = sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S);
+
+    if (zoomIn && !zoomOut)
+    {
+
+        m_view.zoom(1.f-0.1f*m_scrollStepSize); // the arrows work much faster than the scrolling, therefore we use the factor 0.1
+        m_window.setView(m_view);
+    }
+    else if (zoomOut && !zoomIn)
+    {
+
+        m_view.zoom(1.f+0.1f*m_scrollStepSize); // the arrows work much faster than the scrolling, therefore we use the factor 0.1
+        m_window.setView(m_view);
     }
 }
 
@@ -115,6 +172,13 @@ void Graphics::update()
     updateFullCrosslinkers(Crosslinker::Type::DUAL);
     updateFullCrosslinkers(Crosslinker::Type::ACTIVE);
 
+}
+
+void Graphics::propagateGraphicsStep(RandomGenerator& generator, Output& output)
+{
+    m_propagator.propagateGraphicsInterval(m_systemState, generator, output, m_timeStepsDisplayInterval);
+
+    update(); // updates the shapes that are stored in the Graphics class
 }
 
 void Graphics::updatePartialCrosslinkers(const Crosslinker::Type type)
