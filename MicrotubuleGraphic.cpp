@@ -3,12 +3,12 @@
 #include <SFML/Graphics.hpp>
 #include <cstdint>
 
-MicrotubuleGraphic::MicrotubuleGraphic(const int32_t nSites, const float circleRadius, const float lineLength, const float lineThickness)
+MicrotubuleGraphic::MicrotubuleGraphic(const int32_t nSites, const float circleRadius, const float lineLength, const float lineThickness, const std::size_t circlePointCount)
     :   m_nSites(nSites),
         m_circleRadius(circleRadius),
         m_lineLength(lineLength),
         m_lineThickness(lineThickness),
-        m_circles(nSites, sf::CircleShape(circleRadius)),
+        m_circles(nSites, sf::CircleShape(circleRadius, circlePointCount)),
         m_lines(sf::Quads,4*(nSites-1)) // The number of vertices of a quad is 4; nSites-1 quads are needed
 {
     for(int32_t pos = 0; pos < nSites; ++pos)

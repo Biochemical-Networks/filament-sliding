@@ -6,11 +6,12 @@ FullCrosslinkerGraphic::FullCrosslinkerGraphic(const float circleRadius,
                                                const bool mobileTerminusActive,
                                                const bool fixedTerminusActive,
                                                const sf::Vector2f positionOnMobile,
-                                               const sf::Vector2f positionOnFixed)
+                                               const sf::Vector2f positionOnFixed,
+                                               const std::size_t circlePointCount)
     :   m_circleRadius(circleRadius),
         m_lineThickness(lineThickness),
-        m_mobileTerminus(circleRadius),
-        m_fixedTerminus(circleRadius),
+        m_mobileTerminus(circleRadius, circlePointCount),
+        m_fixedTerminus(circleRadius, circlePointCount),
         m_spring(4) // A (thin) bar with four corners
 {
     m_mobileTerminus.setOrigin(circleRadius,circleRadius);

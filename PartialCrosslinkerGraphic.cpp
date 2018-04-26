@@ -1,11 +1,15 @@
 #include "PartialCrosslinkerGraphic.hpp"
 #include <SFML/Graphics.hpp>
 
-PartialCrosslinkerGraphic::PartialCrosslinkerGraphic(const float circleRadius, const float lineThickness, const float springLength, const bool boundTerminusActive)
+PartialCrosslinkerGraphic::PartialCrosslinkerGraphic(const float circleRadius,
+                                                     const float lineThickness,
+                                                     const float springLength,
+                                                     const bool boundTerminusActive,
+                                                     const std::size_t circlePointCount)
     :   m_circleRadius(circleRadius),
         m_lineThickness(lineThickness),
         m_springLength(springLength),
-        m_terminus(circleRadius),
+        m_terminus(circleRadius, circlePointCount),
         m_spring(sf::Vector2f(lineThickness, springLength)) // A (thin) bar with four corners
 {
     m_terminus.setOrigin(circleRadius,circleRadius);

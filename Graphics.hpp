@@ -30,6 +30,7 @@ private:
     const float m_lineThickness = 10.f;
     const float m_distanceBetweenMicrotubules = 100.f;
     const float m_screenBorderThickness = 30.f;
+    const std::size_t m_circlePointCount = 50;
     const float m_trueLatticeSpacing;
     const float m_trueInitialPosition;
     const float m_graphicsLatticeSpacing;

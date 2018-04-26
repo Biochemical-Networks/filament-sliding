@@ -21,7 +21,7 @@ private:
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 public:
-    MicrotubuleGraphic(const int32_t nSites, const float circleRadius, const float lineLength, const float lineThickness);
+    MicrotubuleGraphic(const int32_t nSites, const float circleRadius, const float lineLength, const float lineThickness, const std::size_t circlePointCount);
     virtual ~MicrotubuleGraphic();
 };
 

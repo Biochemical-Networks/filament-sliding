@@ -20,7 +20,7 @@ private:
 
 public:
     FullCrosslinkerGraphic(const float circleRadius, const float lineThickness, const bool mobileTerminusActive, const bool fixedTerminusActive,
-                           const sf::Vector2f positionOnMobile, const sf::Vector2f positionOnFixed);
+                           const sf::Vector2f positionOnMobile, const sf::Vector2f positionOnFixed, const std::size_t circlePointCount);
     virtual ~FullCrosslinkerGraphic();
 };
 

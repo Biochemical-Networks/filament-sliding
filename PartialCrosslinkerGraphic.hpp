@@ -19,7 +19,7 @@ private:
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 public:
-    PartialCrosslinkerGraphic(const float circleRadius, const float lineThickness, const float springLength, const bool boundTerminusActive);
+    PartialCrosslinkerGraphic(const float circleRadius, const float lineThickness, const float springLength, const bool boundTerminusActive, const std::size_t circlePointCount);
     virtual ~PartialCrosslinkerGraphic();
 };
 

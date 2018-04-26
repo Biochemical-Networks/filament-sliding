@@ -19,8 +19,8 @@ Graphics::Graphics(const std::string& runName, SystemState& systemState, Propaga
         m_systemState(systemState),
         m_propagator(propagator),
         m_timeStepsDisplayInterval(timeStepsDisplayInterval),
-        m_mobileMicrotubule(systemState.getNSites(MicrotubuleType::MOBILE), m_circleRadius, m_lineLength, m_lineThickness),
-        m_fixedMicrotubule(systemState.getNSites(MicrotubuleType::FIXED), m_circleRadius, m_lineLength, m_lineThickness)
+        m_mobileMicrotubule(systemState.getNSites(MicrotubuleType::MOBILE), m_circleRadius, m_lineLength, m_lineThickness, m_circlePointCount),
+        m_fixedMicrotubule(systemState.getNSites(MicrotubuleType::FIXED), m_circleRadius, m_lineLength, m_lineThickness, m_circlePointCount)
 {
     //const float worldWidth = std::max({static_cast<float>(m_windowWidth),
     //                                    systemState.getNSites(MicrotubuleType::MOBILE)*m_graphicsLatticeSpacing + 2*m_screenBorderThickness,
@@ -119,7 +119,11 @@ void Graphics::updatePartialCrosslinkers(const Crosslinker::Type type)
         }
 
         const SiteLocation boundLocation = p_linker->getBoundLocationWhenPartiallyConnected();
-        m_partialCrosslinkers.push_back(PartialCrosslinkerGraphic(m_circleRadius-m_lineThickness, m_lineThickness, 0.5f*m_distanceBetweenMicrotubules, boundWithMotor));
+        m_partialCrosslinkers.push_back(PartialCrosslinkerGraphic(m_circleRadius-m_lineThickness,
+                                                                  m_lineThickness,
+                                                                  0.5f*m_distanceBetweenMicrotubules,
+                                                                  boundWithMotor,
+                                                                  m_circlePointCount));
 
         if(boundLocation.microtubule == MicrotubuleType::FIXED)
         {
@@ -179,7 +183,8 @@ void Graphics::updateFullCrosslinkers(const Crosslinker::Type type)
                                                                    mobileTerminusActive,
                                                                    fixedTerminusActive,
                                                                    mobilePosition,
-                                                                   fixedPosition));
+                                                                   fixedPosition,
+                                                                   m_circlePointCount));
     }
 }
 
