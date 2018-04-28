@@ -5,6 +5,7 @@
 #include <cmath> // ceil/floor
 #include <vector>
 #include <utility> // pair
+#include <numeric>
 
 #include "PossibleFullConnection.hpp"
 #include "PossibleHop.hpp"
