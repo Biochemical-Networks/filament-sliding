@@ -174,7 +174,9 @@ void Graphics::handleEvent(const sf::Event& event)
     {
         // update the view to the new size of the window
         sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+        const float centreOverlap = static_cast<float>((m_systemState.beginningOverlap()+0.5*m_systemState.overlapLength())/m_systemState.getLatticeSpacing())*calculateGraphicsLatticeSpacing();
         m_view.reset(visibleArea);
+        m_view.setCenter(sf::Vector2f(centreOverlap, 0.5f*event.size.height));
         m_window.setView(m_view);
     }
     else if(event.type == sf::Event::MouseWheelScrolled)
