@@ -30,6 +30,9 @@ The linker needs the options -lsfml-graphics -lsfml-window -lsfml-system, which 
 Code::Blocks by adding sfml-graphics sfml-window sfml-system to:
 Project->Build Options->CrossLink->linker settings-> add
 
+To create a makefile out of the Code::Blocks project, use the tool cbp2make. Download here: https://sourceforge.net/projects/cbp2make/
+To run it, first compile it, then ./cbp2make -in <input project.cbp> -out <makefile name>
+
 ### HOW TO RUN ###
 
 Set the parameter values in the file named parameters.txt (different name can be set by passing it to the constructor of Input).
