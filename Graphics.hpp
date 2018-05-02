@@ -18,8 +18,10 @@ class Graphics
 {
 private:
     // The window parameters. The parameters should be declared before the RenderWindow and the X and Y positions!
-    const unsigned int m_windowWidth = 1000; // pixels
+    const unsigned int m_windowWidth = 1200; // pixels
     const unsigned int m_windowHeight = 800; // pixels
+    const int m_windowPositionX = 200; // pixels
+    const int m_windowPositionY = 100; // pixels
 
     // Colours:
     const sf::Color m_backGroundColour = sf::Color::White;

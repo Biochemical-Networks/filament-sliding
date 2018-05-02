@@ -30,3 +30,7 @@ testRun*.txt
 
 # Do not include the GitHashWhenCompiled.hpp file, since it changes often
 GitHashWhenCompiled.hpp
+
+# No videos
+*.mkv
+*.ogg

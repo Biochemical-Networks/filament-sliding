@@ -40,6 +40,7 @@ Graphics::Graphics(const std::string& runName,
     m_contextSettings.antialiasingLevel = 8;
 
     m_window.create(sf::VideoMode(m_windowWidth, m_windowHeight), "Crosslink: "+runName, sf::Style::Default, m_contextSettings); // The window title is "Crosslink: "+runName
+    m_window.setPosition(sf::Vector2i(m_windowPositionX,m_windowPositionY));
 
     m_view = m_window.getDefaultView();
     m_view.setCenter(sf::Vector2f(centreOverlap, 0.5f*m_windowHeight));
