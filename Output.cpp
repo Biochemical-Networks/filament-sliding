@@ -11,6 +11,7 @@
 
 Output::Output(const std::string &runName,
                const bool writePositionalDistribution,
+               const bool writeCrosslinkerDirectionData,
                const double positionalHistogramBinSize,
                const double positionalHistogramLowestValue,
                const double positionalHistogramHighestValue)
@@ -20,6 +21,7 @@ Output::Output(const std::string &runName,
         m_collumnWidth(OutputParameters::collumnWidth),
         m_lastCrossingTime(0), // Time 0 indicates the beginning of the run blocks, after which we start writing data
         m_writePositionalDistribution(writePositionalDistribution),
+        m_writeCrosslinkerDirectionData(writeCrosslinkerDirectionData),
         m_positionalHistogram(positionalHistogramBinSize, positionalHistogramLowestValue, positionalHistogramHighestValue)
 {
     m_microtubulePositionFile << std::left
@@ -47,6 +49,15 @@ Output::Output(const std::string &runName,
             << std::setw(m_collumnWidth) << "NUMBER OF SAMPLES"
             << std::setw(m_collumnWidth) << "FRACTION OF SAMPLES" << '\n';
     }
+
+    if(m_writeCrosslinkerDirectionData)
+    {
+        // Only open the file here, not in the constructor initialization list, since the file should only be created if m_writeCrosslinkerDirectionData is set to true.
+        m_crosslinkerDirectionFile.open((runName+".crosslinker_directionality.txt").c_str());
+        m_crosslinkerDirectionFile << std::left
+        << std::setw(m_collumnWidth) << "TIME"
+        << std::setw(m_collumnWidth) << "NUMBER RIGHT PULLING LINKERS" << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth
+    }
 }
 
 Output::~Output()
@@ -57,6 +68,11 @@ Output::~Output()
 void Output::writeMicrotubulePosition(const double time, const SystemState& systemState) // Non-const, stream is changed
 {
     m_microtubulePositionFile << std::setw(m_collumnWidth) << time << std::setw(m_collumnWidth) << systemState.getMicrotubulePosition() << '\n';
+}
+
+void Output::writeNRightPullingLinkers(const double time, const SystemState& systemState)
+{
+    m_crosslinkerDirectionFile << std::setw(m_collumnWidth) << time << std::setw(m_collumnWidth) << systemState.getNFullRightPullingCrosslinkers() << '\n';
 }
 
 void Output::addMicrotubulePositionRemainder(const double remainder)
@@ -82,6 +98,7 @@ void Output::newBlock(const int32_t blockNumber)
     message << blockNumber << '\n';
     m_microtubulePositionFile << message.str();
     m_barrierCrossingTimeFile << message.str();
+    m_crosslinkerDirectionFile << message.str();
 }
 
 void Output::finishWriting()

@@ -18,6 +18,8 @@ private:
     std::ofstream m_microtubulePositionFile;
     std::ofstream m_barrierCrossingTimeFile;
     std::ofstream m_positionalHistogramFile;
+    std::ofstream m_crosslinkerDirectionFile;
+    std::ofstream m_positionAndCrosslinkerHistogramFile;
 
     std::ofstream m_statisticalAnalysisFile;
 
@@ -28,10 +30,12 @@ private:
     double m_lastCrossingTime; // Necessary, since we want statistics on the time interval between the previous and next crossing
 
     const bool m_writePositionalDistribution;
+    const bool m_writeCrosslinkerDirectionData;
     Histogram m_positionalHistogram;
 public:
     Output(const std::string &runName,
            const bool writePositionalDistribution,
+           const bool writeCrosslinkerDirectionData,
            const double positionalHistogramBinSize,
            const double positionalHistogramLowestValue,
            const double positionalHistogramHighestValue);
@@ -42,6 +46,8 @@ public:
     void writeMicrotubulePosition(const double time, const SystemState& systemState);
 
     void addMicrotubulePositionRemainder(const double remainder);
+
+    void writeNRightPullingLinkers(const double time, const SystemState& systemState);
 
     void writeBarrierCrossingTime(const double time);
 

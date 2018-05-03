@@ -58,6 +58,10 @@ int main()
     double positionalHistogramHighestValue;
     input.copyParameter("positionalHistogramHighestValue", positionalHistogramHighestValue);
 
+    std::string recordNumberRightPullingLinkersString;
+    input.copyParameter("recordNumberRightPullingLinkers", recordNumberRightPullingLinkersString);
+    const bool recordNumberRightPullingLinkers = (recordNumberRightPullingLinkersString == "TRUE");
+
     Output output(runName, samplePositionalDistribution, positionalHistogramBinSize, positionalHistogramLowestValue, positionalHistogramHighestValue);
 
     //-----------------------------------------------------------------------------------------------------
@@ -222,30 +226,30 @@ int main()
 
     double baseRateZeroToOneExtremitiesConnected;
     input.copyParameter("baseRateZeroToOneExtremitiesConnected", baseRateZeroToOneExtremitiesConnected);
-    if(baseRateZeroToOneExtremitiesConnected<0.0)
+    if(baseRateZeroToOneExtremitiesConnected<0.0 || (recordNumberRightPullingLinkers && baseRateZeroToOneExtremitiesConnected!=0.0))
     {
-        throw GeneralException("The parameter baseRateZeroToOneExtremitiesConnected contains a wrong value.");
+        throw GeneralException("The parameter baseRateZeroToOneExtremitiesConnected contains a wrong value, or is nonzero when recordNumberRightPullingLinkers is TRUE.");
     }
 
     double baseRateOneToZeroExtremitiesConnected;
     input.copyParameter("baseRateOneToZeroExtremitiesConnected", baseRateOneToZeroExtremitiesConnected);
-    if(baseRateOneToZeroExtremitiesConnected<0.0)
+    if(baseRateOneToZeroExtremitiesConnected<0.0 || (recordNumberRightPullingLinkers && baseRateOneToZeroExtremitiesConnected!=0.0))
     {
-        throw GeneralException("The parameter baseRateOneToZeroExtremitiesConnected contains a wrong value.");
+        throw GeneralException("The parameter baseRateOneToZeroExtremitiesConnected contains a wrong value, or is nonzero when recordNumberRightPullingLinkers is TRUE.");
     }
 
     double baseRateOneToTwoExtremitiesConnected;
     input.copyParameter("baseRateOneToTwoExtremitiesConnected", baseRateOneToTwoExtremitiesConnected);
-    if(baseRateOneToTwoExtremitiesConnected<0.0)
+    if(baseRateOneToTwoExtremitiesConnected<0.0 || (recordNumberRightPullingLinkers && baseRateOneToTwoExtremitiesConnected!=0.0))
     {
-        throw GeneralException("The parameter baseRateOneToTwoExtremitiesConnected contains a wrong value.");
+        throw GeneralException("The parameter baseRateOneToTwoExtremitiesConnected contains a wrong value, or is nonzero when recordNumberRightPullingLinkers is TRUE.");
     }
 
     double baseRateTwoToOneExtremitiesConnected;
     input.copyParameter("baseRateTwoToOneExtremitiesConnected", baseRateTwoToOneExtremitiesConnected);
-    if(baseRateTwoToOneExtremitiesConnected<0.0)
+    if(baseRateTwoToOneExtremitiesConnected<0.0 || (recordNumberRightPullingLinkers && baseRateTwoToOneExtremitiesConnected!=0.0))
     {
-        throw GeneralException("The parameter baseRateTwoToOneExtremitiesConnected contains a wrong value.");
+        throw GeneralException("The parameter baseRateTwoToOneExtremitiesConnected contains a wrong value, or is nonzero when recordNumberRightPullingLinkers is TRUE.");
     }
 
     double headBindingBiasEnergy;

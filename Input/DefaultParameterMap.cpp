@@ -20,7 +20,7 @@ ParameterMap::ParameterMap()
     defineParameter("numberEquilibrationBlocks", 0, "blocks", ">=0");
     defineParameter("numberRunBlocks", 1, "blocks", ">=0");
     defineParameter("calcTimeStep", 1.e-7, "s", ">0");
-    defineParameter("timeStepsPerBlock", 20000, "steps", ">=0");
+    defineParameter("timeStepsPerBlock", 20000, "steps", ">0");
     defineParameter("probePeriod", 10000, "steps", ">0");
 
     // General state parameters
@@ -35,7 +35,7 @@ ParameterMap::ParameterMap()
 
     // Initial state parameters
     defineParameter("initialPositionMicrotubule", 0., "micron"); // The position of the mobile microtubule relative to the fixed one, where 0. means that the two have the same (left) boundary position
-    defineParameter("fractionOverlapSitesConnected", 1.0, "unitless", ">0");
+    defineParameter("fractionOverlapSitesConnected", 1.0, "unitless", "[0,1]");
     defineParameter("initialCrosslinkerDistribution", "RANDOM", "unitless", "RANDOM,HEADSMOBILE,TAILSMOBILE,TEST"); // Can only hold the values set by Initialiser::InitialCrosslinkerDistribution
 
     // Dynamics parameters
@@ -85,10 +85,11 @@ ParameterMap::ParameterMap()
     // Parameters to turn analysis on or off
     defineParameter("addTheoreticalCounterForce", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("samplePositionalDistribution", "FALSE", "unitless", "TRUE,FALSE");
-    defineParameter("positionalHistogramBinSize", 8.e-3, "micron", ">=0");
-    defineParameter("positionalHistogramLowestValue", 0.0, "micron", "real");
-    defineParameter("positionalHistogramHighestValue", 8.e-3, "micron", "real");
+    defineParameter("positionalHistogramBinSize", 8.e-3, "micron", ">0");
+    defineParameter("positionalHistogramLowestValue", 0.0, "micron");
+    defineParameter("positionalHistogramHighestValue", 8.e-3, "micron");
     defineParameter("showGraphics", "FALSE", "unitless", "TRUE,FALSE");
-    defineParameter("timeStepsDisplayInterval", 10000, "steps", ">=0");
+    defineParameter("timeStepsDisplayInterval", 10000, "steps", ">0");
     defineParameter("updateDelayInMilliseconds", 100, "milliseconds", ">=0");
+    defineParameter("recordNumberRightPullingLinkers", "FALSE", "unitless", "TRUE,FALSE");
 }
