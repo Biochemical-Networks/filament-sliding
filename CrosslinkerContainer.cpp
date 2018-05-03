@@ -142,6 +142,26 @@ int32_t CrosslinkerContainer::getNFullCrosslinkers() const
     return m_fullCrosslinkers.size();
 }
 
+// A right pulling crosslinker is a full linker that pulls the mobile microtubule into the positive direction, which is the direction of the mobile microtubule minus tip
+int32_t CrosslinkerContainer::getNFullRightPullingCrosslinkers() const
+{
+    const double mobilePosition = m_mobileMicrotubule.getPosition();
+
+    int32_t nRightPulling = 0;
+
+    for(const Crosslinker* p_linker : m_fullCrosslinkers)
+    {
+        const SiteLocation fixedLocation = p_linker->getLocationOfFullOn(MicrotubuleType::FIXED);
+        const SiteLocation mobileLocation = p_linker->getLocationOfFullOn(MicrotubuleType::MOBILE);
+
+        if(fixedLocation.position*m_latticeSpacing > mobileLocation.position*m_latticeSpacing+mobilePosition)
+        {
+            ++nRightPulling;
+        }
+    }
+    return nRightPulling;
+}
+
 #ifdef MYDEBUG
 int32_t CrosslinkerContainer::getNSitesToBindPartial() const
 {

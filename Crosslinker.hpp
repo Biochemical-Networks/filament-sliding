@@ -62,6 +62,8 @@ public:
 
     Terminus getTerminusOfFullOn(const MicrotubuleType microtubule) const;
 
+    SiteLocation getLocationOfFullOn(const MicrotubuleType microtubule) const;
+
     SiteLocation getBoundLocationWhenPartiallyConnected() const;
 
     SiteLocation getOneBoundLocationWhenFullyConnected(const Crosslinker::Terminus terminus) const;

@@ -209,6 +209,29 @@ Crosslinker::Terminus Crosslinker::getTerminusOfFullOn(const MicrotubuleType mic
     }
 }
 
+SiteLocation Crosslinker::getLocationOfFullOn(const MicrotubuleType microtubule) const
+{
+    #ifdef MYDEBUG
+    if(!isFull())
+    {
+        throw GeneralException("Crosslinker::getLocationOfFullOn() was called on a non-full linker");
+    }
+    else if(m_tail.getMicrotubuleConnectedTo() == m_head.getMicrotubuleConnectedTo())
+    {
+        throw GeneralException("Crosslinker::getLocationOfFullOn() was called on a linker that was connected to one microtubule twice");
+    }
+    #endif // MYDEBUG
+
+    if(m_head.getMicrotubuleConnectedTo()==microtubule)
+    {
+        return m_head.getSiteLocation();
+    }
+    else
+    {
+        return m_tail.getSiteLocation();
+    }
+}
+
 SiteLocation Crosslinker::getBoundLocationWhenPartiallyConnected() const
 {
     #ifdef MYDEBUG

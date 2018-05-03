@@ -435,6 +435,13 @@ int32_t SystemState::getNFullCrosslinkers() const
         + m_activeCrosslinkers.getNFullCrosslinkers();
 }
 
+int32_t SystemState::getNFullRightPullingCrosslinkers() const
+{
+    return m_passiveCrosslinkers.getNFullRightPullingCrosslinkers()
+        + m_dualCrosslinkers.getNFullRightPullingCrosslinkers()
+        + m_activeCrosslinkers.getNFullRightPullingCrosslinkers();
+}
+
 double SystemState::beginningOverlap() const
 {
     // 0.0 is the position of the minus end of the fixed microtubule (the origin)

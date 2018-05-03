@@ -7,6 +7,7 @@
 #include "Output.hpp"
 #include "Log.hpp"
 #include "Graphics.hpp"
+#include "GeneralException/GeneralException.hpp"
 
 #include <iostream>
 #include <cstdint>
@@ -46,6 +47,10 @@ int main()
 
     double positionalHistogramBinSize;
     input.copyParameter("positionalHistogramBinSize", positionalHistogramBinSize);
+    if(samplePositionalDistribution&&positionalHistogramBinSize<=0.0)
+    {
+        throw GeneralException("The parameter positionalHistogramBinSize contains a wrong value.");
+    }
 
     double positionalHistogramLowestValue;
     input.copyParameter("positionalHistogramLowestValue", positionalHistogramLowestValue);
@@ -59,27 +64,59 @@ int main()
     // Get the parameters needed for defining the general systemState.
     double lengthMobileMicrotubule;
     input.copyParameter("lengthMobileMicrotubule", lengthMobileMicrotubule);
+    if(lengthMobileMicrotubule<=0.0)
+    {
+        throw GeneralException("The parameter lengthMobileMicrotubule contains a wrong value.");
+    }
 
     double lengthFixedMicrotubule;
     input.copyParameter("lengthFixedMicrotubule", lengthFixedMicrotubule);
+    if(lengthFixedMicrotubule<=0.0)
+    {
+        throw GeneralException("The parameter lengthFixedMicrotubule contains a wrong value.");
+    }
 
     double latticeSpacing;
     input.copyParameter("latticeSpacing", latticeSpacing);
+    if(latticeSpacing<=0.0)
+    {
+        throw GeneralException("The parameter latticeSpacing contains a wrong value.");
+    }
 
     double maximumStretchPerLatticeSpacing;
     input.copyParameter("maximumStretch", maximumStretchPerLatticeSpacing);
+    if(maximumStretchPerLatticeSpacing<=0.0)
+    {
+        throw GeneralException("The parameter maximumStretchPerLatticeSpacing contains a wrong value.");
+    }
 
     int32_t nActiveCrosslinkers;
     input.copyParameter("numberActiveCrosslinkers", nActiveCrosslinkers);
+    if(nActiveCrosslinkers<0)
+    {
+        throw GeneralException("The parameter nActiveCrosslinkers contains a wrong value.");
+    }
 
     int32_t nDualCrosslinkers;
     input.copyParameter("numberDualCrosslinkers", nDualCrosslinkers);
+    if(nDualCrosslinkers<0)
+    {
+        throw GeneralException("The parameter nDualCrosslinkers contains a wrong value.");
+    }
 
     int32_t nPassiveCrosslinkers;
     input.copyParameter("numberPassiveCrosslinkers", nPassiveCrosslinkers);
+    if(nPassiveCrosslinkers<0)
+    {
+        throw GeneralException("The parameter nPassiveCrosslinkers contains a wrong value.");
+    }
 
     double springConstant;
     input.copyParameter("springConstant", springConstant);
+    if(springConstant<0.0)
+    {
+        throw GeneralException("The parameter springConstant contains a wrong value.");
+    }
 
     std::string addTheoreticalCounterForceString;
     input.copyParameter("addTheoreticalCounterForce", addTheoreticalCounterForceString);
@@ -96,10 +133,13 @@ int main()
 
     double fractionOverlapSitesConnected;
     input.copyParameter("fractionOverlapSitesConnected", fractionOverlapSitesConnected);
+    if(fractionOverlapSitesConnected<0.0 || fractionOverlapSitesConnected > 1.0)
+    {
+        throw GeneralException("The parameter fractionOverlapSitesConnected contains a wrong value.");
+    }
 
     std::string initialCrosslinkerDistributionString;
     input.copyParameter("initialCrosslinkerDistribution", initialCrosslinkerDistributionString);
-
 
 
     Initialiser initialiser(initialPositionMicrotubule, fractionOverlapSitesConnected, initialCrosslinkerDistributionString);
@@ -109,48 +149,104 @@ int main()
 
     int32_t numberEquilibrationBlocks;
     input.copyParameter("numberEquilibrationBlocks", numberEquilibrationBlocks);
+    if(numberEquilibrationBlocks<0)
+    {
+        throw GeneralException("The parameter numberEquilibrationBlocks contains a wrong value.");
+    }
 
     int32_t numberRunBlocks;
     input.copyParameter("numberRunBlocks", numberRunBlocks);
+    if(numberRunBlocks<0)
+    {
+        throw GeneralException("The parameter numberRunBlocks contains a wrong value.");
+    }
 
     int32_t nTimeSteps;
     input.copyParameter("timeStepsPerBlock", nTimeSteps);
+    if(nTimeSteps<=0)
+    {
+        throw GeneralException("The parameter nTimeSteps contains a wrong value.");
+    }
 
     double calcTimeStep;
     input.copyParameter("calcTimeStep", calcTimeStep);
+    if(calcTimeStep<=0.0)
+    {
+        throw GeneralException("The parameter calcTimeStep contains a wrong value.");
+    }
 
     int32_t probePeriod;
     input.copyParameter("probePeriod", probePeriod);
+    if(probePeriod<=0)
+    {
+        throw GeneralException("The parameter probePeriod contains a wrong value.");
+    }
 
     double diffusionConstantMicrotubule;
     input.copyParameter("diffusionConstantMicrotubule", diffusionConstantMicrotubule);
+    if(diffusionConstantMicrotubule<0.0)
+    {
+        throw GeneralException("The parameter diffusionConstantMicrotubule contains a wrong value.");
+    }
 
     double ratePassivePartialHop;
     input.copyParameter("ratePassivePartialHop", ratePassivePartialHop);
+    if(ratePassivePartialHop<0.0)
+    {
+        throw GeneralException("The parameter ratePassivePartialHop contains a wrong value.");
+    }
 
     double ratePassiveFullHop;
     input.copyParameter("ratePassiveFullHop", ratePassiveFullHop);
+    if(ratePassiveFullHop<0.0)
+    {
+        throw GeneralException("The parameter ratePassiveFullHop contains a wrong value.");
+    }
 
     double baseRateActivePartialHop;
     input.copyParameter("baseRateActivePartialHop", baseRateActivePartialHop);
+    if(baseRateActivePartialHop<0.0)
+    {
+        throw GeneralException("The parameter baseRateActivePartialHop contains a wrong value.");
+    }
 
     double baseRateActiveFullHop;
     input.copyParameter("baseRateActiveFullHop", baseRateActiveFullHop);
+    if(baseRateActiveFullHop<0.0)
+    {
+        throw GeneralException("The parameter baseRateActiveFullHop contains a wrong value.");
+    }
 
     double activeHopToPlusBiasEnergy;
     input.copyParameter("activeHopToPlusBiasEnergy", activeHopToPlusBiasEnergy);
 
     double baseRateZeroToOneExtremitiesConnected;
     input.copyParameter("baseRateZeroToOneExtremitiesConnected", baseRateZeroToOneExtremitiesConnected);
+    if(baseRateZeroToOneExtremitiesConnected<0.0)
+    {
+        throw GeneralException("The parameter baseRateZeroToOneExtremitiesConnected contains a wrong value.");
+    }
 
     double baseRateOneToZeroExtremitiesConnected;
     input.copyParameter("baseRateOneToZeroExtremitiesConnected", baseRateOneToZeroExtremitiesConnected);
+    if(baseRateOneToZeroExtremitiesConnected<0.0)
+    {
+        throw GeneralException("The parameter baseRateOneToZeroExtremitiesConnected contains a wrong value.");
+    }
 
     double baseRateOneToTwoExtremitiesConnected;
     input.copyParameter("baseRateOneToTwoExtremitiesConnected", baseRateOneToTwoExtremitiesConnected);
+    if(baseRateOneToTwoExtremitiesConnected<0.0)
+    {
+        throw GeneralException("The parameter baseRateOneToTwoExtremitiesConnected contains a wrong value.");
+    }
 
     double baseRateTwoToOneExtremitiesConnected;
     input.copyParameter("baseRateTwoToOneExtremitiesConnected", baseRateTwoToOneExtremitiesConnected);
+    if(baseRateTwoToOneExtremitiesConnected<0.0)
+    {
+        throw GeneralException("The parameter baseRateTwoToOneExtremitiesConnected contains a wrong value.");
+    }
 
     double headBindingBiasEnergy;
     input.copyParameter("headBindingBiasEnergy", headBindingBiasEnergy);
@@ -185,9 +281,17 @@ int main()
 
     int32_t timeStepsDisplayInterval;
     input.copyParameter("timeStepsDisplayInterval", timeStepsDisplayInterval);
+    if(showGraphics && timeStepsDisplayInterval<=0)
+    {
+        throw GeneralException("The parameter timeStepsDisplayInterval contains a wrong value.");
+    }
 
     int32_t updateDelayInMilliseconds;
     input.copyParameter("updateDelayInMilliseconds", updateDelayInMilliseconds);
+    if(showGraphics && updateDelayInMilliseconds<0)
+    {
+        throw GeneralException("The parameter updateDelayInMilliseconds contains a wrong value.");
+    }
 
     //=====================================================================================================
     // Using the objects created so far, perform the actions

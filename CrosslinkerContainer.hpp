@@ -128,6 +128,8 @@ public:
     int32_t getNPartialCrosslinkers() const;
     int32_t getNFullCrosslinkers() const;
 
+    int32_t getNFullRightPullingCrosslinkers() const;
+
     #ifdef MYDEBUG
     int32_t getNSitesToBindPartial() const; // Function to test whether algorithm works
     #endif // MYDEBUG
