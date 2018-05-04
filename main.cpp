@@ -39,32 +39,6 @@ int main()
     RandomGenerator generator(runName); // Seed with the runName, which is unique
 
     //-----------------------------------------------------------------------------------------------------
-    // Create the output class
-
-    std::string samplePositionalDistributionString;
-    input.copyParameter("samplePositionalDistribution", samplePositionalDistributionString);
-    const bool samplePositionalDistribution = (samplePositionalDistributionString == "TRUE"); // Whenever it is not TRUE, assume it is false
-
-    double positionalHistogramBinSize;
-    input.copyParameter("positionalHistogramBinSize", positionalHistogramBinSize);
-    if(samplePositionalDistribution&&positionalHistogramBinSize<=0.0)
-    {
-        throw GeneralException("The parameter positionalHistogramBinSize contains a wrong value.");
-    }
-
-    double positionalHistogramLowestValue;
-    input.copyParameter("positionalHistogramLowestValue", positionalHistogramLowestValue);
-
-    double positionalHistogramHighestValue;
-    input.copyParameter("positionalHistogramHighestValue", positionalHistogramHighestValue);
-
-    std::string recordNumberRightPullingLinkersString;
-    input.copyParameter("recordNumberRightPullingLinkers", recordNumberRightPullingLinkersString);
-    const bool recordNumberRightPullingLinkers = (recordNumberRightPullingLinkersString == "TRUE");
-
-    Output output(runName, samplePositionalDistribution, positionalHistogramBinSize, positionalHistogramLowestValue, positionalHistogramHighestValue);
-
-    //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for defining the general systemState.
     double lengthMobileMicrotubule;
     input.copyParameter("lengthMobileMicrotubule", lengthMobileMicrotubule);
@@ -128,6 +102,38 @@ int main()
 
     SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing, maximumStretchPerLatticeSpacing,
                             nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers, springConstant, addTheoreticalCounterForce);
+
+    //-----------------------------------------------------------------------------------------------------
+    // Create the output class. Needs to be done before the propagator, since this needs samplePositionalDistribution as well
+
+    std::string samplePositionalDistributionString;
+    input.copyParameter("samplePositionalDistribution", samplePositionalDistributionString);
+    const bool samplePositionalDistribution = (samplePositionalDistributionString == "TRUE"); // Whenever it is not TRUE, assume it is false
+
+    double positionalHistogramBinSize;
+    input.copyParameter("positionalHistogramBinSize", positionalHistogramBinSize);
+    if(samplePositionalDistribution&&positionalHistogramBinSize<=0.0)
+    {
+        throw GeneralException("The parameter positionalHistogramBinSize contains a wrong value.");
+    }
+
+    double positionalHistogramLowestValue;
+    input.copyParameter("positionalHistogramLowestValue", positionalHistogramLowestValue);
+
+    double positionalHistogramHighestValue;
+    input.copyParameter("positionalHistogramHighestValue", positionalHistogramHighestValue);
+
+    std::string recordNumberRightPullingLinkersString;
+    input.copyParameter("recordNumberRightPullingLinkers", recordNumberRightPullingLinkersString);
+    const bool recordNumberRightPullingLinkers = (recordNumberRightPullingLinkersString == "TRUE");
+
+    Output output(runName,
+                  samplePositionalDistribution,
+                  recordNumberRightPullingLinkers,
+                  positionalHistogramBinSize,
+                  positionalHistogramLowestValue,
+                  positionalHistogramHighestValue,
+                  nActiveCrosslinkers+nDualCrosslinkers+nPassiveCrosslinkers);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for initialising the state.

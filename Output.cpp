@@ -14,7 +14,8 @@ Output::Output(const std::string &runName,
                const bool writeCrosslinkerDirectionData,
                const double positionalHistogramBinSize,
                const double positionalHistogramLowestValue,
-               const double positionalHistogramHighestValue)
+               const double positionalHistogramHighestValue,
+               const int32_t maxNFullCrosslinkers)
     :   m_microtubulePositionFile((runName+".microtubule_position.txt").c_str()),
         m_barrierCrossingTimeFile((runName+".times_barrier_crossings.txt").c_str()),
         m_statisticalAnalysisFile((runName+".statistical_analysis.txt").c_str()),
@@ -57,6 +58,11 @@ Output::Output(const std::string &runName,
         m_crosslinkerDirectionFile << std::left
         << std::setw(m_collumnWidth) << "TIME"
         << std::setw(m_collumnWidth) << "NUMBER RIGHT PULLING LINKERS" << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth
+
+        for(int32_t n = 0; n < maxNFullCrosslinkers; ++n)
+        {
+            m_positionAndConfigurationHistogram.push_back(Histogram(positionalHistogramBinSize, positionalHistogramLowestValue, positionalHistogramHighestValue));
+        }
     }
 }
 
@@ -78,6 +84,18 @@ void Output::writeNRightPullingLinkers(const double time, const SystemState& sys
 void Output::addMicrotubulePositionRemainder(const double remainder)
 {
     m_positionalHistogram.addValue(remainder);
+}
+
+void Output::addPositionAndConfiguration(const double remainder, const int32_t nRightPullingCrosslinkers)
+{
+    try
+    {
+        m_positionAndConfigurationHistogram.at(nRightPullingCrosslinkers).addValue(remainder);
+    }
+    catch(const std::out_of_range& outOfRange)
+    {
+        throw GeneralException(std::string("Output::addPositionAndConfiguration() was called with nRightPullingCrosslinkers out of range: ")+std::string(outOfRange.what()));
+    }
 }
 
 void Output::writeBarrierCrossingTime(const double time)

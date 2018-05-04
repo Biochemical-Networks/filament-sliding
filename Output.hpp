@@ -3,6 +3,8 @@
 
 #include <fstream>
 #include <string>
+#include <vector>
+#include <cstdint>
 
 #include "SystemState.hpp"
 #include "Statistics.hpp"
@@ -19,7 +21,7 @@ private:
     std::ofstream m_barrierCrossingTimeFile;
     std::ofstream m_positionalHistogramFile;
     std::ofstream m_crosslinkerDirectionFile;
-    std::ofstream m_positionAndCrosslinkerHistogramFile;
+    std::ofstream m_positionAndConfigurationHistogramFile;
 
     std::ofstream m_statisticalAnalysisFile;
 
@@ -32,13 +34,17 @@ private:
     const bool m_writePositionalDistribution;
     const bool m_writeCrosslinkerDirectionData;
     Histogram m_positionalHistogram;
+
+    std::vector<Histogram> m_positionAndConfigurationHistogram;
+
 public:
     Output(const std::string &runName,
            const bool writePositionalDistribution,
            const bool writeCrosslinkerDirectionData,
            const double positionalHistogramBinSize,
            const double positionalHistogramLowestValue,
-           const double positionalHistogramHighestValue);
+           const double positionalHistogramHighestValue,
+           const int32_t maxNFullCrosslinkers);
     ~Output();
 
     void newBlock(const int32_t blockNumber);
@@ -48,6 +54,8 @@ public:
     void addMicrotubulePositionRemainder(const double remainder);
 
     void writeNRightPullingLinkers(const double time, const SystemState& systemState);
+
+    void addPositionAndConfiguration(const double remainder, const int32_t nRightPullingCrosslinkers);
 
     void writeBarrierCrossingTime(const double time);
 
