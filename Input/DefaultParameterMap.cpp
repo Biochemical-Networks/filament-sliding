@@ -85,7 +85,7 @@ ParameterMap::ParameterMap()
     // Parameters to turn analysis on or off
     defineParameter("addTheoreticalCounterForce", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("samplePositionalDistribution", "FALSE", "unitless", "TRUE,FALSE");
-    defineParameter("positionalHistogramBinSize", 8.e-3, "micron", ">0");
+    defineParameter("positionalHistogramBinSize", 8.e-5, "micron", ">0");
     defineParameter("positionalHistogramLowestValue", 0.0, "micron");
     defineParameter("positionalHistogramHighestValue", 8.e-3, "micron");
     defineParameter("showGraphics", "FALSE", "unitless", "TRUE,FALSE");
