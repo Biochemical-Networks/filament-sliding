@@ -17,6 +17,7 @@ obj/
 *.statistical_analysis.txt
 *.log.txt
 *.positional_histogram.txt
+*.crosslinker_directionality.txt
 
 
 # No files used by gprof

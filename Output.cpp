@@ -60,7 +60,7 @@ Output::Output(const std::string &runName,
         << std::setw(m_collumnWidth) << "NUMBER RIGHT PULLING LINKERS" << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth
 
         // nR is the number of right pulling linkers
-        for(int32_t nR = 0; nR < maxNFullCrosslinkers; ++nR)
+        for(int32_t nR = 0; nR <= maxNFullCrosslinkers; ++nR) // nR can equal maxNFullCrosslinkers!
         {
             m_positionAndConfigurationHistogram.push_back(Histogram(positionalHistogramBinSize, positionalHistogramLowestValue, positionalHistogramHighestValue));
         }
@@ -145,7 +145,7 @@ void Output::finishWriting()
     if(m_writeCrosslinkerDirectionData)
     {
         // nR is the number of right pulling linkers
-        for(uint32_t nR = 0; nR < m_positionAndConfigurationHistogram.size(); ++nR)
+        for(uint32_t nR = 0; nR <= m_positionAndConfigurationHistogram.size(); ++nR) // nR can equal maxNFullCrosslinkers!
         {
             if(m_positionAndConfigurationHistogram[nR].canReportStatistics())
             {
