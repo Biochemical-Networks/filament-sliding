@@ -59,7 +59,8 @@ Output::Output(const std::string &runName,
         << std::setw(m_collumnWidth) << "TIME"
         << std::setw(m_collumnWidth) << "NUMBER RIGHT PULLING LINKERS" << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth
 
-        for(int32_t n = 0; n < maxNFullCrosslinkers; ++n)
+        // nR is the number of right pulling linkers
+        for(int32_t nR = 0; nR < maxNFullCrosslinkers; ++nR)
         {
             m_positionAndConfigurationHistogram.push_back(Histogram(positionalHistogramBinSize, positionalHistogramLowestValue, positionalHistogramHighestValue));
         }
@@ -139,5 +140,22 @@ void Output::finishWriting()
             << std::setw(m_collumnWidth) << m_positionalHistogram.getSEM() << '\n';
 
         m_positionalHistogramFile << m_positionalHistogram;
+    }
+
+    if(m_writeCrosslinkerDirectionData)
+    {
+        // nR is the number of right pulling linkers
+        for(uint32_t nR = 0; nR < m_positionAndConfigurationHistogram.size(); ++nR)
+        {
+            if(m_positionAndConfigurationHistogram[nR].canReportStatistics())
+            {
+                m_statisticalAnalysisFile << std::setw(m_collumnWidth)
+                    << (std::string("REMAINDER WITH NR=")+std::to_string(nR))
+                    << std::setw(m_collumnWidth) << m_positionAndConfigurationHistogram[nR].getNumberOfSamples()
+                    << std::setw(m_collumnWidth) << m_positionAndConfigurationHistogram[nR].getMean()
+                    << std::setw(m_collumnWidth) << m_positionAndConfigurationHistogram[nR].getVariance()
+                    << std::setw(m_collumnWidth) << m_positionAndConfigurationHistogram[nR].getSEM() << '\n';
+            }
+        }
     }
 }
