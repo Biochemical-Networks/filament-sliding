@@ -38,6 +38,7 @@ private:
     double m_currentReactionRateThreshold; // units s^(-1), so in terms of the (accumulated) rate
 
     const bool m_samplePositionalDistribution;
+    const bool m_recordNumberRightPullingLinkers;
 
     // Store pointers to Reactions in the map m_reactions, because we want to store instances of inherited classes in there. That would not be possible with just the objects.
     // std::unique_ptr deletes the thing it is pointing to when going out of scope, meaning that we don't have to worry about memory leaks
@@ -85,7 +86,8 @@ public:
                const double baseRateTwoToOneExtremitiesConnected,
                const double headBindingBiasEnergy,
                RandomGenerator& generator,
-               const bool samplePositionalDistribution);
+               const bool samplePositionalDistribution,
+               const bool recordNumberRightPullingLinkers);
     ~Propagator();
 
     Propagator(const Propagator&) = delete;

@@ -280,7 +280,8 @@ int main()
                           baseRateTwoToOneExtremitiesConnected,
                           headBindingBiasEnergy,
                           generator,
-                          samplePositionalDistribution);
+                          samplePositionalDistribution,
+                          recordNumberRightPullingLinkers);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the Graphics
