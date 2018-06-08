@@ -760,6 +760,7 @@ void SystemState::updateForceAndEnergy()
     // Force has a minus sign: a positively expanded linker pulls the mobile microtubule to negative values
     m_forceMicrotubule = -m_springConstant*totalExtension;
     m_energy = 0.5*m_springConstant*totalSquaredExtension;
+    m_totalExtensionLinkers = totalExtension; // save, for this can be used by the propagator to integrate the force over the time step (instead of assuming a constant force during it)
 
     // Recalculate the external force every time step, since it can change depending on the position of the microtubule
     m_forceMicrotubule += findExternalForce();
@@ -775,6 +776,12 @@ double SystemState::getEnergy() const
 {
     // call the updateForceAndEnergy function before!
     return m_energy;
+}
+
+double SystemState::getTotalExtensionLinkers() const
+{
+    // call the updateForceAndEnergy function before!
+    return m_totalExtensionLinkers;
 }
 
 double SystemState::findExternalForce() const

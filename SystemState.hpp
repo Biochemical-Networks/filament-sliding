@@ -48,6 +48,7 @@ private:
     // The force on the microtubule is a property of the system as a whole, because it is caused by the crosslinkers and a possible external force
     double m_forceMicrotubule;
     double m_energy;
+    double m_totalExtensionLinkers;
 
     const bool m_addTheoreticalCounterForce;
 
@@ -135,6 +136,8 @@ public:
     double getForce() const;
 
     double getEnergy() const;
+
+    double getTotalExtensionLinkers() const;
 
     #ifdef MYDEBUG
     void TESTunbindAFullCrosslinker(const int32_t which, const Crosslinker::Terminus terminusToDisconnect, const Crosslinker::Type typeToDisconnect);
