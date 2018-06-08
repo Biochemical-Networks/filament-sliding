@@ -51,9 +51,6 @@ private:
     double m_totalExtensionLinkers;
 
     const bool m_addTheoreticalCounterForce;
-
-    double findExternalForce() const;
-
 public:
     SystemState(const double lengthMobileMicrotubule,
                 const double lengthFixedMicrotubule,
@@ -138,6 +135,8 @@ public:
     double getEnergy() const;
 
     double getTotalExtensionLinkers() const;
+
+    double findExternalForce() const;
 
     #ifdef MYDEBUG
     void TESTunbindAFullCrosslinker(const int32_t which, const Crosslinker::Terminus terminusToDisconnect, const Crosslinker::Type typeToDisconnect);

@@ -39,6 +39,7 @@ private:
 
     const bool m_samplePositionalDistribution;
     const bool m_recordNumberRightPullingLinkers;
+    const bool m_addTheoreticalCounterForce;
 
     // Store pointers to Reactions in the map m_reactions, because we want to store instances of inherited classes in there. That would not be possible with just the objects.
     // std::unique_ptr deletes the thing it is pointing to when going out of scope, meaning that we don't have to worry about memory leaks
@@ -87,7 +88,8 @@ public:
                const double headBindingBiasEnergy,
                RandomGenerator& generator,
                const bool samplePositionalDistribution,
-               const bool recordNumberRightPullingLinkers);
+               const bool recordNumberRightPullingLinkers,
+               const bool addTheoreticalCounterForce);
     ~Propagator();
 
     Propagator(const Propagator&) = delete;

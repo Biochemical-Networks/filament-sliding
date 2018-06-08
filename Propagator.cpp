@@ -42,7 +42,8 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const double headBindingBiasEnergy,
                        RandomGenerator& generator,
                        const bool samplePositionalDistribution,
-                       const bool recordNumberRightPullingLinkers)
+                       const bool recordNumberRightPullingLinkers,
+                       const bool addTheoreticalCounterForce)
     :   m_nEquilibrationBlocks(numberEquilibrationBlocks),
         m_nRunBlocks(numberRunBlocks),
         m_nTimeSteps(nTimeSteps),
@@ -54,7 +55,8 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_deviationMicrotubule(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep)),
         m_currentTime(-m_nEquilibrationBlocks*m_nTimeSteps*m_calcTimeStep), // time 0 is the start of the run blocks
         m_samplePositionalDistribution(samplePositionalDistribution),
-        m_recordNumberRightPullingLinkers(recordNumberRightPullingLinkers)
+        m_recordNumberRightPullingLinkers(recordNumberRightPullingLinkers),
+        m_addTheoreticalCounterForce(addTheoreticalCounterForce)
 {
     // objects in std::initializer_list are inherently const, so std::unique_ptr's copy constructor cannot be used there, and we cannot use this method of initialising m_reactions.
     // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
@@ -194,6 +196,11 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
     // m_diffusionConstantMicrotubule*systemState.getForce()*m_calcTimeStep
     // use the expm1 function to prevent catastrophic cancellation for very small numbers.
     double deterministicChange = totalExtension/numberFullLinkers*std::expm1(-numberFullLinkers*m_springConstant*m_diffusionConstantMicrotubule*m_calcTimeStep);
+
+    if(m_addTheoreticalCounterForce)
+    {
+        deterministicChange += m_diffusionConstantMicrotubule*systemState.findExternalForce()*m_calcTimeStep;
+    }
 
     // Check if the deterministic change is breaking the boundaries; if so: place the particle just on the proper side of the boundary
     if (deterministicChange<=exclusiveMovementBorders.first)

@@ -281,7 +281,8 @@ int main()
                           headBindingBiasEnergy,
                           generator,
                           samplePositionalDistribution,
-                          recordNumberRightPullingLinkers);
+                          recordNumberRightPullingLinkers,
+                          addTheoreticalCounterForce);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the Graphics
