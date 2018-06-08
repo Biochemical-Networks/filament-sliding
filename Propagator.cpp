@@ -177,39 +177,66 @@ void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& gene
 void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& generator)
 {
     std::pair<double,double> exclusiveMovementBorders = systemState.movementBordersSetByFullLinkers();
-    double change;
-    /* Ask the generator to propose a change to update the position of the microtubule.
-     * Repeat until the proposed change is within the allowed range of movement set by the full linkers, which have a maximum stretch.
-     * The repetition should not happen too often: this means that the time step cannot be too big.
-     * For a maxStretch of 1.5 latticeSpacing, there is a guaranteed open interval of possible changes of the size of one lattice spacing.
-     * For time steps small enough, such that the usually proposed changes are small, this function will not repeat often, even for very stretched conformations.
-     * Hence, the repetition is a proper choice for the updating algorithm.
-     */
+
+    // The mean should be proportional to the force (overdamped system)
+    // mean change = mobility*force*timeStep
+    // units:   [timeStep] = s
+    //          [force] = (kT)*micron^(-1)
+    //          [mobility] = micron^(2)*(kT)^(-1)*s^(-1)
+    // In these units, mobility has the same value as the diffusion constant, which has units micron^(2)*s^(-1), and mobility = D/(kT)
+
+    // First, propose a change due to the deterministic force.
+    // To this end, integrate the force over the positions.
+
+    const double totalExtension = systemState.getTotalExtensionLinkers();
+    const double numberFullLinkers = static_cast<double>(systemState.getNFullCrosslinkers());
+    // The integrated change is given by the following (exponential minus one) function (see notes), which for small time steps reduces to:
+    // m_diffusionConstantMicrotubule*systemState.getForce()*m_calcTimeStep
+    // use the expm1 function to prevent catastrophic cancellation for very small numbers.
+    double deterministicChange = totalExtension/numberFullLinkers*std::expm1(-numberFullLinkers*m_springConstant*m_diffusionConstantMicrotubule*m_calcTimeStep);
+
+    // Check if the deterministic change is breaking the boundaries; if so: place the particle just on the proper side of the boundary
+    if (deterministicChange<=exclusiveMovementBorders.first)
+    {
+        deterministicChange = std::nextafter(exclusiveMovementBorders.first, exclusiveMovementBorders.second);
+    }
+    else if (deterministicChange>=exclusiveMovementBorders.second)
+    {
+        deterministicChange = std::nextafter(exclusiveMovementBorders.second, exclusiveMovementBorders.first);
+    }
 
     #ifdef MYDEBUG
-    std::cout << exclusiveMovementBorders.first << " " << exclusiveMovementBorders.second << std::endl;
-    int32_t trial = 0;
+    if (deterministicChange<=exclusiveMovementBorders.first || deterministicChange>=exclusiveMovementBorders.second)
+    {
+        throw GeneralException("In Propagator::moveMicrotubule(), the deterministic change was outside of the allowed zone.");
+    }
     #endif // MYDEBUG
 
-    do
-    {
-        // The mean should be proportional to the force (overdamped system)
-        // mean change = mobility*force*timeStep
-        // units:   [timeStep] = s
-        //          [force] = (kT)*micron^(-1)
-        //          [mobility] = micron^(2)*(kT)^(-1)*s^(-1)
-        // In these units, mobility has the same value as the diffusion constant, which has units micron^(2)*s^(-1), and mobility = D/(kT)
-        change = generator.getGaussian(m_diffusionConstantMicrotubule*systemState.getForce()*m_calcTimeStep, m_deviationMicrotubule);
+    // update the exclusiveMovementBorders, such that they are now relative to the new position after the deterministic change
+    exclusiveMovementBorders.first -= deterministicChange;
+    exclusiveMovementBorders.second -= deterministicChange;
 
+    // Use a reflecting boundary condition for the random change. First, calculate the Gaussian change.
+    double randomChange = generator.getGaussian(0.0, m_deviationMicrotubule);
+
+    // If the change breaks a barrier, reflect it around that barrier.
+    // The while loop is there to check if a double reflection is necessary (this should really never happen, so while acts as an if here)
+    while (randomChange<=exclusiveMovementBorders.first || randomChange>=exclusiveMovementBorders.second)
+    {
+        if(randomChange<=exclusiveMovementBorders.first)
+        {
+            randomChange = 2*exclusiveMovementBorders.first-randomChange;
+        }
+        if(randomChange>=exclusiveMovementBorders.second)
+        {
+            randomChange = 2*exclusiveMovementBorders.second-randomChange;
+        }
         #ifdef MYDEBUG
-        ++trial;
-        std::cout << "Trial number: "<< trial << '\n';
-        std::cout << "Proposed change: " << change << '\n';
+        std::cout << "A reflection took place!\n";
         #endif // MYDEBUG
     }
-    while (change<=exclusiveMovementBorders.first || change>=exclusiveMovementBorders.second);
 
-    systemState.updateMobilePosition(change);
+    systemState.updateMobilePosition(deterministicChange+randomChange);
     systemState.updateForceAndEnergy();
 }
 
