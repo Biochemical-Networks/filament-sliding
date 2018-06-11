@@ -202,7 +202,7 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
         deterministicChange += m_diffusionConstantMicrotubule*systemState.findExternalForce()*m_calcTimeStep;
     }
 
-    /*// Check if the deterministic change is breaking the boundaries; if so: place the particle just on the proper side of the boundary
+    // Check if the deterministic change is breaking the boundaries; if so: place the particle just on the proper side of the boundary
     if (deterministicChange<=exclusiveMovementBorders.first)
     {
         deterministicChange = std::nextafter(exclusiveMovementBorders.first, exclusiveMovementBorders.second);
@@ -223,7 +223,7 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
     exclusiveMovementBorders.first -= deterministicChange;
     exclusiveMovementBorders.second -= deterministicChange;
 
-    // With the above code, the below code was:
+    // Use a reflecting boundary condition for the random change. First, calculate the Gaussian change.
     double randomChange = generator.getGaussian(0.0, m_deviationMicrotubule);
 
     // If the change breaks a barrier, reflect it around that barrier.
@@ -244,30 +244,6 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
     }
 
     systemState.updateMobilePosition(deterministicChange+randomChange);
-    systemState.updateForceAndEnergy();
-    */
-
-    // Use a reflecting boundary condition for the random change. First, calculate the Gaussian change.
-    double change = generator.getGaussian(deterministicChange, m_deviationMicrotubule);
-
-    // If the change breaks a barrier, reflect it around that barrier.
-    // The while loop is there to check if a double reflection is necessary (this should really never happen, so while acts as an if here)
-    while (change<=exclusiveMovementBorders.first || change>=exclusiveMovementBorders.second)
-    {
-        if(change<=exclusiveMovementBorders.first)
-        {
-            change = 2*exclusiveMovementBorders.first-change;
-        }
-        if(change>=exclusiveMovementBorders.second)
-        {
-            change = 2*exclusiveMovementBorders.second-change;
-        }
-        #ifdef MYDEBUG
-        std::cout << "A reflection took place!\n";
-        #endif // MYDEBUG
-    }
-
-    systemState.updateMobilePosition(change);
     systemState.updateForceAndEnergy();
 }
 
