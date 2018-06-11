@@ -282,7 +282,8 @@ int main()
                           generator,
                           samplePositionalDistribution,
                           recordNumberRightPullingLinkers,
-                          addTheoreticalCounterForce);
+                          addTheoreticalCounterForce,
+                          log);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the Graphics

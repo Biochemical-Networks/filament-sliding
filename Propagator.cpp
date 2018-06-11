@@ -43,7 +43,8 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        RandomGenerator& generator,
                        const bool samplePositionalDistribution,
                        const bool recordNumberRightPullingLinkers,
-                       const bool addTheoreticalCounterForce)
+                       const bool addTheoreticalCounterForce,
+                       Log& log)
     :   m_nEquilibrationBlocks(numberEquilibrationBlocks),
         m_nRunBlocks(numberRunBlocks),
         m_nTimeSteps(nTimeSteps),
@@ -56,7 +57,9 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_currentTime(-m_nEquilibrationBlocks*m_nTimeSteps*m_calcTimeStep), // time 0 is the start of the run blocks
         m_samplePositionalDistribution(samplePositionalDistribution),
         m_recordNumberRightPullingLinkers(recordNumberRightPullingLinkers),
-        m_addTheoreticalCounterForce(addTheoreticalCounterForce)
+        m_addTheoreticalCounterForce(addTheoreticalCounterForce),
+        m_nDeterministicBoundaryCrossings(0), // Counts the number of times a force has tried to push the mobile microtubule across a maximum stretch barrier
+        m_log(log)
 {
     // objects in std::initializer_list are inherently const, so std::unique_ptr's copy constructor cannot be used there, and we cannot use this method of initialising m_reactions.
     // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
@@ -96,6 +99,8 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
 
 Propagator::~Propagator()
 {
+    // Since log has to be declared before propagator (the latter uses the former), log will be destroyed after propagator. So the following code is valid:
+    m_log.writeBoundaryProtocolAppearance(m_nDeterministicBoundaryCrossings);
 }
 
 void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& generator, Output& output, const bool writeOutput, const int32_t nTimeSteps)
@@ -206,10 +211,12 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
     if (deterministicChange<=exclusiveMovementBorders.first)
     {
         deterministicChange = std::nextafter(exclusiveMovementBorders.first, exclusiveMovementBorders.second);
+        ++m_nDeterministicBoundaryCrossings;
     }
     else if (deterministicChange>=exclusiveMovementBorders.second)
     {
         deterministicChange = std::nextafter(exclusiveMovementBorders.second, exclusiveMovementBorders.first);
+        ++m_nDeterministicBoundaryCrossings;
     }
 
     #ifdef MYDEBUG
@@ -333,6 +340,11 @@ Reaction& Propagator::getReactionToHappen(RandomGenerator& generator) const
     }
 
     throw GeneralException("Something went wrong in Propagator::getReactionToHappen()");
+}
+
+int32_t Propagator::getNDeterministicBoundaryCrossings() const
+{
+    return m_nDeterministicBoundaryCrossings;
 }
 
 

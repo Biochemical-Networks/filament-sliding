@@ -10,6 +10,7 @@
 #include "RandomGenerator.hpp"
 #include "Output.hpp"
 #include "Reaction.hpp"
+#include "Log.hpp"
 
 /* Propagator takes a SystemState, which is properly initialised, and propagates its dynamics.
  * In the process, it can report about the current SystemState, for example about the microtubule position.
@@ -40,6 +41,9 @@ private:
     const bool m_samplePositionalDistribution;
     const bool m_recordNumberRightPullingLinkers;
     const bool m_addTheoreticalCounterForce;
+
+    int32_t m_nDeterministicBoundaryCrossings;
+    Log& m_log;
 
     // Store pointers to Reactions in the map m_reactions, because we want to store instances of inherited classes in there. That would not be possible with just the objects.
     // std::unique_ptr deletes the thing it is pointing to when going out of scope, meaning that we don't have to worry about memory leaks
@@ -89,7 +93,8 @@ public:
                RandomGenerator& generator,
                const bool samplePositionalDistribution,
                const bool recordNumberRightPullingLinkers,
-               const bool addTheoreticalCounterForce);
+               const bool addTheoreticalCounterForce,
+               Log& log);
     ~Propagator();
 
     Propagator(const Propagator&) = delete;
@@ -99,6 +104,8 @@ public:
     void run(SystemState& systemState, RandomGenerator& generator, Output& output);
     void equilibrate(SystemState& systemState, RandomGenerator& generator, Output& output);
     void propagateGraphicsInterval(SystemState& systemState, RandomGenerator& generator, Output& output, const int32_t nTimeStepsInterval);
+
+    int32_t getNDeterministicBoundaryCrossings() const;
 };
 
 #endif // PROPAGATOR_HPP

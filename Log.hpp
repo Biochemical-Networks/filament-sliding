@@ -14,6 +14,8 @@ private:
 public:
     Log(const std::string &runName, const Clock& clock);
     ~Log();
+
+    void writeBoundaryProtocolAppearance(const int32_t number);
 };
 
 #endif // LOG_HPP
