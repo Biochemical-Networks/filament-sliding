@@ -28,7 +28,7 @@ private:
     const int32_t m_nRunBlocks;
     const int32_t m_nTimeSteps;
     const double m_calcTimeStep;
-    const int32_t m_probePeriod; // Holds the number of time steps that are between two probes of the system, meaning that data will be written every so many time steps
+    const int32_t m_positionProbePeriod; // Holds the number of time steps that are between two probes of the system, meaning that data will be written every so many time steps
     const double m_diffusionConstantMicrotubule;
     const double m_springConstant;
     const double m_latticeSpacing;
@@ -40,6 +40,7 @@ private:
 
     const bool m_samplePositionalDistribution;
     const bool m_recordTransitionPaths;
+    const int32_t m_transitionPathProbePeriod;
     const bool m_addTheoreticalCounterForce;
 
     int32_t m_nDeterministicBoundaryCrossings;
@@ -71,6 +72,8 @@ private:
 
     void propagateBlock(SystemState& systemState, RandomGenerator& generator, Output& output, const bool writeOutput, const int32_t nTimeSteps);
 
+    bool inBasinOfAttraction(const double mobilePosition, const int32_t nRightPullingCrosslinkers) const;
+
 public:
     Propagator(const int32_t numberEquilibrationBlocks,
                const int32_t numberRunBlocks,
@@ -93,6 +96,7 @@ public:
                RandomGenerator& generator,
                const bool samplePositionalDistribution,
                const bool recordTransitionPaths,
+               const int32_t transitionPathProbePeriod,
                const bool addTheoreticalCounterForce,
                Log& log);
     ~Propagator();

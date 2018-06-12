@@ -10,6 +10,7 @@
 #include "SystemState.hpp"
 #include "Statistics.hpp"
 #include "Histogram.hpp"
+#include "TransitionPath.hpp"
 
 /* Output contains all output files, and contains functions to output information to those.
  * Further, it can do some data analysis. The results of this should then also be stored in a file.
@@ -35,6 +36,9 @@ private:
     const bool m_writePositionalDistribution;
     const bool m_recordTransitionPaths;
 
+    int32_t m_nWrittenTransitionPaths;
+    TransitionPath m_currentTransitionPath;
+
     std::unique_ptr<Histogram> mp_positionalHistogram;
     std::vector<Histogram> m_positionAndConfigurationHistogram;
 
@@ -57,6 +61,12 @@ public:
     void addPositionAndConfiguration(const double remainder, const int32_t nRightPullingCrosslinkers);
 
     void writeBarrierCrossingTime(const double time);
+
+    void addPointTransitionPath(const double time, const double mobilePosition, const int32_t nRightPullingCrosslinkers);
+
+    void writeTransitionPath();
+
+    void cleanTransitionPath();
 
     void finishWriting();
 };

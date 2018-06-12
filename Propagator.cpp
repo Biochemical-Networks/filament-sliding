@@ -26,7 +26,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const int32_t numberRunBlocks,
                        const int32_t nTimeSteps,
                        const double calcTimeStep,
-                       const int32_t probePeriod,
+                       const int32_t positionProbePeriod,
                        const double diffusionConstantMicrotubule,
                        const double springConstant,
                        const double latticeSpacing,
@@ -43,13 +43,14 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        RandomGenerator& generator,
                        const bool samplePositionalDistribution,
                        const bool recordTransitionPaths,
+                       const int32_t transitionPathProbePeriod,
                        const bool addTheoreticalCounterForce,
                        Log& log)
     :   m_nEquilibrationBlocks(numberEquilibrationBlocks),
         m_nRunBlocks(numberRunBlocks),
         m_nTimeSteps(nTimeSteps),
         m_calcTimeStep(calcTimeStep),
-        m_probePeriod(probePeriod),
+        m_positionProbePeriod(positionProbePeriod),
         m_diffusionConstantMicrotubule(diffusionConstantMicrotubule),
         m_springConstant(springConstant),
         m_latticeSpacing(latticeSpacing),
@@ -57,6 +58,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_currentTime(-m_nEquilibrationBlocks*m_nTimeSteps*m_calcTimeStep), // time 0 is the start of the run blocks
         m_samplePositionalDistribution(samplePositionalDistribution),
         m_recordTransitionPaths(recordTransitionPaths),
+        m_transitionPathProbePeriod(transitionPathProbePeriod),
         m_addTheoreticalCounterForce(addTheoreticalCounterForce),
         m_nDeterministicBoundaryCrossings(0), // Counts the number of times a force has tried to push the mobile microtubule across a maximum stretch barrier
         m_log(log)
@@ -109,17 +111,25 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
     {
         if(writeOutput)
         {
-            if(timeStep%m_probePeriod==0)
+            if(timeStep%m_positionProbePeriod==0)
             {
                 output.writeMicrotubulePosition(m_currentTime, systemState); // writes the position and the number of crosslinkers (the order parameters)
             }
-            // Add the microtubule positions more often than the m_probePeriod, since it is not directly written to a file (not slow), and it requires much data.
+            // Add the microtubule positions more often than the m_positionProbePeriod, since it is not directly written to a file (not slow), and it requires much data.
             if(m_samplePositionalDistribution)
             {
                 output.addMicrotubulePositionRemainder(MathematicalFunctions::mod(systemState.getMicrotubulePosition(), m_latticeSpacing));
 
                 output.addPositionAndConfiguration(MathematicalFunctions::mod(systemState.getMicrotubulePosition(), m_latticeSpacing),
                                                    systemState.getNFullRightPullingCrosslinkers());
+            }
+
+            if(m_recordTransitionPaths && timeStep%m_transitionPathProbePeriod==0)
+            {
+                const double position = systemState.getMicrotubulePosition();
+                const int32_t nRightLinkers = systemState.getNFullRightPullingCrosslinkers();
+                if()
+                output.addPointTransitionPath(m_currentTime, position, nRightLinkers);
             }
         }
 
@@ -131,6 +141,12 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
             if(writeOutput){output.writeBarrierCrossingTime(m_currentTime);}
         }
     }
+}
+
+bool Propagator::inBasinOfAttraction(const double mobilePosition, const int32_t nRightPullingCrosslinkers) const
+{
+    const double remainder = mobilePosition%m_latticeSpacing;
+    bla
 }
 
 void Propagator::equilibrate(SystemState& systemState, RandomGenerator& generator, Output& output)

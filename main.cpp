@@ -203,11 +203,18 @@ int main()
         throw GeneralException("The parameter calcTimeStep contains a wrong value.");
     }
 
-    int32_t probePeriod;
-    input.copyParameter("probePeriod", probePeriod);
-    if(probePeriod<=0)
+    int32_t positionProbePeriod;
+    input.copyParameter("positionProbePeriod", positionProbePeriod);
+    if(positionProbePeriod<=0)
     {
-        throw GeneralException("The parameter probePeriod contains a wrong value.");
+        throw GeneralException("The parameter positionProbePeriod contains a wrong value.");
+    }
+
+    int32_t transitionPathProbePeriod;
+    input.copyParameter("transitionPathProbePeriod", transitionPathProbePeriod);
+    if(transitionPathProbePeriod<=0)
+    {
+        throw GeneralException("The parameter transitionPathProbePeriod contains a wrong value.");
     }
 
     double diffusionConstantMicrotubule;
@@ -292,7 +299,7 @@ int main()
                           numberRunBlocks,
                           nTimeSteps,
                           calcTimeStep,
-                          probePeriod,
+                          positionProbePeriod,
                           diffusionConstantMicrotubule,
                           springConstant,
                           latticeSpacing,
@@ -309,6 +316,7 @@ int main()
                           generator,
                           samplePositionalDistribution,
                           recordTransitionPaths,
+                          transitionPathProbePeriod,
                           addTheoreticalCounterForce,
                           log);
 

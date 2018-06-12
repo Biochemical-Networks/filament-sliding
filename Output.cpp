@@ -24,7 +24,8 @@ Output::Output(const std::string &runName,
         m_collumnWidth(OutputParameters::collumnWidth),
         m_lastCrossingTime(0), // Time 0 indicates the beginning of the run blocks, after which we start writing data
         m_writePositionalDistribution(writePositionalDistribution),
-        m_recordTransitionPaths(recordTransitionPaths)
+        m_recordTransitionPaths(recordTransitionPaths),
+        m_nWrittenTransitionPaths(0)
 {
     m_microtubulePositionFile << std::left
         << std::setw(m_collumnWidth) << "TIME"
@@ -69,12 +70,12 @@ Output::Output(const std::string &runName,
 
     if(m_recordTransitionPaths)
     {
-        /*// Only open the file here, not in the constructor initialization list, since the file should only be created if m_writeCrosslinkerDirectionData is set to true.
-        m_crosslinkerDirectionFile.open((runName+".crosslinker_directionality.txt").c_str());
-        m_crosslinkerDirectionFile << std::left
+        // Only open the file here, not in the constructor initialization list, since the file should only be created if m_recordTransitionPaths is set to true.
+        m_transitionPathFile.open((runName+".transition_paths.txt").c_str());
+        m_transitionPathFile << std::left
         << std::setw(m_collumnWidth) << "TIME"
-        << std::setw(m_collumnWidth) << "NUMBER RIGHT PULLING LINKERS" << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth*/
-        int32_t bla;
+        << std::setw(m_collumnWidth) << "POSITION"
+        << std::setw(m_collumnWidth) << "NUMBER RIGHT PULLING LINKERS" << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth
     }
 }
 
@@ -127,6 +128,31 @@ void Output::newBlock(const int32_t blockNumber)
     m_barrierCrossingTimeFile << message.str();
 }
 
+void Output::addPointTransitionPath(const double time, const double mobilePosition, const int32_t nRightPullingCrosslinkers)
+{
+    m_currentTransitionPath.addPoint(time, mobilePosition, nRightPullingCrosslinkers);
+}
+
+void Output::writeTransitionPath()
+{
+    #ifdef MYDEBUG
+    if(!m_recordTransitionPaths)
+    {
+        throw GeneralException("Output::writeTransitionPath() was called, but recordTransitionPaths is set to FALSE.");
+    }
+    #endif // MYDEBUG
+
+    m_transitionPathFile << "New transition path; path number: " << m_nWrittenTransitionPaths << '\n';
+    m_transitionPathFile << m_currentTransitionPath;
+    m_currentTransitionPath.clean();
+    ++m_nWrittenTransitionPaths;
+}
+
+void Output::cleanTransitionPath()
+{
+    m_currentTransitionPath.clean();
+}
+
 void Output::finishWriting()
 {
     if(m_crossingTimeStatistics.canReportStatistics())
@@ -168,12 +194,5 @@ void Output::finishWriting()
                 m_positionAndConfigurationHistogramFile << m_positionAndConfigurationHistogram[nR];
             }
         }
-    }
-
-
-
-    if(m_recordTransitionPaths)
-    {
-        int32_t bla;
     }
 }

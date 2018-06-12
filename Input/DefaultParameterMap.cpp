@@ -21,7 +21,7 @@ ParameterMap::ParameterMap()
     defineParameter("numberRunBlocks", 1, "blocks", ">=0");
     defineParameter("calcTimeStep", 1.e-7, "s", ">0");
     defineParameter("timeStepsPerBlock", 20000, "steps", ">0");
-    defineParameter("probePeriod", 10000, "steps", ">0");
+    defineParameter("positionProbePeriod", 10000, "steps", ">0");
 
     // General state parameters
     defineParameter("lengthMobileMicrotubule", 1., "micron", ">0");
@@ -93,4 +93,5 @@ ParameterMap::ParameterMap()
     defineParameter("timeStepsDisplayInterval", 10000, "steps", ">0");
     defineParameter("updateDelayInMilliseconds", 100, "milliseconds", ">=0");
     defineParameter("recordTransitionPaths", "FALSE", "unitless", "TRUE,FALSE");
+    defineParameter("transitionPathProbePeriod", 100, "steps", ">0");
 }
