@@ -39,7 +39,7 @@ private:
     double m_currentReactionRateThreshold; // units s^(-1), so in terms of the (accumulated) rate
 
     const bool m_samplePositionalDistribution;
-    const bool m_recordNumberRightPullingLinkers;
+    const bool m_recordTransitionPaths;
     const bool m_addTheoreticalCounterForce;
 
     int32_t m_nDeterministicBoundaryCrossings;
@@ -92,7 +92,7 @@ public:
                const double headBindingBiasEnergy,
                RandomGenerator& generator,
                const bool samplePositionalDistribution,
-               const bool recordNumberRightPullingLinkers,
+               const bool recordTransitionPaths,
                const bool addTheoreticalCounterForce,
                Log& log);
     ~Propagator();

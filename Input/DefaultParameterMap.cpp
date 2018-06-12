@@ -76,6 +76,7 @@ ParameterMap::ParameterMap()
     // This is because we assume that the transitions to and from a HEAD state are similar to the transitions to and from a TAIL state.
     // Specifically, we let the base rates equal each other, and only make them differ through a bias energy; there is no difference in the energy barriers.
     // For more information, including solutions to the equations, see the document "Crosslink_Mapping_Binding_Rates_Bias_Energy.pdf"
+    defineParameter("bindingDynamics", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("baseRateZeroToOneExtremitiesConnected", 0.0, "s^(-1)", ">=0");
     defineParameter("baseRateOneToZeroExtremitiesConnected", 0.0, "s^(-1)", ">=0");
     defineParameter("baseRateOneToTwoExtremitiesConnected", 0.0, "s^(-1)", ">=0");
@@ -91,5 +92,5 @@ ParameterMap::ParameterMap()
     defineParameter("showGraphics", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("timeStepsDisplayInterval", 10000, "steps", ">0");
     defineParameter("updateDelayInMilliseconds", 100, "milliseconds", ">=0");
-    defineParameter("recordNumberRightPullingLinkers", "FALSE", "unitless", "TRUE,FALSE");
+    defineParameter("recordTransitionPaths", "FALSE", "unitless", "TRUE,FALSE");
 }

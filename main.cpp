@@ -12,7 +12,7 @@
 #include <iostream>
 #include <cstdint>
 #include <string>
-
+#include <algorithm>
 
 #include "Crosslinker.hpp"
 
@@ -123,17 +123,35 @@ int main()
     double positionalHistogramHighestValue;
     input.copyParameter("positionalHistogramHighestValue", positionalHistogramHighestValue);
 
-    std::string recordNumberRightPullingLinkersString;
-    input.copyParameter("recordNumberRightPullingLinkers", recordNumberRightPullingLinkersString);
-    const bool recordNumberRightPullingLinkers = (recordNumberRightPullingLinkersString == "TRUE");
+    std::string recordTransitionPathsString;
+    input.copyParameter("recordTransitionPaths", recordTransitionPathsString);
+    const bool recordTransitionPaths = (recordTransitionPathsString == "TRUE");
+
+    std::string bindingDynamicsString;
+    input.copyParameter("bindingDynamics", bindingDynamicsString);
+    const bool bindingDynamics = (bindingDynamicsString == "TRUE");
+
+    int32_t maxNFullCrosslinkers;
+    if(bindingDynamics)
+    {
+        maxNFullCrosslinkers = std::min(systemState.getNFreeSitesFixed(), systemState.getNFreeSitesMobile());
+    }
+    else
+    {
+        maxNFullCrosslinkers = nActiveCrosslinkers+nDualCrosslinkers+nPassiveCrosslinkers;
+    }
+
+    #ifdef MYDEBUG
+    std::cout << "The maximum number of full linkers is given by " << maxNFullCrosslinkers << ".\n";
+    #endif // MYDEBUG
 
     Output output(runName,
                   samplePositionalDistribution,
-                  recordNumberRightPullingLinkers,
+                  recordTransitionPaths,
                   positionalHistogramBinSize,
                   positionalHistogramLowestValue,
                   positionalHistogramHighestValue,
-                  nActiveCrosslinkers+nDualCrosslinkers+nPassiveCrosslinkers);
+                  maxNFullCrosslinkers);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for initialising the state.
@@ -232,30 +250,39 @@ int main()
 
     double baseRateZeroToOneExtremitiesConnected;
     input.copyParameter("baseRateZeroToOneExtremitiesConnected", baseRateZeroToOneExtremitiesConnected);
-    if(baseRateZeroToOneExtremitiesConnected<0.0 || (recordNumberRightPullingLinkers && baseRateZeroToOneExtremitiesConnected!=0.0))
+    if(baseRateZeroToOneExtremitiesConnected<0.0)
     {
-        throw GeneralException("The parameter baseRateZeroToOneExtremitiesConnected contains a wrong value, or is nonzero when recordNumberRightPullingLinkers is TRUE.");
+        throw GeneralException("The parameter baseRateZeroToOneExtremitiesConnected contains a wrong value.");
     }
 
     double baseRateOneToZeroExtremitiesConnected;
     input.copyParameter("baseRateOneToZeroExtremitiesConnected", baseRateOneToZeroExtremitiesConnected);
-    if(baseRateOneToZeroExtremitiesConnected<0.0 || (recordNumberRightPullingLinkers && baseRateOneToZeroExtremitiesConnected!=0.0))
+    if(baseRateOneToZeroExtremitiesConnected<0.0)
     {
-        throw GeneralException("The parameter baseRateOneToZeroExtremitiesConnected contains a wrong value, or is nonzero when recordNumberRightPullingLinkers is TRUE.");
+        throw GeneralException("The parameter baseRateOneToZeroExtremitiesConnected contains a wrong value.");
     }
 
     double baseRateOneToTwoExtremitiesConnected;
     input.copyParameter("baseRateOneToTwoExtremitiesConnected", baseRateOneToTwoExtremitiesConnected);
-    if(baseRateOneToTwoExtremitiesConnected<0.0 || (recordNumberRightPullingLinkers && baseRateOneToTwoExtremitiesConnected!=0.0))
+    if(baseRateOneToTwoExtremitiesConnected<0.0)
     {
-        throw GeneralException("The parameter baseRateOneToTwoExtremitiesConnected contains a wrong value, or is nonzero when recordNumberRightPullingLinkers is TRUE.");
+        throw GeneralException("The parameter baseRateOneToTwoExtremitiesConnected contains a wrong value.");
     }
 
     double baseRateTwoToOneExtremitiesConnected;
     input.copyParameter("baseRateTwoToOneExtremitiesConnected", baseRateTwoToOneExtremitiesConnected);
-    if(baseRateTwoToOneExtremitiesConnected<0.0 || (recordNumberRightPullingLinkers && baseRateTwoToOneExtremitiesConnected!=0.0))
+    if(baseRateTwoToOneExtremitiesConnected<0.0)
     {
-        throw GeneralException("The parameter baseRateTwoToOneExtremitiesConnected contains a wrong value, or is nonzero when recordNumberRightPullingLinkers is TRUE.");
+        throw GeneralException("The parameter baseRateTwoToOneExtremitiesConnected contains a wrong value.");
+    }
+
+    // Force the (un)binding rates to zero when binding dynamics is turned off, because then the maximum number of full linkers can be properly set before
+    if(!bindingDynamics)
+    {
+        baseRateZeroToOneExtremitiesConnected = 0.0;
+        baseRateOneToZeroExtremitiesConnected = 0.0;
+        baseRateOneToTwoExtremitiesConnected = 0.0;
+        baseRateTwoToOneExtremitiesConnected = 0.0;
     }
 
     double headBindingBiasEnergy;
@@ -281,7 +308,7 @@ int main()
                           headBindingBiasEnergy,
                           generator,
                           samplePositionalDistribution,
-                          recordNumberRightPullingLinkers,
+                          recordTransitionPaths,
                           addTheoreticalCounterForce,
                           log);
 

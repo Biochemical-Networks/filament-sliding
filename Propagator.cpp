@@ -42,7 +42,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const double headBindingBiasEnergy,
                        RandomGenerator& generator,
                        const bool samplePositionalDistribution,
-                       const bool recordNumberRightPullingLinkers,
+                       const bool recordTransitionPaths,
                        const bool addTheoreticalCounterForce,
                        Log& log)
     :   m_nEquilibrationBlocks(numberEquilibrationBlocks),
@@ -56,7 +56,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_deviationMicrotubule(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep)),
         m_currentTime(-m_nEquilibrationBlocks*m_nTimeSteps*m_calcTimeStep), // time 0 is the start of the run blocks
         m_samplePositionalDistribution(samplePositionalDistribution),
-        m_recordNumberRightPullingLinkers(recordNumberRightPullingLinkers),
+        m_recordTransitionPaths(recordTransitionPaths),
         m_addTheoreticalCounterForce(addTheoreticalCounterForce),
         m_nDeterministicBoundaryCrossings(0), // Counts the number of times a force has tried to push the mobile microtubule across a maximum stretch barrier
         m_log(log)
@@ -111,19 +111,13 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
         {
             if(timeStep%m_probePeriod==0)
             {
-                output.writeMicrotubulePosition(m_currentTime, systemState);
-                if(m_recordNumberRightPullingLinkers)
-                {
-                    output.writeNRightPullingLinkers(m_currentTime, systemState);
-                }
+                output.writeMicrotubulePosition(m_currentTime, systemState); // writes the position and the number of crosslinkers (the order parameters)
             }
             // Add the microtubule positions more often than the m_probePeriod, since it is not directly written to a file (not slow), and it requires much data.
             if(m_samplePositionalDistribution)
             {
                 output.addMicrotubulePositionRemainder(MathematicalFunctions::mod(systemState.getMicrotubulePosition(), m_latticeSpacing));
-            }
-            if(m_recordNumberRightPullingLinkers)
-            {
+
                 output.addPositionAndConfiguration(MathematicalFunctions::mod(systemState.getMicrotubulePosition(), m_latticeSpacing),
                                                    systemState.getNFullRightPullingCrosslinkers());
             }
@@ -134,7 +128,7 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
         // Check if a barrier crossing took place
         if(systemState.barrierCrossed())
         {
-                if(writeOutput){output.writeBarrierCrossingTime(m_currentTime);}
+            if(writeOutput){output.writeBarrierCrossingTime(m_currentTime);}
         }
     }
 }
