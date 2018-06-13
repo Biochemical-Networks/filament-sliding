@@ -61,7 +61,8 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_transitionPathProbePeriod(transitionPathProbePeriod),
         m_addTheoreticalCounterForce(addTheoreticalCounterForce),
         m_nDeterministicBoundaryCrossings(0), // Counts the number of times a force has tried to push the mobile microtubule across a maximum stretch barrier
-        m_log(log)
+        m_log(log),
+        m_basinOfAttractionHalfWidth(0.15*m_latticeSpacing)
 {
     // objects in std::initializer_list are inherently const, so std::unique_ptr's copy constructor cannot be used there, and we cannot use this method of initialising m_reactions.
     // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
@@ -128,8 +129,22 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
             {
                 const double position = systemState.getMicrotubulePosition();
                 const int32_t nRightLinkers = systemState.getNFullRightPullingCrosslinkers();
-                if()
-                output.addPointTransitionPath(m_currentTime, position, nRightLinkers);
+                const int32_t nFullLinkers = systemState.getNFullCrosslinkers();
+
+                if(!inBasinOfAttraction(position, nRightLinkers, nFullLinkers)))
+                {
+                    if(!output.isTrackingPath())
+                    {
+                        output.toggleTracking();
+                    }
+
+                    output.addPointTransitionPath(m_currentTime, position, nRightLinkers);
+                }
+                else if(output.isTrackingPath()) // it is in the basin of attraction
+                {
+                    output.toggleTracking();
+                    output.writeTransitionPath();
+                }
             }
         }
 
@@ -143,10 +158,11 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
     }
 }
 
-bool Propagator::inBasinOfAttraction(const double mobilePosition, const int32_t nRightPullingCrosslinkers) const
+bool Propagator::inBasinOfAttraction(const double mobilePosition, const int32_t nRightPullingCrosslinkers, const int32_t nFullCrosslinkers) const
 {
-    const double remainder = mobilePosition%m_latticeSpacing;
-    bla
+    const double remainder = MathematicalFunctions::mod(mobilePosition,m_latticeSpacing);
+    return ((remainder < m_basinOfAttractionHalfWidth) && (nRightPullingCrosslinkers <= 1)) ||
+           ((remainder > m_latticeSpacing-m_basinOfAttractionHalfWidth) && (nRightPullingCrosslinkers >= nFullCrosslinkers-1));
 }
 
 void Propagator::equilibrate(SystemState& systemState, RandomGenerator& generator, Output& output)

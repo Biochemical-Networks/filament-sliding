@@ -25,7 +25,8 @@ Output::Output(const std::string &runName,
         m_lastCrossingTime(0), // Time 0 indicates the beginning of the run blocks, after which we start writing data
         m_writePositionalDistribution(writePositionalDistribution),
         m_recordTransitionPaths(recordTransitionPaths),
-        m_nWrittenTransitionPaths(0)
+        m_nWrittenTransitionPaths(0),
+        m_isTrackingPath(false)
 {
     m_microtubulePositionFile << std::left
         << std::setw(m_collumnWidth) << "TIME"
@@ -146,6 +147,16 @@ void Output::writeTransitionPath()
     m_transitionPathFile << m_currentTransitionPath;
     m_currentTransitionPath.clean();
     ++m_nWrittenTransitionPaths;
+}
+
+bool Output::isTrackingPath() const
+{
+    return m_isTrackingPath;
+}
+
+void Output::toggleTracking()
+{
+    m_isTrackingPath = !m_isTrackingPath;
 }
 
 void Output::cleanTransitionPath()

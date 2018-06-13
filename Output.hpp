@@ -38,6 +38,7 @@ private:
 
     int32_t m_nWrittenTransitionPaths;
     TransitionPath m_currentTransitionPath;
+    bool m_isTrackingPath;
 
     std::unique_ptr<Histogram> mp_positionalHistogram;
     std::vector<Histogram> m_positionAndConfigurationHistogram;
@@ -65,6 +66,10 @@ public:
     void addPointTransitionPath(const double time, const double mobilePosition, const int32_t nRightPullingCrosslinkers);
 
     void writeTransitionPath();
+
+    bool isTrackingPath() const;
+
+    void toggleTracking();
 
     void cleanTransitionPath();
 

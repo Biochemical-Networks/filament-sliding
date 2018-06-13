@@ -46,6 +46,8 @@ private:
     int32_t m_nDeterministicBoundaryCrossings;
     Log& m_log;
 
+    const double m_basinOfAttractionHalfWidth;
+
     // Store pointers to Reactions in the map m_reactions, because we want to store instances of inherited classes in there. That would not be possible with just the objects.
     // std::unique_ptr deletes the thing it is pointing to when going out of scope, meaning that we don't have to worry about memory leaks
     std::unordered_map<std::string, std::unique_ptr<Reaction>> m_reactions;
@@ -72,7 +74,7 @@ private:
 
     void propagateBlock(SystemState& systemState, RandomGenerator& generator, Output& output, const bool writeOutput, const int32_t nTimeSteps);
 
-    bool inBasinOfAttraction(const double mobilePosition, const int32_t nRightPullingCrosslinkers) const;
+    bool inBasinOfAttraction(const double mobilePosition, const int32_t nRightPullingCrosslinkers, const int32_t nFullCrosslinkers) const;
 
 public:
     Propagator(const int32_t numberEquilibrationBlocks,
