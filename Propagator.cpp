@@ -131,7 +131,7 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
                 const int32_t nRightLinkers = systemState.getNFullRightPullingCrosslinkers();
                 const int32_t nFullLinkers = systemState.getNFullCrosslinkers();
 
-                if(!inBasinOfAttraction(position, nRightLinkers, nFullLinkers)))
+                if(!inBasinOfAttraction(position, nRightLinkers, nFullLinkers))
                 {
                     if(!output.isTrackingPath())
                     {
