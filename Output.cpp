@@ -131,6 +131,13 @@ void Output::newBlock(const int32_t blockNumber)
 
 void Output::addPointTransitionPath(const double time, const double mobilePosition, const int32_t nRightPullingCrosslinkers)
 {
+    #ifdef MYDEBUG
+    if(!m_isTrackingPath)
+    {
+        throw GeneralException("Output::addPointTransitionPath() was called, but m_isTrackingPath is set to FALSE.");
+    }
+    #endif // MYDEBUG
+
     m_currentTransitionPath.addPoint(time, mobilePosition, nRightPullingCrosslinkers);
 }
 

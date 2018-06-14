@@ -47,6 +47,7 @@ private:
     Log& m_log;
 
     const double m_basinOfAttractionHalfWidth;
+    int32_t m_previousBasinOfAttraction;
 
     // Store pointers to Reactions in the map m_reactions, because we want to store instances of inherited classes in there. That would not be possible with just the objects.
     // std::unique_ptr deletes the thing it is pointing to when going out of scope, meaning that we don't have to worry about memory leaks

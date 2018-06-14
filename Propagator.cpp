@@ -136,14 +136,29 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
                     if(!output.isTrackingPath())
                     {
                         output.toggleTracking();
+                        // At the first m_transitionPathProbePeriod out of the basin, it should still be close to the original basin.
+                        m_previousBasinOfAttraction = MathematicalFunctions::intFloor(position/m_latticeSpacing + 0.5);
                     }
 
                     output.addPointTransitionPath(m_currentTime, position, nRightLinkers);
                 }
-                else if(output.isTrackingPath()) // it is in the basin of attraction
+                else // it is in the basin of attraction
                 {
-                    output.toggleTracking();
-                    output.writeTransitionPath();
+                    if(output.isTrackingPath())
+                    {
+                        output.toggleTracking();
+
+                        if(MathematicalFunctions::intFloor(position/m_latticeSpacing + 0.5) == m_previousBasinOfAttraction)
+                        {
+                            // It returned to where it came from
+                            output.cleanTransitionPath();
+                        }
+                        else
+                        {
+                            // It made a transition
+                            output.writeTransitionPath();
+                        }
+                    }
                 }
             }
         }
