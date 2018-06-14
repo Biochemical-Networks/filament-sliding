@@ -126,7 +126,7 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
                                                    systemState.getNFullRightPullingCrosslinkers());
             }
 
-            if(m_recordTransitionPaths && timeStep%m_transitionPathProbePeriod==0)
+            if(m_recordTransitionPaths)
             {
                 const double position = systemState.getMicrotubulePosition();
                 const int32_t nRightLinkers = systemState.getNFullRightPullingCrosslinkers();
@@ -141,7 +141,13 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
                         m_previousBasinOfAttraction = MathematicalFunctions::intFloor(position/m_latticeSpacing + 0.5);
                     }
 
-                    output.addPointTransitionPath(m_currentTime, position, nRightLinkers);
+                    output.addPositionAndConfigurationTransitionPath(MathematicalFunctions::mod(position, m_latticeSpacing),
+                                                                     nRightLinkers);
+
+                    if(timeStep%m_transitionPathProbePeriod==0)
+                    {
+                        output.addPointTransitionPath(m_currentTime, position, nRightLinkers);
+                    }
                 }
                 else // it is in the basin of attraction
                 {
@@ -158,6 +164,7 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
                         {
                             // It made a transition
                             output.writeTransitionPath();
+                            // If empty paths are written away, it means that m_transitionPathProbePeriod is too small to probe a transition path effectively
                         }
                     }
                 }

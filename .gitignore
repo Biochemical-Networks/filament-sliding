@@ -20,6 +20,7 @@ obj/
 *.crosslinker_directionality.txt
 *.position_configuration_histogram.txt
 *.transition_paths.txt
+*.transition_path_histogram.txt
 
 # No files used by gprof
 gmon.out

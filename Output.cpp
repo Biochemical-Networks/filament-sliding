@@ -78,6 +78,22 @@ Output::Output(const std::string &runName,
         << std::setw(m_collumnWidth) << "POSITION"
         << std::setw(m_collumnWidth) << "NUMBER RIGHT PULLING LINKERS" << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth
     }
+
+    if(m_writePositionalDistribution && m_recordTransitionPaths)
+    {
+        // nR is the number of right pulling linkers
+        for(int32_t nR = 0; nR <= maxNFullCrosslinkers; ++nR) // nR can equal maxNFullCrosslinkers!
+        {
+            m_transitionPathHistogram.push_back(Histogram(positionalHistogramBinSize, positionalHistogramLowestValue, positionalHistogramHighestValue));
+        }
+
+        m_transitionPathHistogramFile.open((runName+".transition_path_histogram.txt").c_str());
+        m_transitionPathHistogramFile << std::left
+            << std::setw(m_collumnWidth) << "LOWER BIN BOUND"
+            << std::setw(m_collumnWidth) << "UPPER BIN BOUND"
+            << std::setw(m_collumnWidth) << "NUMBER OF SAMPLES"
+            << std::setw(m_collumnWidth) << "FRACTION OF SAMPLES GIVEN NR" << '\n';
+    }
 }
 
 Output::~Output()
@@ -139,6 +155,18 @@ void Output::addPointTransitionPath(const double time, const double mobilePositi
     #endif // MYDEBUG
 
     m_currentTransitionPath.addPoint(time, mobilePosition, nRightPullingCrosslinkers);
+}
+
+void Output::addPositionAndConfigurationTransitionPath(const double remainder, const int32_t nRightPullingCrosslinkers)
+{
+    try
+    {
+        m_transitionPathHistogram.at(nRightPullingCrosslinkers).addValue(remainder);
+    }
+    catch(const std::out_of_range& outOfRange)
+    {
+        throw GeneralException(std::string("Output::addPositionAndConfigurationTransitionPath() was called with nRightPullingCrosslinkers out of range: ")+std::string(outOfRange.what()));
+    }
 }
 
 void Output::writeTransitionPath()
@@ -210,6 +238,27 @@ void Output::finishWriting()
 
                 m_positionAndConfigurationHistogramFile << (std::string("HISTOGRAM FOR NR=")+std::to_string(nR)) << '\n';
                 m_positionAndConfigurationHistogramFile << m_positionAndConfigurationHistogram[nR];
+            }
+        }
+    }
+
+    if(m_writePositionalDistribution && m_recordTransitionPaths)
+    {
+        // nR is the number of right pulling linkers
+        // m_transitionPathHistogram.size() = maxNFullCrosslinkers + 1
+        for(uint32_t nR = 0; nR < m_transitionPathHistogram.size(); ++nR)
+        {
+            if(m_transitionPathHistogram[nR].canReportStatistics())
+            {
+                m_statisticalAnalysisFile << std::setw(m_collumnWidth)
+                    << (std::string("TRANSITION PATH REMAINDER WITH NR=")+std::to_string(nR))
+                    << std::setw(m_collumnWidth) << m_transitionPathHistogram[nR].getNumberOfSamples()
+                    << std::setw(m_collumnWidth) << m_transitionPathHistogram[nR].getMean()
+                    << std::setw(m_collumnWidth) << m_transitionPathHistogram[nR].getVariance()
+                    << std::setw(m_collumnWidth) << m_transitionPathHistogram[nR].getSEM() << '\n';
+
+                m_positionAndConfigurationHistogramFile << (std::string("TRANSITION PATH HISTOGRAM FOR NR=")+std::to_string(nR)) << '\n';
+                m_positionAndConfigurationHistogramFile << m_transitionPathHistogram[nR];
             }
         }
     }

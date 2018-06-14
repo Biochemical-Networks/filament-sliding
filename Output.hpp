@@ -24,7 +24,7 @@ private:
     std::ofstream m_positionalHistogramFile;
     std::ofstream m_positionAndConfigurationHistogramFile;
     std::ofstream m_transitionPathFile;
-
+    std::ofstream m_transitionPathHistogramFile;
     std::ofstream m_statisticalAnalysisFile;
 
     const int m_collumnWidth;
@@ -42,6 +42,7 @@ private:
 
     std::unique_ptr<Histogram> mp_positionalHistogram;
     std::vector<Histogram> m_positionAndConfigurationHistogram;
+    std::vector<Histogram> m_transitionPathHistogram;
 
 public:
     Output(const std::string &runName,
@@ -64,6 +65,8 @@ public:
     void writeBarrierCrossingTime(const double time);
 
     void addPointTransitionPath(const double time, const double mobilePosition, const int32_t nRightPullingCrosslinkers);
+
+    void addPositionAndConfigurationTransitionPath(const double remainder, const int32_t nRightPullingCrosslinkers);
 
     void writeTransitionPath();
 
