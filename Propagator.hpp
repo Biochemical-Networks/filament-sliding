@@ -44,6 +44,7 @@ private:
     const bool m_addTheoreticalCounterForce;
 
     int32_t m_nDeterministicBoundaryCrossings;
+    int32_t m_nStochasticBoundaryCrossings;
     Log& m_log;
 
     const double m_basinOfAttractionHalfWidth;
@@ -111,8 +112,6 @@ public:
     void run(SystemState& systemState, RandomGenerator& generator, Output& output);
     void equilibrate(SystemState& systemState, RandomGenerator& generator, Output& output);
     void propagateGraphicsInterval(SystemState& systemState, RandomGenerator& generator, Output& output, const int32_t nTimeStepsInterval);
-
-    int32_t getNDeterministicBoundaryCrossings() const;
 };
 
 #endif // PROPAGATOR_HPP

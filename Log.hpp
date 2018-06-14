@@ -15,7 +15,7 @@ public:
     Log(const std::string &runName, const Clock& clock);
     ~Log();
 
-    void writeBoundaryProtocolAppearance(const int32_t number);
+    void writeBoundaryProtocolAppearance(const int32_t numberDeterministic, const int32_t numberStochastic);
 };
 
 #endif // LOG_HPP

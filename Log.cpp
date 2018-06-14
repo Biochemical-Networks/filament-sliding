@@ -22,7 +22,8 @@ Log::~Log()
     m_logFile << "\nExecution time: " << m_clock.now() << " seconds\n";
 }
 
-void Log::writeBoundaryProtocolAppearance(const int32_t number)
+void Log::writeBoundaryProtocolAppearance(const int32_t numberDeterministic, const int32_t numberStochastic)
 {
-    m_logFile << "\nThe deterministic boundary protocol was invoked " << number << ((number==1)?(" time.\n"):(" times.\n"));
+    m_logFile << "\nThe deterministic boundary protocol was invoked " << numberDeterministic << ((numberDeterministic==1)?(" time.\n"):(" times.\n"));
+    m_logFile << "The stochastic boundary protocol was invoked " << numberStochastic << ((numberStochastic==1)?(" time.\n"):(" times.\n"));
 }

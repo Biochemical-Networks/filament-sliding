@@ -61,6 +61,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_transitionPathProbePeriod(transitionPathProbePeriod),
         m_addTheoreticalCounterForce(addTheoreticalCounterForce),
         m_nDeterministicBoundaryCrossings(0), // Counts the number of times a force has tried to push the mobile microtubule across a maximum stretch barrier
+        m_nStochasticBoundaryCrossings(0), // Counts the number of times diffusion of the mobile microtubule was reflected at a maximum stretch barrier
         m_log(log),
         m_basinOfAttractionHalfWidth(0.15*m_latticeSpacing)
 {
@@ -103,7 +104,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
 Propagator::~Propagator()
 {
     // Since log has to be declared before propagator (the latter uses the former), log will be destroyed after propagator. So the following code is valid:
-    m_log.writeBoundaryProtocolAppearance(m_nDeterministicBoundaryCrossings);
+    m_log.writeBoundaryProtocolAppearance(m_nDeterministicBoundaryCrossings, m_nStochasticBoundaryCrossings);
 }
 
 void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& generator, Output& output, const bool writeOutput, const int32_t nTimeSteps)
@@ -286,6 +287,8 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
         {
             randomChange = 2*exclusiveMovementBorders.second-randomChange;
         }
+
+        ++m_nStochasticBoundaryCrossings;
         #ifdef MYDEBUG
         std::cout << "A reflection took place!\n";
         #endif // MYDEBUG
@@ -381,11 +384,6 @@ Reaction& Propagator::getReactionToHappen(RandomGenerator& generator) const
     }
 
     throw GeneralException("Something went wrong in Propagator::getReactionToHappen()");
-}
-
-int32_t Propagator::getNDeterministicBoundaryCrossings() const
-{
-    return m_nDeterministicBoundaryCrossings;
 }
 
 
