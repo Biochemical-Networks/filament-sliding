@@ -141,9 +141,6 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
                         m_previousBasinOfAttraction = MathematicalFunctions::intFloor(position/m_latticeSpacing + 0.5);
                     }
 
-                    output.addPositionAndConfigurationTransitionPath(MathematicalFunctions::mod(position, m_latticeSpacing),
-                                                                     nRightLinkers);
-
                     if(timeStep%m_transitionPathProbePeriod==0)
                     {
                         output.addPointTransitionPath(m_currentTime, position, nRightLinkers);
@@ -163,7 +160,7 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
                         else
                         {
                             // It made a transition
-                            output.writeTransitionPath();
+                            output.writeTransitionPath(m_latticeSpacing);
                             // If empty paths are written away, it means that m_transitionPathProbePeriod is too small to probe a transition path effectively
                         }
                     }

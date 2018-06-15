@@ -68,7 +68,7 @@ public:
 
     void addPositionAndConfigurationTransitionPath(const double remainder, const int32_t nRightPullingCrosslinkers);
 
-    void writeTransitionPath();
+    void writeTransitionPath(const double latticeSpacing);
 
     bool isTrackingPath() const;
 

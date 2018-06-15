@@ -159,6 +159,13 @@ void Output::addPointTransitionPath(const double time, const double mobilePositi
 
 void Output::addPositionAndConfigurationTransitionPath(const double remainder, const int32_t nRightPullingCrosslinkers)
 {
+    #ifdef MYDEBUG
+    if(!m_isTrackingPath || !m_recordTransitionPaths || !m_writePositionalDistribution)
+    {
+        throw GeneralException("Output::addPositionAndConfigurationTransitionPath() is called in improper circumstances");
+    }
+    #endif // MYDEBUG
+
     try
     {
         m_transitionPathHistogram.at(nRightPullingCrosslinkers).addValue(remainder);
@@ -169,7 +176,7 @@ void Output::addPositionAndConfigurationTransitionPath(const double remainder, c
     }
 }
 
-void Output::writeTransitionPath()
+void Output::writeTransitionPath(const double latticeSpacing)
 {
     #ifdef MYDEBUG
     if(!m_recordTransitionPaths)
@@ -177,6 +184,11 @@ void Output::writeTransitionPath()
         throw GeneralException("Output::writeTransitionPath() was called, but recordTransitionPaths is set to FALSE.");
     }
     #endif // MYDEBUG
+
+    for(int32_t label=0; label<m_currentTransitionPath.getSize(); ++label)
+    {
+        addPositionAndConfigurationTransitionPath()
+    }
 
     m_transitionPathFile << "New transition path; path number: " << m_nWrittenTransitionPaths << '\n';
     m_transitionPathFile << m_currentTransitionPath;

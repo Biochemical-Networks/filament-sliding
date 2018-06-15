@@ -22,6 +22,12 @@ public:
 
     void clean();
 
+    int32_t getSize() const;
+
+    double getMobilePosition(const int32_t label) const;
+
+    int32_t getNRightPullingLinkers(const int32_t label) const;
+
     friend std::ostream& operator<< (std::ostream &out, const TransitionPath &transitionPath);
 };
 
