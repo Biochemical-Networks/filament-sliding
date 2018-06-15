@@ -48,6 +48,7 @@ public:
     Output(const std::string &runName,
            const bool writePositionalDistribution,
            const bool recordTransitionPaths,
+           const int32_t transitionPathWriteFrequency,
            const double positionalHistogramBinSize,
            const double positionalHistogramLowestValue,
            const double positionalHistogramHighestValue,

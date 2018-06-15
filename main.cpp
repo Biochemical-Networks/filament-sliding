@@ -145,9 +145,17 @@ int main()
     std::cout << "The maximum number of full linkers is given by " << maxNFullCrosslinkers << ".\n";
     #endif // MYDEBUG
 
+    int32_t transitionPathProbePeriod;
+    input.copyParameter("transitionPathProbePeriod", transitionPathProbePeriod);
+    if(transitionPathProbePeriod<=0)
+    {
+        throw GeneralException("The parameter transitionPathProbePeriod contains a wrong value.");
+    }
+
     Output output(runName,
                   samplePositionalDistribution,
                   recordTransitionPaths,
+                  transitionPathProbePeriod,
                   positionalHistogramBinSize,
                   positionalHistogramLowestValue,
                   positionalHistogramHighestValue,
@@ -208,13 +216,6 @@ int main()
     if(positionProbePeriod<=0)
     {
         throw GeneralException("The parameter positionProbePeriod contains a wrong value.");
-    }
-
-    int32_t transitionPathProbePeriod;
-    input.copyParameter("transitionPathProbePeriod", transitionPathProbePeriod);
-    if(transitionPathProbePeriod<=0)
-    {
-        throw GeneralException("The parameter transitionPathProbePeriod contains a wrong value.");
     }
 
     double diffusionConstantMicrotubule;

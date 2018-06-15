@@ -93,5 +93,5 @@ ParameterMap::ParameterMap()
     defineParameter("timeStepsDisplayInterval", 10000, "steps", ">0");
     defineParameter("updateDelayInMilliseconds", 100, "milliseconds", ">=0");
     defineParameter("recordTransitionPaths", "FALSE", "unitless", "TRUE,FALSE");
-    defineParameter("transitionPathProbePeriod", 100, "steps", ">0");
+    defineParameter("transitionPathProbePeriod", 100, "steps", ">0"); // The probe period is used for writing, not for recording in the histogram
 }

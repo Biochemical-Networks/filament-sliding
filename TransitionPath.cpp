@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <iomanip>
 
-TransitionPath::TransitionPath()
+TransitionPath::TransitionPath(const int32_t writeFrequency) : m_writeFrequency(writeFrequency)
 {
 }
 
@@ -55,8 +55,9 @@ int32_t TransitionPath::getNRightPullingLinkers(const int32_t label) const
 
 std::ostream& operator<< (std::ostream &out, const TransitionPath &transitionPath)
 {
-    for(const TransitionPath::SystemCoordinate& systemCoordinate : transitionPath.m_pathVector)
+    for(uint32_t label = 0; label < transitionPath.m_pathVector.size(); label+=transitionPath.m_writeFrequency)
     {
+        const TransitionPath::SystemCoordinate& systemCoordinate = transitionPath.m_pathVector.at(label);
         out << std::setw(OutputParameters::collumnWidth) << systemCoordinate.m_time
             << std::setw(OutputParameters::collumnWidth) << systemCoordinate.m_mobilePosition
             << std::setw(OutputParameters::collumnWidth) << systemCoordinate.m_nRightPullingCrosslinkers << '\n';

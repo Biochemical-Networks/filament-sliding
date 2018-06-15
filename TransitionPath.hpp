@@ -12,10 +12,12 @@ private:
         const int32_t m_nRightPullingCrosslinkers;
     };
 
+    const int32_t m_writeFrequency;
+
     std::vector<SystemCoordinate> m_pathVector;
 
 public:
-    TransitionPath();
+    TransitionPath(const int32_t writeFrequency);
     ~TransitionPath();
 
     void addPoint(const double time, const double mobilePosition, const int32_t nRightPullingCrosslinkers);

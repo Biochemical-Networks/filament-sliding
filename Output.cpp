@@ -10,10 +10,12 @@
 #include "SystemState.hpp"
 #include "OutputParameters.hpp"
 #include "Histogram.hpp"
+#include "MathematicalFunctions.hpp"
 
 Output::Output(const std::string &runName,
                const bool writePositionalDistribution,
                const bool recordTransitionPaths,
+               const int32_t transitionPathWriteFrequency,
                const double positionalHistogramBinSize,
                const double positionalHistogramLowestValue,
                const double positionalHistogramHighestValue,
@@ -26,6 +28,7 @@ Output::Output(const std::string &runName,
         m_writePositionalDistribution(writePositionalDistribution),
         m_recordTransitionPaths(recordTransitionPaths),
         m_nWrittenTransitionPaths(0),
+        m_currentTransitionPath(transitionPathWriteFrequency),
         m_isTrackingPath(false)
 {
     m_microtubulePositionFile << std::left
@@ -187,7 +190,8 @@ void Output::writeTransitionPath(const double latticeSpacing)
 
     for(int32_t label=0; label<m_currentTransitionPath.getSize(); ++label)
     {
-        addPositionAndConfigurationTransitionPath()
+        addPositionAndConfigurationTransitionPath(MathematicalFunctions::mod(m_currentTransitionPath.getMobilePosition(label), latticeSpacing),
+                                                  m_currentTransitionPath.getNRightPullingLinkers(label));
     }
 
     m_transitionPathFile << "New transition path; path number: " << m_nWrittenTransitionPaths << '\n';
@@ -269,8 +273,8 @@ void Output::finishWriting()
                     << std::setw(m_collumnWidth) << m_transitionPathHistogram[nR].getVariance()
                     << std::setw(m_collumnWidth) << m_transitionPathHistogram[nR].getSEM() << '\n';
 
-                m_positionAndConfigurationHistogramFile << (std::string("TRANSITION PATH HISTOGRAM FOR NR=")+std::to_string(nR)) << '\n';
-                m_positionAndConfigurationHistogramFile << m_transitionPathHistogram[nR];
+                m_transitionPathHistogramFile << (std::string("TRANSITION PATH HISTOGRAM FOR NR=")+std::to_string(nR)) << '\n';
+                m_transitionPathHistogramFile << m_transitionPathHistogram[nR];
             }
         }
     }

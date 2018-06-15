@@ -141,10 +141,7 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
                         m_previousBasinOfAttraction = MathematicalFunctions::intFloor(position/m_latticeSpacing + 0.5);
                     }
 
-                    if(timeStep%m_transitionPathProbePeriod==0)
-                    {
-                        output.addPointTransitionPath(m_currentTime, position, nRightLinkers);
-                    }
+                    output.addPointTransitionPath(m_currentTime, position, nRightLinkers);
                 }
                 else // it is in the basin of attraction
                 {
