@@ -147,8 +147,6 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
                 {
                     if(output.isTrackingPath())
                     {
-                        output.toggleTracking();
-
                         if(MathematicalFunctions::intFloor(position/m_latticeSpacing + 0.5) == m_previousBasinOfAttraction)
                         {
                             // It returned to where it came from
@@ -160,6 +158,7 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
                             output.writeTransitionPath(m_latticeSpacing);
                             // If empty paths are written away, it means that m_transitionPathProbePeriod is too small to probe a transition path effectively
                         }
+                        output.toggleTracking(); // Turn off at the end, after the possible writing has finished
                     }
                 }
             }
