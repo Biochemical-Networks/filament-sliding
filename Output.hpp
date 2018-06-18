@@ -35,6 +35,7 @@ private:
 
     const bool m_writePositionalDistribution;
     const bool m_recordTransitionPaths;
+    const int32_t m_maxNumberTransitionPaths;
 
     int32_t m_nWrittenTransitionPaths;
     TransitionPath m_currentTransitionPath;
@@ -44,15 +45,19 @@ private:
     std::vector<Histogram> m_positionAndConfigurationHistogram;
     std::vector<Histogram> m_transitionPathHistogram;
 
+    const double m_maxPeriodPositionTracking;
+
 public:
     Output(const std::string &runName,
            const bool writePositionalDistribution,
            const bool recordTransitionPaths,
            const int32_t transitionPathWriteFrequency,
+           const int32_t maxNumberTransitionPaths,
            const double positionalHistogramBinSize,
            const double positionalHistogramLowestValue,
            const double positionalHistogramHighestValue,
-           const int32_t maxNFullCrosslinkers);
+           const int32_t maxNFullCrosslinkers,
+           const double maxPeriodPositionTracking);
     ~Output();
 
     void newBlock(const int32_t blockNumber);

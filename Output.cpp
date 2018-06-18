@@ -16,10 +16,12 @@ Output::Output(const std::string &runName,
                const bool writePositionalDistribution,
                const bool recordTransitionPaths,
                const int32_t transitionPathWriteFrequency,
+               const int32_t maxNumberTransitionPaths,
                const double positionalHistogramBinSize,
                const double positionalHistogramLowestValue,
                const double positionalHistogramHighestValue,
-               const int32_t maxNFullCrosslinkers)
+               const int32_t maxNFullCrosslinkers,
+               const double maxPeriodPositionTracking)
     :   m_microtubulePositionFile((runName+".microtubule_position.txt").c_str()),
         m_barrierCrossingTimeFile((runName+".times_barrier_crossings.txt").c_str()),
         m_statisticalAnalysisFile((runName+".statistical_analysis.txt").c_str()),
@@ -27,9 +29,11 @@ Output::Output(const std::string &runName,
         m_lastCrossingTime(0), // Time 0 indicates the beginning of the run blocks, after which we start writing data
         m_writePositionalDistribution(writePositionalDistribution),
         m_recordTransitionPaths(recordTransitionPaths),
+        m_maxNumberTransitionPaths(maxNumberTransitionPaths),
         m_nWrittenTransitionPaths(0),
         m_currentTransitionPath(transitionPathWriteFrequency),
-        m_isTrackingPath(false)
+        m_isTrackingPath(false),
+        m_maxPeriodPositionTracking(maxPeriodPositionTracking)
 {
     m_microtubulePositionFile << std::left
         << std::setw(m_collumnWidth) << "TIME"
@@ -106,9 +110,13 @@ Output::~Output()
 
 void Output::writeMicrotubulePosition(const double time, const SystemState& systemState) // Non-const, stream is changed
 {
-    m_microtubulePositionFile << std::setw(m_collumnWidth) << time
-                              << std::setw(m_collumnWidth) << systemState.getMicrotubulePosition()
-                              << std::setw(m_collumnWidth) << systemState.getNFullRightPullingCrosslinkers() << '\n';
+    // make sure that the file does not bloat
+    if(time <= m_maxPeriodPositionTracking)
+    {
+        m_microtubulePositionFile << std::setw(m_collumnWidth) << time
+                                  << std::setw(m_collumnWidth) << systemState.getMicrotubulePosition()
+                                  << std::setw(m_collumnWidth) << systemState.getNFullRightPullingCrosslinkers() << '\n';
+    }
 }
 
 void Output::addMicrotubulePositionRemainder(const double remainder)
@@ -194,8 +202,11 @@ void Output::writeTransitionPath(const double latticeSpacing)
                                                   m_currentTransitionPath.getNRightPullingLinkers(label));
     }
 
-    m_transitionPathFile << "New transition path; path number: " << m_nWrittenTransitionPaths << '\n';
-    m_transitionPathFile << m_currentTransitionPath;
+    if(m_nWrittenTransitionPaths < m_maxNumberTransitionPaths) // Limit the size of m_transitionPathFile
+    {
+        m_transitionPathFile << "New transition path; path number: " << m_nWrittenTransitionPaths << '\n';
+        m_transitionPathFile << m_currentTransitionPath;
+    }
     m_currentTransitionPath.clean();
     ++m_nWrittenTransitionPaths;
 }

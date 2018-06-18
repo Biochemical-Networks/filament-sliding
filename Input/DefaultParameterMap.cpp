@@ -17,10 +17,10 @@ ParameterMap::ParameterMap()
      */
     // Run parameters
     defineParameter("runName", "run", "unitless"); // The code relies on this parameter being called "runName"
-    defineParameter("numberEquilibrationBlocks", 0, "blocks", ">=0");
+    defineParameter("numberEquilibrationBlocks", 1, "blocks", ">=0");
     defineParameter("numberRunBlocks", 1, "blocks", ">=0");
-    defineParameter("calcTimeStep", 1.e-7, "s", ">0");
-    defineParameter("timeStepsPerBlock", 20000, "steps", ">0");
+    defineParameter("calcTimeStep", 1.e-8, "s", ">0");
+    defineParameter("timeStepsPerBlock", 100000000, "steps", ">0");
     defineParameter("positionProbePeriod", 10000, "steps", ">0");
 
     // General state parameters
@@ -29,9 +29,9 @@ ParameterMap::ParameterMap()
     defineParameter("latticeSpacing", 8.e-3, "micron", ">0");
     defineParameter("maximumStretch", 1.499999999999999, "latticeSpacing", ">0");
 
-    defineParameter("numberActiveCrosslinkers", 1000, "crosslinkers", ">=0");
-    defineParameter("numberDualCrosslinkers", 1000, "crosslinkers", ">=0");
-    defineParameter("numberPassiveCrosslinkers", 1000, "crosslinkers", ">=0");
+    defineParameter("numberActiveCrosslinkers", 0, "crosslinkers", ">=0");
+    defineParameter("numberDualCrosslinkers", 0, "crosslinkers", ">=0");
+    defineParameter("numberPassiveCrosslinkers", 13, "crosslinkers", ">=0");
 
     // Initial state parameters
     defineParameter("initialPositionMicrotubule", 0., "micron"); // The position of the mobile microtubule relative to the fixed one, where 0. means that the two have the same (left) boundary position
@@ -94,4 +94,6 @@ ParameterMap::ParameterMap()
     defineParameter("updateDelayInMilliseconds", 100, "milliseconds", ">=0");
     defineParameter("recordTransitionPaths", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("transitionPathProbePeriod", 100, "steps", ">0"); // The probe period is used for writing, not for recording in the histogram
+    defineParameter("maxNumberTransitionPaths", 1000, "paths", ">=0");
+    defineParameter("maxPeriodPositionTracking", 10.0, "s", ">=0");
 }

@@ -152,14 +152,30 @@ int main()
         throw GeneralException("The parameter transitionPathProbePeriod contains a wrong value.");
     }
 
+    int32_t maxNumberTransitionPaths;
+    input.copyParameter("maxNumberTransitionPaths", maxNumberTransitionPaths);
+    if(maxNumberTransitionPaths<0)
+    {
+        throw GeneralException("The parameter maxNumberTransitionPaths contains a wrong value.");
+    }
+
+    double maxPeriodPositionTracking;
+    input.copyParameter("maxPeriodPositionTracking", maxPeriodPositionTracking);
+    if(maxPeriodPositionTracking<0.0)
+    {
+        throw GeneralException("The parameter maxPeriodPositionTracking contains a wrong value.");
+    }
+
     Output output(runName,
                   samplePositionalDistribution,
                   recordTransitionPaths,
                   transitionPathProbePeriod,
+                  maxNumberTransitionPaths,
                   positionalHistogramBinSize,
                   positionalHistogramLowestValue,
                   positionalHistogramHighestValue,
-                  maxNFullCrosslinkers);
+                  maxNFullCrosslinkers,
+                  maxPeriodPositionTracking);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for initialising the state.
