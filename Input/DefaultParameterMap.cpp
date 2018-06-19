@@ -94,6 +94,6 @@ ParameterMap::ParameterMap()
     defineParameter("updateDelayInMilliseconds", 100, "milliseconds", ">=0");
     defineParameter("recordTransitionPaths", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("transitionPathProbePeriod", 100, "steps", ">0"); // The probe period is used for writing, not for recording in the histogram
-    defineParameter("maxNumberTransitionPaths", 1000, "paths", ">=0");
+    defineParameter("maxNumberTransitionPaths", 100, "paths", ">=0");
     defineParameter("maxPeriodPositionTracking", 10.0, "s", ">=0");
 }
