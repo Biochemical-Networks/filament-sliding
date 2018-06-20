@@ -45,6 +45,7 @@ private:
     std::vector<Histogram> m_positionAndConfigurationHistogram;
     std::vector<Histogram> m_transitionPathHistogram;
 
+    const int32_t m_maxNFullCrosslinkers;
     const double m_maxPeriodPositionTracking;
 
 public:

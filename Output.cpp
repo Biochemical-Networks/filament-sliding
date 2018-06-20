@@ -33,6 +33,7 @@ Output::Output(const std::string &runName,
         m_nWrittenTransitionPaths(0),
         m_currentTransitionPath(transitionPathWriteFrequency),
         m_isTrackingPath(false),
+        m_maxNFullCrosslinkers(maxNFullCrosslinkers),
         m_maxPeriodPositionTracking(maxPeriodPositionTracking)
 {
     m_microtubulePositionFile << std::left
@@ -196,10 +197,28 @@ void Output::writeTransitionPath(const double latticeSpacing)
     }
     #endif // MYDEBUG
 
+    // Does the current transition path move forward in direction (true) or backward (false)?
+    const bool isForwardPath = (m_currentTransitionPath.getMobilePosition(m_currentTransitionPath.getSize()-1) > m_currentTransitionPath.getMobilePosition(0));
+
     for(int32_t label=0; label<m_currentTransitionPath.getSize(); ++label)
     {
-        addPositionAndConfigurationTransitionPath(MathematicalFunctions::mod(m_currentTransitionPath.getMobilePosition(label), latticeSpacing),
-                                                  m_currentTransitionPath.getNRightPullingLinkers(label));
+        // Flip each backward path to a forward path, with x -> d-x, nR -> n-nR.
+        // This way, the histogram represents the statistics of one directional paths.
+        // Since the probability of a path should not depend on its direction in time, this should actually not change the histogram.
+        double x = m_currentTransitionPath.getMobilePosition(label);
+        x = isForwardPath?x:latticeSpacing-x;
+        x = MathematicalFunctions::mod(x, latticeSpacing);
+        int32_t nR = m_currentTransitionPath.getNRightPullingLinkers(label);
+        nR = isForwardPath?nR:m_maxNFullCrosslinkers-nR;
+
+        #ifdef MYDEBUG
+        if(nR<0 || nR > m_maxNFullCrosslinkers)
+        {
+            throw GeneralException("Output::writeTransitionPath() encountered a wrong number of right pulling crosslinkers.");
+        }
+        #endif // MYDEBUG
+
+        addPositionAndConfigurationTransitionPath(x, nR);
     }
 
     if(m_nWrittenTransitionPaths < m_maxNumberTransitionPaths) // Limit the size of m_transitionPathFile
