@@ -167,9 +167,10 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
         advanceTimeStep(systemState, generator);
 
         // Check if a barrier crossing took place
-        if(systemState.barrierCrossed())
+        const int32_t barrierCrossingDirection = systemState.barrierCrossed(); // returns 0 if no barrier is crossed
+        if(barrierCrossingDirection != 0)
         {
-            if(writeOutput){output.writeBarrierCrossingTime(m_currentTime);}
+            if(writeOutput){output.writeBarrierCrossingTime(m_currentTime, barrierCrossingDirection);}
         }
     }
 }

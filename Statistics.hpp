@@ -7,10 +7,13 @@ class Statistics
 {
 private:
     int64_t m_numberOfSamples; // 64 bit, could hold many steps (nRunBlocks*nStepsPerBlock/probePeriod)
-    double m_firstValue; // Always subtract the first value to prevent catastrophic cancellation
-    bool m_empty;
-    double m_accumulatedDifference;
-    double m_accumulatedSquaredDifference;
+
+    // use "online algorithm" (https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Online_algorithm)
+    double m_value;
+    double m_mean;
+    double m_previousMean;
+    double m_accumulatedSquaredDeviation;
+
 public:
     Statistics();
     virtual ~Statistics();

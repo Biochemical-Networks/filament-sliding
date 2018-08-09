@@ -69,7 +69,7 @@ public:
 
     void addPositionAndConfiguration(const double remainder, const int32_t nRightPullingCrosslinkers);
 
-    void writeBarrierCrossingTime(const double time);
+    void writeBarrierCrossingTime(const double time, const int32_t direction);
 
     void addPointTransitionPath(const double time, const double mobilePosition, const int32_t nRightPullingCrosslinkers);
 

@@ -29,7 +29,7 @@ public:
 
     double getPosition() const;
 
-    bool barrierCrossed(); // also updates m_currentAttractorPosition if necessary
+    int32_t barrierCrossed(); // also updates m_currentAttractorPosition if necessary. Returns the direction, 0 if no step is taken
 };
 
 #endif // MOBILEMICROTUBULE_HPP

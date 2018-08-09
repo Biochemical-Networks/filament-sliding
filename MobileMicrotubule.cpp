@@ -41,20 +41,20 @@ void MobileMicrotubule::setPosition(const double initialPosition)
     #endif // MYDEBUG
 }
 
-bool MobileMicrotubule::barrierCrossed()
+int32_t MobileMicrotubule::barrierCrossed()
 {
     if(m_position > (m_currentAttractorPosition+1)*m_latticeSpacing)
     {
         ++m_currentAttractorPosition;
-        return true;
+        return +1;
     }
     else if(m_position < (m_currentAttractorPosition-1)*m_latticeSpacing)
     {
         --m_currentAttractorPosition;
-        return true;
+        return -1;
     }
     else
     {
-        return false;
+        return 0;
     }
 }

@@ -43,7 +43,8 @@ Output::Output(const std::string &runName,
 
     m_barrierCrossingTimeFile << std::left
         << std::setw(m_collumnWidth) << "TIME CROSSING"
-        << std::setw(m_collumnWidth) << "INTERVAL BETWEEN CROSSES"  << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth
+        << std::setw(m_collumnWidth) << "INTERVAL BETWEEN CROSSES"
+        << std::setw(m_collumnWidth) << "HOP DIRECTION" << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth
 
     m_statisticalAnalysisFile << std::left
         << std::setw(m_collumnWidth) << "RANDOM VARIABLE"
@@ -137,11 +138,11 @@ void Output::addPositionAndConfiguration(const double remainder, const int32_t n
     }
 }
 
-void Output::writeBarrierCrossingTime(const double time)
+void Output::writeBarrierCrossingTime(const double time, const int32_t direction)
 {
     const double interval = time - m_lastCrossingTime;
     m_lastCrossingTime = time;
-    m_barrierCrossingTimeFile << std::setw(m_collumnWidth) << time << std::setw(m_collumnWidth) << interval << '\n';
+    m_barrierCrossingTimeFile << std::setw(m_collumnWidth) << time << std::setw(m_collumnWidth) << interval << std::setw(m_collumnWidth) << direction << '\n';
 
     m_crossingTimeStatistics.addValue(interval);
 }

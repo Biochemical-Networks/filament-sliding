@@ -6,9 +6,9 @@
 
 Statistics::Statistics()
     :   m_numberOfSamples(0),
-        m_empty(true),
-        m_accumulatedDifference(0),
-        m_accumulatedSquaredDifference(0)
+        m_mean(0.0),
+        m_previousMean(0.0), // not necessary
+        m_accumulatedSquaredDeviation(0.0)
 {
 }
 
@@ -19,14 +19,12 @@ Statistics::~Statistics()
 void Statistics::addValue(const double value)
 {
     ++m_numberOfSamples;
-    if(m_empty)
-    {
-        m_firstValue = value;
-        m_empty = false;
-    }
-    const double difference = value-m_firstValue;
-    m_accumulatedDifference += difference;
-    m_accumulatedSquaredDifference += difference*difference;
+    // Calculate the new mean estimate:
+    m_previousMean = m_mean;
+    m_mean += (value - m_previousMean)/static_cast<double>(m_numberOfSamples);
+
+    // Calculate the new (n-1)*variance estimate:
+    m_accumulatedSquaredDeviation += (value-m_mean)*(value-m_previousMean);
 }
 
 int64_t Statistics::getNumberOfSamples() const
@@ -36,24 +34,20 @@ int64_t Statistics::getNumberOfSamples() const
 
 double Statistics::getMean() const
 {
-    if(m_empty)
+    if(m_numberOfSamples==0)
     {
         throw GeneralException("Statistics::getMean() was called when there were no samples");
     }
-    return m_firstValue + m_accumulatedDifference/static_cast<double>(m_numberOfSamples);
+    return m_mean;
 }
 
 double Statistics::getVariance() const
 {
-    #ifdef MYDEBUG
-    if(!canReportStatistics())
+    if(m_numberOfSamples < 2)
     {
         throw GeneralException("Statistics::getVariance was called with insufficient samples");
     }
-    #endif // MYDEBUG
-
-    const double n = static_cast<double>(m_numberOfSamples);
-    return (m_accumulatedSquaredDifference-m_accumulatedDifference*m_accumulatedDifference/n)/(n-1);
+    return m_accumulatedSquaredDeviation/static_cast<double>(m_numberOfSamples-1);
 }
 
 double Statistics::getSEM() const
@@ -65,5 +59,5 @@ double Statistics::getSEM() const
 
 bool Statistics::canReportStatistics() const
 {
-    return (m_numberOfSamples>1);
+    return (m_numberOfSamples>1); // For the variance, at least 2 values are necessary
 }

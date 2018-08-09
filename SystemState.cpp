@@ -344,7 +344,7 @@ void SystemState::updateMobilePosition(const double changeMicrotubulePosition)
     m_activeCrosslinkers.updateConnectionDataMobilePositionChange(changeMicrotubulePosition);
 }
 
-bool SystemState::barrierCrossed()
+int32_t SystemState::barrierCrossed()
 {
     return m_mobileMicrotubule.barrierCrossed();
 }
