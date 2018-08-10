@@ -29,16 +29,16 @@ Input::Input(const std::string fileName) : m_fileName(fileName)
     }
     setRunName(); // Set the name of the current run, first from the input file, adding labels if the name was previously used
 
-}
-
-Input::~Input()
-{
-    /* Write the used input data to an output file, such that the data of the run is stored together with the other information about the run
-     */
+    // Write the used input data to an output file, such that the data of the run is stored together with the other information about the run.
+    // Do this early (not in the destructor), since a second run can start without the first being finished
 
     std::ofstream storeInputInformation{m_runName+"."+m_fileName}; // Prepend the name of the run to the inputFile name
     storeInputInformation << m_parameterMap; // Write the previously read parameterMap to an output file
     // storeInputInformation closes because it goes out of scope
+}
+
+Input::~Input()
+{
 }
 
 
