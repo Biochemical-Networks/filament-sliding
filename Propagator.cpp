@@ -120,8 +120,6 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
             // Add the microtubule positions more often than the m_positionProbePeriod, since it is not directly written to a file (not slow), and it requires much data.
             if(m_samplePositionalDistribution)
             {
-                output.addMicrotubulePositionRemainder(MathematicalFunctions::mod(systemState.getMicrotubulePosition(), m_latticeSpacing));
-
                 output.addPositionAndConfiguration(MathematicalFunctions::mod(systemState.getMicrotubulePosition(), m_latticeSpacing),
                                                    systemState.getNFullRightPullingCrosslinkers());
             }

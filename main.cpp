@@ -119,9 +119,17 @@ int main()
 
     double positionalHistogramLowestValue;
     input.copyParameter("positionalHistogramLowestValue", positionalHistogramLowestValue);
+    if(positionalHistogramLowestValue<0.0)
+    {
+        throw GeneralException("The parameter positionalHistogramLowestValue contains a wrong value.");
+    }
 
     double positionalHistogramHighestValue;
     input.copyParameter("positionalHistogramHighestValue", positionalHistogramHighestValue);
+    if(positionalHistogramHighestValue<=positionalHistogramLowestValue)
+    {
+        throw GeneralException("The parameter positionalHistogramHighestValue contains a wrong value.");
+    }
 
     std::string recordTransitionPathsString;
     input.copyParameter("recordTransitionPaths", recordTransitionPathsString);
@@ -175,7 +183,8 @@ int main()
                   positionalHistogramLowestValue,
                   positionalHistogramHighestValue,
                   maxNFullCrosslinkers,
-                  maxPeriodPositionTracking);
+                  maxPeriodPositionTracking,
+                  latticeSpacing);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for initialising the state.

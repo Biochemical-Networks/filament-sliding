@@ -22,6 +22,7 @@ private:
     std::ofstream m_microtubulePositionFile;
     std::ofstream m_barrierCrossingTimeFile;
     std::ofstream m_positionalHistogramFile;
+    std::ofstream m_reactionCoordinateHistogramFile;
     std::ofstream m_positionAndConfigurationHistogramFile;
     std::ofstream m_transitionPathFile;
     std::ofstream m_transitionPathHistogramFile;
@@ -42,11 +43,14 @@ private:
     bool m_isTrackingPath;
 
     std::unique_ptr<Histogram> mp_positionalHistogram;
+    std::unique_ptr<Histogram> mp_reactionCoordinateHistogram;
     std::vector<Histogram> m_positionAndConfigurationHistogram;
     std::vector<Histogram> m_transitionPathHistogram;
 
     const int32_t m_maxNFullCrosslinkers;
     const double m_maxPeriodPositionTracking;
+
+    const double m_latticeSpacing;
 
 public:
     Output(const std::string &runName,
@@ -58,14 +62,13 @@ public:
            const double positionalHistogramLowestValue,
            const double positionalHistogramHighestValue,
            const int32_t maxNFullCrosslinkers,
-           const double maxPeriodPositionTracking);
+           const double maxPeriodPositionTracking,
+           const double latticeSpacing);
     ~Output();
 
     void newBlock(const int32_t blockNumber);
 
     void writeMicrotubulePosition(const double time, const SystemState& systemState);
-
-    void addMicrotubulePositionRemainder(const double remainder);
 
     void addPositionAndConfiguration(const double remainder, const int32_t nRightPullingCrosslinkers);
 

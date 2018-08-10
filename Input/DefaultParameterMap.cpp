@@ -87,8 +87,8 @@ ParameterMap::ParameterMap()
     defineParameter("addTheoreticalCounterForce", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("samplePositionalDistribution", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("positionalHistogramBinSize", 8.e-7, "micron", ">0");
-    defineParameter("positionalHistogramLowestValue", 0.0, "micron");
-    defineParameter("positionalHistogramHighestValue", 8.e-3, "micron");
+    defineParameter("positionalHistogramLowestValue", 0.0, "micron", ">=0");
+    defineParameter("positionalHistogramHighestValue", 8.e-3, "micron", ">positionalHistogramLowestValue");
     defineParameter("showGraphics", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("timeStepsDisplayInterval", 10000, "steps", ">0");
     defineParameter("updateDelayInMilliseconds", 100, "milliseconds", ">=0");

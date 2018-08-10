@@ -21,7 +21,8 @@ Output::Output(const std::string &runName,
                const double positionalHistogramLowestValue,
                const double positionalHistogramHighestValue,
                const int32_t maxNFullCrosslinkers,
-               const double maxPeriodPositionTracking)
+               const double maxPeriodPositionTracking,
+               const double latticeSpacing)
     :   m_microtubulePositionFile((runName+".microtubule_position.txt").c_str()),
         m_barrierCrossingTimeFile((runName+".times_barrier_crossings.txt").c_str()),
         m_statisticalAnalysisFile((runName+".statistical_analysis.txt").c_str()),
@@ -34,7 +35,8 @@ Output::Output(const std::string &runName,
         m_currentTransitionPath(transitionPathWriteFrequency),
         m_isTrackingPath(false),
         m_maxNFullCrosslinkers(maxNFullCrosslinkers),
-        m_maxPeriodPositionTracking(maxPeriodPositionTracking)
+        m_maxPeriodPositionTracking(maxPeriodPositionTracking),
+        m_latticeSpacing(latticeSpacing)
 {
     m_microtubulePositionFile << std::left
         << std::setw(m_collumnWidth) << "TIME"
@@ -59,6 +61,17 @@ Output::Output(const std::string &runName,
         // Only open the file here, not in the constructor initialization list, since the file should only be created if m_writePositionalDistribution is set to true.
         m_positionalHistogramFile.open((runName+".positional_histogram.txt").c_str());
         m_positionalHistogramFile << std::left
+            << std::setw(m_collumnWidth) << "LOWER BIN BOUND"
+            << std::setw(m_collumnWidth) << "UPPER BIN BOUND"
+            << std::setw(m_collumnWidth) << "NUMBER OF SAMPLES"
+            << std::setw(m_collumnWidth) << "FRACTION OF SAMPLES" << '\n';
+
+        // The reaction coordinate will have a value between 0 and 1 from one basin of attraction to the next
+        // Rescale the binsize by the lattice spacing
+        mp_reactionCoordinateHistogram = std::move(std::unique_ptr<Histogram>(new Histogram(positionalHistogramBinSize/m_latticeSpacing, 0.0, 1.0)));
+        // Only open the file here, not in the constructor initialization list, since the file should only be created if m_writePositionalDistribution is set to true.
+        m_reactionCoordinateHistogramFile.open((runName+".reaction_coordinate_histogram.txt").c_str());
+        m_reactionCoordinateHistogramFile << std::left
             << std::setw(m_collumnWidth) << "LOWER BIN BOUND"
             << std::setw(m_collumnWidth) << "UPPER BIN BOUND"
             << std::setw(m_collumnWidth) << "NUMBER OF SAMPLES"
@@ -121,13 +134,13 @@ void Output::writeMicrotubulePosition(const double time, const SystemState& syst
     }
 }
 
-void Output::addMicrotubulePositionRemainder(const double remainder)
-{
-    mp_positionalHistogram->addValue(remainder);
-}
-
 void Output::addPositionAndConfiguration(const double remainder, const int32_t nRightPullingCrosslinkers)
 {
+    mp_positionalHistogram->addValue(remainder);
+
+    // The reaction coordinate is alpha = 1/2(x/delta + Nr/N). m_maxNFullCrosslinkers=N for a system without binding
+    mp_reactionCoordinateHistogram->addValue(0.5*(remainder/m_latticeSpacing+static_cast<double>(nRightPullingCrosslinkers)/static_cast<double>(m_maxNFullCrosslinkers)));
+
     try
     {
         m_positionAndConfigurationHistogram.at(nRightPullingCrosslinkers).addValue(remainder);
@@ -268,6 +281,17 @@ void Output::finishWriting()
                 << std::setw(m_collumnWidth) << mp_positionalHistogram->getSEM() << '\n';
 
             m_positionalHistogramFile << (*mp_positionalHistogram);
+        }
+
+        if(mp_reactionCoordinateHistogram->canReportStatistics())
+        {
+            m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "REACTION COORDINATE"
+                << std::setw(m_collumnWidth) << mp_reactionCoordinateHistogram->getNumberOfSamples()
+                << std::setw(m_collumnWidth) << mp_reactionCoordinateHistogram->getMean()
+                << std::setw(m_collumnWidth) << mp_reactionCoordinateHistogram->getVariance()
+                << std::setw(m_collumnWidth) << mp_reactionCoordinateHistogram->getSEM() << '\n';
+
+            m_reactionCoordinateHistogramFile << (*mp_reactionCoordinateHistogram);
         }
 
         // nR is the number of right pulling linkers
