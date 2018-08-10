@@ -17,6 +17,7 @@ obj/
 *.statistical_analysis.txt
 *.log.txt
 *.positional_histogram.txt
+*.reaction_coordinate_histogram.txt
 *.crosslinker_directionality.txt
 *.position_configuration_histogram.txt
 *.transition_paths.txt
