@@ -52,6 +52,15 @@ private:
 
     const double m_latticeSpacing;
 
+    const bool m_estimateTimeEvolutionAtPeak;
+    const int32_t m_timeStepsPerDistributionEstimate;
+    const int32_t m_nEstimatesDistribution;
+    const double m_dynamicsEstimationRegionWidth;
+    bool m_currentlyTracking;
+    int32_t m_timeStepsTracking;
+
+    double calculateReactionCoordinate(const double remainder, const int32_t nRightPullingCrosslinkers);
+
 public:
     Output(const std::string &runName,
            const bool writePositionalDistribution,
@@ -63,7 +72,12 @@ public:
            const double positionalHistogramHighestValue,
            const int32_t maxNFullCrosslinkers,
            const double maxPeriodPositionTracking,
-           const double latticeSpacing);
+           const double latticeSpacing,
+           const bool estimateTimeEvolutionAtPeak,
+           const int32_t timeStepsPerDistributionEstimate,
+           const int32_t nEstimatesDistribution,
+           const double dynamicsEstimationRegionWidth);
+
     ~Output();
 
     void newBlock(const int32_t blockNumber);

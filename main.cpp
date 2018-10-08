@@ -174,6 +174,31 @@ int main()
         throw GeneralException("The parameter maxPeriodPositionTracking contains a wrong value.");
     }
 
+    std::string estimateTimeEvolutionAtPeakString;
+    input.copyParameter("estimateTimeEvolutionAtPeak", estimateTimeEvolutionAtPeakString);
+    const bool estimateTimeEvolutionAtPeak = (estimateTimeEvolutionAtPeakString == "TRUE");
+
+    int32_t timeStepsPerDistributionEstimate;
+    input.copyParameter("timeStepsPerDistributionEstimate", timeStepsPerDistributionEstimate);
+    if(estimateTimeEvolutionAtPeak && timeStepsPerDistributionEstimate<=0)
+    {
+        throw GeneralException("The parameter timeStepsPerDistributionEstimate contains a wrong value.");
+    }
+
+    int32_t nEstimatesDistribution;
+    input.copyParameter("nEstimatesDistribution", nEstimatesDistribution);
+    if(estimateTimeEvolutionAtPeak && nEstimatesDistribution<=0)
+    {
+        throw GeneralException("The parameter nEstimatesDistribution contains a wrong value.");
+    }
+
+    double dynamicsEstimationRegionWidth;
+    input.copyParameter("dynamicsEstimationRegionWidth", dynamicsEstimationRegionWidth);
+    if(estimateTimeEvolutionAtPeak && (dynamicsEstimationRegionWidth<=0.0 || dynamicsEstimationRegionWidth>1.0))
+    {
+        throw GeneralException("The parameter dynamicsEstimationRegionWidth contains a wrong value.");
+    }
+
     Output output(runName,
                   samplePositionalDistribution,
                   recordTransitionPaths,
@@ -184,7 +209,11 @@ int main()
                   positionalHistogramHighestValue,
                   maxNFullCrosslinkers,
                   maxPeriodPositionTracking,
-                  latticeSpacing);
+                  latticeSpacing,
+                  estimateTimeEvolutionAtPeak,
+                  timeStepsPerDistributionEstimate,
+                  nEstimatesDistribution,
+                  dynamicsEstimationRegionWidth);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for initialising the state.

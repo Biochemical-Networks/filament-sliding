@@ -22,7 +22,11 @@ Output::Output(const std::string &runName,
                const double positionalHistogramHighestValue,
                const int32_t maxNFullCrosslinkers,
                const double maxPeriodPositionTracking,
-               const double latticeSpacing)
+               const double latticeSpacing,
+               const bool estimateTimeEvolutionAtPeak,
+               const int32_t timeStepsPerDistributionEstimate,
+               const int32_t nEstimatesDistribution,
+               const double dynamicsEstimationRegionWidth)
     :   m_microtubulePositionFile((runName+".microtubule_position.txt").c_str()),
         m_barrierCrossingTimeFile((runName+".times_barrier_crossings.txt").c_str()),
         m_statisticalAnalysisFile((runName+".statistical_analysis.txt").c_str()),
@@ -36,7 +40,11 @@ Output::Output(const std::string &runName,
         m_isTrackingPath(false),
         m_maxNFullCrosslinkers(maxNFullCrosslinkers),
         m_maxPeriodPositionTracking(maxPeriodPositionTracking),
-        m_latticeSpacing(latticeSpacing)
+        m_latticeSpacing(latticeSpacing),
+        m_estimateTimeEvolutionAtPeak(estimateTimeEvolutionAtPeak),
+        m_timeStepsPerDistributionEstimate(timeStepsPerDistributionEstimate),
+        m_nEstimatesDistribution(nEstimatesDistribution),
+        m_dynamicsEstimationRegionWidth(dynamicsEstimationRegionWidth)
 {
     m_microtubulePositionFile << std::left
         << std::setw(m_collumnWidth) << "TIME"
@@ -134,12 +142,19 @@ void Output::writeMicrotubulePosition(const double time, const SystemState& syst
     }
 }
 
+double Output::calculateReactionCoordinate(const double remainder, const int32_t nRightPullingCrosslinkers)
+{
+    // The reaction coordinate is alpha = 1/2(x/delta + Nr/N). m_maxNFullCrosslinkers=N for a system without binding
+    return 0.5*(remainder/m_latticeSpacing+static_cast<double>(nRightPullingCrosslinkers)/static_cast<double>(m_maxNFullCrosslinkers));
+}
+
 void Output::addPositionAndConfiguration(const double remainder, const int32_t nRightPullingCrosslinkers)
 {
     mp_positionalHistogram->addValue(remainder);
 
-    // The reaction coordinate is alpha = 1/2(x/delta + Nr/N). m_maxNFullCrosslinkers=N for a system without binding
-    mp_reactionCoordinateHistogram->addValue(0.5*(remainder/m_latticeSpacing+static_cast<double>(nRightPullingCrosslinkers)/static_cast<double>(m_maxNFullCrosslinkers)));
+    const double reactionCoordinate=calculateReactionCoordinate(remainder, nRightPullingCrosslinkers);
+
+    mp_reactionCoordinateHistogram->addValue(reactionCoordinate);
 
     try
     {
@@ -148,6 +163,12 @@ void Output::addPositionAndConfiguration(const double remainder, const int32_t n
     catch(const std::out_of_range& outOfRange)
     {
         throw GeneralException(std::string("Output::addPositionAndConfiguration() was called with nRightPullingCrosslinkers out of range: ")+std::string(outOfRange.what()));
+    }
+
+    if(m_estimateTimeEvolutionAtPeak)
+    {
+        if(!m_currentlyTracking)
+
     }
 }
 
