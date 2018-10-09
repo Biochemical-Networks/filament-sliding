@@ -127,6 +127,17 @@ Output::Output(const std::string &runName,
             << std::setw(m_collumnWidth) << "NUMBER OF SAMPLES"
             << std::setw(m_collumnWidth) << "FRACTION OF SAMPLES GIVEN NR" << '\n';
     }
+
+    if(m_estimateTimeEvolutionAtPeak)
+    {
+        m_peakDynamicsFile.open((runName+".peak_dynamics_statistics.txt").c_str());
+        m_peakDynamicsFile << std::left
+        << std::setw(m_collumnWidth) << "ALPHA: TIME STEPS AFTER PEAK PASSAGE"
+        << std::setw(m_collumnWidth) << "NUMBER OF SAMPLES"
+        << std::setw(m_collumnWidth) << "MEAN"
+        << std::setw(m_collumnWidth) << "VARIANCE"
+        << std::setw(m_collumnWidth) << "STANDARD ERROR OF THE MEAN" << '\n';
+    }
 }
 
 Output::~Output()
@@ -387,6 +398,21 @@ void Output::finishWriting()
                 m_transitionPathHistogramFile << (std::string("TRANSITION PATH HISTOGRAM FOR NR=")+std::to_string(nR)) << '\n';
                 m_transitionPathHistogramFile << m_transitionPathHistogram[nR];
             }
+        }
+    }
+
+    if(m_estimateTimeEvolutionAtPeak)
+    {
+        int32_t timeStepsToPoint=0;
+        for(const Statistics& statPoint : m_estimatePoints)
+        {
+            m_peakDynamicsFile << std::setw(m_collumnWidth) << timeStepsToPoint
+            << std::setw(m_collumnWidth) << statPoint.getNumberOfSamples()
+            << std::setw(m_collumnWidth) << statPoint.getMean()
+            << std::setw(m_collumnWidth) << statPoint.getVariance()
+            << std::setw(m_collumnWidth) << statPoint.getSEM() << '\n';
+
+            timeStepsToPoint+=m_timeStepsPerDistributionEstimate;
         }
     }
 }
