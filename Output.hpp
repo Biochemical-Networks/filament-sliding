@@ -27,6 +27,7 @@ private:
     std::ofstream m_transitionPathFile;
     std::ofstream m_transitionPathHistogramFile;
     std::ofstream m_statisticalAnalysisFile;
+    std::ofstream m_peakDynamicsFile;
 
     const int m_collumnWidth;
 
@@ -94,6 +95,8 @@ public:
     void addPointTransitionPath(const double time, const double mobilePosition, const int32_t nRightPullingCrosslinkers);
 
     void addPositionAndConfigurationTransitionPath(const double remainder, const int32_t nRightPullingCrosslinkers);
+
+    void addTimeStepToPeakAnalysis(const double remainder, const int32_t nRightPullingCrosslinkers);
 
     void writeTransitionPath(const double latticeSpacing);
 

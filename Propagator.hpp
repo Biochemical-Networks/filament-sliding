@@ -42,6 +42,7 @@ private:
     const bool m_recordTransitionPaths;
     const int32_t m_transitionPathProbePeriod;
     const bool m_addTheoreticalCounterForce;
+    const bool m_estimateTimeEvolutionAtPeak;
 
     int32_t m_nDeterministicBoundaryCrossings;
     int32_t m_nStochasticBoundaryCrossings;
@@ -102,6 +103,7 @@ public:
                const bool recordTransitionPaths,
                const int32_t transitionPathProbePeriod,
                const bool addTheoreticalCounterForce,
+               const bool estimateTimeEvolutionAtPeak,
                Log& log);
     ~Propagator();
 

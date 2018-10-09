@@ -160,9 +160,7 @@ void Output::addPositionAndConfiguration(const double remainder, const int32_t n
 {
     mp_positionalHistogram->addValue(remainder);
 
-    const double reactionCoordinate=calculateReactionCoordinate(remainder, nRightPullingCrosslinkers);
-
-    mp_reactionCoordinateHistogram->addValue(reactionCoordinate);
+    mp_reactionCoordinateHistogram->addValue(calculateReactionCoordinate(remainder, nRightPullingCrosslinkers));
 
     try
     {
@@ -172,38 +170,40 @@ void Output::addPositionAndConfiguration(const double remainder, const int32_t n
     {
         throw GeneralException(std::string("Output::addPositionAndConfiguration() was called with nRightPullingCrosslinkers out of range: ")+std::string(outOfRange.what()));
     }
+}
 
-    if(m_estimateTimeEvolutionAtPeak)
+void Output::addTimeStepToPeakAnalysis(const double remainder, const int32_t nRightPullingCrosslinkers)
+{
+    // Collect data about the dynamics at the peak of the barrier
+
+    const double reactionCoordinate=calculateReactionCoordinate(remainder, nRightPullingCrosslinkers);
+
+    if((!m_currentlyTracking) && reactionCoordinateIsAtPeakRegion(reactionCoordinate))
     {
-        if((!m_currentlyTracking) && reactionCoordinateIsAtPeakRegion(reactionCoordinate))
-        {
-            m_currentlyTracking=true;
-            m_timeStepsTracking=0;
-        }
+        m_currentlyTracking=true;
+        m_timeStepsTracking=0;
+    }
 
-        if(m_currentlyTracking) // Also evaluated if m_currentlyTracking was just set to true
+    if(m_currentlyTracking) // Also evaluated if m_currentlyTracking was just set to true
+    {
+        if(m_timeStepsTracking%m_timeStepsPerDistributionEstimate == 0)
         {
-            if(m_timeStepsTracking%m_timeStepsPerDistributionEstimate == 0)
+            const int32_t statisticsPoint = m_timeStepsTracking/m_timeStepsPerDistributionEstimate;
+            try
             {
-                const int32_t statisticsPoint = m_timeStepsTracking/m_timeStepsPerDistributionEstimate;
-
-                try
-                {
-                    m_estimatePoints.at(statisticsPoint).addValue(reactionCoordinate);
-                }
-                catch(const std::out_of_range& outOfRange)
-                {
-                    throw GeneralException(std::string("Output::addPositionAndConfiguration() was called with statisticsPoint out of range: ")+std::string(outOfRange.what()));
-                }
-                // Turn off the tracking if all the points in m_estimatePoints were passed
-                if(statisticsPoint == m_nEstimatesDistribution-1)
-                {
-                    m_currentlyTracking=false;
-                }
+                m_estimatePoints.at(statisticsPoint).addValue(reactionCoordinate);
             }
-            ++m_timeStepsTracking; // it doesn't matter if this is passed one more time even after tracking is turned off, since it has no effect
+            catch(const std::out_of_range& outOfRange)
+            {
+                throw GeneralException(std::string("Output::addPositionAndConfiguration() was called with statisticsPoint out of range: ")+std::string(outOfRange.what()));
+            }
+            // Turn off the tracking if all the points in m_estimatePoints were passed
+            if(statisticsPoint == m_nEstimatesDistribution-1)
+            {
+                m_currentlyTracking=false;
+            }
         }
-
+        ++m_timeStepsTracking; // it doesn't matter if this is passed one more time even after tracking is turned off, since it has no effect
     }
 }
 

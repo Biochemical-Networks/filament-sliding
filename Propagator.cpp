@@ -45,6 +45,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const bool recordTransitionPaths,
                        const int32_t transitionPathProbePeriod,
                        const bool addTheoreticalCounterForce,
+                       const bool estimateTimeEvolutionAtPeak,
                        Log& log)
     :   m_nEquilibrationBlocks(numberEquilibrationBlocks),
         m_nRunBlocks(numberRunBlocks),
@@ -60,6 +61,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_recordTransitionPaths(recordTransitionPaths),
         m_transitionPathProbePeriod(transitionPathProbePeriod),
         m_addTheoreticalCounterForce(addTheoreticalCounterForce),
+        m_estimateTimeEvolutionAtPeak(estimateTimeEvolutionAtPeak),
         m_nDeterministicBoundaryCrossings(0), // Counts the number of times a force has tried to push the mobile microtubule across a maximum stretch barrier
         m_nStochasticBoundaryCrossings(0), // Counts the number of times diffusion of the mobile microtubule was reflected at a maximum stretch barrier
         m_log(log),
@@ -121,6 +123,12 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
             if(m_samplePositionalDistribution)
             {
                 output.addPositionAndConfiguration(MathematicalFunctions::mod(systemState.getMicrotubulePosition(), m_latticeSpacing),
+                                                   systemState.getNFullRightPullingCrosslinkers());
+            }
+
+            if(m_estimateTimeEvolutionAtPeak)
+            {
+                output.addTimeStepToPeakAnalysis(MathematicalFunctions::mod(systemState.getMicrotubulePosition(), m_latticeSpacing),
                                                    systemState.getNFullRightPullingCrosslinkers());
             }
 

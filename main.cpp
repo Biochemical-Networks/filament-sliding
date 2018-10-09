@@ -373,6 +373,7 @@ int main()
                           recordTransitionPaths,
                           transitionPathProbePeriod,
                           addTheoreticalCounterForce,
+                          estimateTimeEvolutionAtPeak,
                           log);
 
     //-----------------------------------------------------------------------------------------------------
