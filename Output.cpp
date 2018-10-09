@@ -44,7 +44,10 @@ Output::Output(const std::string &runName,
         m_estimateTimeEvolutionAtPeak(estimateTimeEvolutionAtPeak),
         m_timeStepsPerDistributionEstimate(timeStepsPerDistributionEstimate),
         m_nEstimatesDistribution(nEstimatesDistribution),
-        m_dynamicsEstimationRegionWidth(dynamicsEstimationRegionWidth)
+        m_dynamicsEstimationRegionWidth(dynamicsEstimationRegionWidth),
+        m_currentlyTracking(false),
+        m_timeStepsTracking(0),
+        m_estimatePoints(m_nEstimatesDistribution) // each m_timeStepsPerDistributionEstimate after passing a point, a Statistics estimates the variance
 {
     m_microtubulePositionFile << std::left
         << std::setw(m_collumnWidth) << "TIME"
@@ -142,10 +145,15 @@ void Output::writeMicrotubulePosition(const double time, const SystemState& syst
     }
 }
 
-double Output::calculateReactionCoordinate(const double remainder, const int32_t nRightPullingCrosslinkers)
+double Output::calculateReactionCoordinate(const double remainder, const int32_t nRightPullingCrosslinkers) const
 {
     // The reaction coordinate is alpha = 1/2(x/delta + Nr/N). m_maxNFullCrosslinkers=N for a system without binding
     return 0.5*(remainder/m_latticeSpacing+static_cast<double>(nRightPullingCrosslinkers)/static_cast<double>(m_maxNFullCrosslinkers));
+}
+
+bool Output::reactionCoordinateIsAtPeakRegion(const double reactionCoordinate) const
+{
+    return reactionCoordinate>0.5*(1.0-m_dynamicsEstimationRegionWidth) && reactionCoordinate<0.5*(1.0+m_dynamicsEstimationRegionWidth);
 }
 
 void Output::addPositionAndConfiguration(const double remainder, const int32_t nRightPullingCrosslinkers)
@@ -167,7 +175,34 @@ void Output::addPositionAndConfiguration(const double remainder, const int32_t n
 
     if(m_estimateTimeEvolutionAtPeak)
     {
-        if(!m_currentlyTracking)
+        if((!m_currentlyTracking) && reactionCoordinateIsAtPeakRegion(reactionCoordinate))
+        {
+            m_currentlyTracking=true;
+            m_timeStepsTracking=0;
+        }
+
+        if(m_currentlyTracking) // Also evaluated if m_currentlyTracking was just set to true
+        {
+            if(m_timeStepsTracking%m_timeStepsPerDistributionEstimate == 0)
+            {
+                const int32_t statisticsPoint = m_timeStepsTracking/m_timeStepsPerDistributionEstimate;
+
+                try
+                {
+                    m_estimatePoints.at(statisticsPoint).addValue(reactionCoordinate);
+                }
+                catch(const std::out_of_range& outOfRange)
+                {
+                    throw GeneralException(std::string("Output::addPositionAndConfiguration() was called with statisticsPoint out of range: ")+std::string(outOfRange.what()));
+                }
+                // Turn off the tracking if all the points in m_estimatePoints were passed
+                if(statisticsPoint == m_nEstimatesDistribution-1)
+                {
+                    m_currentlyTracking=false;
+                }
+            }
+            ++m_timeStepsTracking; // it doesn't matter if this is passed one more time even after tracking is turned off, since it has no effect
+        }
 
     }
 }

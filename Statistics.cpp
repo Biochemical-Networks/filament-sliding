@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <cmath>
 
+// use "online algorithm" (https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Online_algorithm) for calculating mean and variance.
+
 Statistics::Statistics()
     :   m_numberOfSamples(0),
         m_mean(0.0),

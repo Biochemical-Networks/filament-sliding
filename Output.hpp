@@ -58,8 +58,11 @@ private:
     const double m_dynamicsEstimationRegionWidth;
     bool m_currentlyTracking;
     int32_t m_timeStepsTracking;
+    std::vector<Statistics> m_estimatePoints;
 
-    double calculateReactionCoordinate(const double remainder, const int32_t nRightPullingCrosslinkers);
+    double calculateReactionCoordinate(const double remainder, const int32_t nRightPullingCrosslinkers) const;
+
+    bool reactionCoordinateIsAtPeakRegion(const double reactionCoordinate) const;
 
 public:
     Output(const std::string &runName,
