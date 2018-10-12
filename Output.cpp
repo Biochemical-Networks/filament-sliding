@@ -26,7 +26,8 @@ Output::Output(const std::string &runName,
                const bool estimateTimeEvolutionAtPeak,
                const int32_t timeStepsPerDistributionEstimate,
                const int32_t nEstimatesDistribution,
-               const double dynamicsEstimationRegionWidth)
+               const double dynamicsEstimationInitialRegionWidth,
+               const double dynamicsEstimationFinalRegionWidth)
     :   m_microtubulePositionFile((runName+".microtubule_position.txt").c_str()),
         m_barrierCrossingTimeFile((runName+".times_barrier_crossings.txt").c_str()),
         m_statisticalAnalysisFile((runName+".statistical_analysis.txt").c_str()),
@@ -44,8 +45,10 @@ Output::Output(const std::string &runName,
         m_estimateTimeEvolutionAtPeak(estimateTimeEvolutionAtPeak),
         m_timeStepsPerDistributionEstimate(timeStepsPerDistributionEstimate),
         m_nEstimatesDistribution(nEstimatesDistribution),
-        m_dynamicsEstimationRegionWidth(dynamicsEstimationRegionWidth),
+        m_dynamicsEstimationInitialRegionWidth(dynamicsEstimationInitialRegionWidth),
+        m_dynamicsEstimationFinalRegionWidth(dynamicsEstimationFinalRegionWidth),
         m_currentlyTracking(false),
+        m_alsoTrackingTime(false),
         m_timeStepsTracking(0),
         m_estimatePoints(m_nEstimatesDistribution) // each m_timeStepsPerDistributionEstimate after passing a point, a Statistics estimates the variance
 {
@@ -164,7 +167,12 @@ double Output::calculateReactionCoordinate(const double remainder, const int32_t
 
 bool Output::reactionCoordinateIsAtPeakRegion(const double reactionCoordinate) const
 {
-    return reactionCoordinate>0.5*(1.0-m_dynamicsEstimationRegionWidth) && reactionCoordinate<0.5*(1.0+m_dynamicsEstimationRegionWidth);
+    return reactionCoordinate>0.5*(1.0-m_dynamicsEstimationInitialRegionWidth) && reactionCoordinate<0.5*(1.0+m_dynamicsEstimationInitialRegionWidth);
+}
+
+bool Output::reactionCoordinateLeftPeakRegion(const double reactionCoordinate) const
+{
+    return reactionCoordinate<0.5*(1.0-m_dynamicsEstimationFinalRegionWidth) || reactionCoordinate>0.5*(1.0+m_dynamicsEstimationFinalRegionWidth);
 }
 
 void Output::addPositionAndConfiguration(const double remainder, const int32_t nRightPullingCrosslinkers)
@@ -192,6 +200,7 @@ void Output::addTimeStepToPeakAnalysis(const double remainder, const int32_t nRi
     if((!m_currentlyTracking) && reactionCoordinateIsAtPeakRegion(reactionCoordinate))
     {
         m_currentlyTracking=true;
+        m_alsoTrackingTime=true;
         m_timeStepsTracking=0;
     }
 
@@ -214,6 +223,13 @@ void Output::addTimeStepToPeakAnalysis(const double remainder, const int32_t nRi
                 m_currentlyTracking=false;
             }
         }
+
+        if(m_alsoTrackingTime&&reactionCoordinateLeftPeakRegion(reactionCoordinate))
+        {
+            m_diffusionTimeToFinalRegion.addValue(m_timeStepsTracking);
+            m_alsoTrackingTime=false;
+        }
+
         ++m_timeStepsTracking; // it doesn't matter if this is passed one more time even after tracking is turned off, since it has no effect
     }
 }
@@ -407,12 +423,18 @@ void Output::finishWriting()
         for(const Statistics& statPoint : m_estimatePoints)
         {
             m_peakDynamicsFile << std::setw(m_collumnWidth) << timeStepsToPoint
-            << std::setw(m_collumnWidth) << statPoint.getNumberOfSamples()
-            << std::setw(m_collumnWidth) << statPoint.getMean()
-            << std::setw(m_collumnWidth) << statPoint.getVariance()
-            << std::setw(m_collumnWidth) << statPoint.getSEM() << '\n';
+                << std::setw(m_collumnWidth) << statPoint.getNumberOfSamples()
+                << std::setw(m_collumnWidth) << statPoint.getMean()
+                << std::setw(m_collumnWidth) << statPoint.getVariance()
+                << std::setw(m_collumnWidth) << statPoint.getSEM() << '\n';
 
             timeStepsToPoint+=m_timeStepsPerDistributionEstimate;
         }
+
+        m_peakDynamicsFile << std::setw(m_collumnWidth) << "TIME STEPS TO LEAVE BARRIER"
+            << std::setw(m_collumnWidth) << m_diffusionTimeToFinalRegion.getNumberOfSamples()
+            << std::setw(m_collumnWidth) << m_diffusionTimeToFinalRegion.getMean()
+            << std::setw(m_collumnWidth) << m_diffusionTimeToFinalRegion.getVariance()
+            << std::setw(m_collumnWidth) << m_diffusionTimeToFinalRegion.getSEM() << '\n';
     }
 }

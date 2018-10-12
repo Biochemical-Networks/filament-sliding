@@ -56,14 +56,18 @@ private:
     const bool m_estimateTimeEvolutionAtPeak;
     const int32_t m_timeStepsPerDistributionEstimate;
     const int32_t m_nEstimatesDistribution;
-    const double m_dynamicsEstimationRegionWidth;
+    const double m_dynamicsEstimationInitialRegionWidth;
+    const double m_dynamicsEstimationFinalRegionWidth;
     bool m_currentlyTracking;
+    bool m_alsoTrackingTime;
     int32_t m_timeStepsTracking;
     std::vector<Statistics> m_estimatePoints;
+    Statistics m_diffusionTimeToFinalRegion;
 
     double calculateReactionCoordinate(const double remainder, const int32_t nRightPullingCrosslinkers) const;
 
     bool reactionCoordinateIsAtPeakRegion(const double reactionCoordinate) const;
+    bool reactionCoordinateLeftPeakRegion(const double reactionCoordinate) const;
 
 public:
     Output(const std::string &runName,
@@ -80,7 +84,8 @@ public:
            const bool estimateTimeEvolutionAtPeak,
            const int32_t timeStepsPerDistributionEstimate,
            const int32_t nEstimatesDistribution,
-           const double dynamicsEstimationRegionWidth);
+           const double dynamicsEstimationInitialRegionWidth,
+           const double dynamicsEstimationFinalRegionWidth);
 
     ~Output();
 

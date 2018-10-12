@@ -99,5 +99,6 @@ ParameterMap::ParameterMap()
     defineParameter("estimateTimeEvolutionAtPeak", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("timeStepsPerDistributionEstimate", 200, "steps", ">0");
     defineParameter("nEstimatesDistribution", 200, "sets", ">0");
-    defineParameter("dynamicsEstimationRegionWidth", 0.001, "unitless", "(0,1]");
+    defineParameter("dynamicsEstimationInitialRegionWidth", 0.001, "unitless", "(0,1]");
+    defineParameter("dynamicsEstimationFinalRegionWidth", 0.05, "unitless", "(0,1]");
 }

@@ -192,11 +192,18 @@ int main()
         throw GeneralException("The parameter nEstimatesDistribution contains a wrong value.");
     }
 
-    double dynamicsEstimationRegionWidth;
-    input.copyParameter("dynamicsEstimationRegionWidth", dynamicsEstimationRegionWidth);
-    if(estimateTimeEvolutionAtPeak && (dynamicsEstimationRegionWidth<=0.0 || dynamicsEstimationRegionWidth>1.0))
+    double dynamicsEstimationInitialRegionWidth;
+    input.copyParameter("dynamicsEstimationInitialRegionWidth", dynamicsEstimationInitialRegionWidth);
+    if(estimateTimeEvolutionAtPeak && (dynamicsEstimationInitialRegionWidth<=0.0 || dynamicsEstimationInitialRegionWidth>1.0))
     {
-        throw GeneralException("The parameter dynamicsEstimationRegionWidth contains a wrong value.");
+        throw GeneralException("The parameter dynamicsEstimationInitialRegionWidth contains a wrong value.");
+    }
+
+    double dynamicsEstimationFinalRegionWidth;
+    input.copyParameter("dynamicsEstimationFinalRegionWidth", dynamicsEstimationFinalRegionWidth);
+    if(estimateTimeEvolutionAtPeak && (dynamicsEstimationFinalRegionWidth<=0.0 || dynamicsEstimationFinalRegionWidth>1.0))
+    {
+        throw GeneralException("The parameter dynamicsEstimationFinalRegionWidth contains a wrong value.");
     }
 
     Output output(runName,
@@ -213,7 +220,8 @@ int main()
                   estimateTimeEvolutionAtPeak,
                   timeStepsPerDistributionEstimate,
                   nEstimatesDistribution,
-                  dynamicsEstimationRegionWidth);
+                  dynamicsEstimationInitialRegionWidth,
+                  dynamicsEstimationFinalRegionWidth);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for initialising the state.
