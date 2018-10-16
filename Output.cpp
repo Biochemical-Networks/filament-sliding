@@ -47,9 +47,10 @@ Output::Output(const std::string &runName,
         m_nEstimatesDistribution(nEstimatesDistribution),
         m_dynamicsEstimationInitialRegionWidth(dynamicsEstimationInitialRegionWidth),
         m_dynamicsEstimationFinalRegionWidth(dynamicsEstimationFinalRegionWidth),
-        m_currentlyTracking(false),
-        m_alsoTrackingTime(false),
-        m_timeStepsTracking(0),
+        m_currentlyTrackingPeakPos(false),
+        m_currentlyTrackingPeakTime(false),
+        m_timeStepsTrackingPos(0),
+        m_timeStepsTrackingTime(0),
         m_estimatePoints(m_nEstimatesDistribution) // each m_timeStepsPerDistributionEstimate after passing a point, a Statistics estimates the variance
 {
     m_microtubulePositionFile << std::left
@@ -196,19 +197,19 @@ void Output::addTimeStepToPeakAnalysis(const double remainder, const int32_t nRi
     // Collect data about the dynamics at the peak of the barrier
 
     const double reactionCoordinate=calculateReactionCoordinate(remainder, nRightPullingCrosslinkers);
+    const bool isAtPeak=reactionCoordinateIsAtPeakRegion(reactionCoordinate);
 
-    if((!m_currentlyTracking) && reactionCoordinateIsAtPeakRegion(reactionCoordinate))
+    if((!m_currentlyTrackingPeakPos) && isAtPeak)
     {
-        m_currentlyTracking=true;
-        m_alsoTrackingTime=true;
-        m_timeStepsTracking=0;
+        m_currentlyTrackingPeakPos=true;
+        m_timeStepsTrackingPos=0;
     }
 
-    if(m_currentlyTracking) // Also evaluated if m_currentlyTracking was just set to true
+    if(m_currentlyTrackingPeakPos) // Also evaluated if m_currentlyTrackingPeakPos was just set to true
     {
-        if(m_timeStepsTracking%m_timeStepsPerDistributionEstimate == 0)
+        if(m_timeStepsTrackingPos%m_timeStepsPerDistributionEstimate == 0)
         {
-            const int32_t statisticsPoint = m_timeStepsTracking/m_timeStepsPerDistributionEstimate;
+            const int32_t statisticsPoint = m_timeStepsTrackingPos/m_timeStepsPerDistributionEstimate;
             try
             {
                 m_estimatePoints.at(statisticsPoint).addValue(reactionCoordinate);
@@ -220,17 +221,26 @@ void Output::addTimeStepToPeakAnalysis(const double remainder, const int32_t nRi
             // Turn off the tracking if all the points in m_estimatePoints were passed
             if(statisticsPoint == m_nEstimatesDistribution-1)
             {
-                m_currentlyTracking=false;
+                m_currentlyTrackingPeakPos=false;
             }
         }
+        ++m_timeStepsTrackingPos; // it doesn't matter if this is passed one more time even after tracking is turned off, since it has no effect
+    }
 
-        if(m_alsoTrackingTime&&reactionCoordinateLeftPeakRegion(reactionCoordinate))
+    if((!m_currentlyTrackingPeakTime) && isAtPeak)
+    {
+        m_currentlyTrackingPeakTime=true;
+        m_timeStepsTrackingTime=0;
+    }
+
+    if(m_currentlyTrackingPeakTime) // Also evaluated if m_currentlyTrackingPeakTime was just set to true
+    {
+        if(reactionCoordinateLeftPeakRegion(reactionCoordinate))
         {
-            m_diffusionTimeToFinalRegion.addValue(m_timeStepsTracking);
-            m_alsoTrackingTime=false;
+            m_diffusionTimeToFinalRegion.addValue(m_timeStepsTrackingTime);
+            m_currentlyTrackingPeakTime=false;
         }
-
-        ++m_timeStepsTracking; // it doesn't matter if this is passed one more time even after tracking is turned off, since it has no effect
+        ++m_timeStepsTrackingTime; // it doesn't matter if this is passed one more time even after tracking is turned off, since it has no effect
     }
 }
 

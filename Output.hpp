@@ -58,9 +58,10 @@ private:
     const int32_t m_nEstimatesDistribution;
     const double m_dynamicsEstimationInitialRegionWidth;
     const double m_dynamicsEstimationFinalRegionWidth;
-    bool m_currentlyTracking;
-    bool m_alsoTrackingTime;
-    int32_t m_timeStepsTracking;
+    bool m_currentlyTrackingPeakPos;
+    bool m_currentlyTrackingPeakTime;
+    int32_t m_timeStepsTrackingPos;
+    int32_t m_timeStepsTrackingTime;
     std::vector<Statistics> m_estimatePoints;
     Statistics m_diffusionTimeToFinalRegion;
 
