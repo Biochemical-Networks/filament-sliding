@@ -23,19 +23,19 @@ Initialiser::Initialiser(const double initialPositionMicrotubule, const double f
 
     if (initialCrosslinkerDistributionString=="RANDOM")
     {
-        m_initialCrosslinkerDistribution = Initialiser::InitialCrosslinkerDistribution::RANDOM;
+        m_initialCrosslinkerDistribution = InitialCrosslinkerDistribution::RANDOM;
     }
     else if (initialCrosslinkerDistributionString=="HEADSMOBILE")
     {
-        m_initialCrosslinkerDistribution = Initialiser::InitialCrosslinkerDistribution::HEADSMOBILE;
+        m_initialCrosslinkerDistribution = InitialCrosslinkerDistribution::HEADSMOBILE;
     }
     else if (initialCrosslinkerDistributionString=="TAILSMOBILE")
     {
-        m_initialCrosslinkerDistribution = Initialiser::InitialCrosslinkerDistribution::TAILSMOBILE;
+        m_initialCrosslinkerDistribution = InitialCrosslinkerDistribution::TAILSMOBILE;
     }
     else if (initialCrosslinkerDistributionString=="TEST")
     {
-        m_initialCrosslinkerDistribution = Initialiser::InitialCrosslinkerDistribution::TEST;
+        m_initialCrosslinkerDistribution = InitialCrosslinkerDistribution::TEST;
     }
     else
     {

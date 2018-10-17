@@ -25,7 +25,8 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
                             const int32_t nDualCrosslinkers,
                             const int32_t nPassiveCrosslinkers,
                             const double springConstant,
-                            const bool addExternalForce)
+                            const bool addExternalForce,
+                            const std::string externalForceTypeString)
     :   m_maxStretchPerLatticeSpacing(maxStretchPerLatticeSpacing),
         m_maxNumberOfCloseSites(static_cast<int32_t> (std::ceil(2*m_maxStretchPerLatticeSpacing))),
         m_maxStretch(m_maxStretchPerLatticeSpacing*latticeSpacing),
@@ -42,6 +43,18 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
         m_activeCrosslinkers(m_nActiveCrosslinkers, Crosslinker(Crosslinker::Type::ACTIVE),Crosslinker::Type::ACTIVE, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch),
         m_addExternalForce(addExternalForce)
 {
+    if(externalForceTypeString=="BARRIERFREE")
+    {
+        m_externalForceType=ExternalForceType::BARRIERFREE;
+    }
+    else if(externalForceTypeString=="QUADRATIC")
+    {
+        m_externalForceType=ExternalForceType::QUADRATIC;
+    }
+    else
+    {
+        throw GeneralException("In the SystemState constructor, the given externalForceTypeString does not hold a recognised value.");
+    }
 }
 
 SystemState::~SystemState()
@@ -784,25 +797,38 @@ double SystemState::getTotalExtensionLinkers() const
     return m_totalExtensionLinkers;
 }
 
+double SystemState::externalForceFlatOptimalPath() const
+{
+    const double position = MathematicalFunctions::mod(m_mobileMicrotubule.getPosition(),m_latticeSpacing);
+    const double positionFraction = position/m_latticeSpacing;
+    const double nSitesMobileMicrotubule = static_cast<double>(m_mobileMicrotubule.getNSites());
+    const double nFullLinkers = static_cast<double>(getNFullCrosslinkers());
+
+    // The following force has to counter the force felt by the system at the optimal path. Hence, use that force with a minus sign.
+    // See notes for explanations.
+    // First, calculate the energetic part:
+    double externalForce = m_springConstant*nFullLinkers*(0.5*m_latticeSpacing-position);
+    // and then the entropic part:
+    externalForce += nFullLinkers/m_latticeSpacing
+        *(gsl_sf_psi(nSitesMobileMicrotubule-positionFraction*nFullLinkers+1)
+            -gsl_sf_psi((1-positionFraction)*nFullLinkers+1)
+            -gsl_sf_psi(nSitesMobileMicrotubule-(1-positionFraction)*nFullLinkers+1)
+            +gsl_sf_psi(positionFraction*nFullLinkers+1));
+
+    return externalForce;
+}
+
 double SystemState::findExternalForce() const
 {
-    double externalForce = 0;
-    if(m_addExternalForce)
+    #ifdef MYDEBUG
+    if(!m_addExternalForce)
     {
-        const double position = MathematicalFunctions::mod(m_mobileMicrotubule.getPosition(),m_latticeSpacing);
-        const double positionFraction = position/m_latticeSpacing;
-        const double nSitesMobileMicrotubule = static_cast<double>(m_mobileMicrotubule.getNSites());
-        const double nFullLinkers = static_cast<double>(getNFullCrosslinkers());
-
-        // First, calculate the energetic part:
-        externalForce += m_springConstant*nFullLinkers*(0.5*m_latticeSpacing-position);
-        // and then the entropic part:
-        externalForce += nFullLinkers/m_latticeSpacing
-            *(gsl_sf_psi(nSitesMobileMicrotubule-positionFraction*nFullLinkers+1)
-                -gsl_sf_psi((1-positionFraction)*nFullLinkers+1)
-                -gsl_sf_psi(nSitesMobileMicrotubule-(1-positionFraction)*nFullLinkers+1)
-                +gsl_sf_psi(positionFraction*nFullLinkers+1));
+        throw GeneralException("SystemState::findExternalForce() was called without addExternalForce having been set to true");
     }
+    #endif // MYDEBUG
+
+    double externalForce = 0;
+    externalForce = externalForceFlatOptimalPath();
     return externalForce;
 }
 

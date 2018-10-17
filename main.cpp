@@ -100,8 +100,11 @@ int main()
     input.copyParameter("addExternalForce", addExternalForceString);
     const bool addExternalForce = (addExternalForceString == "TRUE"); // Whenever it is not TRUE, assume it is false
 
+    std::string externalForceTypeString;
+    input.copyParameter("externalForceType", externalForceTypeString);
+
     SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing, maximumStretchPerLatticeSpacing,
-                            nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers, springConstant, addExternalForce);
+                            nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers, springConstant, addExternalForce, externalForceTypeString);
 
     //-----------------------------------------------------------------------------------------------------
     // Create the output class. Needs to be done before the propagator, since this needs samplePositionalDistribution as well

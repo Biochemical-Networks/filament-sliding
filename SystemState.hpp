@@ -22,6 +22,12 @@
 
 class SystemState
 {
+public:
+    enum class ExternalForceType
+    {
+        BARRIERFREE,
+        QUADRATIC
+    };
 private:
     // With a stretch < 1.5 lattice spacing, there are maximally 3 types of stretch at a time (at exactly 1.5, there could be 4).
     // The number is defined smaller than 1.5 to be sure that there are never 4 states possible, in which the state could become locked.
@@ -51,6 +57,9 @@ private:
     double m_totalExtensionLinkers;
 
     const bool m_addExternalForce;
+    ExternalForceType m_externalForceType; // not const, has to be found in the constructor body
+
+    double externalForceFlatOptimalPath() const;
 public:
     SystemState(const double lengthMobileMicrotubule,
                 const double lengthFixedMicrotubule,
@@ -60,7 +69,8 @@ public:
                 const int32_t nDualCrosslinkers,
                 const int32_t nPassiveCrosslinkers,
                 const double springConstant,
-                const bool addExternalForce);
+                const bool addExternalForce,
+                const std::string externalForceTypeString);
     ~SystemState();
 
     SystemState(const SystemState&) = delete;
