@@ -38,6 +38,10 @@ int main()
 
     RandomGenerator generator(runName); // Seed with the runName, which is unique
 
+    #ifdef MYDEBUG
+    std::cout<< "The runName is " << runName << '\n';
+    #endif // MYDEBUG
+
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for defining the general systemState.
     double lengthMobileMicrotubule;
