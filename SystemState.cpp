@@ -828,7 +828,19 @@ double SystemState::findExternalForce() const
     #endif // MYDEBUG
 
     double externalForce = 0;
-    externalForce = externalForceFlatOptimalPath();
+    switch(m_externalForceType)
+    {
+        case ExternalForceType::BARRIERFREE:
+            externalForce = externalForceFlatOptimalPath();
+            break;
+        case ExternalForceType::QUADRATIC:
+            externalForce = 0;
+            break;
+        default:
+            throw GeneralException("Caller of SystemState::findExternalForce() asked for an unsupported external force");
+            break;
+    }
+
     return externalForce;
 }
 
