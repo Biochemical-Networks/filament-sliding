@@ -180,11 +180,26 @@ void Initialiser::nCrosslinkersEachTypeToConnect(int32_t& nPassiveCrosslinkersTo
                                                  const int32_t nFreeDualCrosslinkers,
                                                  const int32_t nFreeActiveCrosslinkers) const
 {
-    /* To calculate the number of connected crosslinkers to assign to each type,
-     * first use integer division. In this setup, e.g. 0 <= remainderPassiveCrosslinkers < nFreeCrosslinkers.
-     * Since the fractions are floored to integers, the resulting number of connected crosslinkers is always lower than or equal to nSitesToConnect.
-     * To make up for the loss, assign the remaining crosslinkers to the largest remainders.
-     */
+    // To calculate the number of connected crosslinkers to assign to each type,
+    // first use integer division. In this setup, e.g. 0 <= remainderPassiveCrosslinkers < nFreeCrosslinkers.
+    // Since the fractions are floored to integers, the resulting number of connected crosslinkers is always lower than or equal to nSitesToConnect.
+    // To make up for the loss, assign the remaining crosslinkers to the largest remainders.
+    // But first, check whether the user is trying to have no crosslinkers in the system.
+
+    if(nFreeCrosslinkers==0 && nSitesToConnect==0)
+    {
+        nPassiveCrosslinkersToConnect=nDualCrosslinkersToConnect=nActiveCrosslinkersToConnect=0;
+        return;
+    }
+    #ifdef MYDEBUG
+    if(nFreeCrosslinkers==0 && nSitesToConnect!=0)
+    {
+        throw GeneralException("The user of Initialiser::nCrosslinkersEachTypeToConnect() tried to connect crosslinkers, but none where available.");
+    }
+    #endif // MYDEBUG
+
+    // Here, we can assume that nFreeCrosslinkers>0
+
     nPassiveCrosslinkersToConnect = (nFreePassiveCrosslinkers*nSitesToConnect) / nFreeCrosslinkers;
     int32_t remainderPassiveCrosslinkers = (nFreePassiveCrosslinkers*nSitesToConnect) % nFreeCrosslinkers;
 

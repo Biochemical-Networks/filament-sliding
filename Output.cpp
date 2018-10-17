@@ -163,7 +163,7 @@ void Output::writeMicrotubulePosition(const double time, const SystemState& syst
 double Output::calculateReactionCoordinate(const double remainder, const int32_t nRightPullingCrosslinkers) const
 {
     // The reaction coordinate is alpha = 1/2(x/delta + Nr/N). m_maxNFullCrosslinkers=N for a system without binding
-    return 0.5*(remainder/m_latticeSpacing+static_cast<double>(nRightPullingCrosslinkers)/static_cast<double>(m_maxNFullCrosslinkers));
+    return (m_maxNFullCrosslinkers!=0)?(0.5*(remainder/m_latticeSpacing+static_cast<double>(nRightPullingCrosslinkers)/static_cast<double>(m_maxNFullCrosslinkers))):(remainder/m_latticeSpacing);
 }
 
 bool Output::reactionCoordinateIsAtPeakRegion(const double reactionCoordinate) const

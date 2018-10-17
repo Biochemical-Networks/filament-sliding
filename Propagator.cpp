@@ -245,11 +245,18 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
     // To this end, integrate the force over the positions.
 
     const double totalExtension = systemState.getTotalExtensionLinkers();
-    const double numberFullLinkers = static_cast<double>(systemState.getNFullCrosslinkers());
-    // The integrated change is given by the following (exponential minus one) function (see notes), which for small time steps reduces to:
+    const int32_t numberFullLinkers = systemState.getNFullCrosslinkers();
+    // The integrated change is given by the following (exponential minus one) function (see notes).
+    // The change c follows the formula dc/dt = -k D (E0 + N c).
+    // Here, k is the spring constant (in units of k_B T), D is the diffusion constant (and thus the mobility through the Einstein relation),
+    // E0 is the totalExtension at time 0, and N is the number of crosslinkers. The change in extension upon a change c is N*c.
+    // which for small time steps reduces to:
     // m_diffusionConstantMicrotubule*systemState.getForce()*m_calcTimeStep
     // use the expm1 function to prevent catastrophic cancellation for very small numbers.
-    double deterministicChange = totalExtension/numberFullLinkers*std::expm1(-numberFullLinkers*m_springConstant*m_diffusionConstantMicrotubule*m_calcTimeStep);
+    // Check for the case of no crosslinkers. The numberFullLinkers is implicitly converted to double.
+    double deterministicChange = (numberFullLinkers!=0)?
+                                 (totalExtension/numberFullLinkers*std::expm1(-numberFullLinkers*m_springConstant*m_diffusionConstantMicrotubule*m_calcTimeStep)):
+                                 (0.0);
 
     if(m_addTheoreticalCounterForce)
     {
