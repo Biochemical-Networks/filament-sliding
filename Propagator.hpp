@@ -41,7 +41,7 @@ private:
     const bool m_samplePositionalDistribution;
     const bool m_recordTransitionPaths;
     const int32_t m_transitionPathProbePeriod;
-    const bool m_addTheoreticalCounterForce;
+    const bool m_addExternalForce;
     const bool m_estimateTimeEvolutionAtPeak;
 
     int32_t m_nDeterministicBoundaryCrossings;
@@ -102,7 +102,7 @@ public:
                const bool samplePositionalDistribution,
                const bool recordTransitionPaths,
                const int32_t transitionPathProbePeriod,
-               const bool addTheoreticalCounterForce,
+               const bool addExternalForce,
                const bool estimateTimeEvolutionAtPeak,
                Log& log);
     ~Propagator();

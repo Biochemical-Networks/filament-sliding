@@ -50,7 +50,7 @@ private:
     double m_energy;
     double m_totalExtensionLinkers;
 
-    const bool m_addTheoreticalCounterForce;
+    const bool m_addExternalForce;
 public:
     SystemState(const double lengthMobileMicrotubule,
                 const double lengthFixedMicrotubule,
@@ -60,7 +60,7 @@ public:
                 const int32_t nDualCrosslinkers,
                 const int32_t nPassiveCrosslinkers,
                 const double springConstant,
-                const bool addTheoreticalCounterForce);
+                const bool addExternalForce);
     ~SystemState();
 
     SystemState(const SystemState&) = delete;

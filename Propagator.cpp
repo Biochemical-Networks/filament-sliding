@@ -44,7 +44,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const bool samplePositionalDistribution,
                        const bool recordTransitionPaths,
                        const int32_t transitionPathProbePeriod,
-                       const bool addTheoreticalCounterForce,
+                       const bool addExternalForce,
                        const bool estimateTimeEvolutionAtPeak,
                        Log& log)
     :   m_nEquilibrationBlocks(numberEquilibrationBlocks),
@@ -60,7 +60,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_samplePositionalDistribution(samplePositionalDistribution),
         m_recordTransitionPaths(recordTransitionPaths),
         m_transitionPathProbePeriod(transitionPathProbePeriod),
-        m_addTheoreticalCounterForce(addTheoreticalCounterForce),
+        m_addExternalForce(addExternalForce),
         m_estimateTimeEvolutionAtPeak(estimateTimeEvolutionAtPeak),
         m_nDeterministicBoundaryCrossings(0), // Counts the number of times a force has tried to push the mobile microtubule across a maximum stretch barrier
         m_nStochasticBoundaryCrossings(0), // Counts the number of times diffusion of the mobile microtubule was reflected at a maximum stretch barrier
@@ -258,7 +258,7 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
                                  (totalExtension/numberFullLinkers*std::expm1(-numberFullLinkers*m_springConstant*m_diffusionConstantMicrotubule*m_calcTimeStep)):
                                  (0.0);
 
-    if(m_addTheoreticalCounterForce)
+    if(m_addExternalForce)
     {
         deterministicChange += m_diffusionConstantMicrotubule*systemState.findExternalForce()*m_calcTimeStep;
     }

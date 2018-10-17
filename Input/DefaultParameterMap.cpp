@@ -84,7 +84,7 @@ ParameterMap::ParameterMap()
     defineParameter("headBindingBiasEnergy", 0.0, "kT", "real");
 
     // Parameters to turn analysis on or off
-    defineParameter("addTheoreticalCounterForce", "FALSE", "unitless", "TRUE,FALSE");
+    defineParameter("addExternalForce", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("samplePositionalDistribution", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("positionalHistogramBinSize", 8.e-7, "micron", ">0");
     defineParameter("positionalHistogramLowestValue", 0.0, "micron", ">=0");

@@ -96,12 +96,12 @@ int main()
         throw GeneralException("The parameter springConstant contains a wrong value.");
     }
 
-    std::string addTheoreticalCounterForceString;
-    input.copyParameter("addTheoreticalCounterForce", addTheoreticalCounterForceString);
-    const bool addTheoreticalCounterForce = (addTheoreticalCounterForceString == "TRUE"); // Whenever it is not TRUE, assume it is false
+    std::string addExternalForceString;
+    input.copyParameter("addExternalForce", addExternalForceString);
+    const bool addExternalForce = (addExternalForceString == "TRUE"); // Whenever it is not TRUE, assume it is false
 
     SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing, maximumStretchPerLatticeSpacing,
-                            nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers, springConstant, addTheoreticalCounterForce);
+                            nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers, springConstant, addExternalForce);
 
     //-----------------------------------------------------------------------------------------------------
     // Create the output class. Needs to be done before the propagator, since this needs samplePositionalDistribution as well
@@ -380,7 +380,7 @@ int main()
                           samplePositionalDistribution,
                           recordTransitionPaths,
                           transitionPathProbePeriod,
-                          addTheoreticalCounterForce,
+                          addExternalForce,
                           estimateTimeEvolutionAtPeak,
                           log);
 
