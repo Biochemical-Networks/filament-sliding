@@ -258,7 +258,7 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
                                  (totalExtension/numberFullLinkers*std::expm1(-numberFullLinkers*m_springConstant*m_diffusionConstantMicrotubule*m_calcTimeStep)):
                                  (0.0);
 
-    if(m_addExternalForce)
+    if(m_addExternalForce) // This if is not necessary, but it does prevent the multiplications below to be performed when not necessary
     {
         deterministicChange += m_diffusionConstantMicrotubule*systemState.findExternalForce()*m_calcTimeStep;
     }

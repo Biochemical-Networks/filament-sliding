@@ -820,25 +820,22 @@ double SystemState::externalForceFlatOptimalPath() const
 
 double SystemState::findExternalForce() const
 {
-    #ifdef MYDEBUG
-    if(!m_addExternalForce)
-    {
-        throw GeneralException("SystemState::findExternalForce() was called without addExternalForce having been set to true");
-    }
-    #endif // MYDEBUG
-
     double externalForce = 0;
-    switch(m_externalForceType)
+
+    if(m_addExternalForce) // It can be called without it actually doing something
     {
-        case ExternalForceType::BARRIERFREE:
-            externalForce = externalForceFlatOptimalPath();
-            break;
-        case ExternalForceType::QUADRATIC:
-            externalForce = 0;
-            break;
-        default:
-            throw GeneralException("Caller of SystemState::findExternalForce() asked for an unsupported external force");
-            break;
+        switch(m_externalForceType)
+        {
+            case ExternalForceType::BARRIERFREE:
+                externalForce = externalForceFlatOptimalPath();
+                break;
+            case ExternalForceType::QUADRATIC:
+                externalForce = 0; // Not yet defined
+                break;
+            default:
+                throw GeneralException("Caller of SystemState::findExternalForce() asked for an unsupported external force");
+                break;
+        }
     }
 
     return externalForce;
