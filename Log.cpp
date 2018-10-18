@@ -11,6 +11,7 @@ Log::Log(const std::string &runName, const Clock& clock)
 {
     m_logFile << "The git hash of the commit that was used to create the current program is:\n"
               << gitHash << "\n\n";
+    m_logFile << "The program was run at: " << clock << "\n\n";
 
     // redirect messages and errors to file
     std::cout.rdbuf(m_logFile.rdbuf());
