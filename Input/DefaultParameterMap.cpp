@@ -98,7 +98,7 @@ ParameterMap::ParameterMap()
     defineParameter("maxNumberTransitionPaths", 100, "paths", ">=0");
     defineParameter("maxPeriodPositionTracking", 10.0, "s", ">=0");
     defineParameter("estimateTimeEvolutionAtPeak", "FALSE", "unitless", "TRUE,FALSE");
-    defineParameter("timeStepsPerDistributionEstimate", 200, "steps", ">0");
+    defineParameter("timeStepsPerDistributionEstimate", 25, "steps", ">0");
     defineParameter("nEstimatesDistribution", 200, "sets", ">0");
     defineParameter("dynamicsEstimationInitialRegionWidth", 0.001, "unitless", "(0,1]");
     defineParameter("dynamicsEstimationFinalRegionWidth", 0.05, "unitless", "(0,1]");
