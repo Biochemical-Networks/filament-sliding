@@ -7,7 +7,8 @@ class Clock
 {
 private:
     // steady_clock (not system_clock), because this cannot be affected by changes of the system time
-    std::chrono::steady_clock::time_point m_constructionTime;
+    std::chrono::steady_clock::time_point m_constructionTime; // For measuring intervals: more reliable than system_clock
+    std::chrono::system_clock::time_point m_sysConstructionTime; // For printing the moment of construction as given by the system.
 public:
     Clock();
     ~Clock();

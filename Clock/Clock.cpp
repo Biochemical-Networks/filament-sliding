@@ -5,7 +5,8 @@
 #include <iomanip>
 
 // Initialise and store the time at construction, because for run intervals we will need to subtract the initial time
-Clock::Clock() : m_constructionTime(std::chrono::steady_clock::now())
+Clock::Clock() : m_constructionTime(std::chrono::steady_clock::now()),
+                 m_sysConstructionTime(std::chrono::system_clock::now())
 {
 }
 
@@ -24,7 +25,7 @@ Clock::~Clock()
 
 std::ostream& operator<< (std::ostream &out, const Clock &clock)
 {
-    auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    auto currentTime = std::chrono::system_clock::to_time_t(clock.m_sysConstructionTime);
     out << std::put_time(std::localtime(&currentTime), "%c %Z");
     return out;
 }
