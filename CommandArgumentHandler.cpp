@@ -24,16 +24,18 @@ CommandArgumentHandler::CommandArgumentHandler(int argc, char* argv[])
             else
             {
                 // The number of arguments is correct
-                std::istringstream commandLineArgument(argv[1]);
+
                 const int32_t numberSetArguments = (argc-1)/2;
                 for (int32_t i=0; i!=numberSetArguments; ++i)
                 {
-                    readVariable(commandLineArgument);
+                    // read the variable name and value
+                    readVariable(std::istringstream{argv[2*i+1]}, std::istringstream{argv[2*i+2]});
                 }
             }
         }
         catch(GeneralException except)
         {
+            std::cerr << "Continue with the input file values of all variables.\n";
             m_mobileMicrotubuleLengthDefined = m_numberOfPassiveCrosslinkersDefined = false; // reset if something was set
         }
     }
@@ -43,19 +45,20 @@ CommandArgumentHandler::~CommandArgumentHandler()
 {
 }
 
-void CommandArgumentHandler::readVariable(std::istringstream& CLA)
+void CommandArgumentHandler::readVariable(std::istringstream&& streamName, std::istringstream&& streamValue)
 {
     std::string variableType;
-    if(!(CLA >> variableType))
+    if(!(streamName >> variableType))
     {
         throw GeneralException("CommandArgumentHandler::readVariable() encountered a something wrong where a variableType was expected.");
     }
 
-    int32_t variableValue;
-    if(!(CLA >> variableValue))
+    int variableValue;
+    if(!(streamValue >> variableValue))
     {
         throw GeneralException("CommandArgumentHandler::readVariable() encountered a something wrong where a variableValue was expected.");
     }
+
 
     if(variableType == "-NP" || variableType == "-np" || variableType == "-nP" || variableType == "-Np")
     {

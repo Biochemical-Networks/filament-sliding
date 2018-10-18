@@ -17,7 +17,7 @@ private:
     bool m_numberOfPassiveCrosslinkersDefined;
     int32_t m_numberPassive;
 
-    void readVariable(std::istringstream& CLA);
+    void readVariable(std::istringstream&& streamName, std::istringstream&& streamValue);
 
 public:
     CommandArgumentHandler(int argc, char* argv[]);
