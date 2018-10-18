@@ -81,7 +81,7 @@ bool CommandArgumentHandler::mobileLengthDefined() const
 {
     return m_mobileMicrotubuleLengthDefined;
 }
-int32_t CommandArgumentHandler::getLength() const
+int32_t CommandArgumentHandler::getMobileLength() const
 {
     #ifdef MYDEBUG
     if(!m_mobileMicrotubuleLengthDefined)

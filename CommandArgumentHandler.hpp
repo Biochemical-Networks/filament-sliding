@@ -24,7 +24,7 @@ public:
     ~CommandArgumentHandler();
 
     bool mobileLengthDefined() const;
-    int32_t getLength() const;
+    int32_t getMobileLength() const;
 
     bool numberPassiveDefined() const;
     int32_t getNumberPassive() const;

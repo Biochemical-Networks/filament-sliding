@@ -34,6 +34,8 @@ int main(int argc, char* argv[])
 
     Log log(runName, clock);
 
+    CommandArgumentHandler invokerInputHandler(argc, argv); // After log, such that it writes to the log file
+
     //-----------------------------------------------------------------------------------------------------
     // Set the random number generator
 
@@ -46,11 +48,22 @@ int main(int argc, char* argv[])
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for defining the general systemState.
     double lengthMobileMicrotubule;
-    input.copyParameter("lengthMobileMicrotubule", lengthMobileMicrotubule);
+    // Input file value can be overridden by command line
+    if(invokerInputHandler.mobileLengthDefined())
+    {
+        std::cout << "The length of the mobile microtubule was overridden by the user to the value " << invokerInputHandler.getMobileLength() << '\n';
+        lengthMobileMicrotubule=invokerInputHandler.getMobileLength();
+    }
+    else
+    {
+        input.copyParameter("lengthMobileMicrotubule", lengthMobileMicrotubule);
+    }
     if(lengthMobileMicrotubule<=0.0)
     {
         throw GeneralException("The parameter lengthMobileMicrotubule contains a wrong value.");
     }
+
+
 
     double lengthFixedMicrotubule;
     input.copyParameter("lengthFixedMicrotubule", lengthFixedMicrotubule);
@@ -88,7 +101,16 @@ int main(int argc, char* argv[])
     }
 
     int32_t nPassiveCrosslinkers;
-    input.copyParameter("numberPassiveCrosslinkers", nPassiveCrosslinkers);
+    // Input file value can be overridden by command line
+    if(invokerInputHandler.numberPassiveDefined())
+    {
+        lengthMobileMicrotubule=invokerInputHandler.getNumberPassive();
+        std::cout << "The number of passive linkers was overridden by the user to the value " << invokerInputHandler.getNumberPassive() << '\n';
+    }
+    else
+    {
+        input.copyParameter("numberPassiveCrosslinkers", nPassiveCrosslinkers);
+    }
     if(nPassiveCrosslinkers<0)
     {
         throw GeneralException("The parameter nPassiveCrosslinkers contains a wrong value.");
