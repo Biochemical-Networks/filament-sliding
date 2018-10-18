@@ -14,9 +14,10 @@
 #include <string>
 #include <algorithm>
 
+#include "CommandArgumentHandler.hpp"
 #include "Crosslinker.hpp"
 
-int main()
+int main(int argc, char* argv[])
 {
     #ifdef MYDEBUG
     std::cout<< "You are running the MYDEBUG version of the program.\n";
