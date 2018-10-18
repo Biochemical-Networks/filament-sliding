@@ -1,5 +1,6 @@
 #include "Clock/Clock.hpp"
 #include "Input/Input.hpp"
+#include "Input/CommandArgumentHandler.hpp"
 #include "SystemState.hpp"
 #include "Initialiser.hpp"
 #include "Propagator.hpp"
@@ -14,7 +15,7 @@
 #include <string>
 #include <algorithm>
 
-#include "CommandArgumentHandler.hpp"
+
 #include "Crosslinker.hpp"
 
 int main(int argc, char* argv[])
@@ -23,7 +24,8 @@ int main(int argc, char* argv[])
     std::cout<< "You are running the MYDEBUG version of the program.\n";
     #endif // MYDEBUG
     Clock clock; // Counts time from creation to destruction
-    Input input; // Read the input file, ask to create a default one when anything is wrong with it (e.g. nonexistent)
+    CommandArgumentHandler invokerInputHandler(argc, argv);
+    Input input(invokerInputHandler); // Read the input file, ask to create a default one when anything is wrong with it (e.g. nonexistent)
 
     //=====================================================================================================
     // Instantiate all objects, using parameters from the input file
@@ -33,8 +35,6 @@ int main(int argc, char* argv[])
     std::string runName = input.getRunName(); // copyParameter("runName", runName) would give the runName as it is in the input file, while this is the unique version
 
     Log log(runName, clock);
-
-    CommandArgumentHandler invokerInputHandler(argc, argv); // After log, such that it writes to the log file
 
     //-----------------------------------------------------------------------------------------------------
     // Set the random number generator
@@ -48,22 +48,11 @@ int main(int argc, char* argv[])
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for defining the general systemState.
     double lengthMobileMicrotubule;
-    // Input file value can be overridden by command line
-    if(invokerInputHandler.mobileLengthDefined())
-    {
-        std::cout << "The length of the mobile microtubule was overridden by the user to the value " << invokerInputHandler.getMobileLength() << '\n';
-        lengthMobileMicrotubule=invokerInputHandler.getMobileLength();
-    }
-    else
-    {
-        input.copyParameter("lengthMobileMicrotubule", lengthMobileMicrotubule);
-    }
+    input.copyParameter("lengthMobileMicrotubule", lengthMobileMicrotubule);
     if(lengthMobileMicrotubule<=0.0)
     {
         throw GeneralException("The parameter lengthMobileMicrotubule contains a wrong value.");
     }
-
-
 
     double lengthFixedMicrotubule;
     input.copyParameter("lengthFixedMicrotubule", lengthFixedMicrotubule);
@@ -101,16 +90,7 @@ int main(int argc, char* argv[])
     }
 
     int32_t nPassiveCrosslinkers;
-    // Input file value can be overridden by command line
-    if(invokerInputHandler.numberPassiveDefined())
-    {
-        lengthMobileMicrotubule=invokerInputHandler.getNumberPassive();
-        std::cout << "The number of passive linkers was overridden by the user to the value " << invokerInputHandler.getNumberPassive() << '\n';
-    }
-    else
-    {
-        input.copyParameter("numberPassiveCrosslinkers", nPassiveCrosslinkers);
-    }
+    input.copyParameter("numberPassiveCrosslinkers", nPassiveCrosslinkers);
     if(nPassiveCrosslinkers<0)
     {
         throw GeneralException("The parameter nPassiveCrosslinkers contains a wrong value.");

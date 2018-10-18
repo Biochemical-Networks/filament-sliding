@@ -5,6 +5,7 @@
 #include <string>
 #include "GenericValue.hpp"
 #include "ParameterMap.hpp"
+#include "CommandArgumentHandler.hpp"
 
 // A class that handles the input file. It opens and reads it. If the file does not exist, or it has a wrong format, then the user should be asked if a default file should be produced.
 class Input
@@ -26,7 +27,7 @@ private:
     void setRunName();
 
 public:
-    Input(const std::string fileName = "parameters.txt");
+    Input(const CommandArgumentHandler& cmd, const std::string fileName = "parameters.txt");
 
     ~Input();
 

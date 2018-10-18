@@ -1,5 +1,5 @@
 #include "CommandArgumentHandler.hpp"
-#include "GeneralException/GeneralException.hpp"
+#include "InputException.hpp"
 
 #include <string>
 #include <sstream>
@@ -50,13 +50,13 @@ void CommandArgumentHandler::readVariable(std::istringstream&& streamName, std::
     std::string variableType;
     if(!(streamName >> variableType))
     {
-        throw GeneralException("CommandArgumentHandler::readVariable() encountered a something wrong where a variableType was expected.");
+        throw InputException("CommandArgumentHandler::readVariable() encountered a something wrong where a variableType was expected.");
     }
 
     int variableValue;
     if(!(streamValue >> variableValue))
     {
-        throw GeneralException("CommandArgumentHandler::readVariable() encountered a something wrong where a variableValue was expected.");
+        throw InputException("CommandArgumentHandler::readVariable() encountered a something wrong where a variableValue was expected.");
     }
 
 
@@ -64,7 +64,7 @@ void CommandArgumentHandler::readVariable(std::istringstream&& streamName, std::
     {
         if(m_numberOfPassiveCrosslinkersDefined)
         {
-            throw GeneralException("CommandArgumentHandler::readVariable() tried to set m_numberPassive which was already set.");
+            throw InputException("CommandArgumentHandler::readVariable() tried to set m_numberPassive which was already set.");
         }
         m_numberPassive = variableValue;
         m_numberOfPassiveCrosslinkersDefined = true;
@@ -73,7 +73,7 @@ void CommandArgumentHandler::readVariable(std::istringstream&& streamName, std::
     {
         if(m_mobileMicrotubuleLengthDefined)
         {
-            throw GeneralException("CommandArgumentHandler::readVariable() tried to set m_lengthMobile which was already set.");
+            throw InputException("CommandArgumentHandler::readVariable() tried to set m_lengthMobile which was already set.");
         }
         m_lengthMobile = variableValue;
         m_mobileMicrotubuleLengthDefined = true;
@@ -89,7 +89,7 @@ int32_t CommandArgumentHandler::getMobileLength() const
     #ifdef MYDEBUG
     if(!m_mobileMicrotubuleLengthDefined)
     {
-        throw GeneralException("CommandArgumentHandler::getLength() was called when the command line did not set the length");
+        throw InputException("CommandArgumentHandler::getLength() was called when the command line did not set the length");
     }
     #endif // MYDEBUG
 
@@ -106,7 +106,7 @@ int32_t CommandArgumentHandler::getNumberPassive() const
     #ifdef MYDEBUG
     if(!m_numberOfPassiveCrosslinkersDefined)
     {
-        throw GeneralException("CommandArgumentHandler::getNumberPassive() was called when the command line did not set the number of passive linkers.");
+        throw InputException("CommandArgumentHandler::getNumberPassive() was called when the command line did not set the number of passive linkers.");
     }
     #endif // MYDEBUG
 

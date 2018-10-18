@@ -49,6 +49,19 @@ public:
         variableType.copyValue(variable); // Perform the copy operation
     }
 
+    template <typename T>
+    void overrideParameter(const std::string name, T value)
+    {
+        try
+        {
+            m_parameterMap.at(name) = value;
+        }
+        catch(const std::out_of_range &error) // Throw if m_parameterMap does not contain the key 'name'
+        {
+            throw InputException{"Out of range error: the parameterMap does not contain a variable with the name "+name+", which overrideParameter() is trying to access.\n"};
+        }
+    }
+
     friend std::ostream& operator<< (std::ostream& out, const ParameterMap &parameterMap);
     friend std::istream& operator>> (std::istream& in, ParameterMap &parameterMap); // not const, needs to change it
 

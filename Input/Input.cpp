@@ -5,11 +5,12 @@
 #include <limits> // For std::numeric_limits<std::streamsize>::max()
 #include "InputException.hpp"
 #include "GenericValue.hpp" // Defines the overloaded operator >>
+#include "CommandArgumentHandler.hpp"
 #include <sys/stat.h> // Only works on POSIX systems (probably not windows)
 
 
 // Handle all input exceptions in the constructor of Input, because here is should be decided whether a default input file needs to be created. When the program does not have a
-Input::Input(const std::string fileName) : m_fileName(fileName)
+Input::Input(const CommandArgumentHandler& cmd, const std::string fileName) : m_fileName(fileName)
 {
     try
     {
@@ -28,6 +29,16 @@ Input::Input(const std::string fileName) : m_fileName(fileName)
         }
     }
     setRunName(); // Set the name of the current run, first from the input file, adding labels if the name was previously used
+
+    if(cmd.mobileLengthDefined())
+    {
+        m_parameterMap.overrideParameter("lengthMobileMicrotubule", cmd.getMobileLength());
+    }
+
+    if(cmd.numberPassiveDefined())
+    {
+        m_parameterMap.overrideParameter("numberPassiveCrosslinkers", cmd.getNumberPassive());
+    }
 
     // Write the used input data to an output file, such that the data of the run is stored together with the other information about the run.
     // Do this early (not in the destructor), since a second run can start without the first being finished
