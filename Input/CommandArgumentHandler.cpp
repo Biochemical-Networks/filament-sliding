@@ -7,11 +7,11 @@
 
 CommandArgumentHandler::CommandArgumentHandler(int argc, char* argv[])
     :   m_mobileMicrotubuleLengthDefined(false),
-        m_lengthMobile(0),
+        m_lengthMobile(0.0),
         m_numberOfPassiveCrosslinkersDefined(false),
         m_numberPassive(0)
 {
-    const int maximumNumberOfArguments = 1+2*MAXIMUM_NUMBER_OF_VARIABLES;
+    constexpr int32_t maximumNumberOfArguments = 1+2*static_cast<int32_t>(VariableName::INVALID);
     if(argc>1)
     {
         try
@@ -48,35 +48,54 @@ CommandArgumentHandler::~CommandArgumentHandler()
 void CommandArgumentHandler::readVariable(std::istringstream&& streamName, std::istringstream&& streamValue)
 {
     std::string variableType;
+    VariableName newVariable=VariableName::INVALID;
     if(!(streamName >> variableType))
     {
-        throw InputException("CommandArgumentHandler::readVariable() encountered a something wrong where a variableType was expected.");
+        throw InputException("CommandArgumentHandler::readVariable() expected a variableType, but found no valid one.");
+    }
+    if(variableType == "-NP" || variableType == "-np" || variableType == "-nP" || variableType == "-Np" ||
+       variableType == "-PN" || variableType == "-pn" || variableType == "-pN" || variableType == "-Pn")
+    {
+        newVariable=VariableName::NUMBERPASSIVE;
+    }
+    else if(variableType == "-LM" || variableType == "-lm" || variableType == "-lM" || variableType == "-Lm" ||
+            variableType == "-ML" || variableType == "-ml" || variableType == "-mL" || variableType == "-Ml")
+    {
+        newVariable=VariableName::MOBILELENGTH;
+    }
+    else
+    {
+        newVariable=VariableName::INVALID;
+        throw InputException("CommandArgumentHandler::readVariable() could not match the input variable "+variableType+" to any known variable.");
     }
 
-    int variableValue;
-    if(!(streamValue >> variableValue))
+    switch(newVariable)
     {
-        throw InputException("CommandArgumentHandler::readVariable() encountered a something wrong where a variableValue was expected.");
-    }
-
-
-    if(variableType == "-NP" || variableType == "-np" || variableType == "-nP" || variableType == "-Np")
-    {
-        if(m_numberOfPassiveCrosslinkersDefined)
-        {
-            throw InputException("CommandArgumentHandler::readVariable() tried to set m_numberPassive which was already set.");
-        }
-        m_numberPassive = variableValue;
-        m_numberOfPassiveCrosslinkersDefined = true;
-    }
-    else if(variableType == "-LM" || variableType == "-lm" || variableType == "-lM" || variableType == "-Lm")
-    {
-        if(m_mobileMicrotubuleLengthDefined)
-        {
-            throw InputException("CommandArgumentHandler::readVariable() tried to set m_lengthMobile which was already set.");
-        }
-        m_lengthMobile = variableValue;
-        m_mobileMicrotubuleLengthDefined = true;
+        case VariableName::NUMBERPASSIVE:
+            if(m_numberOfPassiveCrosslinkersDefined)
+            {
+                throw InputException("CommandArgumentHandler::readVariable() tried to set the number of passive linkers more than once.");
+            }
+            if(!(streamValue >> m_numberPassive))
+            {
+                throw InputException("CommandArgumentHandler::readVariable() did not encounter a proper number of passive linkers.");
+            }
+            m_numberOfPassiveCrosslinkersDefined = true;
+            break;
+        case VariableName::MOBILELENGTH:
+            if(m_mobileMicrotubuleLengthDefined)
+            {
+                throw InputException("CommandArgumentHandler::readVariable() tried to set the mobile microtubule length more than once.");
+            }
+            if(!(streamValue >> m_lengthMobile))
+            {
+                throw InputException("CommandArgumentHandler::readVariable() did not encounter a proper length of the mobile microtubule.");
+            }
+            m_mobileMicrotubuleLengthDefined = true;
+            break;
+        case VariableName::INVALID:
+        default:
+            throw InputException("CommandArgumentHandler::readVariable() set newVariable to an invalid value.");
     }
 }
 
@@ -84,7 +103,7 @@ bool CommandArgumentHandler::mobileLengthDefined() const
 {
     return m_mobileMicrotubuleLengthDefined;
 }
-int32_t CommandArgumentHandler::getMobileLength() const
+double CommandArgumentHandler::getMobileLength() const
 {
     #ifdef MYDEBUG
     if(!m_mobileMicrotubuleLengthDefined)

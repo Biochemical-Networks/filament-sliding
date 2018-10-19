@@ -7,12 +7,16 @@
 
 class CommandArgumentHandler
 {
-public:
-    const int32_t MAXIMUM_NUMBER_OF_VARIABLES = 2;
-
 private:
+    enum class VariableName
+    {
+        MOBILELENGTH,
+        NUMBERPASSIVE,
+        INVALID // MUST BE LAST ELEMENT DEFINED. Used to cast to the number of elements. Treat this together with default.
+    };
+
     bool m_mobileMicrotubuleLengthDefined;
-    int32_t m_lengthMobile;
+    double m_lengthMobile;
 
     bool m_numberOfPassiveCrosslinkersDefined;
     int32_t m_numberPassive;
@@ -24,7 +28,7 @@ public:
     ~CommandArgumentHandler();
 
     bool mobileLengthDefined() const;
-    int32_t getMobileLength() const;
+    double getMobileLength() const;
 
     bool numberPassiveDefined() const;
     int32_t getNumberPassive() const;
