@@ -432,19 +432,24 @@ void Output::finishWriting()
         int32_t timeStepsToPoint=0;
         for(const Statistics& statPoint : m_estimatePoints)
         {
-            m_peakDynamicsFile << std::setw(m_collumnWidth) << timeStepsToPoint
-                << std::setw(m_collumnWidth) << statPoint.getNumberOfSamples()
-                << std::setw(m_collumnWidth) << statPoint.getMean()
-                << std::setw(m_collumnWidth) << statPoint.getVariance()
-                << std::setw(m_collumnWidth) << statPoint.getSEM() << '\n';
-
+            if(statPoint.canReportStatistics())
+            {
+                m_peakDynamicsFile << std::setw(m_collumnWidth) << timeStepsToPoint
+                    << std::setw(m_collumnWidth) << statPoint.getNumberOfSamples()
+                    << std::setw(m_collumnWidth) << statPoint.getMean()
+                    << std::setw(m_collumnWidth) << statPoint.getVariance()
+                    << std::setw(m_collumnWidth) << statPoint.getSEM() << '\n';
+            }
             timeStepsToPoint+=m_timeStepsPerDistributionEstimate;
         }
 
-        m_peakDynamicsFile << std::setw(m_collumnWidth) << "TIME STEPS TO LEAVE BARRIER"
-            << std::setw(m_collumnWidth) << m_diffusionTimeToFinalRegion.getNumberOfSamples()
-            << std::setw(m_collumnWidth) << m_diffusionTimeToFinalRegion.getMean()
-            << std::setw(m_collumnWidth) << m_diffusionTimeToFinalRegion.getVariance()
-            << std::setw(m_collumnWidth) << m_diffusionTimeToFinalRegion.getSEM() << '\n';
+        if(m_diffusionTimeToFinalRegion.canReportStatistics())
+        {
+            m_peakDynamicsFile << std::setw(m_collumnWidth) << "TIME STEPS TO LEAVE BARRIER"
+                << std::setw(m_collumnWidth) << m_diffusionTimeToFinalRegion.getNumberOfSamples()
+                << std::setw(m_collumnWidth) << m_diffusionTimeToFinalRegion.getMean()
+                << std::setw(m_collumnWidth) << m_diffusionTimeToFinalRegion.getVariance()
+                << std::setw(m_collumnWidth) << m_diffusionTimeToFinalRegion.getSEM() << '\n';
+        }
     }
 }
