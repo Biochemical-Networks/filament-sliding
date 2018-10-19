@@ -19,9 +19,9 @@ ParameterMap::ParameterMap()
     defineParameter("runName", "run", "unitless"); // The code relies on this parameter being called "runName"
     defineParameter("numberEquilibrationBlocks", 0, "blocks", ">=0");
     defineParameter("numberRunBlocks", 1, "blocks", ">=0");
-    defineParameter("calcTimeStep", 1.e-8, "s", ">0");
-    defineParameter("timeStepsPerBlock", 100000, "steps", ">0");
-    defineParameter("positionProbePeriod", 10000, "steps", ">0");
+    defineParameter("calcTimeStep", 1.e-10, "s", ">0");
+    defineParameter("timeStepsPerBlock", 1000000, "steps", ">0");
+    defineParameter("positionProbePeriod", 1000000, "steps", ">0");
 
     // General state parameters
     defineParameter("lengthMobileMicrotubule", 1., "micron", ">0");
@@ -31,7 +31,7 @@ ParameterMap::ParameterMap()
 
     defineParameter("numberActiveCrosslinkers", 0, "crosslinkers", ">=0");
     defineParameter("numberDualCrosslinkers", 0, "crosslinkers", ">=0");
-    defineParameter("numberPassiveCrosslinkers", 13, "crosslinkers", ">=0");
+    defineParameter("numberPassiveCrosslinkers", 0, "crosslinkers", ">=0");
 
     // Initial state parameters
     defineParameter("initialPositionMicrotubule", 0., "micron"); // The position of the mobile microtubule relative to the fixed one, where 0. means that the two have the same (left) boundary position
@@ -91,15 +91,15 @@ ParameterMap::ParameterMap()
     defineParameter("positionalHistogramLowestValue", 0.0, "micron", ">=0");
     defineParameter("positionalHistogramHighestValue", 8.e-3, "micron", ">positionalHistogramLowestValue");
     defineParameter("showGraphics", "FALSE", "unitless", "TRUE,FALSE");
-    defineParameter("timeStepsDisplayInterval", 10000, "steps", ">0");
+    defineParameter("timeStepsDisplayInterval", 100000, "steps", ">0");
     defineParameter("updateDelayInMilliseconds", 100, "milliseconds", ">=0");
     defineParameter("recordTransitionPaths", "FALSE", "unitless", "TRUE,FALSE");
-    defineParameter("transitionPathProbePeriod", 100, "steps", ">0"); // The probe period is used for writing, not for recording in the histogram
+    defineParameter("transitionPathProbePeriod", 10000, "steps", ">0"); // The probe period is used for writing, not for recording in the histogram
     defineParameter("maxNumberTransitionPaths", 100, "paths", ">=0");
     defineParameter("maxPeriodPositionTracking", 10.0, "s", ">=0");
     defineParameter("estimateTimeEvolutionAtPeak", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("timeStepsPerDistributionEstimate", 25, "steps", ">0");
     defineParameter("nEstimatesDistribution", 200, "sets", ">0");
-    defineParameter("dynamicsEstimationInitialRegionWidth", 0.001, "unitless", "(0,1]");
+    defineParameter("dynamicsEstimationInitialRegionWidth", 0.0002, "unitless", "(0,1]");
     defineParameter("dynamicsEstimationFinalRegionWidth", 0.05, "unitless", "(0,1]");
 }
