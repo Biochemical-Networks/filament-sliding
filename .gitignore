@@ -7,6 +7,10 @@
 compileCommand.sh
 MakeFile*
 
+# Ignore directories for exporting versions
+ExportVersion/
+ExportVersionTest/
+
 # No results of the (pre)compiler
 bin/
 obj/
