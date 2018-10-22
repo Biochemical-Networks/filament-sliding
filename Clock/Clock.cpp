@@ -2,7 +2,7 @@
 #include <chrono>
 #include <ctime> // For printing the time
 #include <iostream>
-#include <iomanip>
+//#include <iomanip> // not needed in export version: std::put_time is broken in gcc <5 (e.g. 4.8.5), so that I'll resort to c style printing (defined in ctime)
 
 // Initialise and store the time at construction, because for run intervals we will need to subtract the initial time
 Clock::Clock() : m_constructionTime(std::chrono::steady_clock::now()),
@@ -26,6 +26,13 @@ Clock::~Clock()
 std::ostream& operator<< (std::ostream &out, const Clock &clock)
 {
     auto currentTime = std::chrono::system_clock::to_time_t(clock.m_sysConstructionTime);
-    out << std::put_time(std::localtime(&currentTime), "%c %Z");
+
+    char timeStr[100]; // 100 is the maximum size of the c-style string
+    if(std::strftime(timeStr, sizeof(timeStr), "%c %Z", std::localtime(&currentTime)))
+    {
+        out << timeStr;
+    }
+
+    //out << std::put_time(std::localtime(&currentTime), "%c %Z");
     return out;
 }
