@@ -11,6 +11,9 @@ ExportVersionTest/
 compileCommand.sh
 MakeFile*
 
+# Ignore shell scripts for running
+runScript.sh
+
 # No results of the (pre)compiler
 bin/
 obj/
