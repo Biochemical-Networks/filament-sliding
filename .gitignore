@@ -5,6 +5,7 @@
 
 # Ignore other ways of building
 compileCommand.sh
+MakeFile*
 
 # No results of the (pre)compiler
 bin/
