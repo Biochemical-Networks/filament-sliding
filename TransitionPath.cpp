@@ -5,6 +5,7 @@
 #include <vector>
 #include <cstdint>
 #include <iomanip>
+#include <stdexcept>
 
 TransitionPath::TransitionPath(const int32_t writeFrequency) : m_writeFrequency(writeFrequency)
 {
