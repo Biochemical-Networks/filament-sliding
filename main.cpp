@@ -424,9 +424,7 @@ int main(int argc, char* argv[])
 
     if(showGraphics)
     {
-        Graphics graphics(runName, systemState, propagator, generator, output, timeStepsDisplayInterval, updateDelayInMilliseconds);
-
-        graphics.performMainLoop();
+        std::cerr << "The exportable version of CrossLink does not support graphics; The installation of the SFML library is not required for this version. Please turn off Graphics.\n";
     }
     else
     {

@@ -14,7 +14,7 @@
 #include <utility> // pair
 #include <string>
 
-#include <gsl/gsl_sf_psi.h>
+//#include <gsl/gsl_sf_psi.h> // Exortable version does not include the library
 
 
 SystemState::SystemState(const double lengthMobileMicrotubule,
@@ -799,7 +799,7 @@ double SystemState::getTotalExtensionLinkers() const
 
 double SystemState::externalForceFlatOptimalPath() const
 {
-    const double position = MathematicalFunctions::mod(m_mobileMicrotubule.getPosition(),m_latticeSpacing);
+    /* const double position = MathematicalFunctions::mod(m_mobileMicrotubule.getPosition(),m_latticeSpacing);
     const double positionFraction = position/m_latticeSpacing;
     const double nSitesMobileMicrotubule = static_cast<double>(m_mobileMicrotubule.getNSites());
     const double nFullLinkers = static_cast<double>(getNFullCrosslinkers());
@@ -813,9 +813,9 @@ double SystemState::externalForceFlatOptimalPath() const
         *(gsl_sf_psi(nSitesMobileMicrotubule-positionFraction*nFullLinkers+1)
             -gsl_sf_psi((1-positionFraction)*nFullLinkers+1)
             -gsl_sf_psi(nSitesMobileMicrotubule-(1-positionFraction)*nFullLinkers+1)
-            +gsl_sf_psi(positionFraction*nFullLinkers+1));
+            +gsl_sf_psi(positionFraction*nFullLinkers+1));*/
 
-    return externalForce;
+    return 0; //externalForce;
 }
 
 double SystemState::findExternalForce() const
