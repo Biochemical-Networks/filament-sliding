@@ -3,6 +3,9 @@ CrossLink.cbp
 CrossLink.depend
 CrossLink.layout
 
+# Ignore other ways of building
+compileCommand.sh
+
 # No results of the (pre)compiler
 bin/
 obj/
