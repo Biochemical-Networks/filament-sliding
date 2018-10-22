@@ -7,7 +7,7 @@
 #include "RandomGenerator.hpp"
 #include "Output.hpp"
 #include "Log.hpp"
-#include "Graphics.hpp"
+//#include "Graphics.hpp"
 #include "GeneralException/GeneralException.hpp"
 
 #include <iostream>
