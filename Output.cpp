@@ -6,6 +6,7 @@
 #include <iomanip> // For std::setw()
 #include <memory> // std::unique_ptr
 #include <utility> // std::move
+#include <stdexcept>
 
 #include "SystemState.hpp"
 #include "OutputParameters.hpp"

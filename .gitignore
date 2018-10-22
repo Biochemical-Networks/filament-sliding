@@ -3,13 +3,13 @@
 *.depend
 *.layout
 
+# Ignore export version directories
+ExportVersion/
+ExportVersionTest/
+
 # Ignore other ways of building
 compileCommand.sh
 MakeFile*
-
-# Ignore directories for exporting versions
-ExportVersion/
-ExportVersionTest/
 
 # No results of the (pre)compiler
 bin/
