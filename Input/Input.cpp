@@ -30,6 +30,8 @@ Input::Input(const CommandArgumentHandler& cmd, const std::string fileName) : m_
     }
     setRunName(); // Set the name of the current run, first from the input file, adding labels if the name was previously used
 
+    m_parameterMap.overrideParameter("runName", m_runName);
+
     if(cmd.mobileLengthDefined())
     {
         m_parameterMap.overrideParameter("lengthMobileMicrotubule", cmd.getMobileLength());
