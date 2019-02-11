@@ -15,54 +15,54 @@
 
 Output::Output(const std::string &runName,
                const bool writePositionalDistribution,
-               const bool recordTransitionPaths,
-               const int32_t transitionPathWriteFrequency,
-               const int32_t maxNumberTransitionPaths,
+               /*const bool recordTransitionPaths,*/
+               /*const int32_t transitionPathWriteFrequency,*/
+               /*const int32_t maxNumberTransitionPaths,*/
                const double positionalHistogramBinSize,
                const double positionalHistogramLowestValue,
-               const double positionalHistogramHighestValue,
-               const int32_t maxNFullCrosslinkers,
-               const double maxPeriodPositionTracking,
-               const double latticeSpacing,
-               const bool estimateTimeEvolutionAtPeak,
-               const int32_t timeStepsPerDistributionEstimate,
-               const int32_t nEstimatesDistribution,
-               const double dynamicsEstimationInitialRegionWidth,
-               const double dynamicsEstimationFinalRegionWidth)
+               const double positionalHistogramHighestValue/*,*/
+               /*const int32_t maxNFullCrosslinkers,*/
+               /*const double maxPeriodPositionTracking,*/
+               /*const double latticeSpacing,*/
+               /*const bool estimateTimeEvolutionAtPeak,*/
+               /*const int32_t timeStepsPerDistributionEstimate,*/
+               /*const int32_t nEstimatesDistribution,*/
+               /*const double dynamicsEstimationInitialRegionWidth,*/
+               /*const double dynamicsEstimationFinalRegionWidth*/)
     :   m_microtubulePositionFile((runName+".microtubule_position.txt").c_str()),
-        m_barrierCrossingTimeFile((runName+".times_barrier_crossings.txt").c_str()),
+        /*m_barrierCrossingTimeFile((runName+".times_barrier_crossings.txt").c_str()),*/
         m_statisticalAnalysisFile((runName+".statistical_analysis.txt").c_str()),
-        m_collumnWidth(OutputParameters::collumnWidth),
-        m_lastCrossingTime(0), // Time 0 indicates the beginning of the run blocks, after which we start writing data
-        m_writePositionalDistribution(writePositionalDistribution),
-        m_recordTransitionPaths(recordTransitionPaths),
-        m_maxNumberTransitionPaths(maxNumberTransitionPaths),
-        m_nWrittenTransitionPaths(0),
-        m_currentTransitionPath(transitionPathWriteFrequency),
-        m_isTrackingPath(false),
-        m_maxNFullCrosslinkers(maxNFullCrosslinkers),
-        m_maxPeriodPositionTracking(maxPeriodPositionTracking),
-        m_latticeSpacing(latticeSpacing),
-        m_estimateTimeEvolutionAtPeak(estimateTimeEvolutionAtPeak),
-        m_timeStepsPerDistributionEstimate(timeStepsPerDistributionEstimate),
-        m_nEstimatesDistribution(nEstimatesDistribution),
-        m_dynamicsEstimationInitialRegionWidth(dynamicsEstimationInitialRegionWidth),
-        m_dynamicsEstimationFinalRegionWidth(dynamicsEstimationFinalRegionWidth),
-        m_currentlyTrackingPeakPos(false),
-        m_currentlyTrackingPeakTime(false),
-        m_timeStepsTrackingPos(0),
-        m_timeStepsTrackingTime(0),
-        m_estimatePoints(m_nEstimatesDistribution) // each m_timeStepsPerDistributionEstimate after passing a point, a Statistics estimates the variance
+        m_collumnWidth(OutputParameters::collumnWidth)/*,*/
+        /*m_lastCrossingTime(0), // Time 0 indicates the beginning of the run blocks, after which we start writing data*/
+        /*m_writePositionalDistribution(writePositionalDistribution),*/
+        /*m_recordTransitionPaths(recordTransitionPaths),*/
+        /*m_maxNumberTransitionPaths(maxNumberTransitionPaths),*/
+        /*m_nWrittenTransitionPaths(0),*/
+        /*m_currentTransitionPath(transitionPathWriteFrequency),*/
+        /*m_isTrackingPath(false),*/
+        /*m_maxNFullCrosslinkers(maxNFullCrosslinkers),*/
+        /*m_maxPeriodPositionTracking(maxPeriodPositionTracking),*/
+        /*m_latticeSpacing(latticeSpacing),*/
+        /*,m_estimateTimeEvolutionAtPeak(estimateTimeEvolutionAtPeak),*/
+        /*m_timeStepsPerDistributionEstimate(timeStepsPerDistributionEstimate),*/
+        /*m_nEstimatesDistribution(nEstimatesDistribution),*/
+        /*m_dynamicsEstimationInitialRegionWidth(dynamicsEstimationInitialRegionWidth),*/
+        /*m_dynamicsEstimationFinalRegionWidth(dynamicsEstimationFinalRegionWidth),*/
+        /*m_currentlyTrackingPeakPos(false),*/
+        /*m_currentlyTrackingPeakTime(false),*/
+        /*m_timeStepsTrackingPos(0),*/
+        /*m_timeStepsTrackingTime(0),*/
+        /*m_estimatePoints(m_nEstimatesDistribution) // each m_timeStepsPerDistributionEstimate after passing a point, a Statistics estimates the variance*/
 {
     m_microtubulePositionFile << std::left
         << std::setw(m_collumnWidth) << "TIME"
         << std::setw(m_collumnWidth) << "POSITION"
-        << std::setw(m_collumnWidth) << "NUMBER RIGHT PULLING LINKERS" << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth
+        /*<< std::setw(m_collumnWidth) << "NUMBER RIGHT PULLING LINKERS"*/ << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth
 
-    m_barrierCrossingTimeFile << std::left
+    /*m_barrierCrossingTimeFile << std::left
         << std::setw(m_collumnWidth) << "TIME CROSSING"
         << std::setw(m_collumnWidth) << "INTERVAL BETWEEN CROSSES"
-        << std::setw(m_collumnWidth) << "HOP DIRECTION" << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth
+        << std::setw(m_collumnWidth) << "HOP DIRECTION" << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth*/
 
     m_statisticalAnalysisFile << std::left
         << std::setw(m_collumnWidth) << "RANDOM VARIABLE"
@@ -82,7 +82,7 @@ Output::Output(const std::string &runName,
             << std::setw(m_collumnWidth) << "NUMBER OF SAMPLES"
             << std::setw(m_collumnWidth) << "FRACTION OF SAMPLES" << '\n';
 
-        // The reaction coordinate will have a value between 0 and 1 from one basin of attraction to the next
+        /*// The reaction coordinate will have a value between 0 and 1 from one basin of attraction to the next
         // Rescale the binsize by the lattice spacing
         mp_reactionCoordinateHistogram = std::move(std::unique_ptr<Histogram>(new Histogram(positionalHistogramBinSize/m_latticeSpacing, 0.0, 1.0)));
         // Only open the file here, not in the constructor initialization list, since the file should only be created if m_writePositionalDistribution is set to true.
@@ -104,10 +104,10 @@ Output::Output(const std::string &runName,
             << std::setw(m_collumnWidth) << "LOWER BIN BOUND"
             << std::setw(m_collumnWidth) << "UPPER BIN BOUND"
             << std::setw(m_collumnWidth) << "NUMBER OF SAMPLES"
-            << std::setw(m_collumnWidth) << "FRACTION OF SAMPLES GIVEN NR" << '\n';
+            << std::setw(m_collumnWidth) << "FRACTION OF SAMPLES GIVEN NR" << '\n';*/
     }
 
-    if(m_recordTransitionPaths)
+    /*if(m_recordTransitionPaths)
     {
         // Only open the file here, not in the constructor initialization list, since the file should only be created if m_recordTransitionPaths is set to true.
         m_transitionPathFile.open((runName+".transition_paths.txt").c_str());
@@ -115,9 +115,9 @@ Output::Output(const std::string &runName,
         << std::setw(m_collumnWidth) << "TIME"
         << std::setw(m_collumnWidth) << "POSITION"
         << std::setw(m_collumnWidth) << "NUMBER RIGHT PULLING LINKERS" << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth
-    }
+    }*/
 
-    if(m_writePositionalDistribution && m_recordTransitionPaths)
+    /*if(m_writePositionalDistribution && m_recordTransitionPaths)
     {
         // nR is the number of right pulling linkers
         for(int32_t nR = 0; nR <= maxNFullCrosslinkers; ++nR) // nR can equal maxNFullCrosslinkers!
@@ -131,9 +131,9 @@ Output::Output(const std::string &runName,
             << std::setw(m_collumnWidth) << "UPPER BIN BOUND"
             << std::setw(m_collumnWidth) << "NUMBER OF SAMPLES"
             << std::setw(m_collumnWidth) << "FRACTION OF SAMPLES GIVEN NR" << '\n';
-    }
+    }*/
 
-    if(m_estimateTimeEvolutionAtPeak)
+    /*if(m_estimateTimeEvolutionAtPeak)
     {
         m_peakDynamicsFile.open((runName+".peak_dynamics_statistics.txt").c_str());
         m_peakDynamicsFile << std::left
@@ -142,7 +142,7 @@ Output::Output(const std::string &runName,
         << std::setw(m_collumnWidth) << "MEAN"
         << std::setw(m_collumnWidth) << "VARIANCE"
         << std::setw(m_collumnWidth) << "STANDARD ERROR OF THE MEAN" << '\n';
-    }
+    }*/
 }
 
 Output::~Output()
@@ -157,27 +157,27 @@ void Output::writeMicrotubulePosition(const double time, const SystemState& syst
     {
         m_microtubulePositionFile << std::setw(m_collumnWidth) << time
                                   << std::setw(m_collumnWidth) << systemState.getMicrotubulePosition()
-                                  << std::setw(m_collumnWidth) << systemState.getNFullRightPullingCrosslinkers() << '\n';
+                                  /*<< std::setw(m_collumnWidth) << systemState.getNFullRightPullingCrosslinkers()*/ << '\n';
     }
 }
 
-double Output::calculateReactionCoordinate(const double remainder, const int32_t nRightPullingCrosslinkers) const
+/*double Output::calculateReactionCoordinate(const double remainder, const int32_t nRightPullingCrosslinkers) const
 {
     // The reaction coordinate is alpha = 1/2(x/delta + Nr/N). m_maxNFullCrosslinkers=N for a system without binding
     return (m_maxNFullCrosslinkers!=0)?(0.5*(remainder/m_latticeSpacing+static_cast<double>(nRightPullingCrosslinkers)/static_cast<double>(m_maxNFullCrosslinkers))):(remainder/m_latticeSpacing);
-}
+}*/
 
-bool Output::reactionCoordinateIsAtPeakRegion(const double reactionCoordinate) const
+/*bool Output::reactionCoordinateIsAtPeakRegion(const double reactionCoordinate) const
 {
     return reactionCoordinate>0.5*(1.0-m_dynamicsEstimationInitialRegionWidth) && reactionCoordinate<0.5*(1.0+m_dynamicsEstimationInitialRegionWidth);
-}
+}*/
 
-bool Output::reactionCoordinateLeftPeakRegion(const double reactionCoordinate) const
+/*bool Output::reactionCoordinateLeftPeakRegion(const double reactionCoordinate) const
 {
     return reactionCoordinate<0.5*(1.0-m_dynamicsEstimationFinalRegionWidth) || reactionCoordinate>0.5*(1.0+m_dynamicsEstimationFinalRegionWidth);
-}
+}*/
 
-void Output::addPositionAndConfiguration(const double remainder, const int32_t nRightPullingCrosslinkers)
+/*void Output::addPositionAndConfiguration(const double remainder, const int32_t nRightPullingCrosslinkers)
 {
     mp_positionalHistogram->addValue(remainder);
 
@@ -191,9 +191,9 @@ void Output::addPositionAndConfiguration(const double remainder, const int32_t n
     {
         throw GeneralException(std::string("Output::addPositionAndConfiguration() was called with nRightPullingCrosslinkers out of range: ")+std::string(outOfRange.what()));
     }
-}
+}*/
 
-void Output::addTimeStepToPeakAnalysis(const double remainder, const int32_t nRightPullingCrosslinkers)
+/*void Output::addTimeStepToPeakAnalysis(const double remainder, const int32_t nRightPullingCrosslinkers)
 {
     // Collect data about the dynamics at the peak of the barrier
 
@@ -243,16 +243,16 @@ void Output::addTimeStepToPeakAnalysis(const double remainder, const int32_t nRi
         }
         ++m_timeStepsTrackingTime; // it doesn't matter if this is passed one more time even after tracking is turned off, since it has no effect
     }
-}
+}*/
 
-void Output::writeBarrierCrossingTime(const double time, const int32_t direction)
+/*void Output::writeBarrierCrossingTime(const double time, const int32_t direction)
 {
     const double interval = time - m_lastCrossingTime;
     m_lastCrossingTime = time;
     m_barrierCrossingTimeFile << std::setw(m_collumnWidth) << time << std::setw(m_collumnWidth) << interval << std::setw(m_collumnWidth) << direction << '\n';
 
     m_crossingTimeStatistics.addValue(interval);
-}
+}*/
 
 void Output::newBlock(const int32_t blockNumber)
 {
@@ -262,10 +262,10 @@ void Output::newBlock(const int32_t blockNumber)
     message.str("A new block starts. This has block number: ");
     message << blockNumber << '\n';
     m_microtubulePositionFile << message.str();
-    m_barrierCrossingTimeFile << message.str();
+    /*m_barrierCrossingTimeFile << message.str();*/
 }
 
-void Output::addPointTransitionPath(const double time, const double mobilePosition, const int32_t nRightPullingCrosslinkers)
+/*void Output::addPointTransitionPath(const double time, const double mobilePosition, const int32_t nRightPullingCrosslinkers)
 {
     #ifdef MYDEBUG
     if(!m_isTrackingPath)
@@ -275,9 +275,9 @@ void Output::addPointTransitionPath(const double time, const double mobilePositi
     #endif // MYDEBUG
 
     m_currentTransitionPath.addPoint(time, mobilePosition, nRightPullingCrosslinkers);
-}
+}*/
 
-void Output::addPositionAndConfigurationTransitionPath(const double remainder, const int32_t nRightPullingCrosslinkers)
+/*void Output::addPositionAndConfigurationTransitionPath(const double remainder, const int32_t nRightPullingCrosslinkers)
 {
     #ifdef MYDEBUG
     if(!m_isTrackingPath || !m_recordTransitionPaths || !m_writePositionalDistribution)
@@ -294,9 +294,9 @@ void Output::addPositionAndConfigurationTransitionPath(const double remainder, c
     {
         throw GeneralException(std::string("Output::addPositionAndConfigurationTransitionPath() was called with nRightPullingCrosslinkers out of range: ")+std::string(outOfRange.what()));
     }
-}
+}*/
 
-void Output::writeTransitionPath(const double latticeSpacing)
+/*void Output::writeTransitionPath(const double latticeSpacing)
 {
     #ifdef MYDEBUG
     if(!m_recordTransitionPaths)
@@ -336,33 +336,33 @@ void Output::writeTransitionPath(const double latticeSpacing)
     }
     m_currentTransitionPath.clean();
     ++m_nWrittenTransitionPaths;
-}
+}*/
 
-bool Output::isTrackingPath() const
+/*bool Output::isTrackingPath() const
 {
     return m_isTrackingPath;
-}
+}*/
 
-void Output::toggleTracking()
+/*void Output::toggleTracking()
 {
     m_isTrackingPath = !m_isTrackingPath;
-}
+}*/
 
-void Output::cleanTransitionPath()
+/*void Output::cleanTransitionPath()
 {
     m_currentTransitionPath.clean();
-}
+}*/
 
 void Output::finishWriting()
 {
-    if(m_crossingTimeStatistics.canReportStatistics())
+    /*if(m_crossingTimeStatistics.canReportStatistics())
     {
         m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "BARRIER CROSSING TIME"
             << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getNumberOfSamples()
             << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getMean()
             << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getVariance()
             << std::setw(m_collumnWidth) << m_crossingTimeStatistics.getSEM() << '\n';
-    }
+    }*/
 
     if(m_writePositionalDistribution)
     {
@@ -377,7 +377,7 @@ void Output::finishWriting()
             m_positionalHistogramFile << (*mp_positionalHistogram);
         }
 
-        if(mp_reactionCoordinateHistogram->canReportStatistics())
+        /*if(mp_reactionCoordinateHistogram->canReportStatistics())
         {
             m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "REACTION COORDINATE"
                 << std::setw(m_collumnWidth) << mp_reactionCoordinateHistogram->getNumberOfSamples()
@@ -386,9 +386,9 @@ void Output::finishWriting()
                 << std::setw(m_collumnWidth) << mp_reactionCoordinateHistogram->getSEM() << '\n';
 
             m_reactionCoordinateHistogramFile << (*mp_reactionCoordinateHistogram);
-        }
+        }*/
 
-        // nR is the number of right pulling linkers
+        /*// nR is the number of right pulling linkers
         // m_positionAndConfigurationHistogram.size() = maxNFullCrosslinkers + 1
         for(uint32_t nR = 0; nR < m_positionAndConfigurationHistogram.size(); ++nR)
         {
@@ -404,10 +404,10 @@ void Output::finishWriting()
                 m_positionAndConfigurationHistogramFile << (std::string("HISTOGRAM FOR NR=")+std::to_string(nR)) << '\n';
                 m_positionAndConfigurationHistogramFile << m_positionAndConfigurationHistogram[nR];
             }
-        }
+        }*/
     }
 
-    if(m_writePositionalDistribution && m_recordTransitionPaths)
+    /*if(m_writePositionalDistribution && m_recordTransitionPaths)
     {
         // nR is the number of right pulling linkers
         // m_transitionPathHistogram.size() = maxNFullCrosslinkers + 1
@@ -426,9 +426,9 @@ void Output::finishWriting()
                 m_transitionPathHistogramFile << m_transitionPathHistogram[nR];
             }
         }
-    }
+    }*/
 
-    if(m_estimateTimeEvolutionAtPeak)
+    /*if(m_estimateTimeEvolutionAtPeak)
     {
         int32_t timeStepsToPoint=0;
         for(const Statistics& statPoint : m_estimatePoints)
@@ -452,5 +452,5 @@ void Output::finishWriting()
                 << std::setw(m_collumnWidth) << m_diffusionTimeToFinalRegion.getVariance()
                 << std::setw(m_collumnWidth) << m_diffusionTimeToFinalRegion.getSEM() << '\n';
         }
-    }
+    }*/
 }
