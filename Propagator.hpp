@@ -38,18 +38,18 @@ private:
     double m_currentTime; // Time 0 is at the beginning of the run blocks: the equilibration blocks simulate negative time
     double m_currentReactionRateThreshold; // units s^(-1), so in terms of the (accumulated) rate
 
-    const bool m_samplePositionalDistribution;
+    /*const bool m_samplePositionalDistribution;
     const bool m_recordTransitionPaths;
-    const int32_t m_transitionPathProbePeriod;
+    const int32_t m_transitionPathProbePeriod;*/
     const bool m_addExternalForce;
-    const bool m_estimateTimeEvolutionAtPeak;
+    /*const bool m_estimateTimeEvolutionAtPeak;*/
 
     int32_t m_nDeterministicBoundaryCrossings;
     int32_t m_nStochasticBoundaryCrossings;
     Log& m_log;
 
-    const double m_basinOfAttractionHalfWidth;
-    int32_t m_previousBasinOfAttraction;
+    /*const double m_basinOfAttractionHalfWidth;
+    int32_t m_previousBasinOfAttraction;*/
 
     // Store pointers to Reactions in the map m_reactions, because we want to store instances of inherited classes in there. That would not be possible with just the objects.
     // std::unique_ptr deletes the thing it is pointing to when going out of scope, meaning that we don't have to worry about memory leaks
@@ -99,11 +99,11 @@ public:
                const double baseRateTwoToOneExtremitiesConnected,
                const double headBindingBiasEnergy,
                RandomGenerator& generator,
-               const bool samplePositionalDistribution,
-               const bool recordTransitionPaths,
-               const int32_t transitionPathProbePeriod,
+               /*const bool samplePositionalDistribution,*/
+               /*const bool recordTransitionPaths,*/
+               /*const int32_t transitionPathProbePeriod,*/
                const bool addExternalForce,
-               const bool estimateTimeEvolutionAtPeak,
+               /*const bool estimateTimeEvolutionAtPeak,*/
                Log& log);
     ~Propagator();
 

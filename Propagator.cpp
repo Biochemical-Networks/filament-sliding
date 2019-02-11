@@ -41,11 +41,11 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const double baseRateTwoToOneExtremitiesConnected,
                        const double headBindingBiasEnergy,
                        RandomGenerator& generator,
-                       const bool samplePositionalDistribution,
-                       const bool recordTransitionPaths,
-                       const int32_t transitionPathProbePeriod,
+                       /*const bool samplePositionalDistribution,*/
+                       /*const bool recordTransitionPaths,*/
+                       /*const int32_t transitionPathProbePeriod,*/
                        const bool addExternalForce,
-                       const bool estimateTimeEvolutionAtPeak,
+                       /*const bool estimateTimeEvolutionAtPeak,*/
                        Log& log)
     :   m_nEquilibrationBlocks(numberEquilibrationBlocks),
         m_nRunBlocks(numberRunBlocks),
@@ -57,15 +57,15 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_latticeSpacing(latticeSpacing),
         m_deviationMicrotubule(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep)),
         m_currentTime(-m_nEquilibrationBlocks*m_nTimeSteps*m_calcTimeStep), // time 0 is the start of the run blocks
-        m_samplePositionalDistribution(samplePositionalDistribution),
-        m_recordTransitionPaths(recordTransitionPaths),
-        m_transitionPathProbePeriod(transitionPathProbePeriod),
+        /*m_samplePositionalDistribution(samplePositionalDistribution),*/
+        /*m_recordTransitionPaths(recordTransitionPaths),*/
+        /*m_transitionPathProbePeriod(transitionPathProbePeriod),*/
         m_addExternalForce(addExternalForce),
-        m_estimateTimeEvolutionAtPeak(estimateTimeEvolutionAtPeak),
+        /*m_estimateTimeEvolutionAtPeak(estimateTimeEvolutionAtPeak),*/
         m_nDeterministicBoundaryCrossings(0), // Counts the number of times a force has tried to push the mobile microtubule across a maximum stretch barrier
         m_nStochasticBoundaryCrossings(0), // Counts the number of times diffusion of the mobile microtubule was reflected at a maximum stretch barrier
-        m_log(log),
-        m_basinOfAttractionHalfWidth(0.15*m_latticeSpacing)
+        m_log(log)/*,
+        m_basinOfAttractionHalfWidth(0.15*m_latticeSpacing)*/
 {
     // objects in std::initializer_list are inherently const, so std::unique_ptr's copy constructor cannot be used there, and we cannot use this method of initialising m_reactions.
     // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
@@ -120,19 +120,19 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
                 output.writeMicrotubulePosition(m_currentTime, systemState); // writes the position and the number of crosslinkers (the order parameters)
             }
             // Add the microtubule positions more often than the m_positionProbePeriod, since it is not directly written to a file (not slow), and it requires much data.
-            if(m_samplePositionalDistribution)
+            /*if(m_samplePositionalDistribution)
             {
                 output.addPositionAndConfiguration(MathematicalFunctions::mod(systemState.getMicrotubulePosition(), m_latticeSpacing),
                                                    systemState.getNFullRightPullingCrosslinkers());
-            }
+            }*/
 
-            if(m_estimateTimeEvolutionAtPeak)
+            /*if(m_estimateTimeEvolutionAtPeak)
             {
                 output.addTimeStepToPeakAnalysis(MathematicalFunctions::mod(systemState.getMicrotubulePosition(), m_latticeSpacing),
                                                    systemState.getNFullRightPullingCrosslinkers());
-            }
+            }*/
 
-            if(m_recordTransitionPaths)
+            /*if(m_recordTransitionPaths)
             {
                 const double position = systemState.getMicrotubulePosition();
                 const int32_t nRightLinkers = systemState.getNFullRightPullingCrosslinkers();
@@ -167,26 +167,26 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
                         output.toggleTracking(); // Turn off at the end, after the possible writing has finished
                     }
                 }
-            }
+            }*/
         }
 
         advanceTimeStep(systemState, generator);
 
-        // Check if a barrier crossing took place
+        /*// Check if a barrier crossing took place
         const int32_t barrierCrossingDirection = systemState.barrierCrossed(); // returns 0 if no barrier is crossed
         if(barrierCrossingDirection != 0)
         {
             if(writeOutput){output.writeBarrierCrossingTime(m_currentTime, barrierCrossingDirection);}
-        }
+        }*/
     }
 }
 
-bool Propagator::inBasinOfAttraction(const double mobilePosition, const int32_t nRightPullingCrosslinkers, const int32_t nFullCrosslinkers) const
+/*bool Propagator::inBasinOfAttraction(const double mobilePosition, const int32_t nRightPullingCrosslinkers, const int32_t nFullCrosslinkers) const
 {
     const double remainder = MathematicalFunctions::mod(mobilePosition,m_latticeSpacing);
     return ((remainder < m_basinOfAttractionHalfWidth) && (nRightPullingCrosslinkers <= 1)) ||
            ((remainder > m_latticeSpacing-m_basinOfAttractionHalfWidth) && (nRightPullingCrosslinkers >= nFullCrosslinkers-1));
-}
+}*/
 
 void Propagator::equilibrate(SystemState& systemState, RandomGenerator& generator, Output& output)
 {
