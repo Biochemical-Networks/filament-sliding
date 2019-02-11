@@ -141,15 +141,15 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter positionalHistogramHighestValue contains a wrong value.");
     }
 
-    std::string recordTransitionPathsString;
+    /*std::string recordTransitionPathsString;
     input.copyParameter("recordTransitionPaths", recordTransitionPathsString);
-    const bool recordTransitionPaths = (recordTransitionPathsString == "TRUE");
+    const bool recordTransitionPaths = (recordTransitionPathsString == "TRUE");*/
 
     std::string bindingDynamicsString;
     input.copyParameter("bindingDynamics", bindingDynamicsString);
     const bool bindingDynamics = (bindingDynamicsString == "TRUE");
 
-    int32_t maxNFullCrosslinkers;
+    /*int32_t maxNFullCrosslinkers;
     if(bindingDynamics)
     {
         maxNFullCrosslinkers = std::min(systemState.getNFreeSitesFixed(), systemState.getNFreeSitesMobile());
@@ -161,9 +161,9 @@ int main(int argc, char* argv[])
 
     #ifdef MYDEBUG
     std::cout << "The maximum number of full linkers is given by " << maxNFullCrosslinkers << ".\n";
-    #endif // MYDEBUG
+    #endif // MYDEBUG*/
 
-    int32_t transitionPathProbePeriod;
+    /*int32_t transitionPathProbePeriod;
     input.copyParameter("transitionPathProbePeriod", transitionPathProbePeriod);
     if(transitionPathProbePeriod<=0)
     {
@@ -214,24 +214,24 @@ int main(int argc, char* argv[])
     if(estimateTimeEvolutionAtPeak && (dynamicsEstimationFinalRegionWidth<=0.0 || dynamicsEstimationFinalRegionWidth>1.0))
     {
         throw GeneralException("The parameter dynamicsEstimationFinalRegionWidth contains a wrong value.");
-    }
+    }*/
 
     Output output(runName,
                   samplePositionalDistribution,
-                  recordTransitionPaths,
-                  transitionPathProbePeriod,
-                  maxNumberTransitionPaths,
+                  /*recordTransitionPaths,*/
+                  /*transitionPathProbePeriod,*/
+                  /*maxNumberTransitionPaths,*/
                   positionalHistogramBinSize,
                   positionalHistogramLowestValue,
-                  positionalHistogramHighestValue,
-                  maxNFullCrosslinkers,
-                  maxPeriodPositionTracking,
-                  latticeSpacing,
-                  estimateTimeEvolutionAtPeak,
-                  timeStepsPerDistributionEstimate,
-                  nEstimatesDistribution,
-                  dynamicsEstimationInitialRegionWidth,
-                  dynamicsEstimationFinalRegionWidth);
+                  positionalHistogramHighestValue/*,*/
+                  /*maxNFullCrosslinkers,*/
+                  /*maxPeriodPositionTracking,*/
+                  /*latticeSpacing,*/
+                  /*estimateTimeEvolutionAtPeak,*/
+                  /*timeStepsPerDistributionEstimate,*/
+                  /*nEstimatesDistribution,*/
+                  /*dynamicsEstimationInitialRegionWidth,*/
+                  /*dynamicsEstimationFinalRegionWidth*/);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for initialising the state.
@@ -388,10 +388,10 @@ int main(int argc, char* argv[])
                           headBindingBiasEnergy,
                           generator,
                           samplePositionalDistribution,
-                          recordTransitionPaths,
-                          transitionPathProbePeriod,
+                          /*recordTransitionPaths,*/
+                          /*transitionPathProbePeriod,*/
                           addExternalForce,
-                          estimateTimeEvolutionAtPeak,
+                          /*estimateTimeEvolutionAtPeak,*/
                           log);
 
     //-----------------------------------------------------------------------------------------------------

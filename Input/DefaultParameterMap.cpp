@@ -93,7 +93,7 @@ ParameterMap::ParameterMap()
     defineParameter("showGraphics", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("timeStepsDisplayInterval", 100000, "steps", ">0");
     defineParameter("updateDelayInMilliseconds", 100, "milliseconds", ">=0");
-    defineParameter("recordTransitionPaths", "FALSE", "unitless", "TRUE,FALSE");
+    /*defineParameter("recordTransitionPaths", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("transitionPathProbePeriod", 10000, "steps", ">0"); // The probe period is used for writing, not for recording in the histogram
     defineParameter("maxNumberTransitionPaths", 100, "paths", ">=0");
     defineParameter("maxPeriodPositionTracking", 10.0, "s", ">=0");
@@ -101,5 +101,5 @@ ParameterMap::ParameterMap()
     defineParameter("timeStepsPerDistributionEstimate", 25, "steps", ">0");
     defineParameter("nEstimatesDistribution", 200, "sets", ">0");
     defineParameter("dynamicsEstimationInitialRegionWidth", 0.0002, "unitless", "(0,1]");
-    defineParameter("dynamicsEstimationFinalRegionWidth", 0.05, "unitless", "(0,1]");
+    defineParameter("dynamicsEstimationFinalRegionWidth", 0.05, "unitless", "(0,1]");*/
 }
