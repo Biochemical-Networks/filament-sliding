@@ -10,7 +10,7 @@
 #include "SystemState.hpp"
 #include "Statistics.hpp"
 #include "Histogram.hpp"
-#include "TransitionPath.hpp"
+/*#include "TransitionPath.hpp"*/
 
 /* Output contains all output files, and contains functions to output information to those.
  * Further, it can do some data analysis. The results of this should then also be stored in a file.
