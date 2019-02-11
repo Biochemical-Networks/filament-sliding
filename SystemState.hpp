@@ -95,7 +95,7 @@ public:
 
     void updateMobilePosition(const double changeMicrotubulePosition);
 
-    int32_t barrierCrossed();
+    /*int32_t barrierCrossed();*/
 
     std::pair<double, double> movementBordersSetByFullLinkers() const;
 
@@ -108,7 +108,7 @@ public:
     std::pair<int32_t,int32_t> getNPartialCrosslinkersBoundWithHeadAndTailOfType(const Crosslinker::Type type) const;
 
     int32_t getNFullCrosslinkers() const;
-    int32_t getNFullRightPullingCrosslinkers() const;
+    /*int32_t getNFullRightPullingCrosslinkers() const;*/
 
     // The following functions return the position of the overlap as measured from the origin at the beginning of the fixed microtubule
     double beginningOverlap() const;

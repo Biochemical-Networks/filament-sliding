@@ -357,10 +357,10 @@ void SystemState::updateMobilePosition(const double changeMicrotubulePosition)
     m_activeCrosslinkers.updateConnectionDataMobilePositionChange(changeMicrotubulePosition);
 }
 
-int32_t SystemState::barrierCrossed()
+/*int32_t SystemState::barrierCrossed()
 {
     return m_mobileMicrotubule.barrierCrossed();
-}
+}*/
 
 // Gives the upper and lower bounds to the possible change in mobile microtubule position
 std::pair<double, double> SystemState::movementBordersSetByFullLinkers() const
@@ -448,12 +448,12 @@ int32_t SystemState::getNFullCrosslinkers() const
         + m_activeCrosslinkers.getNFullCrosslinkers();
 }
 
-int32_t SystemState::getNFullRightPullingCrosslinkers() const
+/*int32_t SystemState::getNFullRightPullingCrosslinkers() const
 {
     return m_passiveCrosslinkers.getNFullRightPullingCrosslinkers()
         + m_dualCrosslinkers.getNFullRightPullingCrosslinkers()
         + m_activeCrosslinkers.getNFullRightPullingCrosslinkers();
-}
+}*/
 
 double SystemState::beginningOverlap() const
 {
