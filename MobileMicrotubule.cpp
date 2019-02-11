@@ -11,9 +11,9 @@ MobileMicrotubule::MobileMicrotubule(const double length, const double latticeSp
     :   Microtubule(MicrotubuleType::MOBILE, length, latticeSpacing),
         m_position(initialPosition)
 {
-    m_currentAttractorPosition = static_cast<int32_t>(std::round(m_position/m_latticeSpacing));
+    /*m_currentAttractorPosition = static_cast<int32_t>(std::round(m_position/m_latticeSpacing));*/
     #ifdef MYDEBUG
-    std::cout << "Position: " << m_position << ", Attractor position: " << m_currentAttractorPosition << '\n';
+    std::cout << "Position: " << m_position /*<< ", Attractor position: " << m_currentAttractorPosition*/ << '\n';
     #endif // MYDEBUG
 }
 
@@ -35,13 +35,13 @@ void MobileMicrotubule::setPosition(const double initialPosition)
 {
     m_position = initialPosition;
 
-    m_currentAttractorPosition = static_cast<int32_t>(std::round(m_position/m_latticeSpacing));
+    /*m_currentAttractorPosition = static_cast<int32_t>(std::round(m_position/m_latticeSpacing));*/
     #ifdef MYDEBUG
-    std::cout << "Position: " << m_position << ", Attractor position: " << m_currentAttractorPosition << '\n';
+    std::cout << "Position: " << m_position /*<< ", Attractor position: " << m_currentAttractorPosition*/ << '\n';
     #endif // MYDEBUG
 }
 
-int32_t MobileMicrotubule::barrierCrossed()
+/*int32_t MobileMicrotubule::barrierCrossed()
 {
     if(m_position > (m_currentAttractorPosition+1)*m_latticeSpacing)
     {
@@ -57,4 +57,4 @@ int32_t MobileMicrotubule::barrierCrossed()
     {
         return 0;
     }
-}
+}*/
