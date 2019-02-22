@@ -15,13 +15,13 @@ class UnbindPartialCrosslinker : public Reaction
 private:
     const double m_rateOneTerminusDisconnects;
     const Crosslinker::Type m_typeToUnbind;
-    // The following gives the factor with which the rate needs to be multiplied when it involves unbinding the head (tail).
+    /*// The following gives the factor with which the rate needs to be multiplied when it involves unbinding the head (tail).
     const double m_headUnbindingFactor; // Equals 2/(1+exp(headBindingBiasEnergy)) = 2*prob_tail_binds. m_tailUnbindingFactor = 2-m_headUnbindingFactor
-    const double m_tailUnbindingFactor;
+    const double m_tailUnbindingFactor;*/
 
     Crosslinker& whichToDisconnect(SystemState& systemState, RandomGenerator& generator) const;
 public:
-    UnbindPartialCrosslinker(const double rateOneTerminusDisconnects, const Crosslinker::Type typeToUnbind, const double headBiasEnergy);
+    UnbindPartialCrosslinker(const double rateOneTerminusDisconnects, const Crosslinker::Type typeToUnbind);
     ~UnbindPartialCrosslinker() override;
 
     void setCurrentRate(const SystemState& systemState) override;
