@@ -13,12 +13,12 @@
 #include <cmath> // exp
 #include <cstddef> // size_t
 
-BindPartialCrosslinker::BindPartialCrosslinker(const double rateOneTerminusToOneSite, const Crosslinker::Type typeToBind, const double headBiasEnergy, const double springConstant)
+BindPartialCrosslinker::BindPartialCrosslinker(const double rateOneTerminusToOneSite, const Crosslinker::Type typeToBind, const double springConstant)
     :   Reaction(),
         m_rateOneTerminusToOneSite(rateOneTerminusToOneSite),
         m_typeToBind(typeToBind),
-        m_headBindingFactor(2/(1+std::exp(-headBiasEnergy))),
-        m_tailBindingFactor(2-m_headBindingFactor),
+        /*m_headBindingFactor(2/(1+std::exp(-headBiasEnergy))),
+        m_tailBindingFactor(2-m_headBindingFactor),*/
         m_springConstant(springConstant)
 {
 }
@@ -39,7 +39,7 @@ void BindPartialCrosslinker::setCurrentRate(const SystemState& systemState)
     {
         // spread the effect of extension evenly over connecting and disconnecting: rate scales with exp(-k x^2 / (4 k_B T))
         double rate = m_rateOneTerminusToOneSite*std::exp(-m_springConstant*possibleConnection.extension*possibleConnection.extension*0.25);
-        rate *= (possibleConnection.p_partialLinker->getFreeTerminusWhenPartiallyConnected()==Crosslinker::Terminus::HEAD)?m_headBindingFactor:m_tailBindingFactor;
+        /*rate *= (possibleConnection.p_partialLinker->getFreeTerminusWhenPartiallyConnected()==Crosslinker::Terminus::HEAD)?m_headBindingFactor:m_tailBindingFactor;*/
         m_individualRates.push_back(rate);
         sum += rate;
     }
