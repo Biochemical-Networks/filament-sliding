@@ -39,7 +39,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const double baseRateOneToZeroExtremitiesConnected,
                        const double baseRateOneToTwoExtremitiesConnected,
                        const double baseRateTwoToOneExtremitiesConnected,
-                       const double headBindingBiasEnergy,
+                       /*const double headBindingBiasEnergy,*/
                        RandomGenerator& generator,
                        /*const bool samplePositionalDistribution,*/
                        /*const bool recordTransitionPaths,*/
@@ -71,18 +71,18 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
     // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
     // Use pointers, because m_reactions contains Reactions, while we want to store objects of a class inherited from Reaction
     // Make sure that the specific reaction has been included in this file
-    m_reactions["bindingFreePassiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(baseRateZeroToOneExtremitiesConnected, Crosslinker::Type::PASSIVE, headBindingBiasEnergy));
-    m_reactions["bindingFreeDualCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(baseRateZeroToOneExtremitiesConnected, Crosslinker::Type::DUAL, headBindingBiasEnergy));
-    m_reactions["bindingFreeActiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(baseRateZeroToOneExtremitiesConnected, Crosslinker::Type::ACTIVE, headBindingBiasEnergy));
-    m_reactions["bindingPartialPassiveCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(baseRateOneToTwoExtremitiesConnected, Crosslinker::Type::PASSIVE, headBindingBiasEnergy, m_springConstant));
-    m_reactions["bindingPartialDualCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(baseRateOneToTwoExtremitiesConnected, Crosslinker::Type::DUAL, headBindingBiasEnergy, m_springConstant));
-    m_reactions["bindingPartialActiveCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(baseRateOneToTwoExtremitiesConnected, Crosslinker::Type::ACTIVE, headBindingBiasEnergy, m_springConstant));
-    m_reactions["unbindingPartialPassiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(baseRateOneToZeroExtremitiesConnected, Crosslinker::Type::PASSIVE, headBindingBiasEnergy));
-    m_reactions["unbindingPartialDualCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(baseRateOneToZeroExtremitiesConnected, Crosslinker::Type::DUAL, headBindingBiasEnergy));
-    m_reactions["unbindingPartialActiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(baseRateOneToZeroExtremitiesConnected, Crosslinker::Type::ACTIVE, headBindingBiasEnergy));
-    m_reactions["unbindingFullPassiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(baseRateTwoToOneExtremitiesConnected, Crosslinker::Type::PASSIVE, headBindingBiasEnergy, m_springConstant));
-    m_reactions["unbindingFullDualCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(baseRateTwoToOneExtremitiesConnected, Crosslinker::Type::DUAL, headBindingBiasEnergy, m_springConstant));
-    m_reactions["unbindingFullActiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(baseRateTwoToOneExtremitiesConnected, Crosslinker::Type::ACTIVE, headBindingBiasEnergy, m_springConstant));
+    m_reactions["bindingFreePassiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(baseRateZeroToOneExtremitiesConnected, Crosslinker::Type::PASSIVE));
+    m_reactions["bindingFreeDualCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(baseRateZeroToOneExtremitiesConnected, Crosslinker::Type::DUAL));
+    m_reactions["bindingFreeActiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(baseRateZeroToOneExtremitiesConnected, Crosslinker::Type::ACTIVE));
+    m_reactions["bindingPartialPassiveCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(baseRateOneToTwoExtremitiesConnected, Crosslinker::Type::PASSIVE, m_springConstant));
+    m_reactions["bindingPartialDualCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(baseRateOneToTwoExtremitiesConnected, Crosslinker::Type::DUAL, m_springConstant));
+    m_reactions["bindingPartialActiveCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(baseRateOneToTwoExtremitiesConnected, Crosslinker::Type::ACTIVE, m_springConstant));
+    m_reactions["unbindingPartialPassiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(baseRateOneToZeroExtremitiesConnected, Crosslinker::Type::PASSIVE));
+    m_reactions["unbindingPartialDualCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(baseRateOneToZeroExtremitiesConnected, Crosslinker::Type::DUAL));
+    m_reactions["unbindingPartialActiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindPartialCrosslinker(baseRateOneToZeroExtremitiesConnected, Crosslinker::Type::ACTIVE));
+    m_reactions["unbindingFullPassiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(baseRateTwoToOneExtremitiesConnected, Crosslinker::Type::PASSIVE, m_springConstant));
+    m_reactions["unbindingFullDualCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(baseRateTwoToOneExtremitiesConnected, Crosslinker::Type::DUAL, m_springConstant));
+    m_reactions["unbindingFullActiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(baseRateTwoToOneExtremitiesConnected, Crosslinker::Type::ACTIVE, m_springConstant));
     m_reactions["hoppingPartialPassiveCrosslinker"] = std::unique_ptr<Reaction>(new HopPartial(ratePassivePartialHop, ratePassivePartialHop, Crosslinker::Type::PASSIVE, 0.0, 0.0)); // For a passive linker, the bias energy is zero
     m_reactions["hoppingPartialDualCrosslinker"] = std::unique_ptr<Reaction>(new HopPartial(baseRateActivePartialHop, ratePassivePartialHop, Crosslinker::Type::DUAL, activeHopToPlusBiasEnergy, 0.0));
     m_reactions["hoppingPartialActiveCrosslinker"] = std::unique_ptr<Reaction>(new HopPartial(baseRateActivePartialHop, baseRateActivePartialHop, Crosslinker::Type::ACTIVE, activeHopToPlusBiasEnergy, activeHopToPlusBiasEnergy));

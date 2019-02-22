@@ -97,7 +97,7 @@ public:
                const double baseRateOneToZeroExtremitiesConnected,
                const double baseRateOneToTwoExtremitiesConnected,
                const double baseRateTwoToOneExtremitiesConnected,
-               const double headBindingBiasEnergy,
+               /*const double headBindingBiasEnergy,*/
                RandomGenerator& generator,
                /*const bool samplePositionalDistribution,*/
                /*const bool recordTransitionPaths,*/

@@ -44,15 +44,15 @@ ParameterMap::ParameterMap()
 
 
     // The rates for hopping of passive extremities when the linker is either partially or fully connected
-    defineParameter("ratePassivePartialHop", 1562.5, "s^(-1)", ">=0");
-    defineParameter("ratePassiveFullHop", 1562.5, "s^(-1)", ">=0");
+    defineParameter("ratePassivePartialHop", 0.0, "s^(-1)", ">=0");
+    defineParameter("ratePassiveFullHop", 0.0, "s^(-1)", ">=0");
     // The rates for hopping of active extremities when the linker is either partially or fully connected
     // are calculated using the following parameters.
     // baseRate is the geometric mean between the forward and backward rate,
     // whereas activeHopToPlusBiasEnergy gives the free energy driving a single hop towards the plus tip of the microtubule.
     // For a minus end walking motor, use a negative bias free energy
-    defineParameter("baseRateActivePartialHop", 1562.5, "s^(-1)", ">=0");
-    defineParameter("baseRateActiveFullHop", 1562.5, "s^(-1)", ">=0");
+    defineParameter("baseRateActivePartialHop", 0.0, "s^(-1)", ">=0");
+    defineParameter("baseRateActiveFullHop", 0.0, "s^(-1)", ">=0");
     defineParameter("activeHopToPlusBiasEnergy", 1., "kT", "real");
 
     // Rates for connecting crosslinkers to the microtubules. The rates from zero to one are per crosslinker in solution per microtubule site.
@@ -81,7 +81,7 @@ ParameterMap::ParameterMap()
     defineParameter("baseRateOneToZeroExtremitiesConnected", 0.0, "s^(-1)", ">=0");
     defineParameter("baseRateOneToTwoExtremitiesConnected", 0.0, "s^(-1)", ">=0");
     defineParameter("baseRateTwoToOneExtremitiesConnected", 0.0, "s^(-1)", ">=0");
-    defineParameter("headBindingBiasEnergy", 0.0, "kT", "real");
+    /*defineParameter("headBindingBiasEnergy", 0.0, "kT", "real");*/
 
     // Parameters to turn analysis on or off
     defineParameter("addExternalForce", "FALSE", "unitless", "TRUE,FALSE");
@@ -95,9 +95,9 @@ ParameterMap::ParameterMap()
     defineParameter("updateDelayInMilliseconds", 100, "milliseconds", ">=0");
     /*defineParameter("recordTransitionPaths", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("transitionPathProbePeriod", 10000, "steps", ">0"); // The probe period is used for writing, not for recording in the histogram
-    defineParameter("maxNumberTransitionPaths", 100, "paths", ">=0");
+    defineParameter("maxNumberTransitionPaths", 100, "paths", ">=0");*/
     defineParameter("maxPeriodPositionTracking", 10.0, "s", ">=0");
-    defineParameter("estimateTimeEvolutionAtPeak", "FALSE", "unitless", "TRUE,FALSE");
+    /*defineParameter("estimateTimeEvolutionAtPeak", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("timeStepsPerDistributionEstimate", 25, "steps", ">0");
     defineParameter("nEstimatesDistribution", 200, "sets", ">0");
     defineParameter("dynamicsEstimationInitialRegionWidth", 0.0002, "unitless", "(0,1]");

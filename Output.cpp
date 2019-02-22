@@ -20,9 +20,9 @@ Output::Output(const std::string &runName,
                /*const int32_t maxNumberTransitionPaths,*/
                const double positionalHistogramBinSize,
                const double positionalHistogramLowestValue,
-               const double positionalHistogramHighestValue/*,*/
+               const double positionalHistogramHighestValue,
                /*const int32_t maxNFullCrosslinkers,*/
-               /*const double maxPeriodPositionTracking,*/
+               const double maxPeriodPositionTracking/*,*/
                /*const double latticeSpacing,*/
                /*const bool estimateTimeEvolutionAtPeak,*/
                /*const int32_t timeStepsPerDistributionEstimate,*/
@@ -32,16 +32,16 @@ Output::Output(const std::string &runName,
     :   m_microtubulePositionFile((runName+".microtubule_position.txt").c_str()),
         /*m_barrierCrossingTimeFile((runName+".times_barrier_crossings.txt").c_str()),*/
         m_statisticalAnalysisFile((runName+".statistical_analysis.txt").c_str()),
-        m_collumnWidth(OutputParameters::collumnWidth)/*,*/
+        m_collumnWidth(OutputParameters::collumnWidth),
         /*m_lastCrossingTime(0), // Time 0 indicates the beginning of the run blocks, after which we start writing data*/
-        /*m_writePositionalDistribution(writePositionalDistribution),*/
+        m_writePositionalDistribution(writePositionalDistribution),
         /*m_recordTransitionPaths(recordTransitionPaths),*/
         /*m_maxNumberTransitionPaths(maxNumberTransitionPaths),*/
         /*m_nWrittenTransitionPaths(0),*/
         /*m_currentTransitionPath(transitionPathWriteFrequency),*/
         /*m_isTrackingPath(false),*/
         /*m_maxNFullCrosslinkers(maxNFullCrosslinkers),*/
-        /*m_maxPeriodPositionTracking(maxPeriodPositionTracking),*/
+        m_maxPeriodPositionTracking(maxPeriodPositionTracking)/*,*/
         /*m_latticeSpacing(latticeSpacing),*/
         /*,m_estimateTimeEvolutionAtPeak(estimateTimeEvolutionAtPeak),*/
         /*m_timeStepsPerDistributionEstimate(timeStepsPerDistributionEstimate),*/

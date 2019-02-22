@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
     if(maxNumberTransitionPaths<0)
     {
         throw GeneralException("The parameter maxNumberTransitionPaths contains a wrong value.");
-    }
+    }*/
 
     double maxPeriodPositionTracking;
     input.copyParameter("maxPeriodPositionTracking", maxPeriodPositionTracking);
@@ -184,7 +184,7 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter maxPeriodPositionTracking contains a wrong value.");
     }
 
-    std::string estimateTimeEvolutionAtPeakString;
+    /*std::string estimateTimeEvolutionAtPeakString;
     input.copyParameter("estimateTimeEvolutionAtPeak", estimateTimeEvolutionAtPeakString);
     const bool estimateTimeEvolutionAtPeak = (estimateTimeEvolutionAtPeakString == "TRUE");
 
@@ -223,9 +223,9 @@ int main(int argc, char* argv[])
                   /*maxNumberTransitionPaths,*/
                   positionalHistogramBinSize,
                   positionalHistogramLowestValue,
-                  positionalHistogramHighestValue/*,*/
+                  positionalHistogramHighestValue,
                   /*maxNFullCrosslinkers,*/
-                  /*maxPeriodPositionTracking,*/
+                  maxPeriodPositionTracking/*,*/
                   /*latticeSpacing,*/
                   /*estimateTimeEvolutionAtPeak,*/
                   /*timeStepsPerDistributionEstimate,*/
@@ -365,8 +365,8 @@ int main(int argc, char* argv[])
         baseRateTwoToOneExtremitiesConnected = 0.0;
     }
 
-    double headBindingBiasEnergy;
-    input.copyParameter("headBindingBiasEnergy", headBindingBiasEnergy);
+    /*double headBindingBiasEnergy;
+    input.copyParameter("headBindingBiasEnergy", headBindingBiasEnergy);*/
 
     Propagator propagator(numberEquilibrationBlocks,
                           numberRunBlocks,
@@ -385,9 +385,9 @@ int main(int argc, char* argv[])
                           baseRateOneToZeroExtremitiesConnected,
                           baseRateOneToTwoExtremitiesConnected,
                           baseRateTwoToOneExtremitiesConnected,
-                          headBindingBiasEnergy,
+                          /*headBindingBiasEnergy,*/
                           generator,
-                          samplePositionalDistribution,
+                          /*samplePositionalDistribution,*/
                           /*recordTransitionPaths,*/
                           /*transitionPathProbePeriod,*/
                           addExternalForce,

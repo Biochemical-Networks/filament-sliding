@@ -48,10 +48,10 @@ private:
     std::vector<Histogram> m_positionAndConfigurationHistogram;
     std::vector<Histogram> m_transitionPathHistogram;*/
 
-    /*const int32_t m_maxNFullCrosslinkers;
+    /*const int32_t m_maxNFullCrosslinkers;*/
     const double m_maxPeriodPositionTracking;
 
-    const double m_latticeSpacing;
+    /*const double m_latticeSpacing;
 
     const bool m_estimateTimeEvolutionAtPeak;
     const int32_t m_timeStepsPerDistributionEstimate;
@@ -78,9 +78,9 @@ public:
            /*const int32_t maxNumberTransitionPaths,*/
            const double positionalHistogramBinSize,
            const double positionalHistogramLowestValue,
-           const double positionalHistogramHighestValue/*,*/
+           const double positionalHistogramHighestValue,
            /*const int32_t maxNFullCrosslinkers,*/
-           /*const double maxPeriodPositionTracking,*/
+           const double maxPeriodPositionTracking/*,*/
            /*const double latticeSpacing,*/
            /*const bool estimateTimeEvolutionAtPeak,*/
            /*const int32_t timeStepsPerDistributionEstimate,*/
