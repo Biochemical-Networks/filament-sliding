@@ -18,7 +18,7 @@ class UnbindFullCrosslinker : public Reaction
 private:
     const double m_rateOneLinkerUnbinds;
     const Crosslinker::Type m_typeToUnbind;
-    const double m_probHeadUnbinds;
+    /*const double m_probHeadUnbinds;*/
 
     const double m_springConstant;
 
@@ -26,7 +26,7 @@ private:
 
     FullConnection whichToDisconnect(SystemState& systemState, RandomGenerator& generator) const;
 public:
-    UnbindFullCrosslinker(const double rateOneLinkerUnbinds, const Crosslinker::Type typeToUnbind, const double headBiasEnergy, const double springConstant);
+    UnbindFullCrosslinker(const double rateOneLinkerUnbinds, const Crosslinker::Type typeToUnbind, const double springConstant);
     ~UnbindFullCrosslinker() override;
 
     void setCurrentRate(const SystemState& systemState) override;

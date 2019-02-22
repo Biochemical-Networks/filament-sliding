@@ -6,11 +6,11 @@
 
 #include <vector>
 
-UnbindFullCrosslinker::UnbindFullCrosslinker(const double rateOneLinkerUnbinds, const Crosslinker::Type typeToUnbind, const double headBiasEnergy, const double springConstant)
+UnbindFullCrosslinker::UnbindFullCrosslinker(const double rateOneLinkerUnbinds, const Crosslinker::Type typeToUnbind, const double springConstant)
     :   Reaction(),
         m_rateOneLinkerUnbinds(rateOneLinkerUnbinds),
         m_typeToUnbind(typeToUnbind),
-        m_probHeadUnbinds(1/(1+std::exp(-headBiasEnergy))), // headBiasEnergy should have units of (k_B T)
+        /*m_probHeadUnbinds(1/(1+std::exp(-headBiasEnergy))), // headBiasEnergy should have units of (k_B T)*/
         m_springConstant(springConstant)
 {
 }
@@ -40,7 +40,7 @@ void UnbindFullCrosslinker::performReaction(SystemState& systemState, RandomGene
 {
     FullConnection connectionToDisconnect = whichToDisconnect(systemState, generator);
 
-    Crosslinker::Terminus terminusToDisconnect = ((generator.getBernoulli(m_probHeadUnbinds))?(Crosslinker::Terminus::HEAD):(Crosslinker::Terminus::TAIL));
+    Crosslinker::Terminus terminusToDisconnect = Crosslinker::Terminus::HEAD; // The head is always connected to the mobile (representing actin)
 
     systemState.disconnectFullyConnectedCrosslinker(*connectionToDisconnect.p_fullLinker, terminusToDisconnect);
 }
