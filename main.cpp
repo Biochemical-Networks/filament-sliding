@@ -246,11 +246,11 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter fractionOverlapSitesConnected contains a wrong value.");
     }
 
-    std::string initialCrosslinkerDistributionString;
-    input.copyParameter("initialCrosslinkerDistribution", initialCrosslinkerDistributionString);
+    /*std::string initialCrosslinkerDistributionString;
+    input.copyParameter("initialCrosslinkerDistribution", initialCrosslinkerDistributionString);*/
 
 
-    Initialiser initialiser(initialPositionMicrotubule, fractionOverlapSitesConnected, initialCrosslinkerDistributionString);
+    Initialiser initialiser(initialPositionMicrotubule, fractionOverlapSitesConnected/*, initialCrosslinkerDistributionString*/);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the propagator

@@ -14,18 +14,18 @@
 
 class Initialiser
 {
-public:
+/*public:
     enum class InitialCrosslinkerDistribution
     {
         RANDOM,
         HEADSMOBILE,
         TAILSMOBILE,
         TEST
-    };
+    };*/
 private:
     const double m_initialPositionMicrotubule;
     const double m_fractionOverlapSitesConnected;
-    InitialCrosslinkerDistribution m_initialCrosslinkerDistribution;
+    /*InitialCrosslinkerDistribution m_initialCrosslinkerDistribution;*/
 
     void initialiseCrosslinkers(SystemState& systemState, RandomGenerator& generator);
 
@@ -38,10 +38,10 @@ private:
                                         const int32_t nFreeDualCrosslinkers,
                                         const int32_t nFreeActiveCrosslinkers) const;
 
-    Crosslinker::Terminus terminusToConnectToFixedMicrotubule(RandomGenerator &generator);
+    /*Crosslinker::Terminus terminusToConnectToFixedMicrotubule(RandomGenerator &generator);*/ // is always TAIL, HEAD binds to actin by choice
 
 public:
-    Initialiser(const double initialPositionMicrotubule, const double fractionOverlapSitesConnected, const std::string initialCrosslinkerDistributionString);
+    Initialiser(const double initialPositionMicrotubule, const double fractionOverlapSitesConnected/*, const std::string initialCrosslinkerDistributionString*/);
     ~Initialiser();
 
     Initialiser(const Initialiser&) = delete;

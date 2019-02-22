@@ -14,14 +14,14 @@
 #include <vector>
 #include <iterator> // std::distance
 
-Initialiser::Initialiser(const double initialPositionMicrotubule, const double fractionOverlapSitesConnected, const std::string initialCrosslinkerDistributionString)
+Initialiser::Initialiser(const double initialPositionMicrotubule, const double fractionOverlapSitesConnected/*, const std::string initialCrosslinkerDistributionString*/)
     :   m_initialPositionMicrotubule(initialPositionMicrotubule),
         m_fractionOverlapSitesConnected(fractionOverlapSitesConnected)
 {
     // Translate the string to an enum object Initialiser::InitialCrosslinkerDistribution
     // switch statements do not work with strings
 
-    if (initialCrosslinkerDistributionString=="RANDOM")
+    /*if (initialCrosslinkerDistributionString=="RANDOM")
     {
         m_initialCrosslinkerDistribution = InitialCrosslinkerDistribution::RANDOM;
     }
@@ -40,7 +40,7 @@ Initialiser::Initialiser(const double initialPositionMicrotubule, const double f
     else
     {
         throw GeneralException("In the Initialiser constructor, the given initialCrosslinkerDistributionString does not hold a recognised value.");
-    }
+    }*/
 }
 
 Initialiser::~Initialiser()
@@ -66,23 +66,10 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
 
     std::vector<int32_t> positionsToConnect(nSitesOverlap);
     std::iota(positionsToConnect.begin(), positionsToConnect.end(), 0); // Fill vector with 0, 1, ..., n-1, such that you have a list of all positions
-    switch(m_initialCrosslinkerDistribution)
-    {
-        case InitialCrosslinkerDistribution::RANDOM:
-        case InitialCrosslinkerDistribution::HEADSMOBILE:
-        case InitialCrosslinkerDistribution::TAILSMOBILE:
-            std::shuffle(positionsToConnect.begin(), positionsToConnect.end(), generator.getBareGenerator()); // Shuffle the positions
-            break;
-        case InitialCrosslinkerDistribution::TEST:
-            // Don't shuffle: linkers get connected from the beginning, such that the initial distribution is deterministic
-            // Passives are connected first, then duals, then actives
-            break;
-        default:
-            throw GeneralException("Caller of Initialiser::initialiseCrosslinkers() asked for an unsupported initial crosslinker distribution");
-            break;
-    }
+    std::shuffle(positionsToConnect.begin(), positionsToConnect.end(), generator.getBareGenerator()); // Shuffle the positions
 
     // The following takes the ceiling, since we would always like to have at least one crosslinker to connect in case there is a finite m_fractionOverlapSitesConnected
+    // is zero when m_fractionOverlapSitesConnected is 0.0
     int32_t nSitesToConnect = static_cast<int32_t> (std::ceil(m_fractionOverlapSitesConnected * nSitesOverlap));
 
     if (nSitesToConnect > nSitesOverlap) // Make sure nothing went wrong in the conversion from double to int
@@ -138,10 +125,11 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     // The first site in the overlap of the mobile microtubule can be a distance maxStretch from that of the fixed microtubule.
     // Therefore, the program should be allowed to run at least for a little while for the system to assume an equilibrium distribution.
     // The crosslinkers will never cross each other, since they are ordered in the same way on the fixed and mobile microtubules
+    // The tail binds to the microtubule first, the head can then bind to the actin filament
     for (int32_t i = 0; i<nPassiveCrosslinkersToConnect; ++connectedSoFar, ++i)
     {
         systemState.fullyConnectFreeCrosslinker(Crosslinker::Type::PASSIVE,
-                                              terminusToConnectToFixedMicrotubule(generator),
+                                              Crosslinker::Terminus::TAIL,
                                               firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar), // The position on the fixed microtubule
                                               firstSiteOverlapMobile+positionsToConnect.at(connectedSoFar));
     }
@@ -149,7 +137,7 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     for (int32_t i = 0; i<nDualCrosslinkersToConnect; ++connectedSoFar, ++i)
     {
         systemState.fullyConnectFreeCrosslinker(Crosslinker::Type::DUAL,
-                                              terminusToConnectToFixedMicrotubule(generator),
+                                              Crosslinker::Terminus::TAIL,
                                               firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar), // The position on the fixed microtubule
                                               firstSiteOverlapMobile+positionsToConnect.at(connectedSoFar));
     }
@@ -157,7 +145,7 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     for (int32_t i = 0; i<nActiveCrosslinkersToConnect; ++connectedSoFar, ++i)
     {
         systemState.fullyConnectFreeCrosslinker(Crosslinker::Type::ACTIVE,
-                                              terminusToConnectToFixedMicrotubule(generator),
+                                              Crosslinker::Terminus::TAIL,
                                               firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar), // The position on the fixed microtubule
                                               firstSiteOverlapMobile+positionsToConnect.at(connectedSoFar));
     }
@@ -238,7 +226,7 @@ void Initialiser::nCrosslinkersEachTypeToConnect(int32_t& nPassiveCrosslinkersTo
     }
 }
 
-Crosslinker::Terminus Initialiser::terminusToConnectToFixedMicrotubule(RandomGenerator &generator)
+/*Crosslinker::Terminus Initialiser::terminusToConnectToFixedMicrotubule(RandomGenerator &generator)
 {
     switch(m_initialCrosslinkerDistribution)
     {
@@ -257,4 +245,4 @@ Crosslinker::Terminus Initialiser::terminusToConnectToFixedMicrotubule(RandomGen
             throw GeneralException("Caller of Initialiser::terminusToConnectToFixedMicrotubule() asked for an unsupported initial crosslinker distribution");
             break;
     }
-}
+}*/
