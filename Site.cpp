@@ -4,10 +4,17 @@
 
 #include <cstdint>
 
-Site::Site(const bool isFree)
+Site::Site(const bool isFree, const bool isBlocked)
     :   m_isFree(isFree),
+        m_isBlocked(isBlocked),
         mp_connectedCrosslinker(nullptr)
 {
+    #ifdef MYDEBUG
+    if(isFree&&isBlocked)
+    {
+        throw GeneralException("Site::Site() blocked a free site");
+    }
+    #endif MYDEBUG
 }
 
 Site::~Site()
@@ -105,4 +112,33 @@ Crosslinker* Site::whichCrosslinkerIsBound() const
     }
     #endif // MYDEBUG
     return mp_connectedCrosslinker;
+}
+
+void Site::block()
+{
+    #ifdef MYDEBUG
+    if (m_isBlocked||!m_isFree)
+    {
+        throw GeneralException("Site::block() tried to block a site that could not be blocked");
+    }
+    #endif // MYDEBUG
+    m_isBlocked = true;
+    m_isFree = false;
+}
+
+void Site::unBlock()
+{
+    #ifdef MYDEBUG
+    if(!m_isBlocked || m_isFree)
+    {
+        throw GeneralException("Site::unBlock() tried to unblock a site that was not blocked");
+    }
+    #endif // MYDEBUG
+    m_isBlocked = false;
+    m_isFree = true;
+}
+
+bool Site::isBlocked() const
+{
+    return m_isBlocked;
 }

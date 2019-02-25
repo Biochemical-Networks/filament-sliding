@@ -12,13 +12,14 @@ class Site
 {
 private:
     bool m_isFree; // Focus on free, not occupied, because we need to ask whether we can move there (fully equivalent otherwise)
+    bool m_isBlocked;
 
     // know which crosslinker is occupying the site if it is occupied:
     Crosslinker *mp_connectedCrosslinker;
     Crosslinker::Terminus m_connectedTerminus;
 
 public:
-    Site(const bool isFree);
+    Site(const bool isFree, const bool isBlocked);
     ~Site();
 
     // Default copy constructor used to initialise vector of Sites in the Microtubule class
@@ -34,6 +35,12 @@ public:
     bool isFull() const;
 
     Crosslinker* whichCrosslinkerIsBound() const;
+
+    void block();
+
+    void unBlock();
+
+    bool isBlocked() const;
 
 };
 
