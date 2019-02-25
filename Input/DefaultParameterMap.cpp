@@ -31,7 +31,7 @@ ParameterMap::ParameterMap()
 
     defineParameter("numberActiveCrosslinkers", 0, "crosslinkers", ">=0");
     defineParameter("numberDualCrosslinkers", 0, "crosslinkers", ">=0");
-    defineParameter("numberPassiveCrosslinkers", 0, "crosslinkers", ">=0");
+    defineParameter("numberPassiveCrosslinkers", 1000, "crosslinkers", ">=0");
 
     // Initial state parameters
     defineParameter("initialPositionMicrotubule", 0., "micron"); // The position of the mobile microtubule relative to the fixed one, where 0. means that the two have the same (left) boundary position
@@ -76,11 +76,11 @@ ParameterMap::ParameterMap()
     // This is because we assume that the transitions to and from a HEAD state are similar to the transitions to and from a TAIL state.
     // Specifically, we let the base rates equal each other, and only make them differ through a bias energy; there is no difference in the energy barriers.
     // For more information, including solutions to the equations, see the document "Crosslink_Mapping_Binding_Rates_Bias_Energy.pdf"
-    defineParameter("bindingDynamics", "FALSE", "unitless", "TRUE,FALSE");
-    defineParameter("baseRateZeroToOneExtremitiesConnected", 0.0, "s^(-1)", ">=0");
-    defineParameter("baseRateOneToZeroExtremitiesConnected", 0.0, "s^(-1)", ">=0");
-    defineParameter("baseRateOneToTwoExtremitiesConnected", 0.0, "s^(-1)", ">=0");
-    defineParameter("baseRateTwoToOneExtremitiesConnected", 0.0, "s^(-1)", ">=0");
+    defineParameter("bindingDynamics", "TRUE", "unitless", "TRUE,FALSE");
+    defineParameter("baseRateZeroToOneExtremitiesConnected", 1.0, "s^(-1)", ">=0");
+    defineParameter("baseRateOneToZeroExtremitiesConnected", 1.0, "s^(-1)", ">=0");
+    defineParameter("baseRateOneToTwoExtremitiesConnected", 1.0, "s^(-1)", ">=0");
+    defineParameter("baseRateTwoToOneExtremitiesConnected", 1.0, "s^(-1)", ">=0");
     /*defineParameter("headBindingBiasEnergy", 0.0, "kT", "real");*/
 
     // Parameters to turn analysis on or off
