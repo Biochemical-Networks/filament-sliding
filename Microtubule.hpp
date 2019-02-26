@@ -51,6 +51,10 @@ public:
 
     void disconnectSite(const int32_t sitePosition);
 
+    void blockSite(const int32_t sitePosition);
+
+    void unblockSite(const int32_t sitePosition);
+
     double getLength() const;
 
     int32_t getNSites() const;

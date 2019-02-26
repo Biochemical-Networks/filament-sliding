@@ -69,6 +69,41 @@ void Microtubule::disconnectSite(const int32_t sitePosition)
     #endif // MYDEBUG
 }
 
+void Microtubule::blockSite(const int32_t sitePosition)
+{
+    #ifdef MYDEBUG
+    try
+    {
+    #endif // MYDEBUG
+        m_sites.at(sitePosition).block();
+        m_freeSitePositions.erase(std::remove(m_freeSitePositions.begin(), m_freeSitePositions.end(), sitePosition), m_freeSitePositions.end());
+        --m_nFreeSites;
+    #ifdef MYDEBUG
+    }
+    catch(std::out_of_range)
+    {
+        throw GeneralException("Microtubule::blockSite() was passed a wrong sitePosition");
+    }
+    #endif
+}
+
+void Microtubule::unblockSite(const int32_t sitePosition)
+{
+    #ifdef MYDEBUG
+    try
+    {
+    #endif // MYDEBUG
+        m_sites.at(sitePosition).unBlock();
+        m_freeSitePositions.push_back(sitePositon);
+        ++m_nFreeSites;
+    #ifdef MYDEBUG
+    }
+    catch(std::out_of_range)
+    {
+        throw GeneralException("Microtubule::blockSite() was passed a wrong sitePosition");
+    }
+    #endif
+}
 
 double Microtubule::getLength() const
 {
