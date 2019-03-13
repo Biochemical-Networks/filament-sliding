@@ -6,6 +6,7 @@
 #include <vector>
 #include <utility> // pair
 #include <numeric>
+#include <string>
 
 #include "PossibleFullConnection.hpp"
 #include "PossibleHop.hpp"
@@ -591,7 +592,7 @@ void Microtubule::growOneSite()
     m_unblockedSitePositions.push_back(m_nSites-1);
 
     #ifdef MYDEBUG
-    if(m_freeSitePositions.size()!=m_nFreeSites)
+    if(m_freeSitePositions.size()!=static_cast<uint32_t>(m_nFreeSites))
     {
         throw GeneralException("Microtubule::growOneSite() saw a wrong number of free sites");
     }
@@ -603,3 +604,21 @@ int32_t Microtubule::getNUnblockedSites() const
     return m_nUnblockedSites;
 }
 
+Crosslinker* Microtubule::giveConnectionAt(const int32_t sitePosition) const
+{
+    try
+    {
+        if(m_sites.at(sitePosition).isFree())
+        {
+            return nullptr;
+        }
+        else
+        {
+            return m_sites.at(sitePosition).whichCrosslinkerIsBound();
+        }
+    }
+    catch(std::out_of_range error)
+    {
+        throw GeneralException(std::string("The sitePosition given to Microtubule::giveConnectionAt() does not exist. ") + error.what());
+    }
+}

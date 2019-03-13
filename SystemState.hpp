@@ -95,6 +95,8 @@ public:
 
     void updateMobilePosition(const double changeMicrotubulePosition);
 
+    void blockSiteOnFixed(const int32_t sitePosition);
+
     /*int32_t barrierCrossed();*/
 
     std::pair<double, double> movementBordersSetByFullLinkers() const;

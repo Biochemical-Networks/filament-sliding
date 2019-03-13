@@ -17,7 +17,8 @@ void RemoveSite::setCurrentRate(const SystemState& systemState)
 
 void RemoveSite::performReaction(SystemState& systemState, RandomGenerator& generator)
 {
-
+    const int32_t siteToBlock = whichSiteToBlock(systemState, generator);
+    systemState.blockSiteOnFixed(siteToBlock);
 }
 
 int32_t RemoveSite::whichSiteToBlock(SystemState& systemState, RandomGenerator& generator)

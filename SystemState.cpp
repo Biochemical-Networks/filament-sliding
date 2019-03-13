@@ -357,6 +357,29 @@ void SystemState::updateMobilePosition(const double changeMicrotubulePosition)
     m_activeCrosslinkers.updateConnectionDataMobilePositionChange(changeMicrotubulePosition);
 }
 
+void SystemState::blockSiteOnFixed(const int32_t sitePosition)
+{
+    Crosslinker* linker = m_fixedMicrotubule.giveConnectionAt(sitePosition);
+    if(linker!=nullptr) // a crosslinker is bound there.
+    {
+        if(linker->isFull())
+        {
+            disconnectFullyConnectedCrosslinker(*linker, Crosslinker::Terminus::HEAD); // HEAD is always connected to the mobile, unbind that first
+        }
+        // must be partial now
+        disconnectPartiallyConnectedCrosslinker(*linker);
+    }
+
+    #ifdef MYDEBUG
+    if(m_fixedMicrotubule.giveConnectionAt(sitePosition)!=nullptr)
+    {
+        throw GeneralException("SystemState::blockSiteOnFixed() did not unbind the crosslinker before blocking the site.");
+    }
+    #endif // MYDEBUG
+
+
+}
+
 /*int32_t SystemState::barrierCrossed()
 {
     return m_mobileMicrotubule.barrierCrossed();
