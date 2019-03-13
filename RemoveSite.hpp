@@ -13,6 +13,8 @@ class RemoveSite : public Reaction
 {
 private:
     const double m_rateRemoveOneSite;
+
+    int32_t whichSiteToBlock(SystemState& systemState, RandomGenerator& generator);
 public:
     RemoveSite(const double rateRemoveOneSite);
     ~RemoveSite() override;

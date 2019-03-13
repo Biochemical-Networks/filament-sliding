@@ -20,6 +20,7 @@ Microtubule::Microtubule(const MicrotubuleType type, const double length, const 
         m_length(length),
         m_latticeSpacing(latticeSpacing),
         m_nSites(static_cast<int32_t>(std::floor(m_length/m_latticeSpacing))+1), // Choose such that microtubule always starts and ends with a site
+        m_nUnblockedSites(m_nSites),
         m_nFreeSites(m_nSites),
         m_sites(m_nSites, Site(true,false)), // Create a copy of Site which is free (isFree=true, isBlocked=false), and copy it into the vector
         m_freeSitePositions(m_nSites) // Set the number of sites, but fill it in the body of the constructor
@@ -77,7 +78,9 @@ void Microtubule::blockSite(const int32_t sitePosition)
     #endif // MYDEBUG
         m_sites.at(sitePosition).block();
         m_freeSitePositions.erase(std::remove(m_freeSitePositions.begin(), m_freeSitePositions.end(), sitePosition), m_freeSitePositions.end());
+        m_unblockedSitePositions.erase(std::remove(m_unblockedSitePositions.begin(), m_unblockedSitePositions.end(), sitePosition), m_unblockedSitePositions.end());
         --m_nFreeSites;
+        --m_nUnblockedSites;
     #ifdef MYDEBUG
     }
     catch(std::out_of_range)
@@ -95,7 +98,9 @@ void Microtubule::unblockSite(const int32_t sitePosition)
     #endif // MYDEBUG
         m_sites.at(sitePosition).unBlock();
         m_freeSitePositions.push_back(sitePosition);
+        m_unblockedSitePositions.push_back(sitePosition);
         ++m_nFreeSites;
+        ++m_nUnblockedSites;
     #ifdef MYDEBUG
     }
     catch(std::out_of_range)
@@ -134,6 +139,17 @@ int32_t Microtubule::getFreeSitePosition(const int32_t whichFreeSite) const
     }
     #endif // MYDEBUG
     return m_freeSitePositions.at(whichFreeSite);
+}
+
+int32_t Microtubule::getUnblockedSitePosition(const int32_t whichUnblockedSite) const
+{
+    #ifdef MYDEBUG
+    if (whichUnblockedSite<0 || whichUnblockedSite >= m_nUnblockedSites)
+    {
+        throw GeneralException("Microtubule::getUnblockedSitePosition() was called with an invalid parameter");
+    }
+    #endif // MYDEBUG
+    return m_unblockedSitePositions.at(whichUnblockedSite);
 }
 
 // The function floor((x-maxStretch)/latticeSpacing+1) returns the first point that is within a distance of maxStretch from x, excluding the exact distance of maxStretch.
@@ -569,8 +585,10 @@ void Microtubule::growOneSite()
     m_length+=m_latticeSpacing;
     ++m_nSites;
     ++m_nFreeSites;
+    ++m_nUnblockedSites;
     m_sites.push_back(Site(true,false)); // the site is free and not blocked
     m_freeSitePositions.push_back(m_nSites-1); // The first site has label 0
+    m_unblockedSitePositions.push_back(m_nSites-1);
 
     #ifdef MYDEBUG
     if(m_freeSitePositions.size()!=m_nFreeSites)
@@ -578,5 +596,10 @@ void Microtubule::growOneSite()
         throw GeneralException("Microtubule::growOneSite() saw a wrong number of free sites");
     }
     #endif // MYDEBUG
+}
+
+int32_t Microtubule::getNUnblockedSites() const
+{
+    return m_nUnblockedSites;
 }
 

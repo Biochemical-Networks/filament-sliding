@@ -548,6 +548,11 @@ int32_t SystemState::getFreeSitePosition(const MicrotubuleType microtubuleType, 
     }
 }
 
+int32_t SystemState::getUnblockedSitePosition(const int32_t whichUnblockedSite) const
+{
+    return m_fixedMicrotubule.getUnblockedSitePosition(whichUnblockedSite);
+}
+
 double SystemState::getMaxStretch() const
 {
     return m_maxStretch;
@@ -888,4 +893,9 @@ void SystemState::TESTunbindAFullCrosslinker(const int32_t which, const Crosslin
 double SystemState::getLatticeSpacing() const
 {
     return m_latticeSpacing;
+}
+
+int32_t SystemState::getNUnblockedSitesFixed() const
+{
+    return m_fixedMicrotubule.getNUnblockedSites();
 }

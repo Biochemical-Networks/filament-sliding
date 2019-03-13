@@ -30,11 +30,14 @@ protected: // such that MobileMicrotubule can access it
 private:
     int32_t m_nSites;
 
+    int32_t m_nUnblockedSites;
+
     // Choose to focus on free instead of occupied sites, since functions may ask if the site is free, not if it is occupied (otherwise completely equivalent of course)
     int32_t m_nFreeSites;
     std::vector<Site> m_sites; // Vector, because the size never changes, but is only known at run time
 
     std::deque<int32_t> m_freeSitePositions; // Elements are removed often, so std::deque is used. The order of the positions will NOT be preserved.
+    std::deque<int32_t> m_unblockedSitePositions;
 
     std::pair<double,double> getOldAndNewStretchFullHop(const int32_t oldPosition, const int32_t newPosition, const double positionOppositeExtremity, const double maxStretch) const;
 
@@ -65,6 +68,8 @@ public:
 
     int32_t getFreeSitePosition(const int32_t whichFreeSite) const; // whichFreeSite labels the free sites, and can be 0 <= whichFreeSite < m_nFreeSites
 
+    int32_t getUnblockedSitePosition(const int32_t whichUnblockedSite) const;
+
     int32_t getFirstPositionCloseTo(const double position, const double maxStretch) const;
 
     int32_t getLastPositionCloseTo(const double position, const double maxStretch) const;
@@ -88,6 +93,8 @@ public:
     std::vector<FullExtremity> getNeighbouringFullCrosslinkersOf(const SiteLocation& originLocation, const Crosslinker::Type typeToCheck) const;
 
     void growOneSite();
+
+    int32_t getNUnblockedSites() const;
 
 };
 
