@@ -21,7 +21,7 @@ Microtubule::Microtubule(const MicrotubuleType type, const double length, const 
         m_latticeSpacing(latticeSpacing),
         m_nSites(static_cast<int32_t>(std::floor(m_length/m_latticeSpacing))+1), // Choose such that microtubule always starts and ends with a site
         m_nFreeSites(m_nSites),
-        m_sites(m_nSites, Site(true)), // Create a copy of Site which is free (isFree=true), and copy it into the vector
+        m_sites(m_nSites, Site(true,false)), // Create a copy of Site which is free (isFree=true, isBlocked=false), and copy it into the vector
         m_freeSitePositions(m_nSites) // Set the number of sites, but fill it in the body of the constructor
 {
     std::iota(m_freeSitePositions.begin(), m_freeSitePositions.end(), 0); // All sites are initially free
@@ -94,7 +94,7 @@ void Microtubule::unblockSite(const int32_t sitePosition)
     {
     #endif // MYDEBUG
         m_sites.at(sitePosition).unBlock();
-        m_freeSitePositions.push_back(sitePositon);
+        m_freeSitePositions.push_back(sitePosition);
         ++m_nFreeSites;
     #ifdef MYDEBUG
     }
@@ -564,4 +564,19 @@ std::vector<FullExtremity> Microtubule::getNeighbouringFullCrosslinkersOf(const 
     return fullNeighbours;
 }
 
+void Microtubule::growOneSite()
+{
+    m_length+=m_latticeSpacing;
+    ++m_nSites;
+    ++m_nFreeSites;
+    m_sites.push_back(Site(true,false)); // the site is free and not blocked
+    m_freeSitePositions.push_back(m_nSites-1); // The first site has label 0
+
+    #ifdef MYDEBUG
+    if(m_freeSitePositions.size()!=m_nFreeSites)
+    {
+        throw GeneralException("Microtubule::growOneSite() saw a wrong number of free sites");
+    }
+    #endif // MYDEBUG
+}
 

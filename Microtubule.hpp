@@ -24,11 +24,11 @@ class Microtubule
 {
 private:
     const MicrotubuleType m_type;
-    const double m_length;
+    double m_length;
 protected: // such that MobileMicrotubule can access it
     const double m_latticeSpacing;
 private:
-    const int32_t m_nSites;
+    int32_t m_nSites;
 
     // Choose to focus on free instead of occupied sites, since functions may ask if the site is free, not if it is occupied (otherwise completely equivalent of course)
     int32_t m_nFreeSites;
@@ -86,6 +86,8 @@ public:
     std::vector<Crosslinker*> getNeighbouringPartialCrosslinkersOf(const SiteLocation& originLocation, const Crosslinker::Type typeToCheck) const;
 
     std::vector<FullExtremity> getNeighbouringFullCrosslinkersOf(const SiteLocation& originLocation, const Crosslinker::Type typeToCheck) const;
+
+    void growOneSite();
 
 };
 
