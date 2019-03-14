@@ -48,6 +48,17 @@ void MicrotubuleGraphic::draw(sf::RenderTarget& target, sf::RenderStates states)
     target.draw(m_lines, states);
 }
 
+void MicrotubuleGraphic::updateActiveSites(const uint32_t newNumberOfSites)
+{
+    const uint32_t oldNumberOfSites = m_nSites;
+    m_nSites = newNumberOfSites;
+    for(int32_t i=oldNumberOfSites; i<newNumberOfSites; ++i)
+    {
+        sf::CircleShape(circleRadius, circlePointCount);
+
+    }
+}
+
 void MicrotubuleGraphic::updatePositions()
 {
     for(int32_t pos = 0; pos < m_nSites; ++pos)

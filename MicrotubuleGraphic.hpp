@@ -8,7 +8,7 @@
 class MicrotubuleGraphic : public sf::Drawable, public sf::Transformable
 {
 private:
-    const int32_t m_nSites;
+    int32_t m_nSites;
     const float m_circleRadius;
     const float m_lineThickness;
     const sf::Color m_microtubuleColor = sf::Color::Black;
@@ -26,6 +26,8 @@ public:
     virtual ~MicrotubuleGraphic();
 
     void setLineLength(const float lineLength);
+
+    void updateSize(const uint32_t newNumberOfSites);
 
     void updatePositions();
 };
