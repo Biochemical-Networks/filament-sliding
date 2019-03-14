@@ -10,6 +10,8 @@
 #include "UnbindFullCrosslinker.hpp"
 #include "HopPartial.hpp"
 #include "HopFull.hpp"
+#include "GrowFixedMicrotubule.hpp"
+#include "RemoveSite.hpp"
 #include "Crosslinker.hpp"
 #include "MathematicalFunctions.hpp"
 
@@ -40,6 +42,8 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const double baseRateOneToTwoExtremitiesConnected,
                        const double baseRateTwoToOneExtremitiesConnected,
                        /*const double headBindingBiasEnergy,*/
+                       const double rateFixedMicrotubuleGrowth,
+                       const double rateRemoveSitesFromFixedMicrotubule,
                        RandomGenerator& generator,
                        /*const bool samplePositionalDistribution,*/
                        /*const bool recordTransitionPaths,*/
@@ -89,6 +93,8 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
     m_reactions["hoppingFullPassiveCrosslinker"] = std::unique_ptr<Reaction>(new HopFull(ratePassiveFullHop, ratePassiveFullHop, Crosslinker::Type::PASSIVE, m_springConstant, 0.0, 0.0));
     m_reactions["hoppingFullDualCrosslinker"] = std::unique_ptr<Reaction>(new HopFull(baseRateActiveFullHop, ratePassiveFullHop, Crosslinker::Type::DUAL, m_springConstant, activeHopToPlusBiasEnergy, 0.0));
     m_reactions["hoppingFullActiveCrosslinker"] = std::unique_ptr<Reaction>(new HopFull(baseRateActiveFullHop, baseRateActiveFullHop, Crosslinker::Type::ACTIVE, m_springConstant, activeHopToPlusBiasEnergy, activeHopToPlusBiasEnergy));
+    m_reactions["fixedMicrotubuleGrowth"] = std::unique_ptr<Reaction>(new GrowFixedMicrotubule(rateFixedMicrotubuleGrowth));
+    m_reactions["fixedMicrotubuleDecay"] = std::unique_ptr<Reaction>(new RemoveSite(rateRemoveSitesFromFixedMicrotubule));
 
     // The standard deviation of the average microtubule position update should be much smaller (orders of magnitude smaller) than the lattice spacing,
     // since that sets a scale over which force differences definitely emerge. The choice 0.1 is pretty large, but this is a hard maximum limit.

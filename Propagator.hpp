@@ -98,6 +98,8 @@ public:
                const double baseRateOneToTwoExtremitiesConnected,
                const double baseRateTwoToOneExtremitiesConnected,
                /*const double headBindingBiasEnergy,*/
+               const double rateFixedMicrotubuleGrowth,
+               const double rateRemoveSitesFromFixedMicrotubule,
                RandomGenerator& generator,
                /*const bool samplePositionalDistribution,*/
                /*const bool recordTransitionPaths,*/
