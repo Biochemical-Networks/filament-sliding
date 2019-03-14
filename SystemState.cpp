@@ -357,6 +357,16 @@ void SystemState::updateMobilePosition(const double changeMicrotubulePosition)
     m_activeCrosslinkers.updateConnectionDataMobilePositionChange(changeMicrotubulePosition);
 }
 
+void SystemState::growFixed()
+{
+    // No crosslinkers are affected, only possibilities
+    m_fixedMicrotubule.growOneSite();
+
+    m_passiveCrosslinkers.updateConnectionDataMicrotubuleGrowth();
+    m_dualCrosslinkers.updateConnectionDataMicrotubuleGrowth();
+    m_activeCrosslinkers.updateConnectionDataMicrotubuleGrowth();
+}
+
 void SystemState::blockSiteOnFixed(const int32_t sitePosition)
 {
     Crosslinker* linker = m_fixedMicrotubule.giveConnectionAt(sitePosition);
