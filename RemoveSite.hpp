@@ -3,6 +3,7 @@
 
 #include "Reaction.hpp"
 #include "SystemState.hpp"
+#include "RandomGenerator.hpp"
 
 #include <cstdint>
 
