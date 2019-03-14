@@ -83,6 +83,10 @@ ParameterMap::ParameterMap()
     defineParameter("baseRateTwoToOneExtremitiesConnected", 1.0, "s^(-1)", ">=0");
     /*defineParameter("headBindingBiasEnergy", 0.0, "kT", "real");*/
 
+    // rates for the dynamics of the fixed microtubule
+    defineParameter("rateFixedMicrotubuleGrowth", 0.0, "s^(-1)", ">=0");
+    defineParameter("rateRemoveSitesFromFixedMicrotubule", 0.0, "s^(-1)", ">=0");
+
     // Parameters to turn analysis on or off
     defineParameter("addExternalForce", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("externalForceType", "BARRIERFREE", "unitless", "BARRIERFREE,QUADRATIC");

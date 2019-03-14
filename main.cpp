@@ -365,6 +365,20 @@ int main(int argc, char* argv[])
         baseRateTwoToOneExtremitiesConnected = 0.0;
     }
 
+    double rateFixedMicrotubuleGrowth;
+    input.copyParameter("rateFixedMicrotubuleGrowth", rateFixedMicrotubuleGrowth);
+    if(rateFixedMicrotubuleGrowth<0.0)
+    {
+        throw GeneralException("The parameter rateFixedMicrotubuleGrowth contains a wrong value");
+    }
+
+    double rateRemoveSitesFromFixedMicrotubule;
+    input.copyParameter("rateRemoveSitesFromFixedMicrotubule", rateRemoveSitesFromFixedMicrotubule);
+    if(rateRemoveSitesFromFixedMicrotubule<0.0)
+    {
+        throw GeneralException("The parameter rateRemoveSitesFromFixedMicrotubule contains a wrong value");
+    }
+
     /*double headBindingBiasEnergy;
     input.copyParameter("headBindingBiasEnergy", headBindingBiasEnergy);*/
 
@@ -386,6 +400,8 @@ int main(int argc, char* argv[])
                           baseRateOneToTwoExtremitiesConnected,
                           baseRateTwoToOneExtremitiesConnected,
                           /*headBindingBiasEnergy,*/
+                          rateFixedMicrotubuleGrowth,
+                          rateRemoveSitesFromFixedMicrotubule,
                           generator,
                           /*samplePositionalDistribution,*/
                           /*recordTransitionPaths,*/
