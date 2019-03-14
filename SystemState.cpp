@@ -367,8 +367,16 @@ void SystemState::blockSiteOnFixed(const int32_t sitePosition)
             disconnectFullyConnectedCrosslinker(*linker, Crosslinker::Terminus::HEAD); // HEAD is always connected to the mobile, unbind that first
         }
         // must be partial now
+        #ifdef MYDEBUG
+        if(!linker->isPartial())
+        {
+            throw GeneralException("SystemState::blockSiteOnFixed() expects the linker to be partial now, but it is not.");
+        }
+        #endif // MYDEBUG
+
         disconnectPartiallyConnectedCrosslinker(*linker);
     }
+    // no linker is connected any longer
 
     #ifdef MYDEBUG
     if(m_fixedMicrotubule.giveConnectionAt(sitePosition)!=nullptr)
@@ -377,7 +385,15 @@ void SystemState::blockSiteOnFixed(const int32_t sitePosition)
     }
     #endif // MYDEBUG
 
+    // no crosslinker is changed any more, so CrosslinkerContainer direct administration is not affected any longer, nor is that of Crosslinker
 
+    // Administration of Microtubule:
+    m_fixedMicrotubule.blockSite(sitePosition);
+
+    // and finally, update the possibilities, held in the CrosslinkerContainers.
+    m_passiveCrosslinkers.updateConnectionDataBlockSite(sitePosition);
+    m_dualCrosslinkers.updateConnectionDataBlockSite(sitePosition);
+    m_activeCrosslinkers.updateConnectionDataBlockSite(sitePosition);
 }
 
 /*int32_t SystemState::barrierCrossed()

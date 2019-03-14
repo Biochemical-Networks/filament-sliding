@@ -149,6 +149,10 @@ public:
 
     void updateConnectionDataMobilePositionChange(const double positionChange);
 
+    void updateConnectionDataMicrotubuleGrowth();
+
+    void updateConnectionDataBlockSite(const int32_t sitePosition);
+
     std::pair<double, double> movementBordersSetByFullLinkers() const;
 
     const std::vector<PossibleFullConnection>& getPossibleConnections() const;

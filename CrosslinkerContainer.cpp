@@ -520,6 +520,7 @@ void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p
 
 /* This function updates the possible connections for partials close to locationConnection, on the opposite microtubule.
  * One (ex-)partial crosslinker is ignored, *p_changedCrosslinker. This represents the crosslinker that was just removed or added.
+ * p_changedCrosslinker can be nullptr, then no crosslinker is ignored. Only in the case full -> partial does this really change anything
  */
 void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const p_changedCrosslinker, const SiteLocation locationConnection)
 {
@@ -672,6 +673,31 @@ void CrosslinkerContainer::updateConnectionDataMobilePositionChange(const double
         // Recalculate all possibilities completely to get rid of outdated ones and include new ones. Also resets the borders
         resetPossibilities();
     }
+}
+
+void CrosslinkerContainer::updateConnectionDataMicrotubuleGrowth()
+{
+    // There is definitely no crosslinker at the new site yet. Only the fixed microtubule grows.
+    const SiteLocation locationAdded{MicrotubuleType::FIXED, m_fixedMicrotubule.getNSites()-1};
+
+    updatePossibleConnectionsOppositeTo(nullptr, locationAdded); // no linker needs to be ignored
+
+    updatePossiblePartialHopsNextTo(locationAdded);
+
+    updatePossibleFullHopsNextTo(locationAdded);
+}
+
+void CrosslinkerContainer::updateConnectionDataBlockSite(const int32_t sitePosition)
+{
+
+    const SiteLocation locationBlocked{MicrotubuleType::FIXED, sitePosition};
+
+    // Perform similar actions as after adding a partial linker. Only remove possibilities, no possibilities are added.
+    updatePossibleConnectionsOppositeTo(nullptr, locationBlocked); // no linker needs to be ignored.
+
+    updatePossiblePartialHopsNextTo(locationBlocked);
+
+    updatePossibleFullHopsNextTo(locationBlocked);
 }
 
 void CrosslinkerContainer::addFullConnection(Crosslinker*const p_newFullCrosslinker)
