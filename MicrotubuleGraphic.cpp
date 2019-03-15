@@ -2,10 +2,12 @@
 
 #include <SFML/Graphics.hpp>
 #include <cstdint>
+#include "GeneralException/GeneralException.hpp"
 
 MicrotubuleGraphic::MicrotubuleGraphic(const int32_t nSites, const float circleRadius, const float lineLength, const float lineThickness, const std::size_t circlePointCount)
     :   m_nSites(nSites),
         m_circleRadius(circleRadius),
+        m_circlePointCount(circlePointCount),
         m_lineThickness(lineThickness),
         m_lineLength(lineLength),
         m_circles(nSites, sf::CircleShape(circleRadius, circlePointCount)),
@@ -48,14 +50,39 @@ void MicrotubuleGraphic::draw(sf::RenderTarget& target, sf::RenderStates states)
     target.draw(m_lines, states);
 }
 
-void MicrotubuleGraphic::updateActiveSites(const uint32_t newNumberOfSites)
+void MicrotubuleGraphic::updateSize(const int32_t newNumberOfSites)
 {
-    const uint32_t oldNumberOfSites = m_nSites;
-    m_nSites = newNumberOfSites;
-    for(int32_t i=oldNumberOfSites; i<newNumberOfSites; ++i)
-    {
-        sf::CircleShape(circleRadius, circlePointCount);
+    const int32_t oldNumberOfSites = m_nSites;
+    if(oldNumberOfSites==newNumberOfSites) return; // do nothing
 
+    #ifdef MYDEBUG
+    if(oldNumberOfSites>newNumberOfSites)
+    {
+        throw GeneralException("MicrotubuleGraphic::updateActiveSites() encountered a shrinking microtubule");
+    }
+    #endif // MYDEBUG
+
+    m_nSites = newNumberOfSites;
+    m_circles.resize(newNumberOfSites, sf::CircleShape(m_circleRadius, m_circlePointCount));
+    m_lines.resize(4*(newNumberOfSites-1)); // sf::VertexArray only has one Primitives Type, so only the new number of vertices should be given
+    for(int32_t pos=oldNumberOfSites; pos<newNumberOfSites; ++pos)
+    {
+        // New circle:
+        m_circles[pos].setOrigin(m_circleRadius,m_circleRadius); // set the origins of the circles to their centre
+        m_circles[pos].setFillColor(m_fillColor);
+        m_circles[pos].setOutlineThickness(-m_lineThickness); // A negative value means that the outline goes inward, and the radius stays the same
+        m_circles[pos].setOutlineColor(m_microtubuleColor);
+        m_circles[pos].setPosition(pos*(m_lineLength+2*m_circleRadius),0.f);
+
+        // New line:
+        m_lines[4*pos+0].position = sf::Vector2f(pos*(m_lineLength+2*m_circleRadius)+m_circleRadius-0.5f*m_lineThickness, 0.5f*m_lineThickness);
+        m_lines[4*pos+0].color = m_microtubuleColor;
+        m_lines[4*pos+1].position = sf::Vector2f(pos*(m_lineLength+2*m_circleRadius)+m_circleRadius+m_lineLength+0.5f*m_lineThickness, 0.5f*m_lineThickness);
+        m_lines[4*pos+1].color = m_microtubuleColor;
+        m_lines[4*pos+2].position = sf::Vector2f(pos*(m_lineLength+2*m_circleRadius)+m_circleRadius+m_lineLength+0.5f*m_lineThickness, -0.5f*m_lineThickness);
+        m_lines[4*pos+2].color = m_microtubuleColor;
+        m_lines[4*pos+3].position = sf::Vector2f(pos*(m_lineLength+2*m_circleRadius)+m_circleRadius-0.5f*m_lineThickness, -0.5f*m_lineThickness);
+        m_lines[4*pos+3].color = m_microtubuleColor;
     }
 }
 

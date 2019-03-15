@@ -213,6 +213,9 @@ void Graphics::handleEvent(const sf::Event& event)
 
 void Graphics::update()
 {
+    // Update the size of the fixed microtubule; it can have grown
+    m_fixedMicrotubule.updateSize(m_systemState.getNSites(MicrotubuleType::FIXED));
+
     // update the internal positions
     m_mobileMicrotubule.updatePositions();
     m_fixedMicrotubule.updatePositions();
