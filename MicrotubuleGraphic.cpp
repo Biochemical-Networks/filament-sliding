@@ -73,7 +73,10 @@ void MicrotubuleGraphic::updateSize(const int32_t newNumberOfSites)
         m_circles[pos].setOutlineThickness(-m_lineThickness); // A negative value means that the outline goes inward, and the radius stays the same
         m_circles[pos].setOutlineColor(m_microtubuleColor);
         m_circles[pos].setPosition(pos*(m_lineLength+2*m_circleRadius),0.f);
+    }
 
+    for(int32_t pos=oldNumberOfSites-1; pos<newNumberOfSites-1; ++pos)
+    {
         // New line:
         m_lines[4*pos+0].position = sf::Vector2f(pos*(m_lineLength+2*m_circleRadius)+m_circleRadius-0.5f*m_lineThickness, 0.5f*m_lineThickness);
         m_lines[4*pos+0].color = m_microtubuleColor;
