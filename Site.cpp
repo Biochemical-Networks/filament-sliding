@@ -14,7 +14,7 @@ Site::Site(const bool isFree, const bool isBlocked)
     {
         throw GeneralException("Site::Site() blocked a free site");
     }
-    #endif MYDEBUG
+    #endif // MYDEBUG
 }
 
 Site::~Site()
