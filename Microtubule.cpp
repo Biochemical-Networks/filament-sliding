@@ -24,9 +24,11 @@ Microtubule::Microtubule(const MicrotubuleType type, const double length, const 
         m_nUnblockedSites(m_nSites),
         m_nFreeSites(m_nSites),
         m_sites(m_nSites, Site(true,false)), // Create a copy of Site which is free (isFree=true, isBlocked=false), and copy it into the vector
-        m_freeSitePositions(m_nSites) // Set the number of sites, but fill it in the body of the constructor
+        m_freeSitePositions(m_nSites), // Set the number of sites, but fill it in the body of the constructor
+        m_unblockedSitePositions(m_nSites)
 {
     std::iota(m_freeSitePositions.begin(), m_freeSitePositions.end(), 0); // All sites are initially free
+    std::iota(m_unblockedSitePositions.begin(), m_unblockedSitePositions.end(), 0); // and unblocked
 }
 
 Microtubule::~Microtubule()
@@ -149,8 +151,15 @@ int32_t Microtubule::getUnblockedSitePosition(const int32_t whichUnblockedSite) 
     {
         throw GeneralException("Microtubule::getUnblockedSitePosition() was called with an invalid parameter");
     }
+    try{
     #endif // MYDEBUG
     return m_unblockedSitePositions.at(whichUnblockedSite);
+    #ifdef MYDEBUG
+    } catch(std::out_of_range error)
+    {
+        throw GeneralException(std::string("Microtubule::getUnblockedSitePosition() encountered a wrong site number! ")+error.what());
+    }
+    #endif // MYDEBUG
 }
 
 // The function floor((x-maxStretch)/latticeSpacing+1) returns the first point that is within a distance of maxStretch from x, excluding the exact distance of maxStretch.
