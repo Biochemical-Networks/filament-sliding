@@ -799,6 +799,19 @@ const std::vector<Crosslinker*>& SystemState::getPartialLinkersBoundWithTail(con
     }
 }
 
+std::vector<int32_t> SystemState::getBlockedSitePositions(const MicrotubuleType type) const
+{
+    switch(type)
+    {
+    case MicrotubuleType::FIXED:
+        return m_fixedMicrotubule.getBlockedSitePositions();
+    case MicrotubuleType::MOBILE:
+        return m_mobileMicrotubule.getBlockedSitePositions();
+    default:
+        throw GeneralException("SystemState::getBlockedSitePositions() encountered wrong type.");
+    }
+}
+
 void SystemState::updateForceAndEnergy()
 {
     const std::vector<FullConnection>& passiveFullConnections = getFullConnections(Crosslinker::Type::PASSIVE);

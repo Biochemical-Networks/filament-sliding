@@ -174,6 +174,8 @@ public:
 
     const std::vector<Crosslinker*>& getPartialLinkersBoundWithTail(const Crosslinker::Type type) const;
 
+    std::vector<int32_t> getBlockedSitePositions(const MicrotubuleType type) const;
+
     int32_t getNSites(const MicrotubuleType microtubule) const;
 
     double getLatticeSpacing() const;

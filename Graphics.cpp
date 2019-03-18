@@ -236,6 +236,10 @@ void Graphics::update()
     updateFullCrosslinkers(Crosslinker::Type::DUAL);
     updateFullCrosslinkers(Crosslinker::Type::ACTIVE);
 
+    m_blockedSites.clear();
+
+    updateBlockedSites(MicrotubuleType::FIXED);
+    updateBlockedSites(MicrotubuleType::MOBILE);
 }
 
 void Graphics::propagateGraphicsStep()
@@ -336,6 +340,28 @@ void Graphics::updateFullCrosslinkers(const Crosslinker::Type type)
     }
 }
 
+void Graphics::updateBlockedSites(const MicrotubuleType type)
+{
+    for(int32_t position : m_systemState.getBlockedSitePositions(type))
+    {
+        sf::Vector2f graphPos;
+
+        if(type == MicrotubuleType::FIXED)
+        {
+            graphPos = sf::Vector2f(m_fixedMicrotubuleX + calculateGraphicsLatticeSpacing()*position, calculateFixedMicrotubuleY());
+        }
+        else
+        {
+            graphPos = sf::Vector2f(calculateMobileMicrotubuleX() + calculateGraphicsLatticeSpacing()*position, calculateMobileMicrotubuleY());
+        }
+
+        m_blockedSites.push_back(BlockedSiteGraphic(m_circleRadius-m_lineThickness,
+                                                    m_lineThickness,
+                                                    graphPos,
+                                                    m_circlePointCount));
+    }
+}
+
 void Graphics::draw()
 {
     m_window.draw(m_mobileMicrotubule);
@@ -344,6 +370,8 @@ void Graphics::draw()
     drawPartialLinkers();
 
     drawFullLinkers();
+
+    drawBlockedSites();
 }
 
 void Graphics::drawPartialLinkers()
@@ -362,6 +390,13 @@ void Graphics::drawFullLinkers()
     }
 }
 
+void Graphics::drawBlockedSites()
+{
+    for(BlockedSiteGraphic& site : m_blockedSites)
+    {
+        m_window.draw(site);
+    }
+}
 float Graphics::calculateMobileMicrotubuleX() const
 {
     return static_cast<float>(m_systemState.getMicrotubulePosition())/m_trueLatticeSpacing*calculateGraphicsLatticeSpacing()+m_screenBorderThickness;

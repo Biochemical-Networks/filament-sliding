@@ -97,6 +97,8 @@ public:
     int32_t getNUnblockedSites() const;
 
     Crosslinker* giveConnectionAt(const int32_t sitePosition) const;
+
+    std::vector<int32_t> getBlockedSitePositions() const;
 };
 
 #endif // MICROTUBULE_HPP

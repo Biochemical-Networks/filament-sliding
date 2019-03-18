@@ -5,10 +5,13 @@
 #include "RandomGenerator.hpp"
 #include "Output.hpp"
 #include "Propagator.hpp"
+#include "MicrotubuleType.hpp"
+#include "Crosslinker.hpp"
 
 #include "MicrotubuleGraphic.hpp"
 #include "PartialCrosslinkerGraphic.hpp"
 #include "FullCrosslinkerGraphic.hpp"
+#include "BlockedSiteGraphic.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <cstdint>
@@ -61,6 +64,8 @@ private:
     std::vector<PartialCrosslinkerGraphic> m_partialCrosslinkers;
     std::vector<FullCrosslinkerGraphic> m_fullCrosslinkers;
 
+    std::vector<BlockedSiteGraphic> m_blockedSites;
+
     sf::ContextSettings m_contextSettings;
     sf::RenderWindow m_window;
     sf::View m_view;
@@ -71,6 +76,8 @@ private:
 
     void drawFullLinkers();
 
+    void drawBlockedSites();
+
     float calculateMobileMicrotubuleX() const;
     float calculateMobileMicrotubuleY() const;
     float calculateFixedMicrotubuleY() const;
@@ -80,6 +87,7 @@ private:
     void update();
     void updatePartialCrosslinkers(const Crosslinker::Type type);
     void updateFullCrosslinkers(const Crosslinker::Type type);
+    void updateBlockedSites(const MicrotubuleType type);
 
     void propagateGraphicsStep();
 
