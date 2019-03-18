@@ -38,6 +38,8 @@ private:
                                         const int32_t nFreeDualCrosslinkers,
                                         const int32_t nFreeActiveCrosslinkers) const;
 
+    void initialiseBlockedSites(SystemState& systemState, RandomGenerator& generator);
+
     /*Crosslinker::Terminus terminusToConnectToFixedMicrotubule(RandomGenerator &generator);*/ // is always TAIL, HEAD binds to actin by choice
 
 public:

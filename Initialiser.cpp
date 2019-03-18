@@ -226,6 +226,11 @@ void Initialiser::nCrosslinkersEachTypeToConnect(int32_t& nPassiveCrosslinkersTo
     }
 }
 
+void initialiseBlockedSites(SystemState& systemState, RandomGenerator& generator)
+{
+
+}
+
 /*Crosslinker::Terminus Initialiser::terminusToConnectToFixedMicrotubule(RandomGenerator &generator)
 {
     switch(m_initialCrosslinkerDistribution)
