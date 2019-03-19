@@ -239,12 +239,69 @@ int main(int argc, char* argv[])
     double initialPositionMicrotubule;
     input.copyParameter("initialPositionMicrotubule", initialPositionMicrotubule);
 
-    double fractionOverlapSitesConnected;
-    input.copyParameter("fractionOverlapSitesConnected", fractionOverlapSitesConnected);
+    double baseRateZeroToOneExtremitiesConnected;
+    input.copyParameter("baseRateZeroToOneExtremitiesConnected", baseRateZeroToOneExtremitiesConnected);
+    if(baseRateZeroToOneExtremitiesConnected<0.0)
+    {
+        throw GeneralException("The parameter baseRateZeroToOneExtremitiesConnected contains a wrong value.");
+    }
+
+    double baseRateOneToZeroExtremitiesConnected;
+    input.copyParameter("baseRateOneToZeroExtremitiesConnected", baseRateOneToZeroExtremitiesConnected);
+    if(baseRateOneToZeroExtremitiesConnected<0.0)
+    {
+        throw GeneralException("The parameter baseRateOneToZeroExtremitiesConnected contains a wrong value.");
+    }
+
+    double baseRateOneToTwoExtremitiesConnected;
+    input.copyParameter("baseRateOneToTwoExtremitiesConnected", baseRateOneToTwoExtremitiesConnected);
+    if(baseRateOneToTwoExtremitiesConnected<0.0)
+    {
+        throw GeneralException("The parameter baseRateOneToTwoExtremitiesConnected contains a wrong value.");
+    }
+
+    double baseRateTwoToOneExtremitiesConnected;
+    input.copyParameter("baseRateTwoToOneExtremitiesConnected", baseRateTwoToOneExtremitiesConnected);
+    if(baseRateTwoToOneExtremitiesConnected<0.0)
+    {
+        throw GeneralException("The parameter baseRateTwoToOneExtremitiesConnected contains a wrong value.");
+    }
+
+    // Force the (un)binding rates to zero when binding dynamics is turned off, because then the maximum number of full linkers can be properly set before
+    if(!bindingDynamics)
+    {
+        baseRateZeroToOneExtremitiesConnected = 0.0;
+        baseRateOneToZeroExtremitiesConnected = 0.0;
+        baseRateOneToTwoExtremitiesConnected = 0.0;
+        baseRateTwoToOneExtremitiesConnected = 0.0;
+    }
+
+    double rateFixedMicrotubuleGrowth;
+    input.copyParameter("rateFixedMicrotubuleGrowth", rateFixedMicrotubuleGrowth);
+    if(rateFixedMicrotubuleGrowth<0.0)
+    {
+        throw GeneralException("The parameter rateFixedMicrotubuleGrowth contains a wrong value");
+    }
+
+    double rateRemoveSitesFromFixedMicrotubule;
+    input.copyParameter("rateRemoveSitesFromFixedMicrotubule", rateRemoveSitesFromFixedMicrotubule);
+    if(rateRemoveSitesFromFixedMicrotubule<0.0)
+    {
+        throw GeneralException("The parameter rateRemoveSitesFromFixedMicrotubule contains a wrong value");
+    }
+
+    double probabilityPartiallyConnected;
+    double probabilityFullyConnected;
+
+    double probabilityTipUnblocked = (rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule==0.0)?
+                                      0.0:
+                                      rateFixedMicrotubuleGrowth/(rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule==0.0);
+
+    /*input.copyParameter("fractionOverlapSitesConnected", fractionOverlapSitesConnected);
     if(fractionOverlapSitesConnected<0.0 || fractionOverlapSitesConnected > 1.0)
     {
         throw GeneralException("The parameter fractionOverlapSitesConnected contains a wrong value.");
-    }
+    }*/
 
     /*std::string initialCrosslinkerDistributionString;
     input.copyParameter("initialCrosslinkerDistribution", initialCrosslinkerDistributionString);*/
@@ -327,57 +384,6 @@ int main(int argc, char* argv[])
 
     double activeHopToPlusBiasEnergy;
     input.copyParameter("activeHopToPlusBiasEnergy", activeHopToPlusBiasEnergy);
-
-    double baseRateZeroToOneExtremitiesConnected;
-    input.copyParameter("baseRateZeroToOneExtremitiesConnected", baseRateZeroToOneExtremitiesConnected);
-    if(baseRateZeroToOneExtremitiesConnected<0.0)
-    {
-        throw GeneralException("The parameter baseRateZeroToOneExtremitiesConnected contains a wrong value.");
-    }
-
-    double baseRateOneToZeroExtremitiesConnected;
-    input.copyParameter("baseRateOneToZeroExtremitiesConnected", baseRateOneToZeroExtremitiesConnected);
-    if(baseRateOneToZeroExtremitiesConnected<0.0)
-    {
-        throw GeneralException("The parameter baseRateOneToZeroExtremitiesConnected contains a wrong value.");
-    }
-
-    double baseRateOneToTwoExtremitiesConnected;
-    input.copyParameter("baseRateOneToTwoExtremitiesConnected", baseRateOneToTwoExtremitiesConnected);
-    if(baseRateOneToTwoExtremitiesConnected<0.0)
-    {
-        throw GeneralException("The parameter baseRateOneToTwoExtremitiesConnected contains a wrong value.");
-    }
-
-    double baseRateTwoToOneExtremitiesConnected;
-    input.copyParameter("baseRateTwoToOneExtremitiesConnected", baseRateTwoToOneExtremitiesConnected);
-    if(baseRateTwoToOneExtremitiesConnected<0.0)
-    {
-        throw GeneralException("The parameter baseRateTwoToOneExtremitiesConnected contains a wrong value.");
-    }
-
-    // Force the (un)binding rates to zero when binding dynamics is turned off, because then the maximum number of full linkers can be properly set before
-    if(!bindingDynamics)
-    {
-        baseRateZeroToOneExtremitiesConnected = 0.0;
-        baseRateOneToZeroExtremitiesConnected = 0.0;
-        baseRateOneToTwoExtremitiesConnected = 0.0;
-        baseRateTwoToOneExtremitiesConnected = 0.0;
-    }
-
-    double rateFixedMicrotubuleGrowth;
-    input.copyParameter("rateFixedMicrotubuleGrowth", rateFixedMicrotubuleGrowth);
-    if(rateFixedMicrotubuleGrowth<0.0)
-    {
-        throw GeneralException("The parameter rateFixedMicrotubuleGrowth contains a wrong value");
-    }
-
-    double rateRemoveSitesFromFixedMicrotubule;
-    input.copyParameter("rateRemoveSitesFromFixedMicrotubule", rateRemoveSitesFromFixedMicrotubule);
-    if(rateRemoveSitesFromFixedMicrotubule<0.0)
-    {
-        throw GeneralException("The parameter rateRemoveSitesFromFixedMicrotubule contains a wrong value");
-    }
 
     /*double headBindingBiasEnergy;
     input.copyParameter("headBindingBiasEnergy", headBindingBiasEnergy);*/

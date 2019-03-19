@@ -35,7 +35,7 @@ ParameterMap::ParameterMap()
 
     // Initial state parameters
     defineParameter("initialPositionMicrotubule", 0., "micron"); // The position of the mobile microtubule relative to the fixed one, where 0. means that the two have the same (left) boundary position
-    defineParameter("fractionOverlapSitesConnected", 1.0, "unitless", "[0,1]");
+    /*defineParameter("fractionOverlapSitesConnected", 1.0, "unitless", "[0,1]");*/
     /*defineParameter("initialCrosslinkerDistribution", "RANDOM", "unitless", "RANDOM,HEADSMOBILE,TAILSMOBILE,TEST"); // Can only hold the values set by Initialiser::InitialCrosslinkerDistribution*/
 
     // Dynamics parameters
