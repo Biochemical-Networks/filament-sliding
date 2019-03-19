@@ -202,8 +202,24 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     }
     #endif // MYDEBUG
 
+    // Connect partials outside overlap
 
+    const double probabilityBoundOutsideOverlap=m_probabilityPartiallyConnected/(1-m_probabilityFullyConnected);
 
+    for(int32_t i=0; i<systemState.getNSites(MicrotubuleType::FIXED); ++i)
+    {
+        if((i<systemState.firstSiteOverlapFixed() || i>systemState.lastSiteOverlapFixed()) &&
+           generator.getProbability()<probabilityBoundOutsideOverlap)
+        {
+            if(systemState.getNFreeCrosslinkers()==0)
+            {
+                throw GeneralException("Not enough passive linkers available in Initialiser::initialiseCrosslinkers().");
+            }
+            systemState.connectFreeCrosslinker(Crosslinker::Type::PASSIVE,
+                                               Crosslinker::Terminus::TAIL,
+                                               SiteLocation{MicrotubuleType::FIXED, i});
+        }
+    }
 }
 
 void Initialiser::nCrosslinkersEachTypeToConnect(int32_t& nPassiveCrosslinkersToConnect,
@@ -275,6 +291,12 @@ void Initialiser::nCrosslinkersEachTypeToConnect(int32_t& nPassiveCrosslinkersTo
 
 void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerator& generator)
 {
+    #ifdef MYDEBUG
+    if(m_probabilityTipUnblocked<0 || m_probabilityTipUnblocked>1)
+    {
+        throw GeneralException("Initialiser::initialiseBlockedSites() encountered a wrong value for m_probabilityTipUnblocked");
+    }
+    #endif // MYDEBUG
     if(m_probabilityTipUnblocked==1.0) return;
     int32_t fixedLabel = systemState.getNSites(MicrotubuleType::FIXED)-1;
     double localUnblockedProbability=m_probabilityTipUnblocked;
