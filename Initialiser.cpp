@@ -58,6 +58,7 @@ void Initialiser::initialise(SystemState& systemState, RandomGenerator& generato
 
     initialiseCrosslinkers(systemState, generator);
 
+    initialiseBlockedSites(systemState, generator);
 }
 
 void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerator& generator)

@@ -300,7 +300,7 @@ int main(int argc, char* argv[])
                         (baseRateZeroToOneExtremitiesConnected*baseRateOneToTwoExtremitiesConnected/occupancyProbabilityDenominator);
 
     const double probabilityTipUnblocked = (rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule==0.0)?1.0:
-                        rateFixedMicrotubuleGrowth/(rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule==0.0);
+                        rateFixedMicrotubuleGrowth/(rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule);
 
     /*input.copyParameter("fractionOverlapSitesConnected", fractionOverlapSitesConnected);
     if(fractionOverlapSitesConnected<0.0 || fractionOverlapSitesConnected > 1.0)
