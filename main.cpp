@@ -290,12 +290,17 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter rateRemoveSitesFromFixedMicrotubule contains a wrong value");
     }
 
-    double probabilityPartiallyConnected;
-    double probabilityFullyConnected;
 
-    double probabilityTipUnblocked = (rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule==0.0)?
-                                      0.0:
-                                      rateFixedMicrotubuleGrowth/(rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule==0.0);
+    const double occupancyProbabilityDenominator = baseRateOneToZeroExtremitiesConnected*baseRateTwoToOneExtremitiesConnected+
+                                                   baseRateZeroToOneExtremitiesConnected*baseRateTwoToOneExtremitiesConnected+
+                                                   baseRateZeroToOneExtremitiesConnected*baseRateOneToTwoExtremitiesConnected;
+    const double probabilityPartiallyConnected = (occupancyProbabilityDenominator==0)?0.0:
+                        (baseRateZeroToOneExtremitiesConnected*baseRateTwoToOneExtremitiesConnected/occupancyProbabilityDenominator);
+    const double probabilityFullyConnected     = (occupancyProbabilityDenominator==0)?0.0:
+                        (baseRateZeroToOneExtremitiesConnected*baseRateOneToTwoExtremitiesConnected/occupancyProbabilityDenominator);
+
+    const double probabilityTipUnblocked = (rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule==0.0)?1.0:
+                        rateFixedMicrotubuleGrowth/(rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule==0.0);
 
     /*input.copyParameter("fractionOverlapSitesConnected", fractionOverlapSitesConnected);
     if(fractionOverlapSitesConnected<0.0 || fractionOverlapSitesConnected > 1.0)
@@ -307,7 +312,7 @@ int main(int argc, char* argv[])
     input.copyParameter("initialCrosslinkerDistribution", initialCrosslinkerDistributionString);*/
 
 
-    Initialiser initialiser(initialPositionMicrotubule, fractionOverlapSitesConnected/*, initialCrosslinkerDistributionString*/);
+    Initialiser initialiser(initialPositionMicrotubule, probabilityPartiallyConnected, probabilityFullyConnected, probabilityTipUnblocked);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the propagator

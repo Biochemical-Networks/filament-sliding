@@ -14,9 +14,14 @@
 #include <vector>
 #include <iterator> // std::distance
 
-Initialiser::Initialiser(const double initialPositionMicrotubule, const double fractionOverlapSitesConnected/*, const std::string initialCrosslinkerDistributionString*/)
+Initialiser::Initialiser(const double initialPositionMicrotubule,
+                         const double probabilityPartiallyConnected,
+                         const double probabilityFullyConnected,
+                         const double probabilityTipUnblocked)
     :   m_initialPositionMicrotubule(initialPositionMicrotubule),
-        m_fractionOverlapSitesConnected(fractionOverlapSitesConnected)
+        m_probabilityPartiallyConnected(probabilityPartiallyConnected),
+        m_probabilityFullyConnected(probabilityFullyConnected),
+        m_probabilityTipUnblocked(probabilityTipUnblocked)
 {
     // Translate the string to an enum object Initialiser::InitialCrosslinkerDistribution
     // switch statements do not work with strings
@@ -68,9 +73,17 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     std::iota(positionsToConnect.begin(), positionsToConnect.end(), 0); // Fill vector with 0, 1, ..., n-1, such that you have a list of all positions
     std::shuffle(positionsToConnect.begin(), positionsToConnect.end(), generator.getBareGenerator()); // Shuffle the positions
 
+    const double fractionOverlapSitesConnected = m_probabilityPartiallyConnected+m_probabilityFullyConnected;
+    #ifdef MYDEBUG
+    if(fractionOverlapSitesConnected>1.0)
+    {
+        throw GeneralException("Initialiser::initialiseCrosslinkers() encountered wrong probabilities.");
+    }
+    #endif // MYDEBUG
+
     // The following takes the ceiling, since we would always like to have at least one crosslinker to connect in case there is a finite m_fractionOverlapSitesConnected
     // is zero when m_fractionOverlapSitesConnected is 0.0
-    int32_t nSitesToConnect = static_cast<int32_t> (std::ceil(m_fractionOverlapSitesConnected * nSitesOverlap));
+    int32_t nSitesToConnect = static_cast<int32_t> (std::ceil(fractionOverlapSitesConnected * nSitesOverlap));
 
     if (nSitesToConnect > nSitesOverlap) // Make sure nothing went wrong in the conversion from double to int
     {
@@ -121,6 +134,10 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     int32_t firstSiteOverlapFixed = systemState.firstSiteOverlapFixed();
     int32_t firstSiteOverlapMobile = systemState.firstSiteOverlapMobile();
 
+    const double givenBoundDenominator = (m_probabilityPartiallyConnected+m_probabilityFullyConnected);
+    const double probabilityPartialGivenBound = (givenBoundDenominator==0.0)?0.0:
+                                                m_probabilityPartiallyConnected/givenBoundDenominator;
+
     // Crosslinkers will usually be initialised in a highly stretched state;
     // The first site in the overlap of the mobile microtubule can be a distance maxStretch from that of the fixed microtubule.
     // Therefore, the program should be allowed to run at least for a little while for the system to assume an equilibrium distribution.
@@ -128,26 +145,53 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     // The tail binds to the microtubule first, the head can then bind to the actin filament
     for (int32_t i = 0; i<nPassiveCrosslinkersToConnect; ++connectedSoFar, ++i)
     {
-        systemState.fullyConnectFreeCrosslinker(Crosslinker::Type::PASSIVE,
+        if(generator.getProbability()<probabilityPartialGivenBound)
+        {
+            systemState.connectFreeCrosslinker(Crosslinker::Type::PASSIVE,
+                                               Crosslinker::Terminus::TAIL,
+                                               SiteLocation{MicrotubuleType::FIXED, firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar)});
+        }
+        else
+        {
+            systemState.fullyConnectFreeCrosslinker(Crosslinker::Type::PASSIVE,
                                               Crosslinker::Terminus::TAIL,
                                               firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar), // The position on the fixed microtubule
                                               firstSiteOverlapMobile+positionsToConnect.at(connectedSoFar));
+        }
     }
 
     for (int32_t i = 0; i<nDualCrosslinkersToConnect; ++connectedSoFar, ++i)
     {
-        systemState.fullyConnectFreeCrosslinker(Crosslinker::Type::DUAL,
+        if(generator.getProbability()<probabilityPartialGivenBound)
+        {
+            systemState.connectFreeCrosslinker(Crosslinker::Type::DUAL,
+                                               Crosslinker::Terminus::TAIL,
+                                               SiteLocation{MicrotubuleType::FIXED, firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar)});
+        }
+        else
+        {
+            systemState.fullyConnectFreeCrosslinker(Crosslinker::Type::DUAL,
                                               Crosslinker::Terminus::TAIL,
                                               firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar), // The position on the fixed microtubule
                                               firstSiteOverlapMobile+positionsToConnect.at(connectedSoFar));
+        }
     }
 
     for (int32_t i = 0; i<nActiveCrosslinkersToConnect; ++connectedSoFar, ++i)
     {
-        systemState.fullyConnectFreeCrosslinker(Crosslinker::Type::ACTIVE,
+        if(generator.getProbability()<probabilityPartialGivenBound)
+        {
+            systemState.connectFreeCrosslinker(Crosslinker::Type::ACTIVE,
+                                               Crosslinker::Terminus::TAIL,
+                                               SiteLocation{MicrotubuleType::FIXED, firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar)});
+        }
+        else
+        {
+            systemState.fullyConnectFreeCrosslinker(Crosslinker::Type::ACTIVE,
                                               Crosslinker::Terminus::TAIL,
                                               firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar), // The position on the fixed microtubule
                                               firstSiteOverlapMobile+positionsToConnect.at(connectedSoFar));
+        }
     }
 
     #ifdef MYDEBUG
@@ -156,6 +200,8 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
         throw GeneralException("Something went wrong in Initialiser::initialiseCrosslinkers(), the number of connected crosslinkers failed to equal the number of sites to connect");
     }
     #endif // MYDEBUG
+
+
 
 }
 
@@ -226,9 +272,20 @@ void Initialiser::nCrosslinkersEachTypeToConnect(int32_t& nPassiveCrosslinkersTo
     }
 }
 
-void initialiseBlockedSites(SystemState& systemState, RandomGenerator& generator)
+void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerator& generator)
 {
-
+    if(m_probabilityTipUnblocked==1.0) return;
+    int32_t fixedLabel = systemState.getNSites(MicrotubuleType::FIXED)-1;
+    double localUnblockedProbability=m_probabilityTipUnblocked;
+    while(fixedLabel>=0)
+    {
+        if(generator.getProbability()>=localUnblockedProbability)
+        {
+            systemState.blockSiteOnFixed(fixedLabel);
+        }
+        --fixedLabel;
+        localUnblockedProbability*=m_probabilityTipUnblocked;
+    }
 }
 
 /*Crosslinker::Terminus Initialiser::terminusToConnectToFixedMicrotubule(RandomGenerator &generator)
