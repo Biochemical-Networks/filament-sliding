@@ -8,7 +8,7 @@ class BlockedSiteGraphic : public sf::Drawable, public sf::Transformable
 private:
     const float m_circleRadius;
     const float m_lineThickness;
-    const sf::Color m_blockedSiteColor = sf::Color::Green;
+    const sf::Color m_blockedSiteColor = sf::Color::Red;
 
     sf::CircleShape m_site;
 
