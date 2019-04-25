@@ -124,6 +124,7 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
             if(timeStep%m_positionProbePeriod==0)
             {
                 output.writeMicrotubulePosition(m_currentTime, systemState); // writes the position and the number of crosslinkers (the order parameters)
+                output.writePositions(m_currentTime, systemState);
             }
             // Add the microtubule positions more often than the m_positionProbePeriod, since it is not directly written to a file (not slow), and it requires much data.
             /*if(m_samplePositionalDistribution)

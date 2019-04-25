@@ -20,6 +20,7 @@ class Output
 {
 private:
     std::ofstream m_microtubulePositionFile;
+    std::ofstream m_positionTipAndFilamentFile;
     /*std::ofstream m_barrierCrossingTimeFile;*/
     std::ofstream m_positionalHistogramFile;
     /*std::ofstream m_reactionCoordinateHistogramFile;*/
@@ -93,6 +94,8 @@ public:
     void newBlock(const int32_t blockNumber);
 
     void writeMicrotubulePosition(const double time, const SystemState& systemState);
+
+    void writePositions(const double time, const SystemState& systemState);
 
     /*void addPositionAndConfiguration(const double remainder, const int32_t nRightPullingCrosslinkers);*/
 

@@ -34,6 +34,7 @@ obj/
 *.transition_paths.txt
 *.transition_path_histogram.txt
 *.peak_dynamics_statistics.txt
+*.tip_and_actin_positions.txt
 
 # No files used by gprof
 gmon.out
