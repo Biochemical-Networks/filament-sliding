@@ -91,11 +91,13 @@ public:
 
     ~Output();
 
-    void newBlock(const int32_t blockNumber);
+    /*void newBlock(const int32_t blockNumber);*/
 
     void writeMicrotubulePosition(const double time, const SystemState& systemState);
 
     void writePositions(const double time, const SystemState& systemState);
+
+    void addPosition(const double remainder);
 
     /*void addPositionAndConfiguration(const double remainder, const int32_t nRightPullingCrosslinkers);*/
 

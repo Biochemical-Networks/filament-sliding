@@ -178,6 +178,11 @@ void Output::writePositions(const double time, const SystemState& systemState)
     }
 }
 
+void Output::addPosition(const double remainder)
+{
+    mp_positionalHistogram->addValue(remainder);
+}
+
 /*double Output::calculateReactionCoordinate(const double remainder, const int32_t nRightPullingCrosslinkers) const
 {
     // The reaction coordinate is alpha = 1/2(x/delta + Nr/N). m_maxNFullCrosslinkers=N for a system without binding
@@ -271,7 +276,7 @@ void Output::writePositions(const double time, const SystemState& systemState)
     m_crossingTimeStatistics.addValue(interval);
 }*/
 
-void Output::newBlock(const int32_t blockNumber)
+/*void Output::newBlock(const int32_t blockNumber)
 {
     // make a single message that can be passed to all output files
     // std::ostringstream::ate (at end) makes sure that << appends new parts at the end of the message
@@ -279,8 +284,8 @@ void Output::newBlock(const int32_t blockNumber)
     message.str("A new block starts. This has block number: ");
     message << blockNumber << '\n';
     m_microtubulePositionFile << message.str();
-    /*m_barrierCrossingTimeFile << message.str();*/
-}
+    m_barrierCrossingTimeFile << message.str();
+}*/
 
 /*void Output::addPointTransitionPath(const double time, const double mobilePosition, const int32_t nRightPullingCrosslinkers)
 {

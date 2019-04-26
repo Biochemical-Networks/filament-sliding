@@ -209,7 +209,7 @@ void Propagator::run(SystemState& systemState, RandomGenerator& generator, Outpu
     constexpr bool writeOutput = true;
     for(int32_t blockNumber = 0; blockNumber < m_nRunBlocks; ++blockNumber)
     {
-        output.newBlock(blockNumber+1);
+        /*output.newBlock(blockNumber+1);*/
         propagateBlock(systemState, generator, output, writeOutput, m_nTimeSteps);
     }
 }
@@ -219,7 +219,7 @@ void Propagator::propagateGraphicsInterval(SystemState& systemState, RandomGener
     constexpr bool writeOutput = true;
     static int32_t intervalNumber = 0;
     ++intervalNumber;
-    output.newBlock(intervalNumber);
+    /*output.newBlock(intervalNumber);*/
     propagateBlock(systemState, generator, output, writeOutput, nTimeStepsInterval);
 }
 
