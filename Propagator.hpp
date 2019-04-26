@@ -38,8 +38,8 @@ private:
     double m_currentTime; // Time 0 is at the beginning of the run blocks: the equilibration blocks simulate negative time
     double m_currentReactionRateThreshold; // units s^(-1), so in terms of the (accumulated) rate
 
-    /*const bool m_samplePositionalDistribution;
-    const bool m_recordTransitionPaths;
+    const bool m_samplePositionalDistribution;
+    /*const bool m_recordTransitionPaths;
     const int32_t m_transitionPathProbePeriod;*/
     const bool m_addExternalForce;
     /*const bool m_estimateTimeEvolutionAtPeak;*/
@@ -101,7 +101,7 @@ public:
                const double rateFixedMicrotubuleGrowth,
                const double rateRemoveSitesFromFixedMicrotubule,
                RandomGenerator& generator,
-               /*const bool samplePositionalDistribution,*/
+               const bool samplePositionalDistribution,
                /*const bool recordTransitionPaths,*/
                /*const int32_t transitionPathProbePeriod,*/
                const bool addExternalForce,

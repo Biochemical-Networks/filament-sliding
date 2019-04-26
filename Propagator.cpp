@@ -45,7 +45,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const double rateFixedMicrotubuleGrowth,
                        const double rateRemoveSitesFromFixedMicrotubule,
                        RandomGenerator& generator,
-                       /*const bool samplePositionalDistribution,*/
+                       const bool samplePositionalDistribution,
                        /*const bool recordTransitionPaths,*/
                        /*const int32_t transitionPathProbePeriod,*/
                        const bool addExternalForce,
@@ -61,7 +61,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_latticeSpacing(latticeSpacing),
         m_deviationMicrotubule(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep)),
         m_currentTime(-m_nEquilibrationBlocks*m_nTimeSteps*m_calcTimeStep), // time 0 is the start of the run blocks
-        /*m_samplePositionalDistribution(samplePositionalDistribution),*/
+        m_samplePositionalDistribution(samplePositionalDistribution),
         /*m_recordTransitionPaths(recordTransitionPaths),*/
         /*m_transitionPathProbePeriod(transitionPathProbePeriod),*/
         m_addExternalForce(addExternalForce),
@@ -126,11 +126,10 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
                 output.writePositionsAndCrosslinkerNumbers(m_currentTime, systemState);
             }
             // Add the microtubule positions more often than the m_positionProbePeriod, since it is not directly written to a file (not slow), and it requires much data.
-            /*if(m_samplePositionalDistribution)
+            if(m_samplePositionalDistribution)
             {
-                output.addPositionAndConfiguration(MathematicalFunctions::mod(systemState.getMicrotubulePosition(), m_latticeSpacing),
-                                                   systemState.getNFullRightPullingCrosslinkers());
-            }*/
+                output.addPosition(MathematicalFunctions::mod(systemState.getMicrotubulePosition(), m_latticeSpacing));
+            }
 
             /*if(m_estimateTimeEvolutionAtPeak)
             {

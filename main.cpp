@@ -414,7 +414,7 @@ int main(int argc, char* argv[])
                           rateFixedMicrotubuleGrowth,
                           rateRemoveSitesFromFixedMicrotubule,
                           generator,
-                          /*samplePositionalDistribution,*/
+                          samplePositionalDistribution,
                           /*recordTransitionPaths,*/
                           /*transitionPathProbePeriod,*/
                           addExternalForce,
