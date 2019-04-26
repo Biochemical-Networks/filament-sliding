@@ -29,8 +29,7 @@ Output::Output(const std::string &runName,
                /*const int32_t nEstimatesDistribution,*/
                /*const double dynamicsEstimationInitialRegionWidth,*/
                /*const double dynamicsEstimationFinalRegionWidth*/)
-    :   m_microtubulePositionFile((runName+".microtubule_position.txt").c_str()),
-        m_positionTipAndFilamentFile((runName+".tip_and_actin_positions.txt").c_str()),
+    :   m_positionsAndCrosslinkersFile((runName+".filament_positions_and_crosslinker_numbers.txt").c_str()),
         /*m_barrierCrossingTimeFile((runName+".times_barrier_crossings.txt").c_str()),*/
         m_statisticalAnalysisFile((runName+".statistical_analysis.txt").c_str()),
         m_collumnWidth(OutputParameters::collumnWidth),
@@ -55,15 +54,12 @@ Output::Output(const std::string &runName,
         /*m_timeStepsTrackingTime(0),*/
         /*m_estimatePoints(m_nEstimatesDistribution) // each m_timeStepsPerDistributionEstimate after passing a point, a Statistics estimates the variance*/
 {
-    m_microtubulePositionFile << std::left
-        << std::setw(m_collumnWidth) << "TIME"
-        << std::setw(m_collumnWidth) << "POSITION"
-        /*<< std::setw(m_collumnWidth) << "NUMBER RIGHT PULLING LINKERS"*/ << '\n'; // The '\n' needs to be separated, otherwise it will take one position from the collumnWidth
-
-    m_positionTipAndFilamentFile << std::left
+    m_positionsAndCrosslinkersFile << std::left
         << std::setw(m_collumnWidth) << "TIME"
         << std::setw(m_collumnWidth) << "TIPPOS"
-        << std::setw(m_collumnWidth) << "ACTPOS" << '\n';
+        << std::setw(m_collumnWidth) << "ACTPOS"
+        << std::setw(m_collumnWidth) << "N"
+        << std::setw(m_collumnWidth) << "NR" << '\n';
 
     /*m_barrierCrossingTimeFile << std::left
         << std::setw(m_collumnWidth) << "TIME CROSSING"
@@ -156,25 +152,16 @@ Output::~Output()
     finishWriting();
 }
 
-void Output::writeMicrotubulePosition(const double time, const SystemState& systemState) // Non-const, stream is changed
-{
-    // make sure that the file does not bloat
-    if(time <= m_maxPeriodPositionTracking)
-    {
-        m_microtubulePositionFile << std::setw(m_collumnWidth) << time
-                                  << std::setw(m_collumnWidth) << systemState.getMicrotubulePosition()
-                                  /*<< std::setw(m_collumnWidth) << systemState.getNFullRightPullingCrosslinkers()*/ << '\n';
-    }
-}
-
-void Output::writePositions(const double time, const SystemState& systemState)
+void Output::writePositionsAndCrosslinkerNumbers(const double time, const SystemState& systemState)
 {
     if(time <= m_maxPeriodPositionTracking)
     {
-        m_positionTipAndFilamentFile << std::setw(m_collumnWidth) << time
+        m_positionsAndCrosslinkersFile << std::setw(m_collumnWidth) << time
             << std::setw(m_collumnWidth) << systemState.getNSites(MicrotubuleType::FIXED)*systemState.getLatticeSpacing()
             << std::setw(m_collumnWidth) << systemState.getMicrotubulePosition()
-                +systemState.getNSites(MicrotubuleType::MOBILE)*systemState.getLatticeSpacing() << '\n';
+                +systemState.getNSites(MicrotubuleType::MOBILE)*systemState.getLatticeSpacing()
+            << std::setw(m_collumnWidth) << systemState.getNFullCrosslinkers()
+            << std::setw(m_collumnWidth) << systemState.getNFullRightPullingCrosslinkers() << '\n';
     }
 }
 

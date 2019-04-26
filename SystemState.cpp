@@ -497,12 +497,12 @@ int32_t SystemState::getNFullCrosslinkers() const
         + m_activeCrosslinkers.getNFullCrosslinkers();
 }
 
-/*int32_t SystemState::getNFullRightPullingCrosslinkers() const
+int32_t SystemState::getNFullRightPullingCrosslinkers() const
 {
     return m_passiveCrosslinkers.getNFullRightPullingCrosslinkers()
         + m_dualCrosslinkers.getNFullRightPullingCrosslinkers()
         + m_activeCrosslinkers.getNFullRightPullingCrosslinkers();
-}*/
+}
 
 double SystemState::beginningOverlap() const
 {
