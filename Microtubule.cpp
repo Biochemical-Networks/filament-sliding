@@ -654,3 +654,27 @@ std::vector<int32_t> Microtubule::getBlockedSitePositions() const
     return blockedSitePositions;
 }
 
+double Microtubule::getMeanTipPosition() const
+{
+    double sumPositions=0;
+    int32_t nUnblockedSites=0;
+    for(std::size_t i=0; i<m_sites.size(); ++i)
+    {
+        #ifdef MYDEBUG
+        try{
+        #endif // MYDEBUG
+        if(!m_sites.at(i).isBlocked())
+        {
+            sumPositions+=i;
+            ++nUnblockedSites;
+        }
+        #ifdef MYDEBUG
+        } catch(std::out_of_range& error)
+        {
+            throw GeneralException(std::string("Microtubule::getMeanTipPosition() tried to access a non-existing site. ")+error.what());
+        }
+        #endif // MYDEBUG
+    }
+    return sumPositions*m_latticeSpacing/nUnblockedSites;
+}
+

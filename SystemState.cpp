@@ -961,3 +961,8 @@ int32_t SystemState::getNUnblockedSitesFixed() const
 {
     return m_fixedMicrotubule.getNUnblockedSites();
 }
+
+double SystemState::getMeanPositionMicrotubuleTip() const
+{
+    return m_fixedMicrotubule.getMeanTipPosition();
+}

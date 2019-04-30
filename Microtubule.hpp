@@ -99,6 +99,8 @@ public:
     Crosslinker* giveConnectionAt(const int32_t sitePosition) const;
 
     std::vector<int32_t> getBlockedSitePositions() const;
+
+    double getMeanTipPosition() const;
 };
 
 #endif // MICROTUBULE_HPP

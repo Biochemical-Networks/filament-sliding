@@ -56,7 +56,8 @@ Output::Output(const std::string &runName,
 {
     m_positionsAndCrosslinkersFile << std::left
         << std::setw(m_collumnWidth) << "TIME"
-        << std::setw(m_collumnWidth) << "TIPPOS"
+        << std::setw(m_collumnWidth) << "TIPFRONT"
+        << std::setw(m_collumnWidth) << "TIPMEAN"
         << std::setw(m_collumnWidth) << "ACTPOS"
         << std::setw(m_collumnWidth) << "N"
         << std::setw(m_collumnWidth) << "NR" << '\n';
@@ -158,6 +159,7 @@ void Output::writePositionsAndCrosslinkerNumbers(const double time, const System
     {
         m_positionsAndCrosslinkersFile << std::setw(m_collumnWidth) << time
             << std::setw(m_collumnWidth) << systemState.getNSites(MicrotubuleType::FIXED)*systemState.getLatticeSpacing()
+            << std::setw(m_collumnWidth) << systemState.getMeanPositionMicrotubuleTip()
             << std::setw(m_collumnWidth) << systemState.getMicrotubulePosition()
                 +systemState.getNSites(MicrotubuleType::MOBILE)*systemState.getLatticeSpacing()
             << std::setw(m_collumnWidth) << systemState.getNFullCrosslinkers()

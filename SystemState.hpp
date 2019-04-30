@@ -181,6 +181,8 @@ public:
     double getLatticeSpacing() const;
 
     int32_t getNUnblockedSitesFixed() const;
+
+    double getMeanPositionMicrotubuleTip() const;
 };
 
 #endif // SYSTEMSTATE_HPP
