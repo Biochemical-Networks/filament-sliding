@@ -30,6 +30,7 @@ private:
     const double m_calcTimeStep;
     const int32_t m_positionProbePeriod; // Holds the number of time steps that are between two probes of the system, meaning that data will be written every so many time steps
     const double m_diffusionConstantMicrotubule;
+    const double m_actinDisconnectTime;
     const double m_springConstant;
     const double m_latticeSpacing;
 
@@ -86,6 +87,7 @@ public:
                const double calcTimeStep,
                const int32_t probePeriod,
                const double diffusionConstantMicrotubule,
+               const double actinDisconnectTime,
                const double springConstant,
                const double latticeSpacing,
                const double ratePassivePartialHop,

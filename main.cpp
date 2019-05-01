@@ -359,6 +359,13 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter diffusionConstantMicrotubule contains a wrong value.");
     }
 
+    double actinDisconnectTime;
+    input.copyParameter("actinDisconnectTime", actinDisconnectTime);
+    if(actinDisconnectTime<0.0)
+    {
+        throw GeneralException("The parameter actinDisconnectTime contains a wrong value.");
+    }
+
     double ratePassivePartialHop;
     input.copyParameter("ratePassivePartialHop", ratePassivePartialHop);
     if(ratePassivePartialHop<0.0)
@@ -399,6 +406,7 @@ int main(int argc, char* argv[])
                           calcTimeStep,
                           positionProbePeriod,
                           diffusionConstantMicrotubule,
+                          actinDisconnectTime,
                           springConstant,
                           latticeSpacing,
                           ratePassivePartialHop,
