@@ -60,6 +60,11 @@ Graphics::Graphics(const std::string& runName,
 
 Graphics::~Graphics()
 {
+    // Handle cases where the window was not properly closed
+    if(m_window.isOpen())
+    {
+        m_window.close();
+    }
 }
 
 void Graphics::performMainLoop()

@@ -49,6 +49,10 @@ private:
     int32_t m_nStochasticBoundaryCrossings;
     Log& m_log;
 
+    // Keep track how long the actin has been disconnected:
+    bool m_actinIsFree;
+    double m_timeFreeActin;
+
     /*const double m_basinOfAttractionHalfWidth;
     int32_t m_previousBasinOfAttraction;*/
 

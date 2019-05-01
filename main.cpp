@@ -9,6 +9,7 @@
 #include "Log.hpp"
 #include "Graphics.hpp"
 #include "GeneralException/GeneralException.hpp"
+#include "ActinDisconnectException.hpp"
 
 #include <iostream>
 #include <cstdint>
@@ -455,18 +456,26 @@ int main(int argc, char* argv[])
 
     initialiser.initialise(systemState, generator); // initialise the system state
 
-    propagator.equilibrate(systemState, generator, output); // run the dynamics for a certain time such that an equilibrium distribution can be reached (not guaranteed to be done)
 
-    if(showGraphics)
+    try
     {
-        Graphics graphics(runName, systemState, propagator, generator, output, timeStepsDisplayInterval, updateDelayInMilliseconds);
+        propagator.equilibrate(systemState, generator, output); // run the dynamics for a certain time such that an equilibrium distribution can be reached (not guaranteed to be done)
 
-        graphics.performMainLoop();
+        if(showGraphics)
+        {
+            Graphics graphics(runName, systemState, propagator, generator, output, timeStepsDisplayInterval, updateDelayInMilliseconds);
+
+            graphics.performMainLoop();
+        }
+        else
+        {
+            propagator.run(systemState, generator, output);
+        }
     }
-    else
+    catch(const ActinDisconnectException& actinDisconnect)
     {
-        propagator.run(systemState, generator, output);
+        // Do nothing. Message was already written and time recorded upon construction of the exception.
+        // Possible window of Graphics was closed by the destructor of Graphics, since that one is called at the end of the try block.
     }
-
     return 0;
 }

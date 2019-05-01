@@ -14,6 +14,7 @@
 #include "RemoveSite.hpp"
 #include "Crosslinker.hpp"
 #include "MathematicalFunctions.hpp"
+#include "ActinDisconnectException.hpp"
 
 #include <cstdint>
 #include <string>
@@ -70,8 +71,10 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         /*m_estimateTimeEvolutionAtPeak(estimateTimeEvolutionAtPeak),*/
         m_nDeterministicBoundaryCrossings(0), // Counts the number of times a force has tried to push the mobile microtubule across a maximum stretch barrier
         m_nStochasticBoundaryCrossings(0), // Counts the number of times diffusion of the mobile microtubule was reflected at a maximum stretch barrier
-        m_log(log)/*,
+        m_log(log),/*,
         m_basinOfAttractionHalfWidth(0.15*m_latticeSpacing)*/
+        m_actinIsFree(false), // start with connected filaments
+        m_timeFreeActin(0.0)
 {
     // objects in std::initializer_list are inherently const, so std::unique_ptr's copy constructor cannot be used there, and we cannot use this method of initialising m_reactions.
     // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
@@ -235,6 +238,24 @@ void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& gene
     }
     moveMicrotubule(systemState, generator);
     m_currentTime+=m_calcTimeStep;
+
+    const bool isFreeNow = (systemState.getNFullCrosslinkers()==0);
+    if(isFreeNow && m_actinIsFree)
+    {
+        m_timeFreeActin+=m_calcTimeStep;
+    }
+    else if(isFreeNow && !m_actinIsFree)
+    {
+        m_timeFreeActin = 0.0;
+    }
+    m_actinIsFree = isFreeNow; // m_actinIsFree holds the value of isFreeNow of the previous time step
+
+    if(m_actinIsFree && m_timeFreeActin > m_actinDisconnectTime)
+    {
+        // Actin has fallen off
+        throw ActinDisconnectException(m_currentTime);
+    }
+
 }
 
 void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& generator)
