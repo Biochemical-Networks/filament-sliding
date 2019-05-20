@@ -71,7 +71,7 @@ bool Site::isPartial() const
     }
     #endif // MYDEBUG
 
-    if (m_isFree || m_isBlocked)
+    if (m_isFree)
     {
         return false;
     }
@@ -90,7 +90,7 @@ bool Site::isFull() const
     }
     #endif // MYDEBUG
 
-    if (m_isFree || m_isBlocked)
+    if (m_isFree)
     {
         return false;
     }
@@ -103,7 +103,7 @@ bool Site::isFull() const
 Crosslinker* Site::whichCrosslinkerIsBound() const
 {
     #ifdef MYDEBUG
-    if (m_isFree || m_isBlocked)
+    if (m_isFree)
     {
         throw GeneralException("Site::whichCrosslinkerIsBound() was called on a free Crosslinker");
     }
@@ -114,25 +114,23 @@ Crosslinker* Site::whichCrosslinkerIsBound() const
 void Site::block()
 {
     #ifdef MYDEBUG
-    if (m_isBlocked||!m_isFree)
+    if (m_isBlocked)
     {
         throw GeneralException("Site::block() tried to block a site that could not be blocked");
     }
     #endif // MYDEBUG
     m_isBlocked = true;
-    m_isFree = false;
 }
 
 void Site::unBlock()
 {
     #ifdef MYDEBUG
-    if(!m_isBlocked || m_isFree)
+    if(!m_isBlocked)
     {
         throw GeneralException("Site::unBlock() tried to unblock a site that was not blocked");
     }
     #endif // MYDEBUG
     m_isBlocked = false;
-    m_isFree = true;
 }
 
 bool Site::isBlocked() const
