@@ -4,9 +4,9 @@
 
 #include <cstdint>
 
-Site::Site(const bool isFree, const bool isBlocked)
-    :   m_isFree(isFree),
-        m_isBlocked(isBlocked),
+Site::Site()
+    :   m_isFree(true),
+        m_isBlocked(false),
         mp_connectedCrosslinker(nullptr)
 {
     #ifdef MYDEBUG

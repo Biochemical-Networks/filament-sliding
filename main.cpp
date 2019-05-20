@@ -146,10 +146,6 @@ int main(int argc, char* argv[])
     input.copyParameter("recordTransitionPaths", recordTransitionPathsString);
     const bool recordTransitionPaths = (recordTransitionPathsString == "TRUE");*/
 
-    std::string bindingDynamicsString;
-    input.copyParameter("bindingDynamics", bindingDynamicsString);
-    const bool bindingDynamics = (bindingDynamicsString == "TRUE");
-
     /*int32_t maxNFullCrosslinkers;
     if(bindingDynamics)
     {
@@ -240,6 +236,10 @@ int main(int argc, char* argv[])
     double initialPositionMicrotubule;
     input.copyParameter("initialPositionMicrotubule", initialPositionMicrotubule);
 
+    std::string bindingDynamicsString;
+    input.copyParameter("bindingDynamics", bindingDynamicsString);
+    const bool bindingDynamics = (bindingDynamicsString == "TRUE");
+
     double baseRateZeroToOneExtremitiesConnected;
     input.copyParameter("baseRateZeroToOneExtremitiesConnected", baseRateZeroToOneExtremitiesConnected);
     if(baseRateZeroToOneExtremitiesConnected<0.0)
@@ -275,6 +275,47 @@ int main(int argc, char* argv[])
         baseRateOneToZeroExtremitiesConnected = 0.0;
         baseRateOneToTwoExtremitiesConnected = 0.0;
         baseRateTwoToOneExtremitiesConnected = 0.0;
+    }
+
+    std::string bindingDynamicsOnBlockedString;
+    input.copyParameter("bindingDynamicsOnBlocked", bindingDynamicsOnBlockedString);
+    const bool bindingDynamicsOnBlocked = (bindingDynamicsOnBlockedString == "TRUE");
+
+    double baseRateZeroToOneOnBlocked;
+    input.copyParameter("baseRateZeroToOneOnBlocked", baseRateZeroToOneOnBlocked);
+    if(baseRateZeroToOneOnBlocked<0.0)
+    {
+        throw GeneralException("The parameter baseRateZeroToOneOnBlocked contains a wrong value.");
+    }
+
+    double baseRateOneToZeroOnBlocked;
+    input.copyParameter("baseRateOneToZeroOnBlocked", baseRateOneToZeroOnBlocked);
+    if(baseRateOneToZeroOnBlocked<0.0)
+    {
+        throw GeneralException("The parameter baseRateOneToZeroOnBlocked contains a wrong value.");
+    }
+
+    double baseRateOneToTwoOnBlocked;
+    input.copyParameter("baseRateOneToTwoOnBlocked", baseRateOneToTwoOnBlocked);
+    if(baseRateOneToTwoOnBlocked<0.0)
+    {
+        throw GeneralException("The parameter baseRateOneToTwoOnBlocked contains a wrong value.");
+    }
+
+    double baseRateTwoToOneOnBlocked;
+    input.copyParameter("baseRateTwoToOneOnBlocked", baseRateTwoToOneOnBlocked);
+    if(baseRateTwoToOneOnBlocked<0.0)
+    {
+        throw GeneralException("The parameter baseRateTwoToOneOnBlocked contains a wrong value.");
+    }
+
+    // Force the (un)binding rates to zero when binding dynamics is turned off, because then the maximum number of full linkers can be properly set before
+    if(!bindingDynamicsOnBlocked)
+    {
+        baseRateZeroToOneOnBlocked = 0.0;
+        baseRateOneToZeroOnBlocked = 0.0;
+        baseRateOneToTwoOnBlocked = 0.0;
+        baseRateTwoToOneOnBlocked = 0.0;
     }
 
     double rateFixedMicrotubuleGrowth;

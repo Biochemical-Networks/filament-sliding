@@ -81,6 +81,13 @@ ParameterMap::ParameterMap()
     defineParameter("baseRateOneToZeroExtremitiesConnected", 1.0, "s^(-1)", ">=0");
     defineParameter("baseRateOneToTwoExtremitiesConnected", 1.0, "s^(-1)", ">=0");
     defineParameter("baseRateTwoToOneExtremitiesConnected", 1.0, "s^(-1)", ">=0");
+
+    defineParameter("bindingDynamicsOnBlocked", "FALSE", "unitless", "TRUE,FALSE");
+    defineParameter("baseRateZeroToOneOnBlocked", 0.0, "s^(-1)", ">=0");
+    defineParameter("baseRateOneToZeroOnBlocked", 0.0, "s^(-1)", ">=0");
+    defineParameter("baseRateOneToTwoOnBlocked", 0.0, "s^(-1)", ">=0");
+    defineParameter("baseRateTwoToOneOnBlocked", 0.0, "s^(-1)", ">=0");
+
     /*defineParameter("headBindingBiasEnergy", 0.0, "kT", "real");*/
 
     // rates for the dynamics of the fixed microtubule

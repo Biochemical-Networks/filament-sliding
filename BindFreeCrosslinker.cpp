@@ -23,8 +23,8 @@ void BindFreeCrosslinker::setCurrentRate(const SystemState& systemState)
 {
     // make rate independent from number of crosslinkers available, except if there are none available
     // getNFreeSites() gives the number of free sites on both microtubules. Each of those is an (unbiased) option for binding a free linker.
-    const bool crosslinker_available = (systemState.getNFreeCrosslinkersOfType(m_typeToBind)!=0);
-    m_currentRate = (crosslinker_available ? 1 : 0) * m_rateOneLinkerToOneSite * systemState.getNFreeSitesFixed();
+    const bool crosslinkerAvailable = (systemState.getNFreeCrosslinkersOfType(m_typeToBind)!=0);
+    m_currentRate = (crosslinkerAvailable ? 1 : 0) * m_rateOneLinkerToOneSite * systemState.getNFreeSitesFixed();
 }
 
 SiteLocation BindFreeCrosslinker::whereToConnect(const SystemState& systemState, RandomGenerator& generator) const
