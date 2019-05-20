@@ -571,6 +571,9 @@ int32_t SystemState::getNFreeSites() const
     return m_fixedMicrotubule.getNFreeSites() + m_mobileMicrotubule.getNFreeSites();
 }
 
+    int32_t getNFreeSites(const SiteType siteType) const;
+    int32_t getNFreeSites(const MicrotubuleType microtubuleType, const SiteType siteType) const;
+
 int32_t SystemState::getNFreeSitesFixed() const
 {
     return m_fixedMicrotubule.getNFreeSites();

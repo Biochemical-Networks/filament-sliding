@@ -33,10 +33,12 @@ private:
     int32_t m_nUnblockedSites;
 
     // Choose to focus on free instead of occupied sites, since functions may ask if the site is free, not if it is occupied (otherwise completely equivalent of course)
-    int32_t m_nFreeSites;
+    int32_t m_nFreeSitesTip;
+    int32_t m_nFreeSitesBlocked;
     std::vector<Site> m_sites; // Vector, because the size never changes, but is only known at run time
 
-    std::deque<int32_t> m_freeSitePositions; // Elements are removed often, so std::deque is used. The order of the positions will NOT be preserved.
+    std::deque<int32_t> m_freeSitePositionsTip; // Elements are removed often, so std::deque is used. The order of the positions will NOT be preserved.
+    std::deque<int32_t> m_freeSitePositionsBlocked;
     std::deque<int32_t> m_unblockedSitePositions;
 
     std::pair<double,double> getOldAndNewStretchFullHop(const int32_t oldPosition, const int32_t newPosition, const double positionOppositeExtremity, const double maxStretch) const;
@@ -64,7 +66,7 @@ public:
 
     double getLatticeSpacing() const;
 
-    int32_t getNFreeSites() const;
+    int32_t getNFreeSites(const SiteType siteType) const;
 
     int32_t getFreeSitePosition(const int32_t whichFreeSite) const; // whichFreeSite labels the free sites, and can be 0 <= whichFreeSite < m_nFreeSites
 

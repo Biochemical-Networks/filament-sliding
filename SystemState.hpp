@@ -128,8 +128,8 @@ public:
     int32_t getNSitesOverlapMobile() const;
 
     int32_t getNFreeSites() const;
-    int32_t getNFreeSitesFixed() const;
-    int32_t getNFreeSitesMobile() const;
+    int32_t getNFreeSites(const SiteType siteType) const;
+    int32_t getNFreeSites(const MicrotubuleType microtubuleType, const SiteType siteType) const;
 
     // whichFreeSite gives the location in the storage of the Microtubule objects, does not say anything about which physical site that is.
     int32_t getFreeSitePosition(const MicrotubuleType microtubuleType, const int32_t whichFreeSite) const;

@@ -18,4 +18,10 @@ struct SiteLocation
     int32_t position;
 };
 
+enum class SiteType
+{
+    TIP,
+    BLOCKED
+}
+
 #endif //MICROTUBULETYPE_HPP

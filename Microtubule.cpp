@@ -128,7 +128,7 @@ double Microtubule::getLatticeSpacing() const
     return m_latticeSpacing;
 }
 
-int32_t Microtubule::getNFreeSites() const
+int32_t Microtubule::getNFreeSites(const SiteType siteType) const
 {
     return m_nFreeSites;
 }
