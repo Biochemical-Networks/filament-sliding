@@ -22,12 +22,14 @@ Microtubule::Microtubule(const MicrotubuleType type, const double length, const 
         m_latticeSpacing(latticeSpacing),
         m_nSites(static_cast<int32_t>(std::floor(m_length/m_latticeSpacing))+1), // Choose such that microtubule always starts and ends with a site
         m_nUnblockedSites(m_nSites),
-        m_nFreeSites(m_nSites),
+        m_nFreeSitesTip(m_nSites),
+        m_nFreeSitesBlocked(0),
         m_sites(m_nSites, Site()), // Create a copy of Site which is free, and copy it into the vector
-        m_freeSitePositions(m_nSites), // Set the number of sites, but fill it in the body of the constructor
+        m_freeSitePositionsTip(m_nSites), // Set the number of sites, but fill it in the body of the constructor
+        m_freeSitePositionsBlocked(0),
         m_unblockedSitePositions(m_nSites)
 {
-    std::iota(m_freeSitePositions.begin(), m_freeSitePositions.end(), 0); // All sites are initially free
+    std::iota(m_freeSitePositionsTip.begin(), m_freeSitePositionsTip.end(), 0); // All sites are initially free
     std::iota(m_unblockedSitePositions.begin(), m_unblockedSitePositions.end(), 0); // and unblocked
 }
 
@@ -43,9 +45,21 @@ void Microtubule::connectSite(const int32_t sitePosition, Crosslinker& crosslink
     #endif // MYDEBUG
         m_sites.at(sitePosition).connectCrosslinker(crosslinkerToConnect, terminusToConnect);
 
-        m_freeSitePositions.erase(std::remove(m_freeSitePositions.begin(), m_freeSitePositions.end(), sitePosition), m_freeSitePositions.end()); // Erase-remove idiom
-        --m_nFreeSites;
+        if(m_sites.at(sitePosition).isBlocked())
+        {
+            m_freeSitePositionsBlocked.erase(std::remove(m_freeSitePositionsBlocked.begin(), m_freeSitePositionsBlocked.end(), sitePosition), m_freeSitePositionsBlocked.end());
+            --m_nFreeSitesBlocked;
+        }
+        else
+        {
+            m_freeSitePositionsTip.erase(std::remove(m_freeSitePositionsTip.begin(), m_freeSitePositionsTip.end(), sitePosition), m_freeSitePositionsTip.end()); // Erase-remove idiom
+            --m_nFreeSitesTip;
+        }
     #ifdef MYDEBUG
+        if(m_freeSitePositionsBlocked.size()!=m_nFreeSitesBlocked || m_freeSitePositionsTip.size()!=m_nFreeSitesTip)
+        {
+            throw GeneralException("Microtubule::connectSite() did not manage to remove the proper site from the free sites after connecting.");
+        }
     }
     catch(std::out_of_range)
     {
@@ -62,8 +76,16 @@ void Microtubule::disconnectSite(const int32_t sitePosition)
     #endif // MYDEBUG
         m_sites.at(sitePosition).disconnectCrosslinker();
 
-        m_freeSitePositions.push_back(sitePosition);
-        ++m_nFreeSites;
+        if(m_sites.at(sitePosition).isBlocked())
+        {
+            m_freeSitePositionsBlocked.push_back(sitePosition);
+            ++m_nFreeSitesBlocked;
+        }
+        else
+        {
+            m_freeSitePositionsTip.push_back(sitePosition);
+            ++m_nFreeSitesTip;
+        }
     #ifdef MYDEBUG
     }
     catch(std::out_of_range)
@@ -78,13 +100,27 @@ void Microtubule::blockSite(const int32_t sitePosition)
     #ifdef MYDEBUG
     try
     {
+        if(m_sites.at(sitePosition).isBlocked())
+        {
+            throw GeneralException("Microtubule::blockSite() tried to block a site that is already blocked.");
+        }
     #endif // MYDEBUG
         m_sites.at(sitePosition).block();
-        m_freeSitePositions.erase(std::remove(m_freeSitePositions.begin(), m_freeSitePositions.end(), sitePosition), m_freeSitePositions.end());
+        if(m_sites.at(sitePosition).isFree())
+        {
+            m_freeSitePositionsTip.erase(std::remove(m_freeSitePositionsTip.begin(), m_freeSitePositionsTip.end(), sitePosition), m_freeSitePositionsTip.end());
+            --m_nFreeSitesTip;
+            m_freeSitePositionsBlocked.push_back(sitePosition);
+            ++m_nFreeSitesBlocked;
+        }
+
         m_unblockedSitePositions.erase(std::remove(m_unblockedSitePositions.begin(), m_unblockedSitePositions.end(), sitePosition), m_unblockedSitePositions.end());
-        --m_nFreeSites;
         --m_nUnblockedSites;
     #ifdef MYDEBUG
+        if(m_freeSitePositionsTip.size()!=m_nFreeSitesTip)
+        {
+            throw GeneralException("Microtubule::blockSite() did not manage to remove the proper site from the free sites after connecting.");
+        }
     }
     catch(std::out_of_range)
     {
@@ -98,13 +134,27 @@ void Microtubule::unblockSite(const int32_t sitePosition)
     #ifdef MYDEBUG
     try
     {
+        if(!m_sites.at(sitePosition).isBlocked())
+        {
+            throw GeneralException("Microtubule::unblockSite() tried to unblock a site that is not blocked.");
+        }
     #endif // MYDEBUG
         m_sites.at(sitePosition).unBlock();
-        m_freeSitePositions.push_back(sitePosition);
+        if(m_sites.at(sitePosition).isFree())
+        {
+            m_freeSitePositionsBlocked.erase(std::remove(m_freeSitePositionsBlocked.begin(), m_freeSitePositionsBlocked.end(), sitePosition), m_freeSitePositionsBlocked.end());
+            --m_nFreeSitesBlocked;
+            m_freeSitePositionsTip.push_back(sitePosition);
+            ++m_nFreeSitesTip;
+        }
+
         m_unblockedSitePositions.push_back(sitePosition);
-        ++m_nFreeSites;
         ++m_nUnblockedSites;
     #ifdef MYDEBUG
+        if(m_freeSitePositionsBlocked.size()!=m_nFreeSitesBlocked)
+        {
+            throw GeneralException("Microtubule::blockSite() did not manage to remove the proper site from the free sites after connecting.");
+        }
     }
     catch(std::out_of_range)
     {
@@ -130,7 +180,15 @@ double Microtubule::getLatticeSpacing() const
 
 int32_t Microtubule::getNFreeSites(const SiteType siteType) const
 {
-    return m_nFreeSites;
+    switch(siteType)
+    {
+    case SiteType::TIP:
+        return m_nFreeSitesTip;
+    case SiteType::BLOCKED:
+        return m_nFreeSitesBlocked;
+    default:
+        throw GeneralException("Microtubule::getNFreeSites() was passed a wrong SiteType");
+    }
 }
 
 int32_t Microtubule::getFreeSitePosition(const int32_t whichFreeSite) const

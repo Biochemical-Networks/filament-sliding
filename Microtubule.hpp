@@ -37,9 +37,10 @@ private:
     int32_t m_nFreeSitesBlocked;
     std::vector<Site> m_sites; // Vector, because the size never changes, but is only known at run time
 
-    std::deque<int32_t> m_freeSitePositionsTip; // Elements are removed often, so std::deque is used. The order of the positions will NOT be preserved.
-    std::deque<int32_t> m_freeSitePositionsBlocked;
-    std::deque<int32_t> m_unblockedSitePositions;
+    // Elements are removed often, so std::deque is used. The order of the positions will NOT be preserved.
+    std::deque<int32_t> m_freeSitePositionsTip; // For binding to the tip
+    std::deque<int32_t> m_freeSitePositionsBlocked; // For binding to the blocked sites
+    std::deque<int32_t> m_unblockedSitePositions; // For blocking sites
 
     std::pair<double,double> getOldAndNewStretchFullHop(const int32_t oldPosition, const int32_t newPosition, const double positionOppositeExtremity, const double maxStretch) const;
 
