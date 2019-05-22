@@ -85,8 +85,6 @@ ParameterMap::ParameterMap()
     defineParameter("bindingDynamicsOnBlocked", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("baseRateZeroToOneOnBlocked", 0.0, "s^(-1)", ">=0");
     defineParameter("baseRateOneToZeroOnBlocked", 0.0, "s^(-1)", ">=0");
-    defineParameter("baseRateOneToTwoOnBlocked", 0.0, "s^(-1)", ">=0");
-    defineParameter("baseRateTwoToOneOnBlocked", 0.0, "s^(-1)", ">=0");
 
     /*defineParameter("headBindingBiasEnergy", 0.0, "kT", "real");*/
 

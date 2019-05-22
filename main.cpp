@@ -295,27 +295,11 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter baseRateOneToZeroOnBlocked contains a wrong value.");
     }
 
-    double baseRateOneToTwoOnBlocked;
-    input.copyParameter("baseRateOneToTwoOnBlocked", baseRateOneToTwoOnBlocked);
-    if(baseRateOneToTwoOnBlocked<0.0)
-    {
-        throw GeneralException("The parameter baseRateOneToTwoOnBlocked contains a wrong value.");
-    }
-
-    double baseRateTwoToOneOnBlocked;
-    input.copyParameter("baseRateTwoToOneOnBlocked", baseRateTwoToOneOnBlocked);
-    if(baseRateTwoToOneOnBlocked<0.0)
-    {
-        throw GeneralException("The parameter baseRateTwoToOneOnBlocked contains a wrong value.");
-    }
-
     // Force the (un)binding rates to zero when binding dynamics is turned off, because then the maximum number of full linkers can be properly set before
     if(!bindingDynamicsOnBlocked)
     {
         baseRateZeroToOneOnBlocked = 0.0;
         baseRateOneToZeroOnBlocked = 0.0;
-        baseRateOneToTwoOnBlocked = 0.0;
-        baseRateTwoToOneOnBlocked = 0.0;
     }
 
     double rateFixedMicrotubuleGrowth;
@@ -333,13 +317,21 @@ int main(int argc, char* argv[])
     }
 
 
-    const double occupancyProbabilityDenominator = baseRateOneToZeroExtremitiesConnected*baseRateTwoToOneExtremitiesConnected+
+    const double occupancyProbabilityDenominatorTip = baseRateOneToZeroExtremitiesConnected*baseRateTwoToOneExtremitiesConnected+
                                                    baseRateZeroToOneExtremitiesConnected*baseRateTwoToOneExtremitiesConnected+
                                                    baseRateZeroToOneExtremitiesConnected*baseRateOneToTwoExtremitiesConnected;
-    const double probabilityPartiallyConnected = (occupancyProbabilityDenominator==0)?0.0:
-                        (baseRateZeroToOneExtremitiesConnected*baseRateTwoToOneExtremitiesConnected/occupancyProbabilityDenominator);
-    const double probabilityFullyConnected     = (occupancyProbabilityDenominator==0)?0.0:
-                        (baseRateZeroToOneExtremitiesConnected*baseRateOneToTwoExtremitiesConnected/occupancyProbabilityDenominator);
+    const double probabilityPartiallyConnectedTip = (occupancyProbabilityDenominatorTip==0)?0.0:
+                        (baseRateZeroToOneExtremitiesConnected*baseRateTwoToOneExtremitiesConnected/occupancyProbabilityDenominatorTip);
+    const double probabilityFullyConnectedTip     = (occupancyProbabilityDenominatorTip==0)?0.0:
+                        (baseRateZeroToOneExtremitiesConnected*baseRateOneToTwoExtremitiesConnected/occupancyProbabilityDenominatorTip);
+
+    const double occupancyProbabilityDenominatorBlocked = baseRateOneToZeroOnBlocked*baseRateTwoToOneExtremitiesConnected+
+                                                   baseRateZeroToOneOnBlocked*baseRateTwoToOneExtremitiesConnected+
+                                                   baseRateZeroToOneOnBlocked*baseRateOneToTwoExtremitiesConnected;
+    const double probabilityPartiallyConnectedBlocked = (occupancyProbabilityDenominatorBlocked==0)?0.0:
+                        (baseRateZeroToOneOnBlocked*baseRateTwoToOneExtremitiesConnected/occupancyProbabilityDenominatorBlocked);
+    const double probabilityFullyConnectedBlocked     = (occupancyProbabilityDenominatorBlocked==0)?0.0:
+                        (baseRateZeroToOneOnBlocked*baseRateOneToTwoExtremitiesConnected/occupancyProbabilityDenominatorBlocked);
 
     const double probabilityTipUnblocked = (rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule==0.0)?1.0:
                         rateFixedMicrotubuleGrowth/(rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule);

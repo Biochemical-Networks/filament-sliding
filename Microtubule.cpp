@@ -56,7 +56,7 @@ void Microtubule::connectSite(const int32_t sitePosition, Crosslinker& crosslink
             --m_nFreeSitesTip;
         }
     #ifdef MYDEBUG
-        if(m_freeSitePositionsBlocked.size()!=m_nFreeSitesBlocked || m_freeSitePositionsTip.size()!=m_nFreeSitesTip)
+        if(m_freeSitePositionsBlocked.size()!=static_cast<uint32_t>(m_nFreeSitesBlocked) || m_freeSitePositionsTip.size()!=static_cast<uint32_t>(m_nFreeSitesTip))
         {
             throw GeneralException("Microtubule::connectSite() did not manage to remove the proper site from the free sites after connecting.");
         }
@@ -117,7 +117,7 @@ void Microtubule::blockSite(const int32_t sitePosition)
         m_unblockedSitePositions.erase(std::remove(m_unblockedSitePositions.begin(), m_unblockedSitePositions.end(), sitePosition), m_unblockedSitePositions.end());
         --m_nUnblockedSites;
     #ifdef MYDEBUG
-        if(m_freeSitePositionsTip.size()!=m_nFreeSitesTip)
+        if(m_freeSitePositionsTip.size()!=static_cast<uint32_t>(m_nFreeSitesTip))
         {
             throw GeneralException("Microtubule::blockSite() did not manage to remove the proper site from the free sites after connecting.");
         }
@@ -151,7 +151,7 @@ void Microtubule::unblockSite(const int32_t sitePosition)
         m_unblockedSitePositions.push_back(sitePosition);
         ++m_nUnblockedSites;
     #ifdef MYDEBUG
-        if(m_freeSitePositionsBlocked.size()!=m_nFreeSitesBlocked)
+        if(m_freeSitePositionsBlocked.size()!=static_cast<uint32_t>(m_nFreeSitesBlocked))
         {
             throw GeneralException("Microtubule::blockSite() did not manage to remove the proper site from the free sites after connecting.");
         }
@@ -191,15 +191,29 @@ int32_t Microtubule::getNFreeSites(const SiteType siteType) const
     }
 }
 
-int32_t Microtubule::getFreeSitePosition(const int32_t whichFreeSite) const
+int32_t Microtubule::getFreeSitePosition(const SiteType siteType, const int32_t whichFreeSite) const
 {
-    #ifdef MYDEBUG
-    if (whichFreeSite<0 || whichFreeSite >= m_nFreeSites)
+    switch(siteType)
     {
-        throw GeneralException("Microtubule::getFreeSitePosition() was called with an invalid parameter");
+    case SiteType::TIP:
+        #ifdef MYDEBUG
+        if(whichFreeSite<0 || whichFreeSite >= m_nFreeSitesTip)
+        {
+            throw GeneralException("Microtubule::getFreeSitePosition() was called with an invalid tip site");
+        }
+        #endif // MYDEBUG
+        return m_freeSitePositionsTip.at(whichFreeSite);
+    case SiteType::BLOCKED:
+        #ifdef MYDEBUG
+        if(whichFreeSite<0 || whichFreeSite >= m_nFreeSitesBlocked)
+        {
+            throw GeneralException("Microtubule::getFreeSitePosition() was called with an invalid blocked site");
+        }
+        #endif // MYDEBUG
+        return m_freeSitePositionsBlocked.at(whichFreeSite);
+    default:
+        throw GeneralException("Microtubule::getFreeSitePosition() was called with a wrong siteType.");
     }
-    #endif // MYDEBUG
-    return m_freeSitePositions.at(whichFreeSite);
 }
 
 int32_t Microtubule::getUnblockedSitePosition(const int32_t whichUnblockedSite) const
@@ -652,14 +666,14 @@ void Microtubule::growOneSite()
 {
     m_length+=m_latticeSpacing;
     ++m_nSites;
-    ++m_nFreeSites;
+    ++m_nFreeSitesTip;
     ++m_nUnblockedSites;
     m_sites.push_back(Site()); // the site is free and not blocked
-    m_freeSitePositions.push_back(m_nSites-1); // The first site has label 0
+    m_freeSitePositionsTip.push_back(m_nSites-1); // The first site has label 0
     m_unblockedSitePositions.push_back(m_nSites-1);
 
     #ifdef MYDEBUG
-    if(m_freeSitePositions.size()!=static_cast<uint32_t>(m_nFreeSites))
+    if(m_freeSitePositionsTip.size()!=static_cast<uint32_t>(m_nFreeSitesTip))
     {
         throw GeneralException("Microtubule::growOneSite() saw a wrong number of free sites");
     }
@@ -733,6 +747,6 @@ double Microtubule::getMeanTipPosition() const
         }
         #endif // MYDEBUG
     }
-    return sumPositions*m_latticeSpacing/nUnblockedSites;
+    return (nUnblockedSites==0) ? 0.0 : sumPositions*m_latticeSpacing/nUnblockedSites;
 }
 

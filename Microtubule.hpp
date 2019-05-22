@@ -69,7 +69,7 @@ public:
 
     int32_t getNFreeSites(const SiteType siteType) const;
 
-    int32_t getFreeSitePosition(const int32_t whichFreeSite) const; // whichFreeSite labels the free sites, and can be 0 <= whichFreeSite < m_nFreeSites
+    int32_t getFreeSitePosition(const SiteType siteType, const int32_t whichFreeSite) const; // whichFreeSite labels the free sites, and can be 0 <= whichFreeSite < m_nFreeSites
 
     int32_t getUnblockedSitePosition(const int32_t whichUnblockedSite) const;
 
