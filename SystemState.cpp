@@ -566,22 +566,31 @@ int32_t SystemState::getNSitesOverlapMobile() const
     return lastSiteOverlapMobile()-firstSiteOverlapMobile()+1;
 }
 
+int32_t SystemState::getNFreeSites(const MicrotubuleType microtubuleType, const SiteType siteType) const
+{
+    switch(microtubuleType)
+    {
+    case MicrotubuleType::FIXED:
+        return m_fixedMicrotubule.getNFreeSites(siteType);
+    case MicrotubuleType::MOBILE:
+        return m_mobileMicrotubule.getNFreeSites(siteType);
+    default:
+        throw GeneralException("SystemState::getNFreeSites() was passed a wrong microtubuleType.");
+    }
+}
+int32_t SystemState::getNFreeSites(const SiteType siteType) const
+{
+    return getNFreeSites(MicrotubuleType::FIXED, siteType) + getNFreeSites(MicrotubuleType::MOBILE, siteType);
+}
+
+int32_t SystemState::getNFreeSites(const MicrotubuleType microtubuleType) const
+{
+    return getNFreeSites(microtubuleType, SiteType::TIP) + getNFreeSites(microtubuleType, SiteType::BLOCKED);
+}
+
 int32_t SystemState::getNFreeSites() const
 {
-    return m_fixedMicrotubule.getNFreeSites() + m_mobileMicrotubule.getNFreeSites();
-}
-
-    int32_t getNFreeSites(const SiteType siteType) const;
-    int32_t getNFreeSites(const MicrotubuleType microtubuleType, const SiteType siteType) const;
-
-int32_t SystemState::getNFreeSitesFixed() const
-{
-    return m_fixedMicrotubule.getNFreeSites();
-}
-
-int32_t SystemState::getNFreeSitesMobile() const
-{
-    return m_mobileMicrotubule.getNFreeSites();
+    return getNFreeSites(SiteType::TIP) + getNFreeSites(SiteType::BLOCKED);
 }
 
 int32_t SystemState::getFreeSitePosition(const MicrotubuleType microtubuleType, const int32_t whichFreeSite) const
