@@ -593,15 +593,15 @@ int32_t SystemState::getNFreeSites() const
     return getNFreeSites(SiteType::TIP) + getNFreeSites(SiteType::BLOCKED);
 }
 
-int32_t SystemState::getFreeSitePosition(const MicrotubuleType microtubuleType, const int32_t whichFreeSite) const
+int32_t SystemState::getFreeSitePosition(const MicrotubuleType microtubuleType, const SiteType siteType, const int32_t whichFreeSite) const
 {
     switch(microtubuleType)
     {
         case MicrotubuleType::FIXED:
-            return m_fixedMicrotubule.getFreeSitePosition(whichFreeSite);
+            return m_fixedMicrotubule.getFreeSitePosition(siteType, whichFreeSite);
             break;
         case MicrotubuleType::MOBILE:
-            return m_mobileMicrotubule.getFreeSitePosition(whichFreeSite);
+            return m_mobileMicrotubule.getFreeSitePosition(siteType, whichFreeSite);
             break;
         default:
             throw GeneralException("An incorrect microtubule type was passed to SystemState::getFreeSitePosition()");
