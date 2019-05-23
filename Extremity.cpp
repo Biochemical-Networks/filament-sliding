@@ -26,7 +26,7 @@ SiteLocation Extremity::getSiteLocation() const
     }
     #endif // MYDEBUG
 
-    return SiteLocation{m_connectedTo,m_sitePosition};
+    return SiteLocation{m_connectedTo,m_sitePosition,m_siteType};
 }
 
 void Extremity::connect(const SiteLocation siteToConnectTo)
@@ -40,6 +40,7 @@ void Extremity::connect(const SiteLocation siteToConnectTo)
     m_connected = true;
     m_connectedTo = siteToConnectTo.microtubule;
     m_sitePosition = siteToConnectTo.position;
+    m_siteType = siteToConnectTo.siteType;
 }
 
 void Extremity::changePosition(const SiteLocation siteToConnectTo)
@@ -55,6 +56,7 @@ void Extremity::changePosition(const SiteLocation siteToConnectTo)
     }
     #endif // MYDEBUG
     m_sitePosition = siteToConnectTo.position;
+    m_siteType = siteToConnectTo.siteType;
 }
 
 void Extremity::disconnect()

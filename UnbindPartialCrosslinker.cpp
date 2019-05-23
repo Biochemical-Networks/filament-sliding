@@ -8,9 +8,10 @@
 #include <vector>
 #include <utility>
 
-UnbindPartialCrosslinker::UnbindPartialCrosslinker(const double rateOneTerminusDisconnects, const Crosslinker::Type typeToUnbind)
+UnbindPartialCrosslinker::UnbindPartialCrosslinker(const double rateOneTerminusDisconnectsTip, const double rateOneTerminusDisconnectsBlocked, const Crosslinker::Type typeToUnbind)
     :   Reaction(),
         m_rateOneTerminusDisconnects(rateOneTerminusDisconnects),
+        m_rateOneTerminusDisconnectsBlocked(rateOneTerminusDisconnectsBlocked),
         m_typeToUnbind(typeToUnbind)/*,
         m_headUnbindingFactor(2/(1+std::exp(headBiasEnergy))),
         m_tailUnbindingFactor(2-m_headUnbindingFactor)*/

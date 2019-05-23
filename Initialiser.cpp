@@ -144,13 +144,16 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     // Therefore, the program should be allowed to run at least for a little while for the system to assume an equilibrium distribution.
     // The crosslinkers will never cross each other, since they are ordered in the same way on the fixed and mobile microtubules
     // The tail binds to the microtubule first, the head can then bind to the actin filament
+    // First make the crosslinkers connect as if they are connected to tip sites.
+    // After, when some sites become blocked, change the SiteType of the linker to Blocked and disconnect a portion
+    // (assuming that the probability of binding to the blocked sites is always lower than that of binding to tip sites)
     for (int32_t i = 0; i<nPassiveCrosslinkersToConnect; ++connectedSoFar, ++i)
     {
         if(generator.getProbability()<probabilityPartialGivenBound)
         {
             systemState.connectFreeCrosslinker(Crosslinker::Type::PASSIVE,
                                                Crosslinker::Terminus::TAIL,
-                                               SiteLocation{MicrotubuleType::FIXED, firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar)});
+                                               SiteLocation{MicrotubuleType::FIXED, firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar), SiteType::TIP});
         }
         else
         {
@@ -167,7 +170,7 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
         {
             systemState.connectFreeCrosslinker(Crosslinker::Type::DUAL,
                                                Crosslinker::Terminus::TAIL,
-                                               SiteLocation{MicrotubuleType::FIXED, firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar)});
+                                               SiteLocation{MicrotubuleType::FIXED, firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar), SiteType::TIP});
         }
         else
         {
@@ -184,7 +187,7 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
         {
             systemState.connectFreeCrosslinker(Crosslinker::Type::ACTIVE,
                                                Crosslinker::Terminus::TAIL,
-                                               SiteLocation{MicrotubuleType::FIXED, firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar)});
+                                               SiteLocation{MicrotubuleType::FIXED, firstSiteOverlapFixed+positionsToConnect.at(connectedSoFar), SiteType::TIP});
         }
         else
         {
@@ -217,7 +220,7 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
             }
             systemState.connectFreeCrosslinker(Crosslinker::Type::PASSIVE,
                                                Crosslinker::Terminus::TAIL,
-                                               SiteLocation{MicrotubuleType::FIXED, i});
+                                               SiteLocation{MicrotubuleType::FIXED, i, SiteType::TIP});
         }
     }
 }

@@ -43,6 +43,9 @@ private:
     // Keep track of the partial linkers that are bound by the head or tail.
     std::vector<Crosslinker*> m_partialCrosslinkersBoundWithHead;
     std::vector<Crosslinker*> m_partialCrosslinkersBoundWithTail;
+    // Keep track of the partial linkers that are bound to the tip or to the blocked region
+    std::vector<Crosslinker*> m_partialCrosslinkersOnTip;
+    std::vector<Crosslinker*> m_partialCrosslinkersOnBlocked;
 
     // Stores all possible connections such that the search needs to be done once every time step
     // Needs to be updated dynamically.  After MT diffusion, it can completely change
@@ -115,7 +118,7 @@ public:
     // There are four other functions (updateConnectionData functions) that do the updating of possibilities after the system has reached its new state
     // Notice there are no functions for hopping (nor are there updateConnectionData functions for hopping). This is because a hop is finally implemented as an unbind, rebind sequence.
     // Still, the possibilities need to be tracked, since hopping is a separate reaction.
-    Crosslinker* connectFromFreeToPartial();
+    Crosslinker* connectFromFreeToPartial(const SiteType siteTypeBoundTo);
 
     void disconnectFromPartialToFree(Crosslinker& crosslinkerToDisconnect);
 

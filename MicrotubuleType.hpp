@@ -10,18 +10,20 @@ enum class MicrotubuleType
     MOBILE
 };
 
-// The word 'Location' will be used throughout the program to talk about the combination (microtubuleType/position on the microtubule).
-// The word 'Position' refers to an integer giving the site number.
-struct SiteLocation
-{
-    MicrotubuleType microtubule;
-    int32_t position;
-};
-
 enum class SiteType
 {
     TIP,
     BLOCKED
 }
+
+// The word 'Location' will be used throughout the program to talk about the combination (microtubuleType/position/S on the microtubule).
+// The word 'Position' refers to an integer giving the site number.
+struct SiteLocation
+{
+    MicrotubuleType microtubule;
+    int32_t position;
+    SiteType siteType;
+};
+
 
 #endif //MICROTUBULETYPE_HPP

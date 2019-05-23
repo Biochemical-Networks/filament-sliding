@@ -53,7 +53,7 @@ SiteLocation BindFreeCrosslinker::whereToConnect(const SystemState& systemState,
     // Now, we have picked a label to a free site uniformly. Then, map this using a linear (bijective) function to the actual positions on the microtubule where the free sites are
     const int32_t positionToConnectAt = systemState.getFreeSitePosition(microtubuleToConnect, siteType, freeSiteLabelToConnect);
 
-    return SiteLocation{microtubuleToConnect, positionToConnectAt};
+    return SiteLocation{microtubuleToConnect, positionToConnectAt, microtubulePartToConnectTo};
 }
 
 void BindFreeCrosslinker::performReaction(SystemState& systemState, RandomGenerator& generator)

@@ -73,12 +73,23 @@ Crosslinker& CrosslinkerContainer::at(const int32_t position)
     }
 }
 
-Crosslinker* CrosslinkerContainer::connectFromFreeToPartial()
+Crosslinker* CrosslinkerContainer::connectFromFreeToPartial(const SiteType siteTypeBoundTo)
 {
     // All free crosslinkers are in the same state, so it doesn't matter which one is taken. Therefore, we take the final one in the row.
     Crosslinker* p_crosslinkerToConnect = m_freeCrosslinkers.back(); // Returns last element, which is a pointer
     m_freeCrosslinkers.pop_back();
     m_partialCrosslinkers.push_back(p_crosslinkerToConnect);
+    switch(siteTypeBoundTo)
+    {
+    case SiteType::TIP:
+        m_partialCrosslinkersOnTip.push_back(p_crosslinkerToConnect);
+        break;
+    case SiteType::BLOCKED:
+        m_partialCrosslinkersOnBlocked.push_back(p_crosslinkerToConnect);
+        break;
+    default:
+        throw GeneralException("CrosslinkerContainer::connectFromFreeToPartial() was passed a wrong SiteType");
+    }
 
     return p_crosslinkerToConnect;
 }
@@ -93,6 +104,11 @@ void CrosslinkerContainer::disconnectFromPartialToFree(Crosslinker& crosslinkerT
     #endif // MYDEBUG
 
     m_partialCrosslinkers.erase(std::remove(m_partialCrosslinkers.begin(), m_partialCrosslinkers.end(), &crosslinkerToDisconnect));
+
+    // Try to remove from both containers, only one will do something.
+    m_partialCrosslinkersOnTip.erase(std::remove(m_partialCrosslinkersOnTip.begin(), m_partialCrosslinkersOnTip.end(), &crosslinkerToDisconnect));
+    m_partialCrosslinkersOnBlocked.erase(std::remove(m_partialCrosslinkersOnBlocked.begin(), m_partialCrosslinkersOnBlocked.end(), &crosslinkerToDisconnect));
+
     m_freeCrosslinkers.push_back(&crosslinkerToDisconnect);
 }
 
@@ -678,7 +694,7 @@ void CrosslinkerContainer::updateConnectionDataMobilePositionChange(const double
 void CrosslinkerContainer::updateConnectionDataMicrotubuleGrowth()
 {
     // There is definitely no crosslinker at the new site yet. Only the fixed microtubule grows.
-    const SiteLocation locationAdded{MicrotubuleType::FIXED, m_fixedMicrotubule.getNSites()-1};
+    const SiteLocation locationAdded{MicrotubuleType::FIXED, m_fixedMicrotubule.getNSites()-1, SiteType::TIP};
 
     updatePossibleConnectionsOppositeTo(nullptr, locationAdded); // no linker needs to be ignored
 
@@ -690,7 +706,7 @@ void CrosslinkerContainer::updateConnectionDataMicrotubuleGrowth()
 void CrosslinkerContainer::updateConnectionDataBlockSite(const int32_t sitePosition)
 {
 
-    const SiteLocation locationBlocked{MicrotubuleType::FIXED, sitePosition};
+    const SiteLocation locationBlocked{MicrotubuleType::FIXED, sitePosition, SiteType::BLOCKED};
 
     // Perform similar actions as after adding a partial linker. Only remove possibilities, no possibilities are added.
     updatePossibleConnectionsOppositeTo(nullptr, locationBlocked); // no linker needs to be ignored.

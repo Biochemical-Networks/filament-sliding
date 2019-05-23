@@ -367,12 +367,12 @@ void SystemState::growFixed()
     m_activeCrosslinkers.updateConnectionDataMicrotubuleGrowth();
 }
 
-void SystemState::blockSiteOnFixed(const int32_t sitePosition)
+void SystemState::blockSiteOnFixed(const int32_t sitePosition, const bool disconnectIfPartial, const bool disconnectIfFull)
 {
     Crosslinker* linker = m_fixedMicrotubule.giveConnectionAt(sitePosition);
     if(linker!=nullptr) // a crosslinker is bound there.
     {
-        if(linker->isFull())
+        if(linker->isFull() && disconnectIfFull)
         {
             disconnectFullyConnectedCrosslinker(*linker, Crosslinker::Terminus::HEAD); // HEAD is always connected to the mobile, unbind that first
         }
@@ -384,17 +384,11 @@ void SystemState::blockSiteOnFixed(const int32_t sitePosition)
         }
         #endif // MYDEBUG
 
-        disconnectPartiallyConnectedCrosslinker(*linker);
+        if(disconnectIfPartial)
+        {
+            disconnectPartiallyConnectedCrosslinker(*linker);
+        }
     }
-    // no linker is connected any longer
-
-    #ifdef MYDEBUG
-    if(m_fixedMicrotubule.giveConnectionAt(sitePosition)!=nullptr)
-    {
-        throw GeneralException("SystemState::blockSiteOnFixed() did not unbind the crosslinker before blocking the site.");
-    }
-    #endif // MYDEBUG
-
     // no crosslinker is changed any more, so CrosslinkerContainer direct administration is not affected any longer, nor is that of Crosslinker
 
     // Administration of Microtubule:

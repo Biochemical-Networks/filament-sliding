@@ -14,6 +14,7 @@ private:
     bool m_connected;
     MicrotubuleType m_connectedTo;
     int32_t m_sitePosition;
+    SiteType m_siteType;
 
 public:
     Extremity(const bool connected);

@@ -333,6 +333,11 @@ int main(int argc, char* argv[])
     const double probabilityFullyConnectedBlocked     = (occupancyProbabilityDenominatorBlocked==0)?0.0:
                         (baseRateZeroToOneOnBlocked*baseRateOneToTwoExtremitiesConnected/occupancyProbabilityDenominatorBlocked);
 
+    if(probabilityPartiallyConnectedBlocked > probabilityPartiallyConnectedTip || probabilityFullyConnectedBlocked > probabilityFullyConnectedTip)
+    {
+        throw GeneralException("The binding rates to the blocked region make it more favorable than the tip region, which is assumed not to be the case.");
+    }
+
     const double probabilityTipUnblocked = (rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule==0.0)?1.0:
                         rateFixedMicrotubuleGrowth/(rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule);
 
@@ -346,7 +351,12 @@ int main(int argc, char* argv[])
     input.copyParameter("initialCrosslinkerDistribution", initialCrosslinkerDistributionString);*/
 
 
-    Initialiser initialiser(initialPositionMicrotubule, probabilityPartiallyConnected, probabilityFullyConnected, probabilityTipUnblocked);
+    Initialiser initialiser(initialPositionMicrotubule,
+                            probabilityPartiallyConnectedTip,
+                            probabilityFullyConnectedTip,
+                            probabilityPartiallyConnectedBlocked,
+                            probabilityFullyConnectedBlocked,
+                            probabilityTipUnblocked);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the propagator
