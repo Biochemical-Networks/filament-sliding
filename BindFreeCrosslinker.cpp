@@ -46,21 +46,14 @@ SiteLocation BindFreeCrosslinker::whereToConnect(const SystemState& systemState,
     const double probabilityOnTip = m_rateOneLinkerToOneSiteTip*nFreeSitesTip/(m_rateOneLinkerToOneSiteTip*nFreeSitesTip+m_rateOneLinkerToOneSiteBlocked*nFreeSitesBlocked);
     const SiteType microtubulePartToConnectTo = generator.getBernoulli(probabilityOnTip) ? SiteType::TIP : SiteType::BLOCKED;
 
-    switch(microtubulePartToConnectTo)
-    {
-    case SiteType::TIP:
-        {
-            int32_t freeSiteLabelToConnect = generator.getUniformInteger(0, nFreeSitesTip-1); // Each site has equal probability of binding
+    const int32_t nFreeSites = (microtubulePartToConnectTo==SiteType::TIP) ? nFreeSitesTip : nFreeSitesBlocked;
 
-            // Now, we have picked a label to a free site uniformly. Then, map this using a linear (bijective) function to the actual positions on the microtubule where the free sites are
-            int32_t positionToConnectAt = systemState.getFreeSitePosition(microtubuleToConnect, freeSiteLabelToConnect);
+    const int32_t freeSiteLabelToConnect = generator.getUniformInteger(0, nFreeSites-1); // Each site has equal probability of binding
 
-            return SiteLocation{microtubuleToConnect, positionToConnectAt};
-    }
+    // Now, we have picked a label to a free site uniformly. Then, map this using a linear (bijective) function to the actual positions on the microtubule where the free sites are
+    const int32_t positionToConnectAt = systemState.getFreeSitePosition(microtubuleToConnect, siteType, freeSiteLabelToConnect);
 
-
-
-
+    return SiteLocation{microtubuleToConnect, positionToConnectAt};
 }
 
 void BindFreeCrosslinker::performReaction(SystemState& systemState, RandomGenerator& generator)
