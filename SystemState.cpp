@@ -339,8 +339,9 @@ void SystemState::fullyConnectFreeCrosslinker(const Crosslinker::Type type,
                                               const int32_t positionOnFixedMicrotubule,
                                               const int32_t positionOnMobileMicrotubule)
 {
-    // Store a reference to the connected crosslinker, such that the next function can be called easily
+    const SiteType typeBindingTo = m_fixedMicrotubule.siteIsBlocked(positionOnFixedMicrotubule) ? SiteType::BLOCKED : SiteType::TIP;
 
+    // Store a reference to the connected crosslinker, such that the next function can be called easily
     Crosslinker &connectedCrosslinker = connectFreeCrosslinker(type, terminusToConnectToFixedMicrotubule, SiteLocation{MicrotubuleType::FIXED, positionOnFixedMicrotubule});
 
     connectPartiallyConnectedCrosslinker(connectedCrosslinker, SiteLocation{MicrotubuleType::MOBILE, positionOnMobileMicrotubule});
