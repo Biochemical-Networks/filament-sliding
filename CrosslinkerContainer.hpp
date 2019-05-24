@@ -40,9 +40,6 @@ private:
     std::vector<Crosslinker*> m_freeCrosslinkers;
     std::vector<Crosslinker*> m_partialCrosslinkers;
     std::vector<Crosslinker*> m_fullCrosslinkers;
-    // Keep track of the partial linkers that are bound by the head or tail.
-    std::vector<Crosslinker*> m_partialCrosslinkersBoundWithHead;
-    std::vector<Crosslinker*> m_partialCrosslinkersBoundWithTail;
     // Keep track of the partial linkers that are bound to the tip or to the blocked region
     std::vector<Crosslinker*> m_partialCrosslinkersOnTip;
     std::vector<Crosslinker*> m_partialCrosslinkersOnBlocked;
@@ -128,7 +125,7 @@ public:
 
     int32_t getNCrosslinkers() const;
     int32_t getNFreeCrosslinkers() const;
-    int32_t getNPartialCrosslinkers() const;
+    int32_t getNPartialCrosslinkers(const SiteType siteType) const;
     int32_t getNFullCrosslinkers() const;
 
     int32_t getNFullRightPullingCrosslinkers() const;
@@ -168,13 +165,9 @@ public:
 
     const std::vector<Crosslinker*>& getPartialLinkers() const;
 
+    const std::vector<Crosslinker*>& getPartialLinkers(const SiteType siteType) const; // function overloading
+
     const std::vector<Crosslinker*>& getFullLinkers() const;
-
-    std::pair<int32_t,int32_t> getNPartialsBoundWithHeadAndTail() const;
-
-    const std::vector<Crosslinker*>& getPartialCrosslinkersBoundWithHead() const;
-
-    const std::vector<Crosslinker*>& getPartialCrosslinkersBoundWithTail() const;
 
     #ifdef MYDEBUG
     Crosslinker* TESTgetAFullCrosslinker(const int32_t which) const;

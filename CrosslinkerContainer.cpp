@@ -148,9 +148,17 @@ int32_t CrosslinkerContainer::getNFreeCrosslinkers() const
     return m_freeCrosslinkers.size();
 }
 
-int32_t CrosslinkerContainer::getNPartialCrosslinkers() const
+int32_t CrosslinkerContainer::getNPartialCrosslinkers(const SiteType siteType) const
 {
-    return m_partialCrosslinkers.size();
+    switch(siteType)
+    {
+    case SiteType::TIP:
+        return m_partialCrosslinkersOnTip.size();
+    case SiteType::BLOCKED:
+        return m_partialCrosslinkersOnBlocked.size();
+    default:
+        throw GeneralException("A wrong siteType was passed to CrosslinkerContainer::getNPartialCrosslinkers()");
+    }
 }
 
 int32_t CrosslinkerContainer::getNFullCrosslinkers() const
@@ -382,15 +390,6 @@ void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p
         addPossibleConnections(p_newPartialCrosslinker);
 
         addPossiblePartialHops(p_newPartialCrosslinker);
-
-        if (p_newPartialCrosslinker->getBoundTerminusWhenPartiallyConnected()==Crosslinker::Terminus::HEAD)
-        {
-            m_partialCrosslinkersBoundWithHead.push_back(p_newPartialCrosslinker);
-        }
-        else
-        {
-            m_partialCrosslinkersBoundWithTail.push_back(p_newPartialCrosslinker);
-        }
     }
 
     SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundLocationWhenPartiallyConnected();
@@ -423,17 +422,6 @@ void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p
         removePossibleConnections(p_oldPartialCrosslinker);
 
         removePossiblePartialHops(p_oldPartialCrosslinker);
-
-        if (terminusDisconnected==Crosslinker::Terminus::HEAD)
-        {
-            m_partialCrosslinkersBoundWithHead.erase(std::remove(m_partialCrosslinkersBoundWithHead.begin(), m_partialCrosslinkersBoundWithHead.end(), p_oldPartialCrosslinker),
-                                                     m_partialCrosslinkersBoundWithHead.end());
-        }
-        else
-        {
-            m_partialCrosslinkersBoundWithTail.erase(std::remove(m_partialCrosslinkersBoundWithTail.begin(), m_partialCrosslinkersBoundWithTail.end(), p_oldPartialCrosslinker),
-                                                     m_partialCrosslinkersBoundWithTail.end());
-        }
     }
 
     updatePossibleConnectionsOppositeTo(p_oldPartialCrosslinker, locationOldConnection);
@@ -464,15 +452,6 @@ void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p
         addPossiblePartialHops(p_oldFullCrosslinker);
 
         removePossibleFullHops(p_oldFullCrosslinker);
-
-        if (p_oldFullCrosslinker->getBoundTerminusWhenPartiallyConnected()==Crosslinker::Terminus::HEAD)
-        {
-            m_partialCrosslinkersBoundWithHead.push_back(p_oldFullCrosslinker);
-        }
-        else
-        {
-            m_partialCrosslinkersBoundWithTail.push_back(p_oldFullCrosslinker);
-        }
 
         // Update m_fullConnections, which holds the current connections, not possibilities
         removeFullConnection(p_oldFullCrosslinker);
@@ -510,18 +489,6 @@ void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p
         removePossiblePartialHops(p_newFullCrosslinker);
 
         addPossibleFullHops(p_newFullCrosslinker);
-
-        // When the tail connects, then the linker used to be a partial with the head connected.
-        if (terminusConnected==Crosslinker::Terminus::TAIL)
-        {
-            m_partialCrosslinkersBoundWithHead.erase(std::remove(m_partialCrosslinkersBoundWithHead.begin(), m_partialCrosslinkersBoundWithHead.end(), p_newFullCrosslinker),
-                                                     m_partialCrosslinkersBoundWithHead.end());
-        }
-        else
-        {
-            m_partialCrosslinkersBoundWithTail.erase(std::remove(m_partialCrosslinkersBoundWithTail.begin(), m_partialCrosslinkersBoundWithTail.end(), p_newFullCrosslinker),
-                                                     m_partialCrosslinkersBoundWithTail.end());
-        }
 
         // Update m_fullConnections:
         addFullConnection(p_newFullCrosslinker);
@@ -800,6 +767,19 @@ const std::vector<Crosslinker*>& CrosslinkerContainer::getPartialLinkers() const
     return m_partialCrosslinkers;
 }
 
+const std::vector<Crosslinker*>& CrosslinkerContainer::getPartialLinkers(const SiteType siteType) const
+{
+    switch(siteType)
+    {
+    case SiteType::TIP:
+        return m_partialCrosslinkersOnTip;
+    case SiteType::BLOCKED:
+        return m_partialCrosslinkersOnBlocked;
+    default:
+        throw GeneralException("CrosslinkerContainer::getPartialLinkers() was passed a wrong SiteType.");
+    }
+}
+
 const std::vector<Crosslinker*>& CrosslinkerContainer::getFullLinkers() const
 {
     return m_fullCrosslinkers;
@@ -814,28 +794,6 @@ void CrosslinkerContainer::resetPossibilities()
     findPossiblePartialHops();
 
     findPossibleFullHops();
-}
-
-std::pair<int32_t,int32_t> CrosslinkerContainer::getNPartialsBoundWithHeadAndTail() const
-{
-    #ifdef MYDEBUG
-    if (m_partialCrosslinkersBoundWithHead.size() + m_partialCrosslinkersBoundWithTail.size() != m_partialCrosslinkers.size())
-    {
-        throw GeneralException("CrosslinkerContainer::getNPartialsBoundWithHead() saw an impossible number of partial crosslinkers");
-    }
-    #endif // MYDEBUG
-
-    return std::pair<int32_t,int32_t>(m_partialCrosslinkersBoundWithHead.size(), m_partialCrosslinkersBoundWithTail.size());
-}
-
-const std::vector<Crosslinker*>& CrosslinkerContainer::getPartialCrosslinkersBoundWithHead() const
-{
-    return m_partialCrosslinkersBoundWithHead;
-}
-
-const std::vector<Crosslinker*>& CrosslinkerContainer::getPartialCrosslinkersBoundWithTail() const
-{
-    return m_partialCrosslinkersBoundWithTail;
 }
 
 #ifdef MYDEBUG

@@ -439,40 +439,21 @@ int32_t SystemState::getNFreeCrosslinkersOfType(const Crosslinker::Type type) co
     }
 }
 
-int32_t SystemState::getNPartialCrosslinkersOfType(const Crosslinker::Type type) const
+int32_t SystemState::getNPartialCrosslinkersOfType(const Crosslinker::Type linkerType, const SiteType siteType) const
 {
-    switch(type)
+    switch(linkerType)
     {
         case Crosslinker::Type::PASSIVE:
-            return m_passiveCrosslinkers.getNPartialCrosslinkers();
+            return m_passiveCrosslinkers.getNPartialCrosslinkers(siteType);
             break;
         case Crosslinker::Type::DUAL:
-            return m_dualCrosslinkers.getNPartialCrosslinkers();
+            return m_dualCrosslinkers.getNPartialCrosslinkers(siteType);
             break;
         case Crosslinker::Type::ACTIVE:
-            return m_activeCrosslinkers.getNPartialCrosslinkers();
+            return m_activeCrosslinkers.getNPartialCrosslinkers(siteType);
             break;
         default:
             throw GeneralException("An incorrect crosslinker type was passed to SystemState::getNPartialCrosslinkersOfType()");
-            break;
-    }
-}
-
-std::pair<int32_t,int32_t> SystemState::getNPartialCrosslinkersBoundWithHeadAndTailOfType(const Crosslinker::Type type) const
-{
-    switch(type)
-    {
-        case Crosslinker::Type::PASSIVE:
-            return m_passiveCrosslinkers.getNPartialsBoundWithHeadAndTail();
-            break;
-        case Crosslinker::Type::DUAL:
-            return m_dualCrosslinkers.getNPartialsBoundWithHeadAndTail();
-            break;
-        case Crosslinker::Type::ACTIVE:
-            return m_activeCrosslinkers.getNPartialsBoundWithHeadAndTail();
-            break;
-        default:
-            throw GeneralException("An incorrect crosslinker type was passed to SystemState::getNPartialCrosslinkersBoundWithHeadAndTailOfType()");
             break;
     }
 }
@@ -750,6 +731,24 @@ const std::vector<Crosslinker*>& SystemState::getPartialLinkers(const Crosslinke
     }
 }
 
+const std::vector<Crosslinker*>& SystemState::getPartialLinkers(const Crosslinker::Type type, const SiteType siteType) const
+{
+    switch(type)
+    {
+    case Crosslinker::Type::PASSIVE:
+        return m_passiveCrosslinkers.getPartialLinkers(siteType);
+        break;
+    case Crosslinker::Type::DUAL:
+        return m_dualCrosslinkers.getPartialLinkers(siteType);
+        break;
+    case Crosslinker::Type::ACTIVE:
+        return m_activeCrosslinkers.getPartialLinkers(siteType);
+        break;
+    default:
+        throw GeneralException("An incorrect type was passed to SystemState::getPartialLinkers()");
+    }
+}
+
 const std::vector<Crosslinker*>& SystemState::getFullLinkers(const Crosslinker::Type type) const
 {
     switch(type)
@@ -765,43 +764,6 @@ const std::vector<Crosslinker*>& SystemState::getFullLinkers(const Crosslinker::
         break;
     default:
         throw GeneralException("An incorrect type was passed to SystemState::getFullLinkers()");
-    }
-}
-
-
-const std::vector<Crosslinker*>& SystemState::getPartialLinkersBoundWithHead(const Crosslinker::Type type) const
-{
-    switch(type)
-    {
-    case Crosslinker::Type::PASSIVE:
-        return m_passiveCrosslinkers.getPartialCrosslinkersBoundWithHead();
-        break;
-    case Crosslinker::Type::DUAL:
-        return m_dualCrosslinkers.getPartialCrosslinkersBoundWithHead();
-        break;
-    case Crosslinker::Type::ACTIVE:
-        return m_activeCrosslinkers.getPartialCrosslinkersBoundWithHead();
-        break;
-    default:
-        throw GeneralException("An incorrect type was passed to SystemState::getPartialLinkersBoundWithHead()");
-    }
-}
-
-const std::vector<Crosslinker*>& SystemState::getPartialLinkersBoundWithTail(const Crosslinker::Type type) const
-{
-    switch(type)
-    {
-    case Crosslinker::Type::PASSIVE:
-        return m_passiveCrosslinkers.getPartialCrosslinkersBoundWithTail();
-        break;
-    case Crosslinker::Type::DUAL:
-        return m_dualCrosslinkers.getPartialCrosslinkersBoundWithTail();
-        break;
-    case Crosslinker::Type::ACTIVE:
-        return m_activeCrosslinkers.getPartialCrosslinkersBoundWithTail();
-        break;
-    default:
-        throw GeneralException("An incorrect type was passed to SystemState::getPartialLinkersBoundWithTail()");
     }
 }
 

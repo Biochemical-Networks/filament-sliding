@@ -10,11 +10,9 @@
 
 UnbindPartialCrosslinker::UnbindPartialCrosslinker(const double rateOneTerminusDisconnectsTip, const double rateOneTerminusDisconnectsBlocked, const Crosslinker::Type typeToUnbind)
     :   Reaction(),
-        m_rateOneTerminusDisconnects(rateOneTerminusDisconnects),
+        m_rateOneTerminusDisconnectsTip(rateOneTerminusDisconnectsTip),
         m_rateOneTerminusDisconnectsBlocked(rateOneTerminusDisconnectsBlocked),
-        m_typeToUnbind(typeToUnbind)/*,
-        m_headUnbindingFactor(2/(1+std::exp(headBiasEnergy))),
-        m_tailUnbindingFactor(2-m_headUnbindingFactor)*/
+        m_typeToUnbind(typeToUnbind)
 {
 }
 
@@ -24,17 +22,17 @@ UnbindPartialCrosslinker::~UnbindPartialCrosslinker()
 
 void UnbindPartialCrosslinker::setCurrentRate(const SystemState& systemState)
 {
-    /*const std::pair<int32_t,int32_t> nPartialsBoundWithHeadAndTail = systemState.getNPartialCrosslinkersBoundWithHeadAndTailOfType(m_typeToUnbind);
-
     #ifdef MYDEBUG
     int32_t nCrosslinkersOfThisType = systemState.getNPartialCrosslinkersOfType(m_typeToUnbind);
-    if (nCrosslinkersOfThisType != nPartialsBoundWithHeadAndTail.first + nPartialsBoundWithHeadAndTail.second)
+    if (nCrosslinkersOfThisType != systemState.getNPartialCrosslinkersOfType(m_typeToUnbind, SiteType::TIP)
+                                    + systemState.getNPartialCrosslinkersOfType(m_typeToUnbind, SiteType::BLOCKED))
     {
         throw GeneralException("UnbindPartialCrosslinker::setCurrentRate() found two different numbers of partial linkers");
     }
-    #endif // MYDEBUG*/
+    #endif // MYDEBUG
 
-    m_currentRate = m_rateOneTerminusDisconnects*systemState.getNPartialCrosslinkersOfType(m_typeToUnbind);
+    m_currentRate = m_rateOneTerminusDisconnectsTip*systemState.getNPartialCrosslinkersOfType(m_typeToUnbind, SiteType::TIP)
+                    + m_rateOneTerminusDisconnectsBlocked*systemState.getNPartialCrosslinkersOfType(m_typeToUnbind, SiteType::BLOCKED);
 }
 
 void UnbindPartialCrosslinker::performReaction(SystemState& systemState, RandomGenerator& generator)
@@ -45,23 +43,37 @@ void UnbindPartialCrosslinker::performReaction(SystemState& systemState, RandomG
 
 Crosslinker& UnbindPartialCrosslinker::whichToDisconnect(SystemState& systemState, RandomGenerator& generator) const
 {
-    /*const std::vector<Crosslinker*>& partialsBoundWithHead = systemState.getPartialLinkersBoundWithHead(m_typeToUnbind);*/
     // All partials are bound with only their tail on the fixed microtubule
-    const std::vector<Crosslinker*>& partialsBoundWithTail = systemState.getPartialLinkersBoundWithTail(m_typeToUnbind);
-/*
+    const std::vector<Crosslinker*>& partialsBoundOnTip = systemState.getPartialLinkers(m_typeToUnbind, SiteType::TIP);
+    const std::vector<Crosslinker*>& partialsBoundOnBlocked = systemState.getPartialLinkers(m_typeToUnbind, SiteType::BLOCKED);
+
     #ifdef MYDEBUG
-    if (partialsBoundWithHead.empty() && partialsBoundWithTail.empty())
+    if (partialsBoundOnTip.empty() && partialsBoundOnBlocked.empty())
     {
         throw GeneralException("No partial linker is available to be disconnected in UnbindPartialCrosslinker::whichToDisconnect()");
     }
     #endif // MYDEBUG
 
-    const double probHeadUnbinds = m_rateOneTerminusDisconnects*partialsBoundWithHead.size()*m_headUnbindingFactor/m_currentRate;
+    const double probUnbindsFromTip = m_rateOneTerminusDisconnectsTip*partialsBoundOnTip.size()/m_currentRate;
+
+    #ifdef MYDEBUG
+    if (probUnbindsFromTip>1)
+    {
+        throw GeneralException("Wrong probability calculated in UnbindPartialCrosslinker::whichToDisconnect()");
+    }
+    #endif // MYDEBUG
 
     // Choose from which of the two sets (bound with head or tail) the crosslinker needs to be picked.
-    const std::vector<Crosslinker*>& whichSet = (generator.getBernoulli(probHeadUnbinds))?partialsBoundWithHead:partialsBoundWithTail;*/
+    const SiteType microtubulePartToDisconnectFrom = (generator.getBernoulli(probUnbindsFromTip)) ? SiteType::TIP : SiteType::BLOCKED;
 
     // Then, generate the position in the set of those linkers uniformly. This way, two random numbers are used, but it does prevent a loop through all separate possible unbinding events.
-    const int32_t label = generator.getUniformInteger(0, partialsBoundWithTail.size()-1);
-    return *partialsBoundWithTail.at(label);
+    switch(microtubulePartToDisconnectFrom)
+    {
+    case SiteType::TIP:
+        return *partialsBoundOnTip.at(generator.getUniformInteger(0, partialsBoundOnTip.size()-1));
+    case SiteType::BLOCKED:
+        return *partialsBoundOnBlocked.at(generator.getUniformInteger(0, partialsBoundOnBlocked.size()-1));
+    default:
+        throw GeneralException("UnbindPartialCrosslinker::whichToDisconnect() created a nonexisting SiteType to unbind from.");
+    }
 }

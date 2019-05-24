@@ -108,8 +108,7 @@ public:
     int32_t getNFreeCrosslinkersOfType(const Crosslinker::Type type) const;
     int32_t getNFreeCrosslinkers() const;
 
-    int32_t getNPartialCrosslinkersOfType(const Crosslinker::Type type) const;
-    std::pair<int32_t,int32_t> getNPartialCrosslinkersBoundWithHeadAndTailOfType(const Crosslinker::Type type) const;
+    int32_t getNPartialCrosslinkersOfType(const Crosslinker::Type linkerType, const SiteType siteType) const;
 
     int32_t getNFullCrosslinkers() const;
     int32_t getNFullRightPullingCrosslinkers() const;
@@ -169,11 +168,9 @@ public:
 
     const std::vector<Crosslinker*>& getPartialLinkers(const Crosslinker::Type type) const;
 
+    const std::vector<Crosslinker*>& getPartialLinkers(const Crosslinker::Type type, const SiteType siteType) const;
+
     const std::vector<Crosslinker*>& getFullLinkers(const Crosslinker::Type type) const;
-
-    const std::vector<Crosslinker*>& getPartialLinkersBoundWithHead(const Crosslinker::Type type) const;
-
-    const std::vector<Crosslinker*>& getPartialLinkersBoundWithTail(const Crosslinker::Type type) const;
 
     std::vector<int32_t> getBlockedSitePositions(const MicrotubuleType type) const;
 
