@@ -704,6 +704,24 @@ Crosslinker* Microtubule::giveConnectionAt(const int32_t sitePosition) const
     }
 }
 
+bool Microtubule::siteIsBlocked(const int32_t sitePosition) const
+{
+    #ifdef MYDEBUG
+    try
+    {
+    #endif // MYDEBUG
+
+        return m_sites.at(sitePosition).isBlocked();
+
+    #ifdef MYDEBUG
+    }
+    catch(std::out_of_range& error)
+    {
+        throw GeneralException(std::string("Microtubule::siteIsBlocked() encountered a non-existing sitePosition. ")+error.what());
+    }
+    #endif // MYDEBUG
+}
+
 std::vector<int32_t> Microtubule::getBlockedSitePositions() const
 {
     std::vector<int32_t> blockedSitePositions;
