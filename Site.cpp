@@ -9,12 +9,6 @@ Site::Site()
         m_isBlocked(false),
         mp_connectedCrosslinker(nullptr)
 {
-    #ifdef MYDEBUG
-    if(isFree&&isBlocked)
-    {
-        throw GeneralException("Site::Site() blocked a free site");
-    }
-    #endif // MYDEBUG
 }
 
 Site::~Site()
