@@ -3,8 +3,8 @@
 #include "GeneralException/GeneralException.hpp"
 #include "MicrotubuleType.hpp"
 
-Extremity::Extremity(const bool connected)
-    :   m_connected(connected)
+Extremity::Extremity()
+    :   m_connected(false)
 {
 }
 

@@ -17,7 +17,7 @@ private:
     SiteType m_siteType;
 
 public:
-    Extremity(const bool connected);
+    Extremity(); // always initialize with a free extremity
     ~Extremity();
 
     bool isConnected() const;

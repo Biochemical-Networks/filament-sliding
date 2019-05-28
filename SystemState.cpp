@@ -342,10 +342,10 @@ void SystemState::fullyConnectFreeCrosslinker(const Crosslinker::Type type,
     const SiteType typeBindingTo = m_fixedMicrotubule.siteIsBlocked(positionOnFixedMicrotubule) ? SiteType::BLOCKED : SiteType::TIP;
 
     // Store a reference to the connected crosslinker, such that the next function can be called easily
-    Crosslinker &connectedCrosslinker = connectFreeCrosslinker(type, terminusToConnectToFixedMicrotubule, SiteLocation{MicrotubuleType::FIXED, positionOnFixedMicrotubule});
+    Crosslinker &connectedCrosslinker = connectFreeCrosslinker(type, terminusToConnectToFixedMicrotubule, SiteLocation{MicrotubuleType::FIXED, positionOnFixedMicrotubule, typeBindingTo});
 
-    connectPartiallyConnectedCrosslinker(connectedCrosslinker, SiteLocation{MicrotubuleType::MOBILE, positionOnMobileMicrotubule});
-
+    // The actin consists only of TIP sites
+    connectPartiallyConnectedCrosslinker(connectedCrosslinker, SiteLocation{MicrotubuleType::MOBILE, positionOnMobileMicrotubule, SiteType::TIP});
 }
 
 void SystemState::updateMobilePosition(const double changeMicrotubulePosition)
