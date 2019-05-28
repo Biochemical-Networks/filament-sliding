@@ -6,8 +6,8 @@
 
 Crosslinker::Crosslinker(const Type type)
     :   m_type(type),
-        m_head(false), // A crosslinker always starts as a free one, because it requires no information
-        m_tail(false)
+        m_head(), // A crosslinker always starts as a free one, because it requires no information
+        m_tail()
 {
 }
 
