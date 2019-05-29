@@ -122,6 +122,11 @@ void CrosslinkerContainer::connectFromPartialToFull(Crosslinker& crosslinkerToCo
     #endif // MYDEBUG
 
     m_partialCrosslinkers.erase(std::remove(m_partialCrosslinkers.begin(), m_partialCrosslinkers.end(), &crosslinkerToConnect));
+
+    // Try to remove from both containers, only one will do something.
+    m_partialCrosslinkersOnTip.erase(std::remove(m_partialCrosslinkersOnTip.begin(), m_partialCrosslinkersOnTip.end(), &crosslinkerToDisconnect));
+    m_partialCrosslinkersOnBlocked.erase(std::remove(m_partialCrosslinkersOnBlocked.begin(), m_partialCrosslinkersOnBlocked.end(), &crosslinkerToDisconnect));
+
     m_fullCrosslinkers.push_back(&crosslinkerToConnect);
 }
 
@@ -134,8 +139,22 @@ void CrosslinkerContainer::disconnectFromFullToPartial(Crosslinker& crosslinkerT
     }
     #endif // MYDEBUG
 
+    const SiteType connectedToOnFixed = crosslinkerToDisconnect.getLocationOfFullOn(MicrotubuleType::FIXED).siteType;
+
     m_fullCrosslinkers.erase(std::remove(m_fullCrosslinkers.begin(), m_fullCrosslinkers.end(), &crosslinkerToDisconnect));
     m_partialCrosslinkers.push_back(&crosslinkerToDisconnect);
+
+    switch(connectedToOnFixed)
+    {
+    case SiteType::TIP:
+        m_partialCrosslinkersOnTip.push_back(&crosslinkerToDisconnect);
+        break;
+    case SiteType::BLOCKED:
+        m_partialCrosslinkersOnBlocked.push_back(&crosslinkerToDisconnect);
+        break;
+    default:
+        throw GeneralException("CrosslinkerContainer::disconnectFromFullToPartial() encountered a wrong SiteType");
+    }
 }
 
 int32_t CrosslinkerContainer::getNCrosslinkers() const
@@ -228,6 +247,7 @@ void CrosslinkerContainer::findPossibleConnections()
     }
 }
 
+/*
 void CrosslinkerContainer::findPossiblePartialHops()
 {
     // Empty the container, the following will recalculate the whole vector
@@ -252,12 +272,12 @@ void CrosslinkerContainer::findPossibleFullHops()
     {
         addPossibleFullHops(p_linker); // Adds the possible hops for both extremities of the full linker
     }
-}
+}*/
 
-/* The following function adds all possible connections of *p_newPartialCrosslinker to m_possibleConnections.
- * It does not finish changing m_possibleConnections:
- * it is possible that the new partial linker also occupies the previously free position of a partial linker on the opposite microtubule.
- */
+// The following function adds all possible connections of *p_newPartialCrosslinker to m_possibleConnections.
+// It does not finish changing m_possibleConnections:
+// it is possible that the new partial linker also occupies the previously free position of a partial linker on the opposite microtubule.
+
 void CrosslinkerContainer::addPossibleConnections(Crosslinker*const p_newPartialCrosslinker)
 {
     SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundLocationWhenPartiallyConnected();
@@ -293,6 +313,7 @@ void CrosslinkerContainer::removePossibleConnections(Crosslinker*const p_oldPart
 
 }
 
+/*
 void CrosslinkerContainer::addPossiblePartialHops(Crosslinker*const p_newPartialCrosslinker)
 {
     SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundLocationWhenPartiallyConnected();
@@ -367,7 +388,7 @@ void CrosslinkerContainer::removePossibleFullHops(Crosslinker*const p_oldFullCro
                                                     // This is okay as long as the CrosslinkerContainer class guarantees that m_crosslinkers is never resized.
                                                     return possibleFullHop.p_fullLinker==p_oldFullCrosslinker;
                                                 }), m_possibleFullHops.end());
-}
+}*/
 
 void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker)
 {
@@ -389,16 +410,16 @@ void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p
     {
         addPossibleConnections(p_newPartialCrosslinker);
 
-        addPossiblePartialHops(p_newPartialCrosslinker);
+        /*addPossiblePartialHops(p_newPartialCrosslinker);*/
     }
 
     SiteLocation locationConnectedTo = p_newPartialCrosslinker->getBoundLocationWhenPartiallyConnected();
     // Remove the old possibilities relating the free (now occupied) site
     updatePossibleConnectionsOppositeTo(p_newPartialCrosslinker, locationConnectedTo);
 
-    updatePossiblePartialHopsNextTo(locationConnectedTo);
+    /*updatePossiblePartialHopsNextTo(locationConnectedTo);
 
-    updatePossibleFullHopsNextTo(locationConnectedTo);
+    updatePossibleFullHopsNextTo(locationConnectedTo);*/
 }
 
 void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker,

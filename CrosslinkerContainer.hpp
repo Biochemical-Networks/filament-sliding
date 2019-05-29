@@ -51,9 +51,9 @@ private:
     // Added to crosslinkerContainer, because it is stored for each type of crosslinker separately.
     std::vector<PossibleFullConnection> m_possibleConnections;
 
-    std::vector<PossiblePartialHop> m_possiblePartialHops;
+    /*std::vector<PossiblePartialHop> m_possiblePartialHops;
 
-    std::vector<PossibleFullHop> m_possibleFullHops;
+    std::vector<PossibleFullHop> m_possibleFullHops;*/
 
     std::vector<FullConnection> m_fullConnections; // These are not possibilities, but actual connections
 
@@ -63,13 +63,13 @@ private:
 
     void removePossibleConnections(Crosslinker*const p_oldPartialCrosslinker);
 
-    void addPossiblePartialHops(Crosslinker*const p_newPartialCrosslinker);
+    /*void addPossiblePartialHops(Crosslinker*const p_newPartialCrosslinker);
 
     void removePossiblePartialHops(Crosslinker*const p_oldPartialCrosslinker);
 
     void addPossibleFullHops(Crosslinker*const p_newFullCrosslinker); // Hops are implemented as a combined unbinding-binding event, so the possibilities are updated through an unbinding
 
-    void removePossibleFullHops(Crosslinker*const p_oldFullCrosslinker);
+    void removePossibleFullHops(Crosslinker*const p_oldFullCrosslinker);*/
 
     void addFullConnection(Crosslinker*const p_newFullCrosslinker);
 
@@ -79,9 +79,9 @@ private:
 
     void updatePossibleConnectionsOppositeTo(Crosslinker*const p_partialCrosslinker, SiteLocation locationConnection);
 
-    void updatePossiblePartialHopsNextTo(const SiteLocation& originLocation);
+    /*void updatePossiblePartialHopsNextTo(const SiteLocation& originLocation);
 
-    void updatePossibleFullHopsNextTo(const SiteLocation& originLocation);
+    void updatePossibleFullHopsNextTo(const SiteLocation& originLocation);*/
 
     // The findPossible... functions recalculate the possibility vectors,
     // while the findPossibilityBorders calculates and sets the borders within which the current possibilities are valid.
@@ -91,9 +91,9 @@ private:
 
     void findPossibleConnections();
 
-    void findPossiblePartialHops();
+    /*void findPossiblePartialHops();
 
-    void findPossibleFullHops();
+    void findPossibleFullHops();*/
 
 public:
     CrosslinkerContainer(const int32_t nCrosslinkers,
@@ -157,9 +157,9 @@ public:
 
     const std::vector<PossibleFullConnection>& getPossibleConnections() const;
 
-    const std::vector<PossiblePartialHop>& getPossiblePartialHops() const;
+    /*const std::vector<PossiblePartialHop>& getPossiblePartialHops() const;
 
-    const std::vector<PossibleFullHop>& getPossibleFullHops() const;
+    const std::vector<PossibleFullHop>& getPossibleFullHops() const;*/
 
     const std::vector<FullConnection>& getFullConnections() const;
 
