@@ -53,7 +53,7 @@ private:
 
     // The force on the microtubule is a property of the system as a whole, because it is caused by the crosslinkers and a possible external force
     double m_forceMicrotubule;
-    double m_energy;
+    /*double m_energy;*/
     double m_totalExtensionLinkers;
 
     const bool m_addExternalForce;
@@ -148,7 +148,7 @@ public:
 
     double getForce() const;
 
-    double getEnergy() const;
+    /*double getEnergy() const;*/
 
     double getTotalExtensionLinkers() const;
 
@@ -160,9 +160,9 @@ public:
 
     const std::vector<PossibleFullConnection>& getPossibleConnections(const Crosslinker::Type type) const;
 
-    const std::vector<PossiblePartialHop>& getPossiblePartialHops(const Crosslinker::Type type) const;
+    /*const std::vector<PossiblePartialHop>& getPossiblePartialHops(const Crosslinker::Type type) const;
 
-    const std::vector<PossibleFullHop>& getPossibleFullHops(const Crosslinker::Type type) const;
+    const std::vector<PossibleFullHop>& getPossibleFullHops(const Crosslinker::Type type) const;*/
 
     const std::vector<FullConnection>& getFullConnections(const Crosslinker::Type type) const;
 

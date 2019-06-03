@@ -6,7 +6,6 @@
 #include "MobileMicrotubule.hpp"
 #include "PossibleFullConnection.hpp"
 #include "FullConnection.hpp"
-#include "PossibleHop.hpp"
 
 #include <cstdint>
 #include <vector>

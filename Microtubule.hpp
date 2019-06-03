@@ -9,7 +9,6 @@
 #include "Site.hpp"
 #include "Crosslinker.hpp"
 #include "PossibleFullConnection.hpp"
-#include "PossibleHop.hpp"
 #include "MicrotubuleType.hpp"
 #include "FullConnection.hpp"
 

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "PossibleFullConnection.hpp"
-#include "PossibleHop.hpp"
 #include "MicrotubuleType.hpp"
 
 #include "Site.hpp"

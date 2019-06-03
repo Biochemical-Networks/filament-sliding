@@ -660,7 +660,7 @@ const std::vector<PossibleFullConnection>& SystemState::getPossibleConnections(c
     }
 }
 
-const std::vector<PossiblePartialHop>& SystemState::getPossiblePartialHops(const Crosslinker::Type type) const
+/*const std::vector<PossiblePartialHop>& SystemState::getPossiblePartialHops(const Crosslinker::Type type) const
 {
     switch(type)
     {
@@ -694,7 +694,7 @@ const std::vector<PossibleFullHop>& SystemState::getPossibleFullHops(const Cross
     default:
         throw GeneralException("An incorrect type was passed to SystemState::getPossibleFullHops()");
     }
-}
+}*/
 
 const std::vector<FullConnection>& SystemState::getFullConnections(const Crosslinker::Type type) const
 {
@@ -793,22 +793,22 @@ void SystemState::updateForceAndEnergy()
     for(const FullConnection& fullConnection : passiveFullConnections)
     {
         totalExtension += fullConnection.extension;
-        totalSquaredExtension += fullConnection.extension*fullConnection.extension;
+        /*totalSquaredExtension += fullConnection.extension*fullConnection.extension;*/
     }
     for(const FullConnection& fullConnection : dualFullConnections)
     {
         totalExtension += fullConnection.extension;
-        totalSquaredExtension += fullConnection.extension*fullConnection.extension;
+        /*totalSquaredExtension += fullConnection.extension*fullConnection.extension;*/
     }
     for(const FullConnection& fullConnection : activeFullConnections)
     {
         totalExtension += fullConnection.extension;
-        totalSquaredExtension += fullConnection.extension*fullConnection.extension;
+        /*totalSquaredExtension += fullConnection.extension*fullConnection.extension;*/
     }
 
     // Force has a minus sign: a positively expanded linker pulls the mobile microtubule to negative values
     m_forceMicrotubule = -m_springConstant*totalExtension;
-    m_energy = 0.5*m_springConstant*totalSquaredExtension;
+    /*m_energy = 0.5*m_springConstant*totalSquaredExtension;*/
     m_totalExtensionLinkers = totalExtension; // save, for this can be used by the propagator to integrate the force over the time step (instead of assuming a constant force during it)
 
     // Recalculate the external force every time step, since it can change depending on the position of the microtubule
@@ -821,11 +821,11 @@ double SystemState::getForce() const
     return m_forceMicrotubule;
 }
 
-double SystemState::getEnergy() const
+/*double SystemState::getEnergy() const
 {
     // call the updateForceAndEnergy function before!
     return m_energy;
-}
+}*/
 
 double SystemState::getTotalExtensionLinkers() const
 {
