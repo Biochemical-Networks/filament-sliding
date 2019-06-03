@@ -423,8 +423,7 @@ void CrosslinkerContainer::updateConnectionDataFreeToPartial(Crosslinker*const p
 }
 
 void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker,
-                                                             const SiteLocation locationOldConnection,
-                                                             const Crosslinker::Terminus terminusDisconnected)
+                                                             const SiteLocation locationOldConnection)
 {
     #ifdef MYDEBUG
     if(p_oldPartialCrosslinker->isConnected())
@@ -442,14 +441,14 @@ void CrosslinkerContainer::updateConnectionDataPartialToFree(Crosslinker*const p
     {
         removePossibleConnections(p_oldPartialCrosslinker);
 
-        removePossiblePartialHops(p_oldPartialCrosslinker);
+        /*removePossiblePartialHops(p_oldPartialCrosslinker);*/
     }
 
     updatePossibleConnectionsOppositeTo(p_oldPartialCrosslinker, locationOldConnection);
 
-    updatePossiblePartialHopsNextTo(locationOldConnection);
+    /*updatePossiblePartialHopsNextTo(locationOldConnection);
 
-    updatePossibleFullHopsNextTo(locationOldConnection);
+    updatePossibleFullHopsNextTo(locationOldConnection);*/
 }
 
 void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p_oldFullCrosslinker, const SiteLocation locationOldConnection)
@@ -470,9 +469,9 @@ void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p
     {
         addPossibleConnections(p_oldFullCrosslinker);
 
-        addPossiblePartialHops(p_oldFullCrosslinker);
+        /*addPossiblePartialHops(p_oldFullCrosslinker);
 
-        removePossibleFullHops(p_oldFullCrosslinker);
+        removePossibleFullHops(p_oldFullCrosslinker);*/
 
         // Update m_fullConnections, which holds the current connections, not possibilities
         removeFullConnection(p_oldFullCrosslinker);
@@ -480,14 +479,13 @@ void CrosslinkerContainer::updateConnectionDataFullToPartial(Crosslinker*const p
 
     updatePossibleConnectionsOppositeTo(p_oldFullCrosslinker, locationOldConnection);
 
-    updatePossiblePartialHopsNextTo(locationOldConnection);
+    /*updatePossiblePartialHopsNextTo(locationOldConnection);
 
-    updatePossibleFullHopsNextTo(locationOldConnection);
+    updatePossibleFullHopsNextTo(locationOldConnection);*/
 }
 
 void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p_newFullCrosslinker,
-                                                             const SiteLocation locationNewConnection,
-                                                             const Crosslinker::Terminus terminusConnected)
+                                                             const SiteLocation locationNewConnection)
 {
     #ifdef MYDEBUG
     if(!(p_newFullCrosslinker->isFull()))
@@ -507,9 +505,9 @@ void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p
     {
         removePossibleConnections(p_newFullCrosslinker);
 
-        removePossiblePartialHops(p_newFullCrosslinker);
+        /*removePossiblePartialHops(p_newFullCrosslinker);
 
-        addPossibleFullHops(p_newFullCrosslinker);
+        addPossibleFullHops(p_newFullCrosslinker);*/
 
         // Update m_fullConnections:
         addFullConnection(p_newFullCrosslinker);
@@ -517,9 +515,9 @@ void CrosslinkerContainer::updateConnectionDataPartialToFull(Crosslinker*const p
 
     updatePossibleConnectionsOppositeTo(p_newFullCrosslinker, locationNewConnection);
 
-    updatePossiblePartialHopsNextTo(locationNewConnection);
+    /*updatePossiblePartialHopsNextTo(locationNewConnection);
 
-    updatePossibleFullHopsNextTo(locationNewConnection);
+    updatePossibleFullHopsNextTo(locationNewConnection);*/
 }
 
 /* This function updates the possible connections for partials close to locationConnection, on the opposite microtubule.

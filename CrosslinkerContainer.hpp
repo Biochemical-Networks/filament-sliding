@@ -141,9 +141,9 @@ public:
     // They need to be called when any linker goes through the change: when the linker is of a different type, it can still affect the possibilities of linkers of this type
     void updateConnectionDataFreeToPartial(Crosslinker*const p_newPartialCrosslinker);
 
-    void updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection, const Crosslinker::Terminus terminusDisconnected);
+    void updateConnectionDataPartialToFree(Crosslinker*const p_oldPartialCrosslinker, const SiteLocation locationOldConnection);
 
-    void updateConnectionDataPartialToFull(Crosslinker*const p_newFullCrosslinker, const SiteLocation locationNewConnection, const Crosslinker::Terminus terminusConnected);
+    void updateConnectionDataPartialToFull(Crosslinker*const p_newFullCrosslinker, const SiteLocation locationNewConnection);
 
     void updateConnectionDataFullToPartial(Crosslinker*const p_oldFullCrosslinker, const SiteLocation locationOldConnection);
 
