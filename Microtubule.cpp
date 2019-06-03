@@ -335,7 +335,7 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
     }
 }
 
-void Microtubule::addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>& possiblePartialHops, Crosslinker* const p_partialLinker) const
+/*void Microtubule::addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>& possiblePartialHops, Crosslinker* const p_partialLinker) const
 {
     #ifdef MYDEBUG
     if(!p_partialLinker->isPartial())
@@ -452,95 +452,97 @@ void Microtubule::addPossibleFullHopsCloseTo(std::vector<PossibleFullHop>& possi
                                                        oldAndNewStretch.second});
         }
     }
-}
+}*/
 
 // Checks if a possible full connection of possibility.p_fullLinker to possibility.location would not cross any existing fully connected linkers.
 // Needs to be called on the microtubule opposite to possibility.p_fullLinker, since the full linker crossing the potential
 // Assume that all possibleConnections belong to the same partial linker!
 void Microtubule::cleanPossibleCrossings(std::vector<PossibleFullConnection>& possibleConnectionsToCheck, const double mobilePosition, const double maxStretch) const
 {
-    if(!possibleConnectionsToCheck.empty())
+    if(possibleConnectionsToCheck.empty())
     {
-        #ifdef MYDEBUG
-        if(possibleConnectionsToCheck.front().location.microtubule!=m_type)
-        {
-            throw GeneralException("Microtubule::cleanPossibleCrossings() was called on the wrong microtubule");
-        }
-        #endif // MYDEBUG
-
-        // Store the partial linker and its position now, since there is assumed to be only one partial linker
-        Crosslinker*const p_thisPartialLinker = possibleConnectionsToCheck.front().p_partialLinker;
-
-        #ifdef MYDEBUG
-        if(!p_thisPartialLinker->isPartial())
-        {
-            throw GeneralException("Microtubule::cleanPossibleCrossings() encountered a non-partial linker");
-        }
-        #endif // MYDEBUG
-
-        const SiteLocation locationPartialLinker = p_thisPartialLinker->getBoundLocationWhenPartiallyConnected();
-
-        #ifdef MYDEBUG
-        if (locationPartialLinker.microtubule == m_type)
-        {
-            throw GeneralException("Microtubule::cleanPossibleCrossings() encountered a linker on this microtubule");
-        }
-        for (const PossibleFullConnection& possibility : possibleConnectionsToCheck)
-        {
-            if(possibility.p_partialLinker != p_thisPartialLinker)
-            {
-                throw GeneralException("possibleConnectionsToCheck contains possibilities from different partial linkers, while Microtubule::cleanPossibleCrossings() assumes only one linker");
-            }
-        }
-        #endif // MYDEBUG
-
-        double positionPartialLinker; // Calculate the position relative to this microtubule, which is opposite to the partial linker
-        switch(locationPartialLinker.microtubule)
-        {
-        case MicrotubuleType::FIXED:
-            positionPartialLinker = locationPartialLinker.position*m_latticeSpacing - mobilePosition;
-            break;
-        case MicrotubuleType::MOBILE:
-            positionPartialLinker = locationPartialLinker.position*m_latticeSpacing + mobilePosition;
-            break;
-        default:
-            throw GeneralException("switch statement in Microtubule::cleanPossibleCrossings() fell through");
-        }
-
-        std::vector<FullConnectionLocations> fullConnections = getFullCrosslinkersCloseTo(positionPartialLinker, maxStretch);
-
-        #ifdef MYDEBUG
-        for(const FullConnectionLocations& fullConnection : fullConnections)
-        {
-            if(fullConnection.locationNextToPartial.microtubule != locationPartialLinker.microtubule || fullConnection.locationOppositeToPartial.microtubule == locationPartialLinker.microtubule)
-            {
-                throw GeneralException("Microtubule::cleanPossibleCrossings() encountered something fishy in fullConnections");
-            }
-        }
-        #endif // MYDEBUG
-
-        // erase-remove idiom erasing all possibleConnections from possibleConnectionsToCheck that have a full linker in the surroundings that crosses the possibleConnection
-        possibleConnectionsToCheck.erase(std::remove_if(possibleConnectionsToCheck.begin(),possibleConnectionsToCheck.end(),
-                                                // lambda expression
-                                                [&fullConnections, &locationPartialLinker](const PossibleFullConnection& possibleConnection)
-                                                {
-                                                    for(const FullConnectionLocations& fullConnection : fullConnections)
-                                                    {
-                                                        // Compare the integers labeling the sites on each microtubule with each other
-                                                        if ((locationPartialLinker.position < fullConnection.locationNextToPartial.position) &&
-                                                            (possibleConnection.location.position > fullConnection.locationOppositeToPartial.position))
-                                                        {
-                                                            return true;
-                                                        }
-                                                        else if((locationPartialLinker.position > fullConnection.locationNextToPartial.position) &&
-                                                                (possibleConnection.location.position < fullConnection.locationOppositeToPartial.position))
-                                                        {
-                                                            return true;
-                                                        }
-                                                    }
-                                                    return false;
-                                                }), possibleConnectionsToCheck.end());
+        return;
     }
+
+    #ifdef MYDEBUG
+    if(possibleConnectionsToCheck.front().location.microtubule!=m_type)
+    {
+        throw GeneralException("Microtubule::cleanPossibleCrossings() was called on the wrong microtubule");
+    }
+    #endif // MYDEBUG
+
+    // Store the partial linker and its position now, since there is assumed to be only one partial linker
+    Crosslinker*const p_thisPartialLinker = possibleConnectionsToCheck.front().p_partialLinker;
+
+    #ifdef MYDEBUG
+    if(!p_thisPartialLinker->isPartial())
+    {
+        throw GeneralException("Microtubule::cleanPossibleCrossings() encountered a non-partial linker");
+    }
+    #endif // MYDEBUG
+
+    const SiteLocation locationPartialLinker = p_thisPartialLinker->getBoundLocationWhenPartiallyConnected();
+
+    #ifdef MYDEBUG
+    if (locationPartialLinker.microtubule == m_type)
+    {
+        throw GeneralException("Microtubule::cleanPossibleCrossings() encountered a linker on this microtubule");
+    }
+    for (const PossibleFullConnection& possibility : possibleConnectionsToCheck)
+    {
+        if(possibility.p_partialLinker != p_thisPartialLinker)
+        {
+            throw GeneralException("possibleConnectionsToCheck contains possibilities from different partial linkers, while Microtubule::cleanPossibleCrossings() assumes only one linker");
+        }
+    }
+    #endif // MYDEBUG
+
+    double positionPartialLinker; // Calculate the position relative to this microtubule, which is opposite to the partial linker
+    switch(locationPartialLinker.microtubule)
+    {
+    case MicrotubuleType::FIXED:
+        positionPartialLinker = locationPartialLinker.position*m_latticeSpacing - mobilePosition;
+        break;
+    case MicrotubuleType::MOBILE:
+        positionPartialLinker = locationPartialLinker.position*m_latticeSpacing + mobilePosition;
+        break;
+    default:
+        throw GeneralException("switch statement in Microtubule::cleanPossibleCrossings() fell through");
+    }
+
+    std::vector<FullConnectionLocations> fullConnections = getFullCrosslinkersCloseTo(positionPartialLinker, maxStretch);
+
+    #ifdef MYDEBUG
+    for(const FullConnectionLocations& fullConnection : fullConnections)
+    {
+        if(fullConnection.locationNextToPartial.microtubule != locationPartialLinker.microtubule || fullConnection.locationOppositeToPartial.microtubule == locationPartialLinker.microtubule)
+        {
+            throw GeneralException("Microtubule::cleanPossibleCrossings() encountered something fishy in fullConnections");
+        }
+    }
+    #endif // MYDEBUG
+
+    // erase-remove idiom erasing all possibleConnections from possibleConnectionsToCheck that have a full linker in the surroundings that crosses the possibleConnection
+    possibleConnectionsToCheck.erase(std::remove_if(possibleConnectionsToCheck.begin(),possibleConnectionsToCheck.end(),
+                                            // lambda expression
+                                            [&fullConnections, &locationPartialLinker](const PossibleFullConnection& possibleConnection)
+                                            {
+                                                for(const FullConnectionLocations& fullConnection : fullConnections)
+                                                {
+                                                    // Compare the integers labeling the sites on each microtubule with each other
+                                                    if ((locationPartialLinker.position < fullConnection.locationNextToPartial.position) &&
+                                                        (possibleConnection.location.position > fullConnection.locationOppositeToPartial.position))
+                                                    {
+                                                        return true;
+                                                    }
+                                                    else if((locationPartialLinker.position > fullConnection.locationNextToPartial.position) &&
+                                                            (possibleConnection.location.position < fullConnection.locationOppositeToPartial.position))
+                                                    {
+                                                        return true;
+                                                    }
+                                                }
+                                                return false;
+                                            }), possibleConnectionsToCheck.end());
 }
 
 // position relative to this microtubule. Should return knowing that a partial linker is opposite to this microtubule.
@@ -605,7 +607,7 @@ std::vector<Crosslinker*> Microtubule::getPartialCrosslinkersCloseTo(const doubl
     }
 }
 
-// Finds the nearest neighbour partial linkers (relative to originLocation) of type typeToCheck.
+/*// Finds the nearest neighbour partial linkers (relative to originLocation) of type typeToCheck.
 std::vector<Crosslinker*> Microtubule::getNeighbouringPartialCrosslinkersOf(const SiteLocation& originLocation, const Crosslinker::Type typeToCheck) const
 {
     #ifdef MYDEBUG
@@ -660,7 +662,7 @@ std::vector<FullExtremity> Microtubule::getNeighbouringFullCrosslinkersOf(const 
     }
 
     return fullNeighbours;
-}
+}*/
 
 void Microtubule::growOneSite()
 {

@@ -3,4 +3,5 @@ Crosslinker *
 CrosslinkerContainer *
 MicrotubuleType *
 Site *
-Microtubule
+Microtubule *
+MobileMicrotubule 
