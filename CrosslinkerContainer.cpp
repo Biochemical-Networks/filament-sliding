@@ -558,7 +558,7 @@ void CrosslinkerContainer::updatePossibleConnectionsOppositeTo(Crosslinker*const
     }
 }
 
-void CrosslinkerContainer::updatePossiblePartialHopsNextTo(const SiteLocation& originLocation)
+/*void CrosslinkerContainer::updatePossiblePartialHopsNextTo(const SiteLocation& originLocation)
 {
     std::vector<Crosslinker*> partialNeighbours;
 
@@ -602,7 +602,7 @@ void CrosslinkerContainer::updatePossibleFullHopsNextTo(const SiteLocation& orig
         removePossibleFullHops(fullExtremity.p_fullLinker); // removes the possible hops of both extremities, so
         addPossibleFullHops(fullExtremity.p_fullLinker); // this adds the possible hops of both extremities again, in the updated configuration
     }
-}
+}*/
 
 // Gives the upper and lower bounds to the possible change in mobile microtubule position
 std::pair<double, double> CrosslinkerContainer::movementBordersSetByFullLinkers() const
@@ -664,11 +664,11 @@ void CrosslinkerContainer::updateConnectionDataMobilePositionChange(const double
         {
             connection.extension += positionChange;
         }
-        for (PossibleFullHop& hop : m_possibleFullHops)
+        /*for (PossibleFullHop& hop : m_possibleFullHops)
         {
             hop.oldExtension += positionChange;
             hop.newExtension += positionChange;
-        }
+        }*/
     }
     else
     {
@@ -684,9 +684,9 @@ void CrosslinkerContainer::updateConnectionDataMicrotubuleGrowth()
 
     updatePossibleConnectionsOppositeTo(nullptr, locationAdded); // no linker needs to be ignored
 
-    updatePossiblePartialHopsNextTo(locationAdded);
+    /*updatePossiblePartialHopsNextTo(locationAdded);
 
-    updatePossibleFullHopsNextTo(locationAdded);
+    updatePossibleFullHopsNextTo(locationAdded);*/
 }
 
 void CrosslinkerContainer::updateConnectionDataBlockSite(const int32_t sitePosition)
@@ -697,9 +697,9 @@ void CrosslinkerContainer::updateConnectionDataBlockSite(const int32_t sitePosit
     // Perform similar actions as after adding a partial linker. Only remove possibilities, no possibilities are added.
     updatePossibleConnectionsOppositeTo(nullptr, locationBlocked); // no linker needs to be ignored.
 
-    updatePossiblePartialHopsNextTo(locationBlocked);
+    /*updatePossiblePartialHopsNextTo(locationBlocked);
 
-    updatePossibleFullHopsNextTo(locationBlocked);
+    updatePossibleFullHopsNextTo(locationBlocked);*/
 }
 
 void CrosslinkerContainer::addFullConnection(Crosslinker*const p_newFullCrosslinker)
@@ -766,7 +766,7 @@ const std::vector<PossibleFullConnection>& CrosslinkerContainer::getPossibleConn
     return m_possibleConnections;
 }
 
-const std::vector<PossiblePartialHop>& CrosslinkerContainer::getPossiblePartialHops() const
+/*const std::vector<PossiblePartialHop>& CrosslinkerContainer::getPossiblePartialHops() const
 {
     return m_possiblePartialHops;
 }
@@ -774,7 +774,7 @@ const std::vector<PossiblePartialHop>& CrosslinkerContainer::getPossiblePartialH
 const std::vector<PossibleFullHop>& CrosslinkerContainer::getPossibleFullHops() const
 {
     return m_possibleFullHops;
-}
+}*/
 
 const std::vector<FullConnection>& CrosslinkerContainer::getFullConnections() const
 {
@@ -810,9 +810,9 @@ void CrosslinkerContainer::resetPossibilities()
 
     findPossibleConnections();
 
-    findPossiblePartialHops();
+    /*findPossiblePartialHops();
 
-    findPossibleFullHops();
+    findPossibleFullHops();*/
 }
 
 #ifdef MYDEBUG
