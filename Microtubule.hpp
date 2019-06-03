@@ -42,7 +42,7 @@ private:
     std::deque<int32_t> m_freeSitePositionsBlocked; // For binding to the blocked sites
     std::deque<int32_t> m_unblockedSitePositions; // For blocking sites
 
-    std::pair<double,double> getOldAndNewStretchFullHop(const int32_t oldPosition, const int32_t newPosition, const double positionOppositeExtremity, const double maxStretch) const;
+    /*std::pair<double,double> getOldAndNewStretchFullHop(const int32_t oldPosition, const int32_t newPosition, const double positionOppositeExtremity, const double maxStretch) const;*/
 
     void cleanPossibleCrossings(std::vector<PossibleFullConnection>& possibleConnectionsToCheck, const double mobilePosition, const double maxStretch) const;
 
@@ -83,17 +83,18 @@ public:
     void addPossibleConnectionsCloseTo(std::vector<PossibleFullConnection>& possibleConnections, Crosslinker* const p_oppositeCrosslinker,
                                        const double position, const double mobilePosition, const double maxStretch) const;
 
-    void addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>& possiblePartialHops, Crosslinker* const p_partialLinker) const;
+    /*void addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>& possiblePartialHops, Crosslinker* const p_partialLinker) const;
 
     void addPossibleFullHopsCloseTo(std::vector<PossibleFullHop>& possibleFullHops, const FullExtremity& fullLinkerExtremity,
-                                    const double positionOppositeExtremity, const double maxStretch) const;
+                                    const double positionOppositeExtremity, const double maxStretch) const;*/
 
     std::vector<Crosslinker*> getPartialCrosslinkersCloseTo(const double position, const double maxStretch, const Crosslinker::Type typeToCheck) const;
 
+    /* Only used for possible hops:
     // The following functions take a location instead of a linker (pointer), since it could be used for finding neighbours of both full or partial linkers
     std::vector<Crosslinker*> getNeighbouringPartialCrosslinkersOf(const SiteLocation& originLocation, const Crosslinker::Type typeToCheck) const;
 
-    std::vector<FullExtremity> getNeighbouringFullCrosslinkersOf(const SiteLocation& originLocation, const Crosslinker::Type typeToCheck) const;
+    std::vector<FullExtremity> getNeighbouringFullCrosslinkersOf(const SiteLocation& originLocation, const Crosslinker::Type typeToCheck) const;*/
 
     Crosslinker* giveConnectionAt(const int32_t sitePosition) const;
 

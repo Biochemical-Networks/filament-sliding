@@ -1,5 +1,6 @@
 Extremity *
 Crosslinker *
 CrosslinkerContainer *
-MicrotubuleType
+MicrotubuleType *
 Site *
+Microtubule
