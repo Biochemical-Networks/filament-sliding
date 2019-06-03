@@ -49,13 +49,17 @@ private:
     // Will be traversed linearly, to calculate all rates: this should happen every time step, so a vector can be accessed quickly.
     // However, to find elements or for resizing, it may be less quick. Make sure that it doesn't resize too often!
     // Added to crosslinkerContainer, because it is stored for each type of crosslinker separately.
+    // Not separate for Tip or Blocked, since full binding rates are independent from the MT state
     std::vector<PossibleFullConnection> m_possibleConnections;
 
     /*std::vector<PossiblePartialHop> m_possiblePartialHops;
 
     std::vector<PossibleFullHop> m_possibleFullHops;*/
 
+    // Keep track of full connections, indepependent from Tip or Blocked states of the microtubule site connected to.
+    // The binding / unbinding of full crosslinks does not change with the MT state, only the (un)binding of partial linkers changes.
     std::vector<FullConnection> m_fullConnections; // These are not possibilities, but actual connections
+
 
     // The following functions are used internally; cannot be called by public, m_possibleConnections is only altered through calls to (dis)connect functions, or to findPossibleConnections
     // add and remove functions are concerned with adding or removing all (possible) connections of a specific crosslinker (extremity).
