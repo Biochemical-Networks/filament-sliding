@@ -34,15 +34,16 @@ SiteLocation BindFreeCrosslinker::whereToConnect(const SystemState& systemState,
     int32_t nFreeSitesBlocked = systemState.getNFreeSites(MicrotubuleType::FIXED, SiteType::BLOCKED);
 
     #ifdef MYDEBUG
-    if(nFreeSitesTip<0 || nFreeSitesBlocked<0 || nFreeSitesTip==0 && nFreeSitesBlocked==0)
+    if(nFreeSitesTip<0 || nFreeSitesBlocked<0 || (nFreeSitesTip==0 && nFreeSitesBlocked==0))
     {
         throw GeneralException("BindFreeCrosslinker::whereToConnect() failed to find a proper number of free sites");
     }
     #endif // MYDEBUG
 
     // Always first bind to fixed when studying transport
-    MicrotubuleType microtubuleToConnect = MicrotubuleType::FIXED;
+    const MicrotubuleType microtubuleToConnect = MicrotubuleType::FIXED;
 
+    // Division should be possible: otherwise this function would not be called
     const double probabilityOnTip = m_rateOneLinkerToOneSiteTip*nFreeSitesTip/(m_rateOneLinkerToOneSiteTip*nFreeSitesTip+m_rateOneLinkerToOneSiteBlocked*nFreeSitesBlocked);
     const SiteType microtubulePartToConnectTo = generator.getBernoulli(probabilityOnTip) ? SiteType::TIP : SiteType::BLOCKED;
 
@@ -64,7 +65,6 @@ void BindFreeCrosslinker::performReaction(SystemState& systemState, RandomGenera
     Crosslinker::Terminus terminusToConnect = Crosslinker::Terminus::TAIL;
 
     systemState.connectFreeCrosslinker(m_typeToBind, terminusToConnect, connectLocation);
-
 }
 
 
