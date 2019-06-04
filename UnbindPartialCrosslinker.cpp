@@ -52,8 +52,14 @@ Crosslinker& UnbindPartialCrosslinker::whichToDisconnect(SystemState& systemStat
     {
         throw GeneralException("No partial linker is available to be disconnected in UnbindPartialCrosslinker::whichToDisconnect()");
     }
+    if (partialsBoundOnTip.size()!=systemState.getNPartialCrosslinkersOfType(m_typeToUnbind, SiteType::TIP) ||
+        partialsBoundOnBlocked.size()!=systemState.getNPartialCrosslinkersOfType(m_typeToUnbind, SiteType::BLOCKED) )
+    {
+        throw GeneralException("UnbindPartialCrosslinker::whichToDisconnect() saw two numbers of partials, something went wrong.");
+    }
     #endif // MYDEBUG
 
+    // m_currentRate must be nonzero, otherwise this function is never called
     const double probUnbindsFromTip = m_rateOneTerminusDisconnectsTip*partialsBoundOnTip.size()/m_currentRate;
 
     #ifdef MYDEBUG

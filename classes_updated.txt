@@ -9,13 +9,14 @@ SystemState *
 BindFreeCrosslinker *
 BindPartialCrosslinker *
 UnbindFullCrosslinker *
-UnbindPartialCrosslinker
+UnbindPartialCrosslinker *
 Initialiser
 Propagator
 Output
-
 Input/DefaultParameterMap
 Input/CommandArgumentHandler
+main
+
 ---- No updates required:
 
 ActinDisconnectException
