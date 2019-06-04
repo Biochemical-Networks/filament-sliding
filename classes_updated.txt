@@ -7,8 +7,8 @@ Microtubule *
 MobileMicrotubule *
 SystemState *
 BindFreeCrosslinker *
-BindPartialCrosslinker
-UnbindFullCrosslinker
+BindPartialCrosslinker *
+UnbindFullCrosslinker *
 UnbindPartialCrosslinker
 Initialiser
 Propagator
