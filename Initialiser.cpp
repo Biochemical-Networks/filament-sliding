@@ -15,12 +15,16 @@
 #include <iterator> // std::distance
 
 Initialiser::Initialiser(const double initialPositionMicrotubule,
-                         const double probabilityPartiallyConnected,
-                         const double probabilityFullyConnected,
+                         const double probabilityPartiallyConnectedTip,
+                         const double probabilityFullyConnectedTip,
+                         const double probabilityPartiallyConnectedBlocked,
+                         const double probabilityFullyConnectedBlocked,
                          const double probabilityTipUnblocked)
     :   m_initialPositionMicrotubule(initialPositionMicrotubule),
-        m_probabilityPartiallyConnected(probabilityPartiallyConnected),
-        m_probabilityFullyConnected(probabilityFullyConnected),
+        m_probabilityPartiallyConnectedTip(probabilityPartiallyConnectedTip),
+        m_probabilityFullyConnectedTip(probabilityFullyConnectedTip),
+        m_probabilityPartiallyConnectedBlocked(probabilityPartiallyConnectedBlocked),
+        m_probabilityFullyConnectedBlocked(probabilityFullyConnectedBlocked),
         m_probabilityTipUnblocked(probabilityTipUnblocked)
 {
     // Translate the string to an enum object Initialiser::InitialCrosslinkerDistribution
@@ -65,7 +69,6 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
 {
     const int32_t nSitesOverlapFixed = systemState.getNSitesOverlapFixed();
     const int32_t nSitesOverlapMobile = systemState.getNSitesOverlapMobile();
-    // std::cout << "nSitesOverlapFixed: " << nSitesOverlapFixed << " nSitesOverlapMobile: " << nSitesOverlapMobile << '\n';
 
     // nSitesOverlapFixed and nSitesOverlapMobile can be different when one microtubule is completely overlapping with the other, then use the shortest
     const int32_t nSitesOverlap = std::min(nSitesOverlapFixed, nSitesOverlapMobile);
@@ -93,23 +96,15 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
 
     int32_t nFreeCrosslinkers = systemState.getNFreeCrosslinkers();
 
-    try
+    if (nFreeCrosslinkers < nSitesToConnect)
     {
-        if (nFreeCrosslinkers < nSitesToConnect)
-        {
-            std::string numberOfFreeCrosslinkers = std::to_string(nFreeCrosslinkers);
-            std::string desiredNumberOfCrosslinkers = std::to_string(nSitesToConnect);
-            throw GeneralException("In Initialiser::initialiseCrosslinkers(), the number of free crosslinkers is "
-                                   +numberOfFreeCrosslinkers
-                                   +", lower than the initial number of crosslinkers needed, "
-                                   +desiredNumberOfCrosslinkers
-                                   +", for achieving a well connected system. "
-                                   +"\nContinue with the actual number of crosslinkers.");
-        }
-    }
-    catch(GeneralException)
-    {
-        nSitesToConnect = nFreeCrosslinkers; // Set the number of crosslinkers to the maximum number available.
+        std::string numberOfFreeCrosslinkers = std::to_string(nFreeCrosslinkers);
+        std::string desiredNumberOfCrosslinkers = std::to_string(nSitesToConnect);
+        throw GeneralException("In Initialiser::initialiseCrosslinkers(), the number of free crosslinkers is "
+                                +numberOfFreeCrosslinkers
+                                +", lower than the initial number of crosslinkers needed, "
+                                +desiredNumberOfCrosslinkers
+                                +", for achieving a well connected system. ");
     }
 
     /* The following code will calculate the number of crosslinkers of each type to be connected.
@@ -135,9 +130,9 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     int32_t firstSiteOverlapFixed = systemState.firstSiteOverlapFixed();
     int32_t firstSiteOverlapMobile = systemState.firstSiteOverlapMobile();
 
-    const double givenBoundDenominator = (m_probabilityPartiallyConnected+m_probabilityFullyConnected);
-    const double probabilityPartialGivenBound = (givenBoundDenominator==0.0)?0.0:
-                                                m_probabilityPartiallyConnected/givenBoundDenominator;
+    const double givenBoundTipDenominator = (m_probabilityPartiallyConnectedTip+m_probabilityFullyConnectedTip);
+    const double probabilityPartialGivenBoundTip = (givenBoundDenominatorTip==0.0)?0.0:
+                                                m_probabilityPartiallyConnectedTip/givenBoundDenominatorTip;
 
     // Crosslinkers will usually be initialised in a highly stretched state;
     // The first site in the overlap of the mobile microtubule can be a distance maxStretch from that of the fixed microtubule.
@@ -149,7 +144,7 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     // (assuming that the probability of binding to the blocked sites is always lower than that of binding to tip sites)
     for (int32_t i = 0; i<nPassiveCrosslinkersToConnect; ++connectedSoFar, ++i)
     {
-        if(generator.getProbability()<probabilityPartialGivenBound)
+        if(generator.getProbability()<probabilityPartialGivenBoundTip)
         {
             systemState.connectFreeCrosslinker(Crosslinker::Type::PASSIVE,
                                                Crosslinker::Terminus::TAIL,
@@ -166,7 +161,7 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
 
     for (int32_t i = 0; i<nDualCrosslinkersToConnect; ++connectedSoFar, ++i)
     {
-        if(generator.getProbability()<probabilityPartialGivenBound)
+        if(generator.getProbability()<probabilityPartialGivenBoundTip)
         {
             systemState.connectFreeCrosslinker(Crosslinker::Type::DUAL,
                                                Crosslinker::Terminus::TAIL,
@@ -183,7 +178,7 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
 
     for (int32_t i = 0; i<nActiveCrosslinkersToConnect; ++connectedSoFar, ++i)
     {
-        if(generator.getProbability()<probabilityPartialGivenBound)
+        if(generator.getProbability()<probabilityPartialGivenBoundTip)
         {
             systemState.connectFreeCrosslinker(Crosslinker::Type::ACTIVE,
                                                Crosslinker::Terminus::TAIL,
@@ -205,14 +200,14 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     }
     #endif // MYDEBUG
 
-    // Connect partials outside overlap
+    // Connect partials outside overlap. The ones inside the overlap are already connected
 
-    const double probabilityBoundOutsideOverlap=m_probabilityPartiallyConnected/(1-m_probabilityFullyConnected);
+    const double probabilityBoundTipOutsideOverlap=m_probabilityPartiallyConnectedTip/(1-m_probabilityFullyConnectedTip);
 
     for(int32_t i=0; i<systemState.getNSites(MicrotubuleType::FIXED); ++i)
     {
         if((i<systemState.firstSiteOverlapFixed() || i>systemState.lastSiteOverlapFixed()) &&
-           generator.getProbability()<probabilityBoundOutsideOverlap)
+           generator.getProbability()<probabilityBoundTipOutsideOverlap)
         {
             if(systemState.getNFreeCrosslinkers()==0)
             {
@@ -301,13 +296,48 @@ void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerat
     }
     #endif // MYDEBUG
     if(m_probabilityTipUnblocked==1.0) return;
+
+    // recalculate the overlap beginning and end as used in Initialiser::initialiseCrosslinkers(),
+    // which is necessary to know for deciding whether a specific crosslinker needs to be unbound or not (that depends on whether it is in the overlap)
+    const int32_t nSitesOverlap = std::min(systemState.getNSitesOverlapFixed(), systemState.getNSitesOverlapMobile());
+    const int32_t firstSiteOverlapFixed = systemState.firstSiteOverlapFixed();
+    const int32_t lastSiteOverlapFixed = firstSiteOverlapFixed+nSitesOverlap-1;
+
+    const double disconnectProbabilityUponBlockInOverlap = 1-m_probabilityFullyConnectedBlocked/m_probabilityFullyConnectedTip;
+    const double disconnectProbabilityUponBlockOutOfOverlap
+        = 1 - (m_probabilityPartiallyConnectedBlocked*(1-m_probabilityFullyConnectedTip))/((1-m_probabilityFullyConnectedBlocked)*m_probabilityPartiallyConnectedTip);
+
+    #ifdef MYDEBUG
+    if(disconnectProbabilityUponBlockInOverlap<0.0 || disconnectProbabilityUponBlockInOverlap > 1.0)
+    {
+        throw GeneralException("Initialiser::initialiseBlockedSites() calculated a wrong disconnectProbabilityUponBlockInOverlap.");
+    }
+
+    if(disconnectProbabilityUponBlockOutOfOverlap<0.0 || disconnectProbabilityUponBlockOutOfOverlap > 1.0)
+    {
+        throw GeneralException("Initialiser::initialiseBlockedSites() calculated a wrong disconnectProbabilityUponBlockOutOfOverlap");
+    }
+
+    const double disconnectProbabilityUponBlockInOverlap_2 = 1- m_probabilityPartiallyConnectedBlocked/m_probabilityPartiallyConnectedTip;
+    if(std::abs(disconnectProbabilityUponBlockInOverlap_2-disconnectProbabilityUponBlockInOverlap)/disconnectProbabilityUponBlockInOverlap > 0.01)
+    {
+        throw GeneralException("Initialiser::initialiseBlockedSites() calculated two different unbinding probabilities.");
+    }
+    #endif // MYDEBUG
+
     int32_t fixedLabel = systemState.getNSites(MicrotubuleType::FIXED)-1;
     double localUnblockedProbability=m_probabilityTipUnblocked;
     while(fixedLabel>=0)
     {
         if(generator.getProbability()>=localUnblockedProbability)
         {
-            systemState.blockSiteOnFixed(fixedLabel);
+            // Since the energy difference between being partially connected or fully connected does not depend on the site state (tip or blocked),
+            // there is a fixed probability that a linker in the overlap needs to be disconnected.
+            // However, the probability that a linker outside of the overlap should be disconnected is different!
+            const bool disconnect = (fixedLabel<firstSiteOverlapFixed || fixedLabel > lastSiteOverlapFixed) ?
+                                    generator.getBernoulli(disconnectProbabilityUponBlockOutOfOverlap) :
+                                    generator.getBernoulli(disconnectProbabilityUponBlockInOverlap);
+            systemState.blockSiteOnFixed(fixedLabel, disconnect);
         }
         --fixedLabel;
         localUnblockedProbability*=m_probabilityTipUnblocked;

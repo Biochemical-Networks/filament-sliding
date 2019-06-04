@@ -24,8 +24,10 @@ class Initialiser
     };*/
 private:
     const double m_initialPositionMicrotubule;
-    const double m_probabilityPartiallyConnected;
-    const double m_probabilityFullyConnected;
+    const double m_probabilityPartiallyConnectedTip;
+    const double m_probabilityFullyConnectedTip;
+    const double m_probabilityPartiallyConnectedBlocked;
+    const double m_probabilityFullyConnectedBlocked;
     const double m_probabilityTipUnblocked;
     /*InitialCrosslinkerDistribution m_initialCrosslinkerDistribution;*/
 
@@ -46,8 +48,10 @@ private:
 
 public:
     Initialiser(const double initialPositionMicrotubule,
-                const double probabilityPartiallyConnected,
-                const double probabilityFullyConnected,
+                const double probabilityPartiallyConnectedTip,
+                const double probabilityFullyConnectedTip,
+                const double probabilityPartiallyConnectedBlocked,
+                const double probabilityFullyConnectedBlocked,
                 const double probabilityTipUnblocked);
     ~Initialiser();
 

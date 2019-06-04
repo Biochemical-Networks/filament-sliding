@@ -97,7 +97,7 @@ public:
 
     void growFixed();
 
-    void blockSiteOnFixed(const int32_t sitePosition);
+    void blockSiteOnFixed(const int32_t sitePosition, const bool disconnect);
 
     /*int32_t barrierCrossed();*/
 

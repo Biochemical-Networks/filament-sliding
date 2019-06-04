@@ -368,24 +368,21 @@ void SystemState::growFixed()
     m_activeCrosslinkers.updateConnectionDataMicrotubuleGrowth();
 }
 
-void SystemState::blockSiteOnFixed(const int32_t sitePosition, const bool disconnectIfPartial, const bool disconnectIfFull)
+void SystemState::blockSiteOnFixed(const int32_t sitePosition, const bool disconnect)
 {
     Crosslinker* linker = m_fixedMicrotubule.giveConnectionAt(sitePosition);
-    if(linker!=nullptr) // a crosslinker is bound there.
+    if(linker!=nullptr && disconnect) // a crosslinker is bound there and we need to disconnect it.
     {
-        if(linker->isFull() && disconnectIfFull)
+        // Either fully disconnect it or leave it: don't turn a full into a partial here.
+        // disconnectIfFull is only set to True if it needs to fully disconnect.
+        // Crosslinkers that should be initially partial should be made partial in the first place (when all sites are still tip sites).
+        if(linker->isFull())
         {
             disconnectFullyConnectedCrosslinker(*linker, Crosslinker::Terminus::HEAD); // HEAD is always connected to the mobile, unbind that first
-        }
-        // must be partial now
-        #ifdef MYDEBUG
-        if(!linker->isPartial())
-        {
-            throw GeneralException("SystemState::blockSiteOnFixed() expects the linker to be partial now, but it is not.");
-        }
-        #endif // MYDEBUG
 
-        if(disconnectIfPartial)
+            disconnectPartiallyConnectedCrosslinker(*linker);
+        }
+        else if(linker->isPartial())
         {
             disconnectPartiallyConnectedCrosslinker(*linker);
         }

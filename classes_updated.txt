@@ -10,10 +10,10 @@ BindFreeCrosslinker *
 BindPartialCrosslinker *
 UnbindFullCrosslinker *
 UnbindPartialCrosslinker *
-Initialiser
+Initialiser *
 Propagator
 Output
-Input/DefaultParameterMap
+Input/DefaultParameterMap *
 Input/CommandArgumentHandler
 main
 
