@@ -142,38 +142,6 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter positionalHistogramHighestValue contains a wrong value.");
     }
 
-    /*std::string recordTransitionPathsString;
-    input.copyParameter("recordTransitionPaths", recordTransitionPathsString);
-    const bool recordTransitionPaths = (recordTransitionPathsString == "TRUE");*/
-
-    /*int32_t maxNFullCrosslinkers;
-    if(bindingDynamics)
-    {
-        maxNFullCrosslinkers = std::min(systemState.getNFreeSitesFixed(), systemState.getNFreeSitesMobile());
-    }
-    else
-    {
-        maxNFullCrosslinkers = nActiveCrosslinkers+nDualCrosslinkers+nPassiveCrosslinkers;
-    }
-
-    #ifdef MYDEBUG
-    std::cout << "The maximum number of full linkers is given by " << maxNFullCrosslinkers << ".\n";
-    #endif // MYDEBUG*/
-
-    /*int32_t transitionPathProbePeriod;
-    input.copyParameter("transitionPathProbePeriod", transitionPathProbePeriod);
-    if(transitionPathProbePeriod<=0)
-    {
-        throw GeneralException("The parameter transitionPathProbePeriod contains a wrong value.");
-    }
-
-    int32_t maxNumberTransitionPaths;
-    input.copyParameter("maxNumberTransitionPaths", maxNumberTransitionPaths);
-    if(maxNumberTransitionPaths<0)
-    {
-        throw GeneralException("The parameter maxNumberTransitionPaths contains a wrong value.");
-    }*/
-
     double maxPeriodPositionTracking;
     input.copyParameter("maxPeriodPositionTracking", maxPeriodPositionTracking);
     if(maxPeriodPositionTracking<0.0)
@@ -181,54 +149,12 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter maxPeriodPositionTracking contains a wrong value.");
     }
 
-    /*std::string estimateTimeEvolutionAtPeakString;
-    input.copyParameter("estimateTimeEvolutionAtPeak", estimateTimeEvolutionAtPeakString);
-    const bool estimateTimeEvolutionAtPeak = (estimateTimeEvolutionAtPeakString == "TRUE");
-
-    int32_t timeStepsPerDistributionEstimate;
-    input.copyParameter("timeStepsPerDistributionEstimate", timeStepsPerDistributionEstimate);
-    if(estimateTimeEvolutionAtPeak && timeStepsPerDistributionEstimate<=0)
-    {
-        throw GeneralException("The parameter timeStepsPerDistributionEstimate contains a wrong value.");
-    }
-
-    int32_t nEstimatesDistribution;
-    input.copyParameter("nEstimatesDistribution", nEstimatesDistribution);
-    if(estimateTimeEvolutionAtPeak && nEstimatesDistribution<=0)
-    {
-        throw GeneralException("The parameter nEstimatesDistribution contains a wrong value.");
-    }
-
-    double dynamicsEstimationInitialRegionWidth;
-    input.copyParameter("dynamicsEstimationInitialRegionWidth", dynamicsEstimationInitialRegionWidth);
-    if(estimateTimeEvolutionAtPeak && (dynamicsEstimationInitialRegionWidth<=0.0 || dynamicsEstimationInitialRegionWidth>1.0))
-    {
-        throw GeneralException("The parameter dynamicsEstimationInitialRegionWidth contains a wrong value.");
-    }
-
-    double dynamicsEstimationFinalRegionWidth;
-    input.copyParameter("dynamicsEstimationFinalRegionWidth", dynamicsEstimationFinalRegionWidth);
-    if(estimateTimeEvolutionAtPeak && (dynamicsEstimationFinalRegionWidth<=0.0 || dynamicsEstimationFinalRegionWidth>1.0))
-    {
-        throw GeneralException("The parameter dynamicsEstimationFinalRegionWidth contains a wrong value.");
-    }*/
-
     Output output(runName,
                   samplePositionalDistribution,
-                  /*recordTransitionPaths,*/
-                  /*transitionPathProbePeriod,*/
-                  /*maxNumberTransitionPaths,*/
                   positionalHistogramBinSize,
                   positionalHistogramLowestValue,
                   positionalHistogramHighestValue,
-                  /*maxNFullCrosslinkers,*/
-                  maxPeriodPositionTracking/*,*/
-                  /*latticeSpacing,*/
-                  /*estimateTimeEvolutionAtPeak,*/
-                  /*timeStepsPerDistributionEstimate,*/
-                  /*nEstimatesDistribution,*/
-                  /*dynamicsEstimationInitialRegionWidth,*/
-                  /*dynamicsEstimationFinalRegionWidth*/);
+                  maxPeriodPositionTracking);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for initialising the state.
@@ -340,16 +266,6 @@ int main(int argc, char* argv[])
 
     const double probabilityTipUnblocked = (rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule==0.0)?1.0:
                         rateFixedMicrotubuleGrowth/(rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule);
-
-    /*input.copyParameter("fractionOverlapSitesConnected", fractionOverlapSitesConnected);
-    if(fractionOverlapSitesConnected<0.0 || fractionOverlapSitesConnected > 1.0)
-    {
-        throw GeneralException("The parameter fractionOverlapSitesConnected contains a wrong value.");
-    }*/
-
-    /*std::string initialCrosslinkerDistributionString;
-    input.copyParameter("initialCrosslinkerDistribution", initialCrosslinkerDistributionString);*/
-
 
     Initialiser initialiser(initialPositionMicrotubule,
                             probabilityPartiallyConnectedTip,
@@ -476,6 +392,7 @@ int main(int argc, char* argv[])
     {
         // Do nothing. Message was already written and time recorded upon construction of the exception.
         // Possible window of Graphics was closed by the destructor of Graphics, since that one is called at the end of the try block.
+        // Still catch, to signal that the program is meant to end in this way.
     }
     return 0;
 }

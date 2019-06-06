@@ -12,10 +12,9 @@ UnbindFullCrosslinker *
 UnbindPartialCrosslinker *
 Initialiser *
 Propagator *
-Output
+Output *
 Input/DefaultParameterMap *
-Input/CommandArgumentHandler
-main
+main *
 
 ---- No updates required:
 
@@ -40,3 +39,4 @@ RandomGenerator
 Reaction
 RemoveSite
 Statistics
+Input/CommandArgumentHandler
