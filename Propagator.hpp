@@ -94,24 +94,15 @@ public:
                const double actinDisconnectTime,
                const double springConstant,
                const double latticeSpacing,
-               const double ratePassivePartialHop,
-               const double ratePassiveFullHop,
-               const double baseRateActivePartialHop,
-               const double baseRateActiveFullHop,
-               const double activeHopToPlusBiasEnergy,
                const double baseRateZeroToOneExtremitiesConnected,
                const double baseRateOneToZeroExtremitiesConnected,
                const double baseRateOneToTwoExtremitiesConnected,
                const double baseRateTwoToOneExtremitiesConnected,
-               /*const double headBindingBiasEnergy,*/
                const double rateFixedMicrotubuleGrowth,
                const double rateRemoveSitesFromFixedMicrotubule,
                RandomGenerator& generator,
                const bool samplePositionalDistribution,
-               /*const bool recordTransitionPaths,*/
-               /*const int32_t transitionPathProbePeriod,*/
                const bool addExternalForce,
-               /*const bool estimateTimeEvolutionAtPeak,*/
                Log& log);
     ~Propagator();
 

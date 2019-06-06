@@ -410,40 +410,6 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter actinDisconnectTime contains a wrong value.");
     }
 
-    double ratePassivePartialHop;
-    input.copyParameter("ratePassivePartialHop", ratePassivePartialHop);
-    if(ratePassivePartialHop<0.0)
-    {
-        throw GeneralException("The parameter ratePassivePartialHop contains a wrong value.");
-    }
-
-    double ratePassiveFullHop;
-    input.copyParameter("ratePassiveFullHop", ratePassiveFullHop);
-    if(ratePassiveFullHop<0.0)
-    {
-        throw GeneralException("The parameter ratePassiveFullHop contains a wrong value.");
-    }
-
-    double baseRateActivePartialHop;
-    input.copyParameter("baseRateActivePartialHop", baseRateActivePartialHop);
-    if(baseRateActivePartialHop<0.0)
-    {
-        throw GeneralException("The parameter baseRateActivePartialHop contains a wrong value.");
-    }
-
-    double baseRateActiveFullHop;
-    input.copyParameter("baseRateActiveFullHop", baseRateActiveFullHop);
-    if(baseRateActiveFullHop<0.0)
-    {
-        throw GeneralException("The parameter baseRateActiveFullHop contains a wrong value.");
-    }
-
-    double activeHopToPlusBiasEnergy;
-    input.copyParameter("activeHopToPlusBiasEnergy", activeHopToPlusBiasEnergy);
-
-    /*double headBindingBiasEnergy;
-    input.copyParameter("headBindingBiasEnergy", headBindingBiasEnergy);*/
-
     Propagator propagator(numberEquilibrationBlocks,
                           numberRunBlocks,
                           nTimeSteps,
@@ -453,24 +419,15 @@ int main(int argc, char* argv[])
                           actinDisconnectTime,
                           springConstant,
                           latticeSpacing,
-                          ratePassivePartialHop,
-                          ratePassiveFullHop,
-                          baseRateActivePartialHop,
-                          baseRateActiveFullHop,
-                          activeHopToPlusBiasEnergy,
                           baseRateZeroToOneExtremitiesConnected,
                           baseRateOneToZeroExtremitiesConnected,
                           baseRateOneToTwoExtremitiesConnected,
                           baseRateTwoToOneExtremitiesConnected,
-                          /*headBindingBiasEnergy,*/
                           rateFixedMicrotubuleGrowth,
                           rateRemoveSitesFromFixedMicrotubule,
                           generator,
                           samplePositionalDistribution,
-                          /*recordTransitionPaths,*/
-                          /*transitionPathProbePeriod,*/
                           addExternalForce,
-                          /*estimateTimeEvolutionAtPeak,*/
                           log);
 
     //-----------------------------------------------------------------------------------------------------

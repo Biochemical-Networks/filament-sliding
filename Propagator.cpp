@@ -32,24 +32,15 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const double actinDisconnectTime,
                        const double springConstant,
                        const double latticeSpacing,
-                       const double ratePassivePartialHop,
-                       const double ratePassiveFullHop,
-                       const double baseRateActivePartialHop,
-                       const double baseRateActiveFullHop,
-                       const double activeHopToPlusBiasEnergy,
                        const double baseRateZeroToOneExtremitiesConnected,
                        const double baseRateOneToZeroExtremitiesConnected,
                        const double baseRateOneToTwoExtremitiesConnected,
                        const double baseRateTwoToOneExtremitiesConnected,
-                       /*const double headBindingBiasEnergy,*/
                        const double rateFixedMicrotubuleGrowth,
                        const double rateRemoveSitesFromFixedMicrotubule,
                        RandomGenerator& generator,
                        const bool samplePositionalDistribution,
-                       /*const bool recordTransitionPaths,*/
-                       /*const int32_t transitionPathProbePeriod,*/
                        const bool addExternalForce,
-                       /*const bool estimateTimeEvolutionAtPeak,*/
                        Log& log)
     :   m_nEquilibrationBlocks(numberEquilibrationBlocks),
         m_nRunBlocks(numberRunBlocks),
@@ -63,14 +54,10 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_deviationMicrotubule(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep)),
         m_currentTime(-m_nEquilibrationBlocks*m_nTimeSteps*m_calcTimeStep), // time 0 is the start of the run blocks
         m_samplePositionalDistribution(samplePositionalDistribution),
-        /*m_recordTransitionPaths(recordTransitionPaths),*/
-        /*m_transitionPathProbePeriod(transitionPathProbePeriod),*/
         m_addExternalForce(addExternalForce),
-        /*m_estimateTimeEvolutionAtPeak(estimateTimeEvolutionAtPeak),*/
         m_nDeterministicBoundaryCrossings(0), // Counts the number of times a force has tried to push the mobile microtubule across a maximum stretch barrier
         m_nStochasticBoundaryCrossings(0), // Counts the number of times diffusion of the mobile microtubule was reflected at a maximum stretch barrier
-        m_log(log),/*,
-        m_basinOfAttractionHalfWidth(0.15*m_latticeSpacing)*/
+        m_log(log),
         m_actinIsFree(false), // start with connected filaments
         m_timeFreeActin(0.0)
 {
@@ -127,68 +114,11 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
             {
                 output.addPosition(MathematicalFunctions::mod(systemState.getMicrotubulePosition(), m_latticeSpacing));
             }
-
-            /*if(m_estimateTimeEvolutionAtPeak)
-            {
-                output.addTimeStepToPeakAnalysis(MathematicalFunctions::mod(systemState.getMicrotubulePosition(), m_latticeSpacing),
-                                                   systemState.getNFullRightPullingCrosslinkers());
-            }*/
-
-            /*if(m_recordTransitionPaths)
-            {
-                const double position = systemState.getMicrotubulePosition();
-                const int32_t nRightLinkers = systemState.getNFullRightPullingCrosslinkers();
-                const int32_t nFullLinkers = systemState.getNFullCrosslinkers();
-
-                if(!inBasinOfAttraction(position, nRightLinkers, nFullLinkers))
-                {
-                    if(!output.isTrackingPath())
-                    {
-                        output.toggleTracking();
-                        // At the first m_transitionPathProbePeriod out of the basin, it should still be close to the original basin.
-                        m_previousBasinOfAttraction = MathematicalFunctions::intFloor(position/m_latticeSpacing + 0.5);
-                    }
-
-                    output.addPointTransitionPath(m_currentTime, position, nRightLinkers);
-                }
-                else // it is in the basin of attraction
-                {
-                    if(output.isTrackingPath())
-                    {
-                        if(MathematicalFunctions::intFloor(position/m_latticeSpacing + 0.5) == m_previousBasinOfAttraction)
-                        {
-                            // It returned to where it came from
-                            output.cleanTransitionPath();
-                        }
-                        else
-                        {
-                            // It made a transition
-                            output.writeTransitionPath(m_latticeSpacing);
-                            // If empty paths are written away, it means that m_transitionPathProbePeriod is too small to probe a transition path effectively
-                        }
-                        output.toggleTracking(); // Turn off at the end, after the possible writing has finished
-                    }
-                }
-            }*/
         }
 
         advanceTimeStep(systemState, generator);
-
-        /*// Check if a barrier crossing took place
-        const int32_t barrierCrossingDirection = systemState.barrierCrossed(); // returns 0 if no barrier is crossed
-        if(barrierCrossingDirection != 0)
-        {
-            if(writeOutput){output.writeBarrierCrossingTime(m_currentTime, barrierCrossingDirection);}
-        }*/
     }
 }
-
-/*bool Propagator::inBasinOfAttraction(const double mobilePosition, const int32_t nRightPullingCrosslinkers, const int32_t nFullCrosslinkers) const
-{
-    const double remainder = MathematicalFunctions::mod(mobilePosition,m_latticeSpacing);
-    return ((remainder < m_basinOfAttractionHalfWidth) && (nRightPullingCrosslinkers <= 1)) ||
-           ((remainder > m_latticeSpacing-m_basinOfAttractionHalfWidth) && (nRightPullingCrosslinkers >= nFullCrosslinkers-1));
-}*/
 
 void Propagator::equilibrate(SystemState& systemState, RandomGenerator& generator, Output& output)
 {

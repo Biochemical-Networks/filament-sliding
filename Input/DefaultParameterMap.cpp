@@ -43,18 +43,6 @@ ParameterMap::ParameterMap()
     defineParameter("actinDisconnectTime", 0.01, "s", ">=0");
     defineParameter("springConstant", 1.1e5, "kT*micron^(-2)", ">=0");
 
-    // The rates for hopping of passive extremities when the linker is either partially or fully connected
-    defineParameter("ratePassivePartialHop", 0.0, "s^(-1)", ">=0");
-    defineParameter("ratePassiveFullHop", 0.0, "s^(-1)", ">=0");
-    // The rates for hopping of active extremities when the linker is either partially or fully connected
-    // are calculated using the following parameters.
-    // baseRate is the geometric mean between the forward and backward rate,
-    // whereas activeHopToPlusBiasEnergy gives the free energy driving a single hop towards the plus tip of the microtubule.
-    // For a minus end walking motor, use a negative bias free energy
-    defineParameter("baseRateActivePartialHop", 0.0, "s^(-1)", ">=0");
-    defineParameter("baseRateActiveFullHop", 0.0, "s^(-1)", ">=0");
-    defineParameter("activeHopToPlusBiasEnergy", 1., "kT", "real");
-
     // Rates for connecting crosslinkers to the microtubules. The rates from zero to one are per crosslinker in solution per microtubule site.
     // So the full rate for connecting to any site is baseRateZeroToOneExtremitiesConnected * #free crosslinkers * # free microtubule sites
     // For unbinding a full linker, the rate is given per linker, not per extremity.
