@@ -22,15 +22,6 @@ UnbindPartialCrosslinker::~UnbindPartialCrosslinker()
 
 void UnbindPartialCrosslinker::setCurrentRate(const SystemState& systemState)
 {
-    #ifdef MYDEBUG
-    int32_t nCrosslinkersOfThisType = systemState.getNPartialCrosslinkersOfType(m_typeToUnbind);
-    if (nCrosslinkersOfThisType != systemState.getNPartialCrosslinkersOfType(m_typeToUnbind, SiteType::TIP)
-                                    + systemState.getNPartialCrosslinkersOfType(m_typeToUnbind, SiteType::BLOCKED))
-    {
-        throw GeneralException("UnbindPartialCrosslinker::setCurrentRate() found two different numbers of partial linkers");
-    }
-    #endif // MYDEBUG
-
     m_currentRate = m_rateOneTerminusDisconnectsTip*systemState.getNPartialCrosslinkersOfType(m_typeToUnbind, SiteType::TIP)
                     + m_rateOneTerminusDisconnectsBlocked*systemState.getNPartialCrosslinkersOfType(m_typeToUnbind, SiteType::BLOCKED);
 }

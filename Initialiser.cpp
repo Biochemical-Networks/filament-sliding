@@ -77,7 +77,7 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     std::iota(positionsToConnect.begin(), positionsToConnect.end(), 0); // Fill vector with 0, 1, ..., n-1, such that you have a list of all positions
     std::shuffle(positionsToConnect.begin(), positionsToConnect.end(), generator.getBareGenerator()); // Shuffle the positions
 
-    const double fractionOverlapSitesConnected = m_probabilityPartiallyConnected+m_probabilityFullyConnected;
+    const double fractionOverlapSitesConnected = m_probabilityPartiallyConnectedTip+m_probabilityFullyConnectedTip;
     #ifdef MYDEBUG
     if(fractionOverlapSitesConnected>1.0)
     {
@@ -131,8 +131,8 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     int32_t firstSiteOverlapMobile = systemState.firstSiteOverlapMobile();
 
     const double givenBoundTipDenominator = (m_probabilityPartiallyConnectedTip+m_probabilityFullyConnectedTip);
-    const double probabilityPartialGivenBoundTip = (givenBoundDenominatorTip==0.0)?0.0:
-                                                m_probabilityPartiallyConnectedTip/givenBoundDenominatorTip;
+    const double probabilityPartialGivenBoundTip = (givenBoundTipDenominator==0.0)?0.0:
+                                                m_probabilityPartiallyConnectedTip/givenBoundTipDenominator;
 
     // Crosslinkers will usually be initialised in a highly stretched state;
     // The first site in the overlap of the mobile microtubule can be a distance maxStretch from that of the fixed microtubule.

@@ -25,7 +25,7 @@ void BindFreeCrosslinker::setCurrentRate(const SystemState& systemState)
     // getNFreeSites() gives the number of free sites on both microtubules. Each of those is an (unbiased) option for binding a free linker.
     const bool crosslinkerAvailable = (systemState.getNFreeCrosslinkersOfType(m_typeToBind)!=0);
     m_currentRate = (crosslinkerAvailable ? 1 : 0) * (m_rateOneLinkerToOneSiteTip * systemState.getNFreeSites(MicrotubuleType::FIXED, SiteType::TIP)
-                                                    +m_rateOneLinkerToOneSiteBlocked * systemState.getNFreeSites(MicrotubuleType::FIXED, SiteType::BLOCKED);
+                                                    +m_rateOneLinkerToOneSiteBlocked * systemState.getNFreeSites(MicrotubuleType::FIXED, SiteType::BLOCKED));
 }
 
 SiteLocation BindFreeCrosslinker::whereToConnect(const SystemState& systemState, RandomGenerator& generator) const
@@ -52,7 +52,7 @@ SiteLocation BindFreeCrosslinker::whereToConnect(const SystemState& systemState,
     const int32_t freeSiteLabelToConnect = generator.getUniformInteger(0, nFreeSites-1); // Each site has equal probability of binding
 
     // Now, we have picked a label to a free site uniformly. Then, map this using a linear (bijective) function to the actual positions on the microtubule where the free sites are
-    const int32_t positionToConnectAt = systemState.getFreeSitePosition(microtubuleToConnect, siteType, freeSiteLabelToConnect);
+    const int32_t positionToConnectAt = systemState.getFreeSitePosition(microtubuleToConnect, microtubulePartToConnectTo, freeSiteLabelToConnect);
 
     return SiteLocation{microtubuleToConnect, positionToConnectAt, microtubulePartToConnectTo};
 }

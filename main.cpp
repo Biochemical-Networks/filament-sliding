@@ -343,6 +343,8 @@ int main(int argc, char* argv[])
                           baseRateOneToZeroExtremitiesConnected,
                           baseRateOneToTwoExtremitiesConnected,
                           baseRateTwoToOneExtremitiesConnected,
+                          baseRateZeroToOneOnBlocked,
+                          baseRateOneToZeroOnBlocked,
                           rateFixedMicrotubuleGrowth,
                           rateRemoveSitesFromFixedMicrotubule,
                           unbindUponUnblock,

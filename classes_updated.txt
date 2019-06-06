@@ -15,6 +15,7 @@ Propagator *
 Output *
 Input/DefaultParameterMap *
 main *
+RemoveSite *
 
 ---- No updates required:
 
@@ -37,6 +38,5 @@ PartialCrosslinkerGraphic
 PossibleFullConnection
 RandomGenerator
 Reaction
-RemoveSite
 Statistics
 Input/CommandArgumentHandler

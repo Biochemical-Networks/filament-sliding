@@ -106,13 +106,13 @@ Crosslinker& SystemState::connectFreeCrosslinker(const Crosslinker::Type type,
     switch(type)
     {
         case Crosslinker::Type::PASSIVE:
-            p_connectingCrosslinker = m_passiveCrosslinkers.connectFromFreeToPartial();
+            p_connectingCrosslinker = m_passiveCrosslinkers.connectFromFreeToPartial(locationToConnectTo.siteType);
             break;
         case Crosslinker::Type::DUAL:
-            p_connectingCrosslinker = m_dualCrosslinkers.connectFromFreeToPartial();
+            p_connectingCrosslinker = m_dualCrosslinkers.connectFromFreeToPartial(locationToConnectTo.siteType);
             break;
         case Crosslinker::Type::ACTIVE:
-            p_connectingCrosslinker = m_activeCrosslinkers.connectFromFreeToPartial();
+            p_connectingCrosslinker = m_activeCrosslinkers.connectFromFreeToPartial(locationToConnectTo.siteType);
             break;
         default:
             throw GeneralException("An incorrect crosslinker type was passed to SystemState::connectFreeCrosslinker()");
@@ -145,8 +145,6 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
     SiteLocation locationToDisconnectFrom = disconnectingCrosslinker.getBoundLocationWhenPartiallyConnected();
 
     Crosslinker::Type type = disconnectingCrosslinker.getType();
-
-    const Crosslinker::Terminus disconnectingTerminus = disconnectingCrosslinker.getBoundTerminusWhenPartiallyConnected();
 
     // Disconnect in administration of crosslinker container
     switch(type)
@@ -184,9 +182,9 @@ void SystemState::disconnectPartiallyConnectedCrosslinker(Crosslinker& disconnec
 
 
     // Finally, update the information on possibilities with the new SystemState
-    m_passiveCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom, disconnectingTerminus);
-    m_dualCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom, disconnectingTerminus);
-    m_activeCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom, disconnectingTerminus);
+    m_passiveCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom);
+    m_dualCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom);
+    m_activeCrosslinkers.updateConnectionDataPartialToFree(&disconnectingCrosslinker, locationToDisconnectFrom);
 
 }
 
@@ -271,9 +269,9 @@ void SystemState::connectPartiallyConnectedCrosslinker(Crosslinker& connectingCr
     p_microtubuleToConnect->connectSite(locationOppositeMicrotubule.position, connectingCrosslinker, terminusToConnect);
 
     // Finally, update the information on possibilities with the new SystemState
-    m_passiveCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule, terminusToConnect);
-    m_dualCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule, terminusToConnect);
-    m_activeCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule, terminusToConnect);
+    m_passiveCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule);
+    m_dualCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule);
+    m_activeCrosslinkers.updateConnectionDataPartialToFull(&connectingCrosslinker, locationOppositeMicrotubule);
 
 }
 
