@@ -326,6 +326,10 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter actinDisconnectTime contains a wrong value.");
     }
 
+    // If there is (un)binding on the lattice region, then don't remove crosslinkers from hydrolysed sites.
+    // However, if there is no (un)binding, then linkers have to be removed upon blocking, since they would remain indefinitely otherwise
+    const bool unbindUponUnblock = !bindingDynamicsOnBlocked;
+
     Propagator propagator(numberEquilibrationBlocks,
                           numberRunBlocks,
                           nTimeSteps,
@@ -341,6 +345,7 @@ int main(int argc, char* argv[])
                           baseRateTwoToOneExtremitiesConnected,
                           rateFixedMicrotubuleGrowth,
                           rateRemoveSitesFromFixedMicrotubule,
+                          unbindUponUnblock,
                           generator,
                           samplePositionalDistribution,
                           addExternalForce,

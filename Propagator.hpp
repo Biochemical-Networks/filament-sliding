@@ -100,6 +100,7 @@ public:
                const double baseRateTwoToOneExtremitiesConnected,
                const double rateFixedMicrotubuleGrowth,
                const double rateRemoveSitesFromFixedMicrotubule,
+               const double unbindUponBlock,
                RandomGenerator& generator,
                const bool samplePositionalDistribution,
                const bool addExternalForce,
