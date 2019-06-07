@@ -106,8 +106,9 @@ void CrosslinkerContainer::disconnectFromPartialToFree(Crosslinker& crosslinkerT
     m_partialCrosslinkers.erase(std::remove(m_partialCrosslinkers.begin(), m_partialCrosslinkers.end(), &crosslinkerToDisconnect));
 
     // Try to remove from both containers, only one will do something.
-    m_partialCrosslinkersOnTip.erase(std::remove(m_partialCrosslinkersOnTip.begin(), m_partialCrosslinkersOnTip.end(), &crosslinkerToDisconnect));
-    m_partialCrosslinkersOnBlocked.erase(std::remove(m_partialCrosslinkersOnBlocked.begin(), m_partialCrosslinkersOnBlocked.end(), &crosslinkerToDisconnect));
+    // For this, the range based erase has to be used! Trying to erase only the iterator will result in a segfault if nothing is present and v.end() is returned.
+    m_partialCrosslinkersOnTip.erase(std::remove(m_partialCrosslinkersOnTip.begin(), m_partialCrosslinkersOnTip.end(), &crosslinkerToDisconnect), m_partialCrosslinkersOnTip.end());
+    m_partialCrosslinkersOnBlocked.erase(std::remove(m_partialCrosslinkersOnBlocked.begin(), m_partialCrosslinkersOnBlocked.end(), &crosslinkerToDisconnect), m_partialCrosslinkersOnBlocked.end());
 
     m_freeCrosslinkers.push_back(&crosslinkerToDisconnect);
 }
@@ -124,8 +125,9 @@ void CrosslinkerContainer::connectFromPartialToFull(Crosslinker& crosslinkerToCo
     m_partialCrosslinkers.erase(std::remove(m_partialCrosslinkers.begin(), m_partialCrosslinkers.end(), &crosslinkerToConnect));
 
     // Try to remove from both containers, only one will do something.
-    m_partialCrosslinkersOnTip.erase(std::remove(m_partialCrosslinkersOnTip.begin(), m_partialCrosslinkersOnTip.end(), &crosslinkerToConnect));
-    m_partialCrosslinkersOnBlocked.erase(std::remove(m_partialCrosslinkersOnBlocked.begin(), m_partialCrosslinkersOnBlocked.end(), &crosslinkerToConnect));
+    // For this, the range based erase has to be used! Trying to erase only the iterator will result in a segfault if nothing is present and v.end() is returned.
+    m_partialCrosslinkersOnTip.erase(std::remove(m_partialCrosslinkersOnTip.begin(), m_partialCrosslinkersOnTip.end(), &crosslinkerToConnect), m_partialCrosslinkersOnTip.end());
+    m_partialCrosslinkersOnBlocked.erase(std::remove(m_partialCrosslinkersOnBlocked.begin(), m_partialCrosslinkersOnBlocked.end(), &crosslinkerToConnect), m_partialCrosslinkersOnBlocked.end());
 
     m_fullCrosslinkers.push_back(&crosslinkerToConnect);
 }

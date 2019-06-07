@@ -16,6 +16,7 @@ Output *
 Input/DefaultParameterMap *
 main *
 RemoveSite *
+PartialCrosslinkerGraphic
 
 ---- No updates required:
 
@@ -34,7 +35,6 @@ Log
 MathematicalFunctions
 MicrotubuleGraphic
 OutputParameters
-PartialCrosslinkerGraphic
 PossibleFullConnection
 RandomGenerator
 Reaction
