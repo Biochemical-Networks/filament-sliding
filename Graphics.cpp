@@ -280,6 +280,7 @@ void Graphics::updatePartialCrosslinkers(const Crosslinker::Type type)
                                                                   m_lineThickness,
                                                                   0.5f*m_distanceBetweenMicrotubules,
                                                                   boundWithMotor,
+                                                                  boundLocation.siteType==SiteType::TIP,
                                                                   m_circlePointCount));
 
         if(boundLocation.microtubule == MicrotubuleType::FIXED)
@@ -323,22 +324,26 @@ void Graphics::updateFullCrosslinkers(const Crosslinker::Type type)
 
         sf::Vector2f fixedPosition;
         sf::Vector2f mobilePosition;
+        bool boundToTipOnFixed;
 
         if(headLocation.microtubule == MicrotubuleType::FIXED)
         {
             fixedPosition = sf::Vector2f(m_fixedMicrotubuleX + calculateGraphicsLatticeSpacing()*headLocation.position, calculateFixedMicrotubuleY());
             mobilePosition = sf::Vector2f(calculateMobileMicrotubuleX() + calculateGraphicsLatticeSpacing()*tailLocation.position, calculateMobileMicrotubuleY());
+            boundToTipOnFixed = headLocation.siteType==SiteType::TIP;
         }
         else
         {
             fixedPosition = sf::Vector2f(m_fixedMicrotubuleX + calculateGraphicsLatticeSpacing()*tailLocation.position, calculateFixedMicrotubuleY());
             mobilePosition = sf::Vector2f(calculateMobileMicrotubuleX() + calculateGraphicsLatticeSpacing()*headLocation.position, calculateMobileMicrotubuleY());
+            boundToTipOnFixed = tailLocation.siteType==SiteType::TIP;
         }
 
         m_fullCrosslinkers.push_back(FullCrosslinkerGraphic(m_circleRadius-m_lineThickness,
                                                                    m_lineThickness,
                                                                    mobileTerminusActive,
                                                                    fixedTerminusActive,
+                                                                   boundToTipOnFixed,
                                                                    mobilePosition,
                                                                    fixedPosition,
                                                                    m_circlePointCount));

@@ -5,6 +5,7 @@ FullCrosslinkerGraphic::FullCrosslinkerGraphic(const float circleRadius,
                                                const float lineThickness,
                                                const bool mobileTerminusActive,
                                                const bool fixedTerminusActive,
+                                               const bool fixedTerminusOnTip,
                                                const sf::Vector2f positionOnMobile,
                                                const sf::Vector2f positionOnFixed,
                                                const std::size_t circlePointCount)
@@ -15,11 +16,11 @@ FullCrosslinkerGraphic::FullCrosslinkerGraphic(const float circleRadius,
         m_spring(4) // A (thin) bar with four corners
 {
     m_mobileTerminus.setOrigin(circleRadius,circleRadius);
-    m_mobileTerminus.setFillColor(mobileTerminusActive?m_activeTerminusColor:m_passiveTerminusColor);
+    m_mobileTerminus.setFillColor(decideColor(mobileTerminusActive, true)); // The mobile (actin) filament is always in the tip state
     m_mobileTerminus.setPosition(positionOnMobile);
 
     m_fixedTerminus.setOrigin(circleRadius,circleRadius);
-    m_fixedTerminus.setFillColor(fixedTerminusActive?m_activeTerminusColor:m_passiveTerminusColor);
+    m_fixedTerminus.setFillColor(decideColor(fixedTerminusActive, fixedTerminusOnTip));
     m_fixedTerminus.setPosition(positionOnFixed);
 
     m_spring.setFillColor(m_springColor);
@@ -41,5 +42,31 @@ void FullCrosslinkerGraphic::draw(sf::RenderTarget& target, sf::RenderStates sta
     target.draw(m_spring, states);
     target.draw(m_mobileTerminus, states);
     target.draw(m_fixedTerminus, states);
+}
+
+inline sf::Color FullCrosslinkerGraphic::decideColor(const bool boundTerminusActive, const bool onTip) const
+{
+    if(boundTerminusActive)
+    {
+        if(onTip)
+        {
+            return m_activeTerminusColorOnTip;
+        }
+        else
+        {
+            return m_activeTerminusColorOnBlocked;
+        }
+    }
+    else
+    {
+        if(onTip)
+        {
+            return m_passiveTerminusColorOnTip;
+        }
+        else
+        {
+            return m_passiveTerminusColorOnBlocked;
+        }
+    }
 }
 
