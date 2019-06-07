@@ -326,7 +326,8 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
                 // Check if the new connection proposed does not cross an existing full connection (we disallow that).
                 // For this, make use of the fact that the opposite extremity of that full linker should be within a maxStretch distance compared to the position of the partial linker
 
-                newPossibleConnections.push_back(PossibleFullConnection{p_oppositeCrosslinker, SiteLocation{m_type, posToCheck}, stretch});
+                // Since partials only bind to the microtubule (fixed filament), and not to actin, the SiteLocation needs to be on Actin, which is always in the TIP state
+                newPossibleConnections.push_back(PossibleFullConnection{p_oppositeCrosslinker, SiteLocation{m_type, posToCheck, SiteType::TIP}, stretch});
             }
         }
         cleanPossibleCrossings(newPossibleConnections, mobilePosition, maxStretch);
