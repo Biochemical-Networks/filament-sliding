@@ -13,6 +13,7 @@
 #include <cmath> // std::ceil
 #include <vector>
 #include <iterator> // std::distance
+#include <iostream>
 
 Initialiser::Initialiser(const double initialPositionMicrotubule,
                          const double probabilityPartiallyConnectedTip,
@@ -323,6 +324,9 @@ void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerat
     {
         throw GeneralException("Initialiser::initialiseBlockedSites() calculated two different unbinding probabilities.");
     }
+
+    std::cout << "disconnectProbabilityUponBlockInOverlap: " << disconnectProbabilityUponBlockInOverlap
+              << "\ndisconnectProbabilityUponBlockOutOfOverlap: " << disconnectProbabilityUponBlockOutOfOverlap << '\n';
     #endif // MYDEBUG
 
     int32_t fixedLabel = systemState.getNSites(MicrotubuleType::FIXED)-1;
