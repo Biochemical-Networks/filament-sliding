@@ -229,6 +229,13 @@ void Graphics::update()
     m_mobileMicrotubule.setPosition(calculateMobileMicrotubuleX(), calculateMobileMicrotubuleY());
     m_fixedMicrotubule.setPosition(m_fixedMicrotubuleX, calculateFixedMicrotubuleY());
 
+    // First draw the blocked sites: the crosslinkers are on top
+
+    m_blockedSites.clear();
+
+    updateBlockedSites(MicrotubuleType::FIXED);
+    updateBlockedSites(MicrotubuleType::MOBILE);
+
     m_partialCrosslinkers.clear();
 
     updatePartialCrosslinkers(Crosslinker::Type::PASSIVE);
@@ -240,11 +247,6 @@ void Graphics::update()
     updateFullCrosslinkers(Crosslinker::Type::PASSIVE);
     updateFullCrosslinkers(Crosslinker::Type::DUAL);
     updateFullCrosslinkers(Crosslinker::Type::ACTIVE);
-
-    m_blockedSites.clear();
-
-    updateBlockedSites(MicrotubuleType::FIXED);
-    updateBlockedSites(MicrotubuleType::MOBILE);
 }
 
 void Graphics::propagateGraphicsStep()
