@@ -783,7 +783,7 @@ void SystemState::updateForceAndEnergy()
     const std::vector<FullConnection>& activeFullConnections = getFullConnections(Crosslinker::Type::ACTIVE);
 
     double totalExtension = 0;
-    double totalSquaredExtension = 0;
+    /*double totalSquaredExtension = 0;*/
 
     for(const FullConnection& fullConnection : passiveFullConnections)
     {

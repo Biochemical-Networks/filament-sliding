@@ -43,8 +43,8 @@ Crosslinker& UnbindPartialCrosslinker::whichToDisconnect(SystemState& systemStat
     {
         throw GeneralException("No partial linker is available to be disconnected in UnbindPartialCrosslinker::whichToDisconnect()");
     }
-    if (partialsBoundOnTip.size()!=systemState.getNPartialCrosslinkersOfType(m_typeToUnbind, SiteType::TIP) ||
-        partialsBoundOnBlocked.size()!=systemState.getNPartialCrosslinkersOfType(m_typeToUnbind, SiteType::BLOCKED) )
+    if (static_cast<int32_t>(partialsBoundOnTip.size())!=systemState.getNPartialCrosslinkersOfType(m_typeToUnbind, SiteType::TIP) ||
+        static_cast<int32_t>(partialsBoundOnBlocked.size())!=systemState.getNPartialCrosslinkersOfType(m_typeToUnbind, SiteType::BLOCKED) )
     {
         throw GeneralException("UnbindPartialCrosslinker::whichToDisconnect() saw two numbers of partials, something went wrong.");
     }
