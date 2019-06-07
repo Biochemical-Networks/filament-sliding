@@ -47,7 +47,7 @@ void Site::disconnectCrosslinker()
 bool Site::isFree() const
 {
     #ifdef MYDEBUG
-    if ((m_isFree || m_isBlocked) && mp_connectedCrosslinker!=nullptr)
+    if ((m_isFree && mp_connectedCrosslinker!=nullptr) || (!m_isFree && mp_connectedCrosslinker==nullptr))
     {
         throw GeneralException("Site::isFree() was called while something was wrong");
     }
@@ -59,7 +59,7 @@ bool Site::isFree() const
 bool Site::isPartial() const
 {
     #ifdef MYDEBUG
-    if ((m_isFree || m_isBlocked) && mp_connectedCrosslinker!=nullptr)
+    if ((m_isFree && mp_connectedCrosslinker!=nullptr) || (!m_isFree && mp_connectedCrosslinker==nullptr))
     {
         throw GeneralException("Site::isPartial() was called while something was wrong");
     }
@@ -78,7 +78,7 @@ bool Site::isPartial() const
 bool Site::isFull() const
 {
     #ifdef MYDEBUG
-    if ((m_isFree || m_isBlocked) && mp_connectedCrosslinker!=nullptr)
+    if ((m_isFree && mp_connectedCrosslinker!=nullptr) || (!m_isFree && mp_connectedCrosslinker==nullptr))
     {
         throw GeneralException("Site::isFull() was called while something was wrong");
     }
