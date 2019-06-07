@@ -30,8 +30,8 @@ void BindFreeCrosslinker::setCurrentRate(const SystemState& systemState)
 
 SiteLocation BindFreeCrosslinker::whereToConnect(const SystemState& systemState, RandomGenerator& generator) const
 {
-    int32_t nFreeSitesTip = systemState.getNFreeSites(MicrotubuleType::FIXED, SiteType::TIP);
-    int32_t nFreeSitesBlocked = systemState.getNFreeSites(MicrotubuleType::FIXED, SiteType::BLOCKED);
+    const int32_t nFreeSitesTip = systemState.getNFreeSites(MicrotubuleType::FIXED, SiteType::TIP);
+    const int32_t nFreeSitesBlocked = systemState.getNFreeSites(MicrotubuleType::FIXED, SiteType::BLOCKED);
 
     #ifdef MYDEBUG
     if(nFreeSitesTip<0 || nFreeSitesBlocked<0 || (nFreeSitesTip==0 && nFreeSitesBlocked==0))

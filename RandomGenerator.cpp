@@ -26,7 +26,7 @@ double RandomGenerator::getGaussian(const double mean, const double deviation)
 
 bool RandomGenerator::getBernoulli(const double probability)
 {
-    static std::bernoulli_distribution distribution(probability);
+    std::bernoulli_distribution distribution(probability);
     return distribution(m_generator);
 }
 
