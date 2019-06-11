@@ -20,16 +20,18 @@ Microtubule::Microtubule(const MicrotubuleType type, const double length, const 
         m_length(length),
         m_latticeSpacing(latticeSpacing),
         m_nSites(static_cast<int32_t>(std::floor(m_length/m_latticeSpacing))+1), // Choose such that microtubule always starts and ends with a site
-        m_nUnblockedSites(m_nSites),
+        m_nBoundUnblockedSites(0),
+        m_nFreeUnblockedSites(m_nSites),
         m_nFreeSitesTip(m_nSites),
         m_nFreeSitesBlocked(0),
         m_sites(m_nSites, Site()), // Create a copy of Site which is free, and copy it into the vector
         m_freeSitePositionsTip(m_nSites), // Set the number of sites, but fill it in the body of the constructor
         m_freeSitePositionsBlocked(0),
-        m_unblockedSitePositions(m_nSites)
+        m_boundUnblockedSitePositions(),
+        m_freeUnblockedSitePositions(m_nSites)
 {
     std::iota(m_freeSitePositionsTip.begin(), m_freeSitePositionsTip.end(), 0); // All sites are initially free
-    std::iota(m_unblockedSitePositions.begin(), m_unblockedSitePositions.end(), 0); // and unblocked
+    std::iota(m_freeUnblockedSitePositions.begin(), m_freeUnblockedSitePositions.end(), 0); // and unblocked
 }
 
 Microtubule::~Microtubule()
@@ -53,6 +55,11 @@ void Microtubule::connectSite(const int32_t sitePosition, Crosslinker& crosslink
         {
             m_freeSitePositionsTip.erase(std::remove(m_freeSitePositionsTip.begin(), m_freeSitePositionsTip.end(), sitePosition), m_freeSitePositionsTip.end()); // Erase-remove idiom
             --m_nFreeSitesTip;
+
+            m_freeUnblockedSitePositions.erase(std::remove(m_freeUnblockedSitePositions.begin(), m_freeUnblockedSitePositions.end(), sitePosition), m_freeUnblockedSitePositions.end());
+            --m_nFreeUnblockedSites;
+            m_boundUnblockedSitePositions.push_back(sitePosition);
+            ++m_nBoundUnblockedSites;
         }
     #ifdef MYDEBUG
         if(m_freeSitePositionsBlocked.size()!=static_cast<uint32_t>(m_nFreeSitesBlocked) || m_freeSitePositionsTip.size()!=static_cast<uint32_t>(m_nFreeSitesTip))
@@ -84,6 +91,11 @@ void Microtubule::disconnectSite(const int32_t sitePosition)
         {
             m_freeSitePositionsTip.push_back(sitePosition);
             ++m_nFreeSitesTip;
+
+            m_boundUnblockedSitePositions.erase(std::remove(m_boundUnblockedSitePositions.begin(), m_boundUnblockedSitePositions.end(), sitePosition), m_boundUnblockedSitePositions.end());
+            --m_nBoundUnblockedSites;
+            m_freeUnblockedSitePositions.push_back(sitePosition);
+            ++m_nFreeUnblockedSites;
         }
     #ifdef MYDEBUG
     }
@@ -111,10 +123,16 @@ void Microtubule::blockSite(const int32_t sitePosition)
             --m_nFreeSitesTip;
             m_freeSitePositionsBlocked.push_back(sitePosition);
             ++m_nFreeSitesBlocked;
+
+            m_freeUnblockedSitePositions.erase(std::remove(m_freeUnblockedSitePositions.begin(), m_freeUnblockedSitePositions.end(), sitePosition), m_freeUnblockedSitePositions.end());
+            --m_nFreeUnblockedSites;
+        }
+        else
+        {
+            m_boundUnblockedSitePositions.erase(std::remove(m_boundUnblockedSitePositions.begin(), m_boundUnblockedSitePositions.end(), sitePosition), m_boundUnblockedSitePositions.end());
+            --m_nBoundUnblockedSites;
         }
 
-        m_unblockedSitePositions.erase(std::remove(m_unblockedSitePositions.begin(), m_unblockedSitePositions.end(), sitePosition), m_unblockedSitePositions.end());
-        --m_nUnblockedSites;
     #ifdef MYDEBUG
         if(m_freeSitePositionsTip.size()!=static_cast<uint32_t>(m_nFreeSitesTip))
         {
@@ -145,10 +163,16 @@ void Microtubule::unblockSite(const int32_t sitePosition)
             --m_nFreeSitesBlocked;
             m_freeSitePositionsTip.push_back(sitePosition);
             ++m_nFreeSitesTip;
+
+            m_freeUnblockedSitePositions.push_back(sitePosition);
+            ++m_nFreeUnblockedSites;
+        }
+        else
+        {
+            m_boundUnblockedSitePositions.push_back(sitePosition);
+            ++m_nBoundUnblockedSites;
         }
 
-        m_unblockedSitePositions.push_back(sitePosition);
-        ++m_nUnblockedSites;
     #ifdef MYDEBUG
         if(m_freeSitePositionsBlocked.size()!=static_cast<uint32_t>(m_nFreeSitesBlocked))
         {
@@ -160,6 +184,24 @@ void Microtubule::unblockSite(const int32_t sitePosition)
         throw GeneralException("Microtubule::blockSite() was passed a wrong sitePosition");
     }
     #endif
+}
+
+void Microtubule::growOneSite()
+{
+    m_length+=m_latticeSpacing;
+    ++m_nSites;
+    ++m_nFreeSitesTip;
+    ++m_nFreeUnblockedSites;
+    m_sites.push_back(Site()); // the site is free and not blocked
+    m_freeSitePositionsTip.push_back(m_nSites-1); // The first site has label 0
+    m_freeUnblockedSitePositions.push_back(m_nSites-1);
+
+    #ifdef MYDEBUG
+    if(m_freeSitePositionsTip.size()!=static_cast<uint32_t>(m_nFreeSitesTip))
+    {
+        throw GeneralException("Microtubule::growOneSite() saw a wrong number of free sites");
+    }
+    #endif // MYDEBUG
 }
 
 double Microtubule::getLength() const
@@ -215,16 +257,20 @@ int32_t Microtubule::getFreeSitePosition(const SiteType siteType, const int32_t 
     }
 }
 
-int32_t Microtubule::getUnblockedSitePosition(const int32_t whichUnblockedSite) const
+int32_t Microtubule::getUnblockedSitePosition(const BoundState whichBoundState, const int32_t whichUnblockedSite) const
 {
     #ifdef MYDEBUG
-    if (whichUnblockedSite<0 || whichUnblockedSite >= m_nUnblockedSites)
-    {
-        throw GeneralException("Microtubule::getUnblockedSitePosition() was called with an invalid parameter");
-    }
     try{
     #endif // MYDEBUG
-    return m_unblockedSitePositions.at(whichUnblockedSite);
+    switch(whichBoundState)
+    {
+    case BoundState::BOUND:
+        return m_boundUnblockedSitePositions.at(whichUnblockedSite);
+    case BoundState::UNBOUND:
+        return m_freeUnblockedSitePositions.at(whichUnblockedSite);
+    default:
+        throw GeneralException("Microtubule::getUnblockedSitePosition() was passed a wrong BoundState");
+    }
     #ifdef MYDEBUG
     } catch(std::out_of_range error)
     {
@@ -664,27 +710,24 @@ std::vector<FullExtremity> Microtubule::getNeighbouringFullCrosslinkersOf(const 
     return fullNeighbours;
 }*/
 
-void Microtubule::growOneSite()
+int32_t Microtubule::getNUnblockedSites(const BoundState boundState) const
 {
-    m_length+=m_latticeSpacing;
-    ++m_nSites;
-    ++m_nFreeSitesTip;
-    ++m_nUnblockedSites;
-    m_sites.push_back(Site()); // the site is free and not blocked
-    m_freeSitePositionsTip.push_back(m_nSites-1); // The first site has label 0
-    m_unblockedSitePositions.push_back(m_nSites-1);
-
     #ifdef MYDEBUG
-    if(m_freeSitePositionsTip.size()!=static_cast<uint32_t>(m_nFreeSitesTip))
+    if(m_nFreeUnblockedSites!=static_cast<int32_t>(m_freeUnblockedSitePositions.size()) || m_nBoundUnblockedSites!=static_cast<int32_t>(m_boundUnblockedSitePositions.size()))
     {
-        throw GeneralException("Microtubule::growOneSite() saw a wrong number of free sites");
+        throw GeneralException("Microtubule::getNUnblockedSites() encountered a point where the number of unblocked sites was not kept track of properly");
     }
     #endif // MYDEBUG
-}
 
-int32_t Microtubule::getNUnblockedSites() const
-{
-    return m_nUnblockedSites;
+    switch(boundState)
+    {
+    case BoundState::BOUND:
+        return m_nBoundUnblockedSites;
+    case BoundState::UNBOUND:
+        return m_nFreeUnblockedSites;
+    default:
+        throw GeneralException("Microtubule::getNUnblockedSites() was passed a wrong BoundState");
+    }
 }
 
 Crosslinker* Microtubule::giveConnectionAt(const int32_t sitePosition) const

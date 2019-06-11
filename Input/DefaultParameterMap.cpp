@@ -78,7 +78,8 @@ ParameterMap::ParameterMap()
 
     // rates for the dynamics of the fixed microtubule
     defineParameter("rateFixedMicrotubuleGrowth", 0.0, "s^(-1)", ">=0");
-    defineParameter("rateRemoveSitesFromFixedMicrotubule", 0.0, "s^(-1)", ">=0");
+    defineParameter("rateBlockBoundSites", 0.0, "s^(-1)", ">=0");
+    defineParameter("rateBlockUnboundSites", 0.0, "s^(-1)", ">=0");
 
     // Parameters to turn analysis on or off
     defineParameter("addExternalForce", "FALSE", "unitless", "TRUE,FALSE");

@@ -1,8 +1,9 @@
 #include "RemoveSite.hpp"
 
-RemoveSite::RemoveSite(const double rateRemoveOneSite, const bool unbindUponBlock)
+RemoveSite::RemoveSite(const double rateRemoveOneBoundSite, const double rateRemoveOneUnboundSite, const bool unbindUponBlock)
     :   Reaction(),
-        m_rateRemoveOneSite(rateRemoveOneSite),
+        m_rateRemoveOneBoundSite(rateRemoveOneBoundSite),
+        m_rateRemoveOneUnboundSite(rateRemoveOneUnboundSite),
         m_unbindUponBlock(unbindUponBlock)
 {
 }
@@ -13,7 +14,8 @@ RemoveSite::~RemoveSite()
 
 void RemoveSite::setCurrentRate(const SystemState& systemState)
 {
-    m_currentRate = systemState.getNUnblockedSitesFixed()*m_rateRemoveOneSite;
+    m_currentRate = systemState.getNUnblockedSitesFixed(BoundState::BOUND)*m_rateRemoveOneBoundSite
+                   +systemState.getNUnblockedSitesFixed(BoundState::UNBOUND)*m_rateRemoveOneUnboundSite;
 }
 
 void RemoveSite::performReaction(SystemState& systemState, RandomGenerator& generator)
@@ -27,7 +29,12 @@ void RemoveSite::performReaction(SystemState& systemState, RandomGenerator& gene
 
 int32_t RemoveSite::whichSiteToBlock(SystemState& systemState, RandomGenerator& generator)
 {
-    const uint32_t numberOfSites = systemState.getNUnblockedSitesFixed();
+    // This division must be possible, this function should never be called when its rate is zero
+    const double probBoundSiteRemoved = systemState.getNUnblockedSitesFixed(BoundState::BOUND)*m_rateRemoveOneBoundSite / m_currentRate;
+
+    const BoundState boundStateToBlock = generator.getBernoulli(probBoundSiteRemoved) ? BoundState::BOUND : BoundState::UNBOUND;
+
+    const uint32_t numberOfSites = systemState.getNUnblockedSitesFixed(boundStateToBlock);
     const uint32_t label = generator.getUniformInteger(0, numberOfSites-1);
-    return systemState.getUnblockedSitePosition(label);
+    return systemState.getUnblockedSitePosition(boundStateToBlock, label);
 }

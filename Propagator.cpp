@@ -39,7 +39,8 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const double baseRateZeroToOneExtremitiesConnectedBlocked,
                        const double baseRateOneToZeroExtremitiesConnectedBlocked,
                        const double rateFixedMicrotubuleGrowth,
-                       const double rateRemoveSitesFromFixedMicrotubule,
+                       const double rateBlockBoundSites,
+                       const double rateBlockUnboundSites,
                        const bool unbindUponBlock,
                        RandomGenerator& generator,
                        const bool samplePositionalDistribution,
@@ -81,7 +82,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
     m_reactions["unbindingFullDualCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(baseRateTwoToOneExtremitiesConnected, Crosslinker::Type::DUAL, m_springConstant));
     m_reactions["unbindingFullActiveCrosslinker"] = std::unique_ptr<Reaction>(new UnbindFullCrosslinker(baseRateTwoToOneExtremitiesConnected, Crosslinker::Type::ACTIVE, m_springConstant));
     m_reactions["fixedMicrotubuleGrowth"] = std::unique_ptr<Reaction>(new GrowFixedMicrotubule(rateFixedMicrotubuleGrowth));
-    m_reactions["fixedMicrotubuleDecay"] = std::unique_ptr<Reaction>(new RemoveSite(rateRemoveSitesFromFixedMicrotubule, unbindUponBlock));
+    m_reactions["fixedMicrotubuleDecay"] = std::unique_ptr<Reaction>(new RemoveSite(rateBlockBoundSites, rateBlockUnboundSites, unbindUponBlock));
 
     // The standard deviation of the average microtubule position update should be much smaller (orders of magnitude smaller) than the lattice spacing,
     // since that sets a scale over which force differences definitely emerge. The choice 0.1 is pretty large, but this is a hard maximum limit.

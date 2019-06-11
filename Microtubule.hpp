@@ -29,7 +29,8 @@ protected: // such that MobileMicrotubule can access it
 private:
     int32_t m_nSites;
 
-    int32_t m_nUnblockedSites;
+    int32_t m_nBoundUnblockedSites;
+    int32_t m_nFreeUnblockedSites;
 
     // Choose to focus on free instead of occupied sites, since functions may ask if the site is free, not if it is occupied (otherwise completely equivalent of course)
     int32_t m_nFreeSitesTip;
@@ -39,7 +40,8 @@ private:
     // Elements are removed often, so std::deque is used. The order of the positions will NOT be preserved.
     std::deque<int32_t> m_freeSitePositionsTip; // For binding to the tip
     std::deque<int32_t> m_freeSitePositionsBlocked; // For binding to the blocked sites
-    std::deque<int32_t> m_unblockedSitePositions; // For blocking sites
+    std::deque<int32_t> m_boundUnblockedSitePositions; // For blocking sites that are bound to linkers
+    std::deque<int32_t> m_freeUnblockedSitePositions; // For blocking sites that are free
 
     /*std::pair<double,double> getOldAndNewStretchFullHop(const int32_t oldPosition, const int32_t newPosition, const double positionOppositeExtremity, const double maxStretch) const;*/
 
@@ -60,6 +62,8 @@ public:
 
     void unblockSite(const int32_t sitePosition);
 
+    void growOneSite();
+
     double getLength() const;
 
     int32_t getNSites() const;
@@ -70,7 +74,7 @@ public:
 
     int32_t getFreeSitePosition(const SiteType siteType, const int32_t whichFreeSite) const; // whichFreeSite labels the free sites, and can be 0 <= whichFreeSite < m_nFreeSites
 
-    int32_t getUnblockedSitePosition(const int32_t whichUnblockedSite) const;
+    int32_t getUnblockedSitePosition(const BoundState whichBoundState, const int32_t whichUnblockedSite) const;
 
     int32_t getFirstPositionCloseTo(const double position, const double maxStretch) const;
 
@@ -97,9 +101,7 @@ public:
 
     Crosslinker* giveConnectionAt(const int32_t sitePosition) const;
 
-    void growOneSite();
-
-    int32_t getNUnblockedSites() const;
+    int32_t getNUnblockedSites(const BoundState boundState) const;
 
     bool siteIsBlocked(const int32_t sitePosition) const;
 

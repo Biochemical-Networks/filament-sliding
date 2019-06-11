@@ -235,13 +235,19 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter rateFixedMicrotubuleGrowth contains a wrong value");
     }
 
-    double rateRemoveSitesFromFixedMicrotubule;
-    input.copyParameter("rateRemoveSitesFromFixedMicrotubule", rateRemoveSitesFromFixedMicrotubule);
-    if(rateRemoveSitesFromFixedMicrotubule<0.0)
+    double rateBlockBoundSites;
+    input.copyParameter("rateBlockBoundSites", rateBlockBoundSites);
+    if(rateBlockBoundSites<0.0)
     {
-        throw GeneralException("The parameter rateRemoveSitesFromFixedMicrotubule contains a wrong value");
+        throw GeneralException("The parameter rateBlockBoundSites contains a wrong value");
     }
 
+    double rateBlockUnboundSites;
+    input.copyParameter("rateBlockUnboundSites", rateBlockUnboundSites);
+    if(rateBlockUnboundSites<0.0)
+    {
+        throw GeneralException("The parameter rateBlockUnboundSites contains a wrong value");
+    }
 
     const double occupancyProbabilityDenominatorTip = baseRateOneToZeroExtremitiesConnected*baseRateTwoToOneExtremitiesConnected+
                                                    baseRateZeroToOneExtremitiesConnected*baseRateTwoToOneExtremitiesConnected+
@@ -264,8 +270,13 @@ int main(int argc, char* argv[])
         throw GeneralException("The binding rates to the blocked region make it more favorable than the tip region, which is assumed not to be the case.");
     }
 
-    const double probabilityTipUnblocked = (rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule==0.0)?1.0:
-                        rateFixedMicrotubuleGrowth/(rateFixedMicrotubuleGrowth+rateRemoveSitesFromFixedMicrotubule);
+    const double probabilityTipUnblocked = (rateFixedMicrotubuleGrowth+rateBlockUnboundSites==0.0)?1.0:
+                        rateFixedMicrotubuleGrowth/(rateFixedMicrotubuleGrowth+rateBlockUnboundSites);
+
+    if(rateBlockUnboundSites!=rateBlockBoundSites)
+    {
+        std::cout << "rateBlockUnboundSites is different from rateBlockBoundSites. The initial distribution of blocked sites is set by rateBlockUnboundSites.\n";
+    }
 
     Initialiser initialiser(initialPositionMicrotubule,
                             probabilityPartiallyConnectedTip,
@@ -346,7 +357,8 @@ int main(int argc, char* argv[])
                           baseRateZeroToOneOnBlocked,
                           baseRateOneToZeroOnBlocked,
                           rateFixedMicrotubuleGrowth,
-                          rateRemoveSitesFromFixedMicrotubule,
+                          rateBlockBoundSites,
+                          rateBlockUnboundSites,
                           unbindUponUnblock,
                           generator,
                           samplePositionalDistribution,

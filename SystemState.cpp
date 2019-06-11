@@ -591,9 +591,9 @@ int32_t SystemState::getFreeSitePosition(const MicrotubuleType microtubuleType, 
     }
 }
 
-int32_t SystemState::getUnblockedSitePosition(const int32_t whichUnblockedSite) const
+int32_t SystemState::getUnblockedSitePosition(const BoundState whichBoundState, const int32_t whichUnblockedSite) const
 {
-    return m_fixedMicrotubule.getUnblockedSitePosition(whichUnblockedSite);
+    return m_fixedMicrotubule.getUnblockedSitePosition(whichBoundState, whichUnblockedSite);
 }
 
 double SystemState::getMaxStretch() const
@@ -932,9 +932,9 @@ double SystemState::getLatticeSpacing() const
     return m_latticeSpacing;
 }
 
-int32_t SystemState::getNUnblockedSitesFixed() const
+int32_t SystemState::getNUnblockedSitesFixed(const BoundState boundState) const
 {
-    return m_fixedMicrotubule.getNUnblockedSites();
+    return m_fixedMicrotubule.getNUnblockedSites(boundState);
 }
 
 double SystemState::getMeanPositionMicrotubuleTip() const

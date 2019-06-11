@@ -135,7 +135,7 @@ public:
     // whichFreeSite gives the location in the storage of the Microtubule objects, does not say anything about which physical site that is.
     int32_t getFreeSitePosition(const MicrotubuleType microtubuleType, const SiteType siteType, const int32_t whichFreeSite) const;
 
-    int32_t getUnblockedSitePosition(const int32_t whichUnblockedSite) const;
+    int32_t getUnblockedSitePosition(const BoundState whichBoundState, const int32_t whichUnblockedSite) const;
 
     double getMaxStretch() const;
 
@@ -179,7 +179,7 @@ public:
 
     double getLatticeSpacing() const;
 
-    int32_t getNUnblockedSitesFixed() const;
+    int32_t getNUnblockedSitesFixed(const BoundState boundState) const;
 
     double getMeanPositionMicrotubuleTip() const;
 };

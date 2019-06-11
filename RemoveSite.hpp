@@ -13,13 +13,14 @@
 class RemoveSite : public Reaction
 {
 private:
-    const double m_rateRemoveOneSite;
+    const double m_rateRemoveOneBoundSite;
+    const double m_rateRemoveOneUnboundSite;
 
     const bool m_unbindUponBlock;
 
     int32_t whichSiteToBlock(SystemState& systemState, RandomGenerator& generator);
 public:
-    RemoveSite(const double rateRemoveOneSite, const bool unbindUponBlock);
+    RemoveSite(const double rateRemoveOneBoundSite, const double rateRemoveOneUnboundSite, const bool unbindUponBlock);
     ~RemoveSite() override;
 
     void setCurrentRate(const SystemState& systemState) override;
