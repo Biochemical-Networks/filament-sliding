@@ -398,6 +398,8 @@ bool SystemState::blockSiteOnFixed(const int32_t sitePosition, const bool discon
     m_fixedMicrotubule.blockSite(sitePosition);
 
     // and finally, update the possibilities, held in the CrosslinkerContainers.
+    // Nothing will actually be updated here, since there are no partials on the mobile,
+    // and the possible connections do not store the SiteLocation of the partial explicitly.
     m_passiveCrosslinkers.updateConnectionDataBlockSite(sitePosition);
     m_dualCrosslinkers.updateConnectionDataBlockSite(sitePosition);
     m_activeCrosslinkers.updateConnectionDataBlockSite(sitePosition);
