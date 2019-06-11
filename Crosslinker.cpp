@@ -148,6 +148,30 @@ void Crosslinker::disconnectFromFullConnection(const Terminus terminusToDisconne
     }
 }
 
+void Crosslinker::changePosition(const SiteLocation siteToConnectTo)
+{
+    #ifdef MYDEBUG
+    if(isFree())
+    {
+        throw GeneralException("Crosslinker::changePosition() was called on a free crosslinker");
+    }
+    #endif // MYDEBUG
+
+    const Terminus terminusToChange = isPartial() ? getBoundTerminusWhenPartiallyConnected() : getTerminusOfFullOn(siteToConnectTo.microtubule);
+
+    switch(terminusToChange)
+    {
+    case Terminus::TAIL:
+        m_tail.changePosition(siteToConnectTo);
+        break;
+    case Terminus::HEAD:
+        m_head.changePosition(siteToConnectTo);
+        break;
+    default:
+        throw GeneralException("Crosslinker::changePosition() encountered an undefined Terminus");
+    }
+}
+
 Crosslinker::Terminus Crosslinker::getFreeTerminusWhenPartiallyConnected() const
 {
     #ifdef MYDEBUG

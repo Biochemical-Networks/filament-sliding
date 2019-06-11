@@ -366,10 +366,12 @@ void SystemState::growFixed()
     m_activeCrosslinkers.updateConnectionDataMicrotubuleGrowth();
 }
 
-void SystemState::blockSiteOnFixed(const int32_t sitePosition, const bool disconnect)
+// Signal whether a crosslinker was left on a blocked site, such that these events can be counted
+bool SystemState::blockSiteOnFixed(const int32_t sitePosition, const bool disconnect)
 {
     Crosslinker* linker = m_fixedMicrotubule.giveConnectionAt(sitePosition);
-    if(linker!=nullptr && disconnect) // a crosslinker is bound there and we need to disconnect it.
+    const bool somethingConnected = linker!=nullptr;
+    if(somethingConnected && disconnect) // a crosslinker is bound there and we need to disconnect it.
     {
         // Either fully disconnect it or leave it: don't turn a full into a partial here.
         // disconnectIfFull is only set to True if it needs to fully disconnect.
@@ -385,7 +387,12 @@ void SystemState::blockSiteOnFixed(const int32_t sitePosition, const bool discon
             disconnectPartiallyConnectedCrosslinker(*linker);
         }
     }
-    // no crosslinker is changed any more, so CrosslinkerContainer direct administration is not affected any longer, nor is that of Crosslinker
+    else if(somethingConnected && !disconnect)
+    {
+        // no crosslinker is changed any more, so CrosslinkerContainer direct administration is not affected any longer.
+        // The administration of Crosslinker is changed, since the extremity holds the SiteLocation (including SiteType) it is connected to
+        linker->changePosition(SiteLocation{MicrotubuleType::FIXED, sitePosition, SiteType::BLOCKED});
+    }
 
     // Administration of Microtubule:
     m_fixedMicrotubule.blockSite(sitePosition);
@@ -394,6 +401,8 @@ void SystemState::blockSiteOnFixed(const int32_t sitePosition, const bool discon
     m_passiveCrosslinkers.updateConnectionDataBlockSite(sitePosition);
     m_dualCrosslinkers.updateConnectionDataBlockSite(sitePosition);
     m_activeCrosslinkers.updateConnectionDataBlockSite(sitePosition);
+
+    return somethingConnected && (!disconnect);
 }
 
 /*int32_t SystemState::barrierCrossed()

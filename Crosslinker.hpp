@@ -56,6 +56,8 @@ public:
 
     void disconnectFromFullConnection(const Terminus terminusToDisconnect);
 
+    void changePosition(const SiteLocation siteToConnectTo);
+
     Terminus getFreeTerminusWhenPartiallyConnected() const;
 
     Terminus getBoundTerminusWhenPartiallyConnected() const;

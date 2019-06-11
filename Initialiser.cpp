@@ -327,6 +327,7 @@ void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerat
 
     std::cout << "disconnectProbabilityUponBlockInOverlap: " << disconnectProbabilityUponBlockInOverlap
               << "\ndisconnectProbabilityUponBlockOutOfOverlap: " << disconnectProbabilityUponBlockOutOfOverlap << '\n';
+    int32_t nCrosslinkersOnBlockedInitally=0;
     #endif // MYDEBUG
 
     int32_t fixedLabel = systemState.getNSites(MicrotubuleType::FIXED)-1;
@@ -341,11 +342,19 @@ void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerat
             const bool disconnect = (fixedLabel<firstSiteOverlapFixed || fixedLabel > lastSiteOverlapFixed) ?
                                     generator.getBernoulli(disconnectProbabilityUponBlockOutOfOverlap) :
                                     generator.getBernoulli(disconnectProbabilityUponBlockInOverlap);
-            systemState.blockSiteOnFixed(fixedLabel, disconnect);
+            const bool crosslinkerOnBlocked = systemState.blockSiteOnFixed(fixedLabel, disconnect);
+
+            #ifdef MYDEBUG
+            if(crosslinkerOnBlocked) ++nCrosslinkersOnBlockedInitally;
+            #endif // MYDEBUG
         }
         --fixedLabel;
         localUnblockedProbability*=m_probabilityTipUnblocked;
     }
+
+    #ifdef MYDEBUG
+    std::cout << "The number of crosslinkers that was initially put on the blocked area: " << nCrosslinkersOnBlockedInitally << '\n';
+    #endif // MYDEBUG
 }
 
 /*Crosslinker::Terminus Initialiser::terminusToConnectToFixedMicrotubule(RandomGenerator &generator)

@@ -97,7 +97,8 @@ public:
 
     void growFixed();
 
-    void blockSiteOnFixed(const int32_t sitePosition, const bool disconnect);
+    // Signal true when a crosslinker is bound and it is not unbound
+    bool blockSiteOnFixed(const int32_t sitePosition, const bool disconnect);
 
     /*int32_t barrierCrossed();*/
 
