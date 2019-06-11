@@ -342,7 +342,10 @@ void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerat
             const bool disconnect = (fixedLabel<firstSiteOverlapFixed || fixedLabel > lastSiteOverlapFixed) ?
                                     generator.getBernoulli(disconnectProbabilityUponBlockOutOfOverlap) :
                                     generator.getBernoulli(disconnectProbabilityUponBlockInOverlap);
-            const bool crosslinkerOnBlocked = systemState.blockSiteOnFixed(fixedLabel, disconnect);
+            #ifdef MYDEBUG
+            const bool crosslinkerOnBlocked =
+            #endif // MYDEBUG
+            systemState.blockSiteOnFixed(fixedLabel, disconnect);
 
             #ifdef MYDEBUG
             if(crosslinkerOnBlocked) ++nCrosslinkersOnBlockedInitally;
