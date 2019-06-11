@@ -256,9 +256,6 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
         }
 
         ++m_nStochasticBoundaryCrossings;
-        #ifdef MYDEBUG
-        std::cout << "A reflection took place!\n";
-        #endif // MYDEBUG
     }
 
     systemState.updateMobilePosition(deterministicChange+randomChange);
@@ -271,11 +268,6 @@ void Propagator::performReaction(SystemState& systemState, RandomGenerator& gene
     resetAction();
     setNewReactionRateThreshold(generator.getProbability());
     systemState.updateForceAndEnergy();
-    #ifdef MYDEBUG
-    static int32_t numberOfReactions = 1;
-    ++numberOfReactions;
-    std::cout << "A reaction happened, so far we've seen "<< numberOfReactions << " reactions.\n";
-    #endif // MYDEBUG
 }
 
 // Invert the survival probability vs the integrated reaction rate
