@@ -970,7 +970,6 @@ void SystemState::checkConsistency()
     for(const PossibleFullConnection& old_possibility : copyPossibilitiesPassiveOld)
     {
         // std::find uses operator==, defined for PossibileFullConnection struct.
-        // Watch out: also checks equality of extension, which is a floating point number.
         if(std::find(copyPossibilitiesPassiveNew.begin(), copyPossibilitiesPassiveNew.end(), old_possibility) == copyPossibilitiesPassiveNew.end())
         {
             throw GeneralException("In SystemState::checkConsistency(): an inconsistency was found in the possible connections");
