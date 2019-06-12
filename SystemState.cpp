@@ -59,6 +59,7 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
 
 SystemState::~SystemState()
 {
+    checkConsistency();
 }
 
 void SystemState::setMicrotubulePosition(const double initialPosition)
