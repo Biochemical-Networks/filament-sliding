@@ -8,7 +8,7 @@
 #include "PossibleFullConnection.hpp"
 #include "MathematicalFunctions.hpp"
 
-#include <algorithm> // max/min
+#include <algorithm> // max/min/find
 #include <cmath> // ceil/floor/abs
 #include <deque>
 #include <utility> // pair
@@ -940,4 +940,39 @@ int32_t SystemState::getNUnblockedSitesFixed(const BoundState boundState) const
 double SystemState::getMeanPositionMicrotubuleTip() const
 {
     return m_fixedMicrotubule.getMeanTipPosition();
+}
+
+// Check if all duplicate information in the different parts of the SystemState object is consistent with each other.
+// Throw exceptions indicating the inconsistency in case one is found.
+void SystemState::checkConsistency()
+{
+    // Classes containing data:
+    // * Crosslinker
+    // * CrosslinkerContainer
+    // * Extremity
+    // * Microtubule
+    // * MobileMicrotubule
+    // * Site
+
+    // First, ask the microtubules to create lists of all sites with data with which crosslinkers are bound to
+
+
+    // Test whether the possibilities are correct
+    const std::vector<PossibleFullConnection> copyPossibilitiesPassiveOld = m_passiveCrosslinkers.getPossibleConnections();
+    m_passiveCrosslinkers.resetPossibilities();
+    const std::vector<PossibleFullConnection> copyPossibilitiesPassiveNew = m_passiveCrosslinkers.getPossibleConnections();
+
+    if(copyPossibilitiesPassiveOld.size()!=copyPossibilitiesPassiveNew.size())
+    {
+        throw GeneralException("In SystemState::checkConsistency(): found different sizes of possibility vectors");
+    }
+    for(const PossibleFullConnection& old_possibility : copyPossibilitiesPassiveOld)
+    {
+        // std::find uses operator==, defined for PossibileFullConnection struct.
+        // Watch out: also checks equality of extension, which is a floating point number.
+        if(std::find(copyPossibilitiesPassiveNew.begin(), copyPossibilitiesPassiveNew.end(), old_possibility) == copyPossibilitiesPassiveNew.end())
+        {
+            throw GeneralException("In SystemState::checkConsistency(): an inconsistency was found in the possible connections");
+        }
+    }
 }

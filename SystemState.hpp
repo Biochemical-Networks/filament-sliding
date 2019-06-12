@@ -182,6 +182,8 @@ public:
     int32_t getNUnblockedSitesFixed(const BoundState boundState) const;
 
     double getMeanPositionMicrotubuleTip() const;
+
+    void checkConsistency(); // throws if not consistent. Mutates object, since checking of possibilities is done through recalculation
 };
 
 #endif // SYSTEMSTATE_HPP
