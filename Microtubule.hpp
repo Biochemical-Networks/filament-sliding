@@ -29,19 +29,16 @@ protected: // such that MobileMicrotubule can access it
 private:
     int32_t m_nSites;
 
-    int32_t m_nBoundUnblockedSites;
-    int32_t m_nFreeUnblockedSites;
+    std::vector<Site> m_sites; // Vector, because the size never changes, but is only known at run time
 
     // Choose to focus on free instead of occupied sites, since functions may ask if the site is free, not if it is occupied (otherwise completely equivalent of course)
     int32_t m_nFreeSitesTip;
     int32_t m_nFreeSitesBlocked;
-    std::vector<Site> m_sites; // Vector, because the size never changes, but is only known at run time
-
+    int32_t m_nBoundSitesTip;
     // Elements are removed often, so std::deque is used. The order of the positions will NOT be preserved.
-    std::deque<int32_t> m_freeSitePositionsTip; // For binding to the tip
+    std::deque<int32_t> m_freeSitePositionsTip; // For binding to the tip and blocking the tip sites that are free
     std::deque<int32_t> m_freeSitePositionsBlocked; // For binding to the blocked sites
-    std::deque<int32_t> m_boundUnblockedSitePositions; // For blocking sites that are bound to linkers
-    std::deque<int32_t> m_freeUnblockedSitePositions; // For blocking sites that are free
+    std::deque<int32_t> m_boundSitePositionsTip; // For blocking sites that are bound to linkers
 
     /*std::pair<double,double> getOldAndNewStretchFullHop(const int32_t oldPosition, const int32_t newPosition, const double positionOppositeExtremity, const double maxStretch) const;*/
 
@@ -108,6 +105,8 @@ public:
     std::vector<int32_t> getBlockedSitePositions() const;
 
     double getMeanTipPosition() const;
+
+    void checkInternalConsistency() const;
 };
 
 #endif // MICROTUBULE_HPP
