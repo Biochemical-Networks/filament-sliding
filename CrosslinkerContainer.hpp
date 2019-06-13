@@ -172,9 +172,7 @@ public:
 
     const std::vector<Crosslinker*>& getFullLinkers() const;
 
-    #ifdef MYDEBUG
-    Crosslinker* TESTgetAFullCrosslinker(const int32_t which) const;
-    #endif // MYDEBUG
+    void checkInternalConsistency(); // on mutable objects, such that reset functions can be used to recalculate
 };
 
 #endif // CROSSLINKERCONTAINER_HPP

@@ -817,12 +817,51 @@ void CrosslinkerContainer::resetPossibilities()
     findPossibleFullHops();*/
 }
 
-#ifdef MYDEBUG
-Crosslinker* CrosslinkerContainer::TESTgetAFullCrosslinker(const int32_t which) const
+void CrosslinkerContainer::checkInternalConsistency()
 {
-    return m_fullCrosslinkers.at(which);
+    for(const Crosslinker& linker : m_crosslinkers)
+    {
+        if(linker.isFree())
+        {
+            if(std::find(m_freeCrosslinkers.begin(), m_freeCrosslinkers.end(), &linker)==m_freeCrosslinkers.end())
+            {
+                throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): free linker was not in m_freeCrosslinkers");
+            }
+        }
+        if(linker.isPartial())
+        {
+            if(std::find(m_partialCrosslinkers.begin(), m_partialCrosslinkers.end(), &linker)==m_partialCrosslinkers.end())
+            {
+                throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): partial linker was not in m_partialCrosslinkers");
+            }
+        }
+        if(linker.isPartial())
+        {
+            if(std::find(m_partialCrosslinkers.begin(), m_partialCrosslinkers.end(), &linker)==m_partialCrosslinkers.end())
+            {
+                throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): partial linker was not in m_partialCrosslinkers");
+            }
+        }
+    }
+    std::vector<Crosslinker*> m_fullCrosslinkers bla
+    // Keep track of the partial linkers that are bound to the tip or to the blocked region
+    std::vector<Crosslinker*> m_partialCrosslinkersOnTip;
+    std::vector<Crosslinker*> m_partialCrosslinkersOnBlocked;
+
+    // Test whether the possibilities are correct
+    const std::vector<PossibleFullConnection> oldCopyPossibilities = m_possibleConnections;
+    resetPossibilities();
+
+    if(oldCopyPossibilities.size()!=m_possibleConnections.size())
+    {
+        throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): found different sizes of possibility vectors");
+    }
+    for(const PossibleFullConnection& old_possibility : oldCopyPossibilities)
+    {
+        // std::find uses operator==, defined for PossibileFullConnection struct.
+        if(std::find(m_possibleConnections.begin(), m_possibleConnections.end(), old_possibility) == m_possibleConnections.end())
+        {
+            throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): an inconsistency was found in the possible connections");
+        }
+    }
 }
-#endif // MYDEBUG
-
-
-
