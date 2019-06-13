@@ -155,10 +155,6 @@ public:
 
     double findExternalForce() const;
 
-    #ifdef MYDEBUG
-    void TESTunbindAFullCrosslinker(const int32_t which, const Crosslinker::Terminus terminusToDisconnect, const Crosslinker::Type typeToDisconnect);
-    #endif // MYDEBUG
-
     const std::vector<PossibleFullConnection>& getPossibleConnections(const Crosslinker::Type type) const;
 
     /*const std::vector<PossiblePartialHop>& getPossiblePartialHops(const Crosslinker::Type type) const;

@@ -900,34 +900,6 @@ int32_t SystemState::getNSites(const MicrotubuleType microtubule) const
     }
 }
 
-#ifdef MYDEBUG
-void SystemState::TESTunbindAFullCrosslinker(const int32_t which, const Crosslinker::Terminus terminusToDisconnect, const Crosslinker::Type typeToDisconnect)
-{
-    Crosslinker* p_disconnectingCrosslinker = nullptr;
-
-    // Now, the members containing all crosslinkers of each type are called to connect a free crosslinker in their administration, and to return a pointer to the one that it connected.
-    // Then, the pointer can be used to connect the crosslinker in its own administration as well.
-    // Done this way, such that the containers don't have to know about the position or microtubule that needs to be connected.
-    switch(typeToDisconnect)
-    {
-        case Crosslinker::Type::PASSIVE:
-            p_disconnectingCrosslinker = m_passiveCrosslinkers.TESTgetAFullCrosslinker(which);
-            break;
-        case Crosslinker::Type::DUAL:
-            p_disconnectingCrosslinker = m_dualCrosslinkers.TESTgetAFullCrosslinker(which);
-            break;
-        case Crosslinker::Type::ACTIVE:
-            p_disconnectingCrosslinker = m_activeCrosslinkers.TESTgetAFullCrosslinker(which);
-            break;
-        default:
-            throw GeneralException("An incorrect crosslinker type was passed to SystemState::TESTunbindAFullCrosslinker()");
-            break;
-    }
-    disconnectFullyConnectedCrosslinker(*p_disconnectingCrosslinker, terminusToDisconnect);
-
-}
-#endif //MYDEBUG
-
 double SystemState::getLatticeSpacing() const
 {
     return m_latticeSpacing;
@@ -948,15 +920,18 @@ double SystemState::getMeanPositionMicrotubuleTip() const
 void SystemState::checkConsistency()
 {
     // Classes containing data:
+    // * Extremity
     // * Crosslinker
     // * CrosslinkerContainer
-    // * Extremity
+    // * Site
     // * Microtubule
     // * MobileMicrotubule
-    // * Site
 
     // First, ask the microtubules to create lists of all sites with data with which crosslinkers are bound to
 
+    // Check the internal consistency of the information stored in the microtubules
+    m_fixedMicrotubule.checkInternalConsistency();
+    m_mobileMicrotubule.checkInternalConsistency();
 
     // Test whether the possibilities are correct
     const std::vector<PossibleFullConnection> copyPossibilitiesPassiveOld = m_passiveCrosslinkers.getPossibleConnections();
