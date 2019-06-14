@@ -862,3 +862,29 @@ void Microtubule::checkInternalConsistency() const
         throw GeneralException("Microtubule::checkInternalConsistency(): m_boundSitePositionsTip contains wrong information");
     }
 }
+
+std::vector<Crosslinker*> Microtubule::getPartialPassiveLinkers(const SiteType siteType) const
+{
+    std::vector<Crosslinker*> partialPassives;
+    for(const Site& site : m_sites)
+    {
+        if(site.isPartial() && ( (siteType==SiteType::TIP && !site.isBlocked()) || (siteType==SiteType::BLOCKED && site.isBlocked()) ))
+        {
+            partialPassives.push_back(site.whichCrosslinkerIsBound());
+        }
+    }
+    return partialPassives;
+}
+
+std::vector<Crosslinker*> Microtubule::getFullPassiveLinkers() const
+{
+    std::vector<Crosslinker*> fullLinkers;
+    for(const Site& site : m_sites)
+    {
+        if(site.isFull())
+        {
+            fullLinkers.push_back(site.whichCrosslinkerIsBound());
+        }
+    }
+    return fullLinkers;
+}

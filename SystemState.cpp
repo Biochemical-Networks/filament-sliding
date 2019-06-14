@@ -925,29 +925,59 @@ void SystemState::checkConsistency()
     // * CrosslinkerContainer
     // * Site
     // * Microtubule
-    // * MobileMicrotubule
 
-    // First, ask the microtubules to create lists of all sites with data with which crosslinkers are bound to
-
-    // Check the internal consistency of the information stored in the microtubules
+    // Check the internal consistency of the information stored in the microtubules (including the sites)
     m_fixedMicrotubule.checkInternalConsistency();
     m_mobileMicrotubule.checkInternalConsistency();
 
-    // Test whether the possibilities are correct
-    const std::vector<PossibleFullConnection> copyPossibilitiesPassiveOld = m_passiveCrosslinkers.getPossibleConnections();
-    m_passiveCrosslinkers.resetPossibilities();
-    const std::vector<PossibleFullConnection> copyPossibilitiesPassiveNew = m_passiveCrosslinkers.getPossibleConnections();
+    // Check the internal consistency of the information stored in the crosslinker containers
+    // (including the crosslinkers and with them the extremities, and the possible connections)
+    m_passiveCrosslinkers.checkInternalConsistency();
+    m_dualCrosslinkers.checkInternalConsistency();
+    m_activeCrosslinkers.checkInternalConsistency();
 
-    if(copyPossibilitiesPassiveOld.size()!=copyPossibilitiesPassiveNew.size())
+    // Cross-check the information stored in the crosslinker containers against the info in the microtubules
+    // First the partial passive linkers on the tip:
+    const std::vector<Crosslinker*>& partialPassivesTipCrosslinkerContainer = m_passiveCrosslinkers.getPartialLinkers(SiteType::TIP);
+    const std::vector<Crosslinker*> partialPassivesTipFixedMicrotubule = m_fixedMicrotubule.getPartialPassiveLinkers(SiteType::TIP);
+    if(partialPassivesTipCrosslinkerContainer.size()!=partialPassivesTipFixedMicrotubule.size())
     {
-        throw GeneralException("In SystemState::checkConsistency(): found different sizes of possibility vectors");
+        throw GeneralException("In SystemState::checkConsistency(): the number of partial passives on the tip is inconsistent");
     }
-    for(const PossibleFullConnection& old_possibility : copyPossibilitiesPassiveOld)
+    for(const Crosslinker*const p_linker : partialPassivesTipCrosslinkerContainer)
     {
-        // std::find uses operator==, defined for PossibileFullConnection struct.
-        if(std::find(copyPossibilitiesPassiveNew.begin(), copyPossibilitiesPassiveNew.end(), old_possibility) == copyPossibilitiesPassiveNew.end())
+        if(std::find(partialPassivesTipFixedMicrotubule.begin(), partialPassivesTipFixedMicrotubule.end(), p_linker)==partialPassivesTipFixedMicrotubule.end())
         {
-            throw GeneralException("In SystemState::checkConsistency(): an inconsistency was found in the possible connections");
+            throw GeneralException("In SystemState::checkConsistency(): partial passives on the tip are inconsistent");
+        }
+    }
+    // Then the partial passive linkers on the blocked region:
+    const std::vector<Crosslinker*>& partialPassivesBlockedCrosslinkerContainer = m_passiveCrosslinkers.getPartialLinkers(SiteType::BLOCKED);
+    const std::vector<Crosslinker*> partialPassivesBlockedFixedMicrotubule = m_fixedMicrotubule.getPartialPassiveLinkers(SiteType::BLOCKED);
+    if(partialPassivesBlockedCrosslinkerContainer.size()!=partialPassivesBlockedFixedMicrotubule.size())
+    {
+        throw GeneralException("In SystemState::checkConsistency(): the number of partial passives on the blocked region is inconsistent");
+    }
+    for(const Crosslinker*const p_linker : partialPassivesBlockedCrosslinkerContainer)
+    {
+        if(std::find(partialPassivesBlockedFixedMicrotubule.begin(), partialPassivesBlockedFixedMicrotubule.end(), p_linker)==partialPassivesBlockedFixedMicrotubule.end())
+        {
+            throw GeneralException("In SystemState::checkConsistency(): partial passives on the blocked region are inconsistent");
+        }
+    }
+
+    // Also the full linkers:
+    const std::vector<Crosslinker*> fullPassiveLinkersCrosslinkerContainer = m_passiveCrosslinkers.getFullLinkers();
+    const std::vector<Crosslinker*> fullPassiveLinkersFixedMicrotubule = m_fixedMicrotubule.getFullPassiveLinkers();
+    if(fullPassiveLinkersCrosslinkerContainer.size()!=fullPassiveLinkersFixedMicrotubule.size())
+    {
+        throw GeneralException("In SystemState::checkConsistency(): the number of full passives is inconsistent");
+    }
+    for(const Crosslinker*const p_linker : fullPassiveLinkersCrosslinkerContainer)
+    {
+        if(std::find(fullPassiveLinkersFixedMicrotubule.begin(), fullPassiveLinkersFixedMicrotubule.end(), p_linker)==fullPassiveLinkersFixedMicrotubule.end())
+        {
+            throw GeneralException("In SystemState::checkConsistency(): full passives are inconsistent");
         }
     }
 }

@@ -107,6 +107,10 @@ public:
     double getMeanTipPosition() const;
 
     void checkInternalConsistency() const;
+
+    // Functions for testing consistency with the crosslinkercontainer
+    std::vector<Crosslinker*> getPartialPassiveLinkers(const SiteType siteType) const;
+    std::vector<Crosslinker*> getFullPassiveLinkers() const;
 };
 
 #endif // MICROTUBULE_HPP
