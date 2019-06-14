@@ -880,7 +880,7 @@ void CrosslinkerContainer::checkInternalConsistency()
             {
                 throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): full linker was not in m_fullCrosslinkers");
             }
-            if(std::find_if(m_fullConnections.begin(), m_fullConnections.end(), [linker](const FullConnection& connection){return connection.p_fullLinker==&linker;})==m_fullConnections.end())
+            if(std::find_if(m_fullConnections.begin(), m_fullConnections.end(), [&linker](const FullConnection& connection){return connection.p_fullLinker==&linker;})==m_fullConnections.end())
             {
                 throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): full linker was not in m_fullConnections");
             }
