@@ -819,10 +819,21 @@ void CrosslinkerContainer::resetPossibilities()
 
 void CrosslinkerContainer::checkInternalConsistency()
 {
+    // Check all containers of linker pointers:
+    // Both check whether each crosslinker is represented in each container that needs to point to it,
+    // and whether the sizes of those containers are correct (no double representations or wrong ones)
+
+    int32_t nFreeLinkers=0;
+    int32_t nPartialLinkers=0;
+    int32_t nFullLinkers=0;
+    int32_t nPartialTipLinkers=0;
+    int32_t nPartialBlockedLinkers=0;
+
     for(const Crosslinker& linker : m_crosslinkers)
     {
         if(linker.isFree())
         {
+            ++nFreeLinkers;
             if(std::find(m_freeCrosslinkers.begin(), m_freeCrosslinkers.end(), &linker)==m_freeCrosslinkers.end())
             {
                 throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): free linker was not in m_freeCrosslinkers");
@@ -830,23 +841,75 @@ void CrosslinkerContainer::checkInternalConsistency()
         }
         if(linker.isPartial())
         {
+            ++nPartialLinkers;
             if(std::find(m_partialCrosslinkers.begin(), m_partialCrosslinkers.end(), &linker)==m_partialCrosslinkers.end())
             {
                 throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): partial linker was not in m_partialCrosslinkers");
             }
-        }
-        if(linker.isPartial())
-        {
-            if(std::find(m_partialCrosslinkers.begin(), m_partialCrosslinkers.end(), &linker)==m_partialCrosslinkers.end())
+
+            const SiteLocation boundLocation = linker.getBoundLocationWhenPartiallyConnected();
+            if(boundLocation.microtubule!=MicrotubuleType::FIXED)
             {
-                throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): partial linker was not in m_partialCrosslinkers");
+                throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): the program assumes that all partials are on the fixed");
+            }
+
+            switch(boundLocation.siteType)
+            {
+            case SiteType::TIP:
+                ++nPartialTipLinkers;
+                if(std::find(m_partialCrosslinkersOnTip.begin(), m_partialCrosslinkersOnTip.end(), &linker)==m_partialCrosslinkersOnTip.end())
+                {
+                    throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): partial linker on tip was not in m_partialCrosslinkersOnTip");
+                }
+                break;
+            case SiteType::BLOCKED:
+                ++nPartialBlockedLinkers;
+                if(std::find(m_partialCrosslinkersOnBlocked.begin(), m_partialCrosslinkersOnBlocked.end(), &linker)==m_partialCrosslinkersOnBlocked.end())
+                {
+                    throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): partial linker on blocked was not in m_partialCrosslinkersOnBlocked");
+                }
+                break;
+            default:
+                throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): encountered wrong SiteType");
+            }
+        }
+        if(linker.isFull())
+        {
+            ++nFullLinkers;
+            if(std::find(m_fullCrosslinkers.begin(), m_fullCrosslinkers.end(), &linker)==m_fullCrosslinkers.end())
+            {
+                throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): full linker was not in m_fullCrosslinkers");
+            }
+            if(std::find_if(m_fullConnections.begin(), m_fullConnections.end(), [linker](const FullConnection& connection){return connection.p_fullLinker==&linker;})==m_fullConnections.end())
+            {
+                throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): full linker was not in m_fullConnections");
             }
         }
     }
-    std::vector<Crosslinker*> m_fullCrosslinkers bla
-    // Keep track of the partial linkers that are bound to the tip or to the blocked region
-    std::vector<Crosslinker*> m_partialCrosslinkersOnTip;
-    std::vector<Crosslinker*> m_partialCrosslinkersOnBlocked;
+    if(static_cast<int32_t>(m_freeCrosslinkers.size())!=nFreeLinkers)
+    {
+        throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): inconsistent number of free linkers");
+    }
+    if(static_cast<int32_t>(m_partialCrosslinkers.size())!=nPartialLinkers)
+    {
+        throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): inconsistent number of partial linkers");
+    }
+    if(static_cast<int32_t>(m_fullCrosslinkers.size())!=nFullLinkers)
+    {
+        throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): inconsistent number of full linkers");
+    }
+    if(static_cast<int32_t>(m_partialCrosslinkersOnTip.size())!=nPartialTipLinkers)
+    {
+        throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): inconsistent number of partial tip linkers");
+    }
+    if(static_cast<int32_t>(m_partialCrosslinkersOnBlocked.size())!=nPartialBlockedLinkers)
+    {
+        throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): inconsistent number of partial blocked linkers");
+    }
+    if(static_cast<int32_t>(m_fullConnections.size())!=nFullLinkers)
+    {
+        throw GeneralException("In CrosslinkerContainer::checkInternalConsistency(): inconsistent number of full connections");
+    }
 
     // Test whether the possibilities are correct
     const std::vector<PossibleFullConnection> oldCopyPossibilities = m_possibleConnections;
