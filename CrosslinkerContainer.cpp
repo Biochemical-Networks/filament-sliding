@@ -159,6 +159,25 @@ void CrosslinkerContainer::disconnectFromFullToPartial(Crosslinker& crosslinkerT
     }
 }
 
+void CrosslinkerContainer::blockConnectedSite(Crosslinker& crosslinkerToBlock)
+{
+    #ifdef MYDEBUG
+    if(crosslinkerToBlock.isFree() ||
+        (crosslinkerToBlock.isPartial() && crosslinkerToBlock.getBoundLocationWhenPartiallyConnected().siteType==SiteType::BLOCKED) ||
+        (crosslinkerToBlock.isFull() && crosslinkerToBlock.getLocationOfFullOn(MicrotubuleType::FIXED).siteType==SiteType::BLOCKED))
+    {
+        throw GeneralException("CrosslinkerContainer::blockConnectedSite() was called on a linker that was free or connected to a site that was already blocked.");
+    }
+    #endif // MYDEBUG
+
+    if(crosslinkerToBlock.isPartial())
+    {
+        m_partialCrosslinkersOnTip.erase(std::remove(m_partialCrosslinkersOnTip.begin(), m_partialCrosslinkersOnTip.end(), &crosslinkerToBlock), m_partialCrosslinkersOnTip.end());
+        m_partialCrosslinkersOnBlocked.push_back(&crosslinkerToBlock);
+    }
+    // else full linker, these are not distinguised between bound on the tip or lattice in the administration of the crosslinker container
+}
+
 int32_t CrosslinkerContainer::getNCrosslinkers() const
 {
     return m_crosslinkers.size();

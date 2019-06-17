@@ -390,7 +390,21 @@ bool SystemState::blockSiteOnFixed(const int32_t sitePosition, const bool discon
     }
     else if(somethingConnected && !disconnect)
     {
-        // no crosslinker is changed any more, so CrosslinkerContainer direct administration is not affected any longer.
+        // Change the direct administration of CrosslinkerContainer
+        switch(linker->getType())
+        {
+        case Crosslinker::Type::PASSIVE:
+            m_passiveCrosslinkers.blockConnectedSite(*linker);
+            break;
+        case Crosslinker::Type::DUAL:
+            m_dualCrosslinkers.blockConnectedSite(*linker);
+            break;
+        case Crosslinker::Type::ACTIVE:
+            m_activeCrosslinkers.blockConnectedSite(*linker);
+            break;
+        default:
+            throw GeneralException("An incorrect crosslinker type was encountered in SystemState::blockSiteOnFixed()");
+        }
         // The administration of Crosslinker is changed, since the extremity holds the SiteLocation (including SiteType) it is connected to
         linker->changePosition(SiteLocation{MicrotubuleType::FIXED, sitePosition, SiteType::BLOCKED});
     }

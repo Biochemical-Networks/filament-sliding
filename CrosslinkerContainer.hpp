@@ -126,6 +126,8 @@ public:
 
     void disconnectFromFullToPartial(Crosslinker& crosslinkerToDisconnect);
 
+    void blockConnectedSite(Crosslinker& crosslinkerToBlock);
+
     int32_t getNCrosslinkers() const;
     int32_t getNFreeCrosslinkers() const;
     int32_t getNPartialCrosslinkers(const SiteType siteType) const;
