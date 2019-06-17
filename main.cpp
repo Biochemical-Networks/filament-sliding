@@ -274,7 +274,9 @@ int main(int argc, char* argv[])
 
     // Initially block sites according to a stationary distribution without the influence of actin.
     // The rate of hydrolysis without actin present is given by a weighted sum over the rates of hydrolysis with or without a partial linker present
-    const double unblockedPartitionSum = rateFixedMicrotubuleGrowth+rateBlockUnboundSites*(1-probabilityPartialBoundOnTipOutsideOverlap)+rateBlockBoundSites*probabilityPartialBoundOnTipOutsideOverlap;
+    const double meanHydrolysisRate = rateBlockUnboundSites*(1-probabilityPartialBoundOnTipOutsideOverlap)+rateBlockBoundSites*probabilityPartialBoundOnTipOutsideOverlap;
+    std::cout << "The mean hydrolysis rate equals " << meanHydrolysisRate << " s^(-1).\n";
+    const double unblockedPartitionSum = rateFixedMicrotubuleGrowth+meanHydrolysisRate;
     const double probabilityTipUnblocked = (unblockedPartitionSum==0.0)?1.0:
                         rateFixedMicrotubuleGrowth/(unblockedPartitionSum);
 
