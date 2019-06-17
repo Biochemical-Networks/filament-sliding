@@ -20,12 +20,14 @@ Initialiser::Initialiser(const double initialPositionMicrotubule,
                          const double probabilityFullyConnectedTip,
                          const double probabilityPartiallyConnectedBlocked,
                          const double probabilityFullyConnectedBlocked,
+                         const double probabilityPartialBoundOnTipOutsideOverlap,
                          const double probabilityTipUnblocked)
     :   m_initialPositionMicrotubule(initialPositionMicrotubule),
         m_probabilityPartiallyConnectedTip(probabilityPartiallyConnectedTip),
         m_probabilityFullyConnectedTip(probabilityFullyConnectedTip),
         m_probabilityPartiallyConnectedBlocked(probabilityPartiallyConnectedBlocked),
         m_probabilityFullyConnectedBlocked(probabilityFullyConnectedBlocked),
+        m_probabilityPartialBoundOnTipOutsideOverlap(probabilityPartialBoundOnTipOutsideOverlap),
         m_probabilityTipUnblocked(probabilityTipUnblocked)
 {
     // Translate the string to an enum object Initialiser::InitialCrosslinkerDistribution
@@ -203,12 +205,10 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
 
     // Connect partials outside overlap. The ones inside the overlap are already connected
 
-    const double probabilityBoundTipOutsideOverlap=m_probabilityPartiallyConnectedTip/(1-m_probabilityFullyConnectedTip);
-
     for(int32_t i=0; i<systemState.getNSites(MicrotubuleType::FIXED); ++i)
     {
         if((i<systemState.firstSiteOverlapFixed() || i>systemState.lastSiteOverlapFixed()) &&
-           generator.getProbability()<probabilityBoundTipOutsideOverlap)
+           generator.getProbability()<m_probabilityPartialBoundOnTipOutsideOverlap)
         {
             if(systemState.getNFreeCrosslinkers()==0)
             {

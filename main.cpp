@@ -270,8 +270,13 @@ int main(int argc, char* argv[])
         throw GeneralException("The binding rates to the blocked region make it more favorable than the tip region, which is assumed not to be the case.");
     }
 
-    const double probabilityTipUnblocked = (rateFixedMicrotubuleGrowth+rateBlockUnboundSites==0.0)?1.0:
-                        rateFixedMicrotubuleGrowth/(rateFixedMicrotubuleGrowth+rateBlockUnboundSites);
+    const double probabilityPartialBoundOnTipOutsideOverlap=probabilityPartiallyConnectedTip/(1-probabilityFullyConnectedTip);
+
+    // Initially block sites according to a stationary distribution without the influence of actin.
+    // The rate of hydrolysis without actin present is given by a weighted sum over the rates of hydrolysis with or without a partial linker present
+    const double unblockedPartitionSum = rateFixedMicrotubuleGrowth+rateBlockUnboundSites*(1-probabilityPartialBoundOnTipOutsideOverlap)+rateBlockBoundSites*probabilityPartialBoundOnTipOutsideOverlap;
+    const double probabilityTipUnblocked = (unblockedPartitionSum==0.0)?1.0:
+                        rateFixedMicrotubuleGrowth/(unblockedPartitionSum);
 
     if(rateBlockUnboundSites!=rateBlockBoundSites)
     {
@@ -283,6 +288,7 @@ int main(int argc, char* argv[])
                             probabilityFullyConnectedTip,
                             probabilityPartiallyConnectedBlocked,
                             probabilityFullyConnectedBlocked,
+                            probabilityPartialBoundOnTipOutsideOverlap,
                             probabilityTipUnblocked);
 
     //-----------------------------------------------------------------------------------------------------

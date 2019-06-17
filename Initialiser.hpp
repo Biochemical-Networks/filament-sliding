@@ -28,6 +28,7 @@ private:
     const double m_probabilityFullyConnectedTip;
     const double m_probabilityPartiallyConnectedBlocked;
     const double m_probabilityFullyConnectedBlocked;
+    const double m_probabilityPartialBoundOnTipOutsideOverlap;
     const double m_probabilityTipUnblocked;
     /*InitialCrosslinkerDistribution m_initialCrosslinkerDistribution;*/
 
@@ -52,6 +53,7 @@ public:
                 const double probabilityFullyConnectedTip,
                 const double probabilityPartiallyConnectedBlocked,
                 const double probabilityFullyConnectedBlocked,
+                const double probabilityPartialBoundOnTipOutsideOverlap,
                 const double probabilityTipUnblocked);
     ~Initialiser();
 
