@@ -29,7 +29,8 @@ Graphics::Graphics(const std::string& runName,
         m_timeStepsDisplayInterval(timeStepsDisplayInterval),
         m_pause(true), // make the system pause initially
         m_mobileMicrotubule(systemState.getNSites(MicrotubuleType::MOBILE), m_circleRadius, m_lineLength, m_lineThickness, m_circlePointCount),
-        m_fixedMicrotubule(systemState.getNSites(MicrotubuleType::FIXED), m_circleRadius, m_lineLength, m_lineThickness, m_circlePointCount)
+        m_fixedMicrotubule(systemState.getNSites(MicrotubuleType::FIXED), m_circleRadius, m_lineLength, m_lineThickness, m_circlePointCount),
+        m_currentZoomFactor(1.0)
 {
     //const float worldWidth = std::max({static_cast<float>(m_windowWidth),
     //                                    systemState.getNSites(MicrotubuleType::MOBILE)*calculateGraphicsLatticeSpacing() + 2*m_screenBorderThickness,
@@ -98,12 +99,12 @@ void Graphics::handleContinuousKeyPresses()
     const bool right = sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D);
     if (left && !right)
     {
-        m_view.move(-m_moveStepSize,0);
+        m_view.move(-m_moveStepSize*m_currentZoomFactor,0);
         m_window.setView(m_view);
     }
     else if (right && !left)
     {
-        m_view.move(m_moveStepSize,0);
+        m_view.move(m_moveStepSize*m_currentZoomFactor,0);
         m_window.setView(m_view);
     }
 
@@ -112,14 +113,16 @@ void Graphics::handleContinuousKeyPresses()
 
     if (zoomIn && !zoomOut)
     {
-
-        m_view.zoom(1.f-m_keyPressedScaleStep); // the arrows work much faster than the scrolling, therefore we use the factor 0.1
+        const double zoomFactor = 1.f-m_keyPressedScaleStep;
+        m_currentZoomFactor*=zoomFactor;
+        m_view.zoom(zoomFactor); // the arrows work much faster than the scrolling, therefore we use the factor 0.1
         m_window.setView(m_view);
     }
     else if (zoomOut && !zoomIn)
     {
-
-        m_view.zoom(1.f+m_keyPressedScaleStep); // the arrows work much faster than the scrolling, therefore we use the factor 0.1
+        const double zoomFactor = 1.f+m_keyPressedScaleStep;
+        m_currentZoomFactor*=zoomFactor;
+        m_view.zoom(zoomFactor); // the arrows work much faster than the scrolling, therefore we use the factor 0.1
         m_window.setView(m_view);
     }
 
@@ -182,7 +185,9 @@ void Graphics::handleEvent(const sf::Event& event)
     }
     else if(event.type == sf::Event::MouseWheelScrolled)
     {
-        m_view.zoom(std::max(1.f-event.mouseWheelScroll.delta*m_scrollStepSize,m_scrollStepSize));
+        const double zoomFactor = std::max(1.f-event.mouseWheelScroll.delta*m_scrollStepSize,m_scrollStepSize);
+        m_currentZoomFactor*=zoomFactor;
+        m_view.zoom(zoomFactor);
         m_window.setView(m_view);
     }
     else if(event.type == sf::Event::KeyReleased)

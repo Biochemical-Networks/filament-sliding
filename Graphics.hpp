@@ -65,6 +65,10 @@ private:
     sf::RenderWindow m_window;
     sf::View m_view;
 
+    // Keep track of the current zoom factor:
+    // window movement is sped up when zoomed out, and this factor is necessary for finding the current speed
+    double m_currentZoomFactor;
+
     void draw();
 
     void drawPartialLinkers();
