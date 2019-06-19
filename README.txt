@@ -77,6 +77,11 @@ Further, I chose to keep concepts quite separated in the design of the program:
 there is a system state, which stores the current state and defines how the state can change;
 then there are propagators, which define the rules of the dynamics, and act on the system state.
 
+### RUN ON CLUSTER ###
+
+Since the program depends on the libraries GSL and SFML, 
+it is recommended to strip these from the source code if you would like to run on a cluster where these libraries are not (and will not be) installed.
+
 ### AUTHOR ###
 
 Harmen Wierenga
