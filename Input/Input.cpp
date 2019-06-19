@@ -42,6 +42,16 @@ Input::Input(const CommandArgumentHandler& cmd, const std::string fileName) : m_
         m_parameterMap.overrideParameter("numberPassiveCrosslinkers", cmd.getNumberPassive());
     }
 
+    if(cmd.springConstantDefined())
+    {
+        m_parameterMap.overrideParameter("springConstant", cmd.getSpringConstant());
+    }
+
+    if(cmd.growthVelocityDefined())
+    {
+        m_parameterMap.overrideParameter("rateFixedMicrotubuleGrowth", cmd.getGrowthVelocity());
+    }
+
     // Write the used input data to an output file, such that the data of the run is stored together with the other information about the run.
     // Do this early (not in the destructor), since a second run can start without the first being finished
 
