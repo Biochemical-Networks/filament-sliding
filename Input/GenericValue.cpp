@@ -55,7 +55,7 @@ GenericValue& GenericValue::operator= (const GenericValue &genericValue)
 
 // Overloaded function to copy variables into the given value:
 
-void GenericValue::copyValue(std::string &stringValue)
+void GenericValue::copyValue(std::string &stringValue) const
 {
     if (m_currentType != AllowedTypes::TEXT)
     {
@@ -64,7 +64,7 @@ void GenericValue::copyValue(std::string &stringValue)
     stringValue = m_stringValue;
 }
 
-void GenericValue::copyValue(int32_t &integerValue)
+void GenericValue::copyValue(int32_t &integerValue) const
 {
     if (m_currentType != AllowedTypes::INTEGER)
     {
@@ -73,7 +73,7 @@ void GenericValue::copyValue(int32_t &integerValue)
     integerValue = m_integerValue;
 }
 
-void GenericValue::copyValue(double &realValue)
+void GenericValue::copyValue(double &realValue) const
 {
     if (m_currentType != AllowedTypes::REAL)
     {
@@ -82,6 +82,16 @@ void GenericValue::copyValue(double &realValue)
     realValue = m_realValue;
 }
 
+std::string GenericValue::getUnit() const
+{
+    #ifdef MYDEBUG
+    if(m_currentType == AllowedTypes::NONE)
+    {
+        throw InputException("In GenericValue::getUnit(): no value was set yet");
+    }
+    #endif // MYDEBUG
+    return m_unit;
+}
 
 
 // IO operators

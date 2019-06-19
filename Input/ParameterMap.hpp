@@ -36,7 +36,7 @@ public:
     template <typename T>
     void copyParameter(const std::string &name, T &variable)
     {
-        GenericValue variableType{variable}; // Create a GenericValue with the type of variable
+        GenericValue variableType{variable, "unknown_unit"}; // Create a GenericValue with the type of variable
         // Change a std::out_of_range to an InputException, such that the exceptions can be handled uniformly.
         try
         {
@@ -54,7 +54,7 @@ public:
     {
         try
         {
-            m_parameterMap.at(name) = value;
+            m_parameterMap.at(name) = GenericValue{value,m_parameterMap.at(name).getUnit()};
         }
         catch(const std::out_of_range &error) // Throw if m_parameterMap does not contain the key 'name'
         {
