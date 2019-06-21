@@ -14,9 +14,6 @@
 #include <utility> // pair
 #include <string>
 
-#include <gsl/gsl_sf_psi.h>
-
-
 SystemState::SystemState(const double lengthMobileMicrotubule,
                             const double lengthFixedMicrotubule,
                             const double latticeSpacing,
@@ -854,27 +851,6 @@ double SystemState::getTotalExtensionLinkers() const
     return m_totalExtensionLinkers;
 }
 
-double SystemState::externalForceFlatOptimalPath() const
-{
-    const double position = MathematicalFunctions::mod(m_mobileMicrotubule.getPosition(),m_latticeSpacing);
-    const double positionFraction = position/m_latticeSpacing;
-    const double nSitesMobileMicrotubule = static_cast<double>(m_mobileMicrotubule.getNSites());
-    const double nFullLinkers = static_cast<double>(getNFullCrosslinkers());
-
-    // The following force has to counter the force felt by the system at the optimal path. Hence, use that force with a minus sign.
-    // See notes for explanations.
-    // First, calculate the energetic part:
-    double externalForce = m_springConstant*nFullLinkers*(0.5*m_latticeSpacing-position);
-    // and then the entropic part:
-    externalForce += nFullLinkers/m_latticeSpacing
-        *(gsl_sf_psi(nSitesMobileMicrotubule-positionFraction*nFullLinkers+1)
-            -gsl_sf_psi((1-positionFraction)*nFullLinkers+1)
-            -gsl_sf_psi(nSitesMobileMicrotubule-(1-positionFraction)*nFullLinkers+1)
-            +gsl_sf_psi(positionFraction*nFullLinkers+1));
-
-    return externalForce;
-}
-
 double SystemState::findExternalForce() const
 {
     double externalForce = 0;
@@ -884,7 +860,7 @@ double SystemState::findExternalForce() const
         switch(m_externalForceType)
         {
             case ExternalForceType::BARRIERFREE:
-                externalForce = externalForceFlatOptimalPath();
+                externalForce = 0; // Not defined for export version
                 break;
             case ExternalForceType::QUADRATIC:
                 externalForce = 0; // Not yet defined

@@ -7,7 +7,6 @@
 #include "RandomGenerator.hpp"
 #include "Output.hpp"
 #include "Log.hpp"
-#include "Graphics.hpp"
 #include "GeneralException/GeneralException.hpp"
 #include "ActinDisconnectException.hpp"
 
@@ -374,24 +373,17 @@ int main(int argc, char* argv[])
                           log);
 
     //-----------------------------------------------------------------------------------------------------
-    // Get the parameters needed for setting the Graphics
+    // Even though graphics are turned off in the export version,
+    // we would like to keep the input files portable.
+    // Hence, we check if graphics are turned on, and throw an exception if they are
 
     std::string showGraphicsString;
     input.copyParameter("showGraphics", showGraphicsString);
     const bool showGraphics = (showGraphicsString == "TRUE");
 
-    int32_t timeStepsDisplayInterval;
-    input.copyParameter("timeStepsDisplayInterval", timeStepsDisplayInterval);
-    if(showGraphics && timeStepsDisplayInterval<=0)
+    if(showGraphics)
     {
-        throw GeneralException("The parameter timeStepsDisplayInterval contains a wrong value.");
-    }
-
-    int32_t updateDelayInMilliseconds;
-    input.copyParameter("updateDelayInMilliseconds", updateDelayInMilliseconds);
-    if(showGraphics && updateDelayInMilliseconds<0)
-    {
-        throw GeneralException("The parameter updateDelayInMilliseconds contains a wrong value.");
+        throw GeneralException("This is the export version for tip tracking. Do not turn on Graphics.");
     }
 
     //=====================================================================================================
@@ -404,16 +396,7 @@ int main(int argc, char* argv[])
     {
         propagator.equilibrate(systemState, generator, output); // run the dynamics for a certain time such that an equilibrium distribution can be reached (not guaranteed to be done)
 
-        if(showGraphics)
-        {
-            Graphics graphics(runName, systemState, propagator, generator, output, timeStepsDisplayInterval, updateDelayInMilliseconds);
-
-            graphics.performMainLoop();
-        }
-        else
-        {
-            propagator.run(systemState, generator, output);
-        }
+        propagator.run(systemState, generator, output);
     }
     catch(const ActinDisconnectException& actinDisconnect)
     {

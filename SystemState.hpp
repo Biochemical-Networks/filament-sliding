@@ -59,7 +59,6 @@ private:
     const bool m_addExternalForce;
     ExternalForceType m_externalForceType; // not const, has to be found in the constructor body
 
-    double externalForceFlatOptimalPath() const;
 public:
     SystemState(const double lengthMobileMicrotubule,
                 const double lengthFixedMicrotubule,
