@@ -26,7 +26,7 @@ LIBDIR_DEBUG = $(LIBDIR)
 LIB_DEBUG = $(LIB)
 LDFLAGS_DEBUG = $(LDFLAGS)
 OBJDIR_DEBUG = obj/Debug
-DEP_DEBUG =  /home/ipausers/wierenga/Documents/Coding/CrossLink/.git/HEAD /home/ipausers/wierenga/Documents/Coding/CrossLink/.git/index
+DEP_DEBUG = 
 OUT_DEBUG = bin/Debug/CrossLink
 
 INC_RELEASE = $(INC) -Iinclude
