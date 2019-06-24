@@ -15,8 +15,8 @@
 #PBS -M h.wierenga@amolf.nl
 
 ## Write std_out and std_err to out directory, with these file names:
-#PBS -o out/"${PBS_JOBNAME}".out
-#PBS -e out/"${PBS_JOBNAME}".err
+#PBS -o out/"CrossLink.${PBS_JOBID}.out"
+#PBS -e out/"CrossLink.${PBS_JOBID}.err"
 
 ## start job from the directory from which it was submitted.
 ## NO PBS DIRECTIVES AFTER THIS!
