@@ -19,6 +19,9 @@ run_n_times.sh
 bin/
 obj/
 
+# Ignore the output directory
+out/
+
 # No files that are used for the parameters.
 # If the name changes, change this as well
 *parameters.txt
