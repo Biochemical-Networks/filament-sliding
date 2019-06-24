@@ -15,8 +15,8 @@
 #PBS -M h.wierenga@amolf.nl
 
 ## Write std_out and std_err to out directory, with these file names:
-#PBS -o out/"CrossLink.${PBS_JOBID}.out"
-#PBS -e out/"CrossLink.${PBS_JOBID}.err"
+#PBS -o out/"CrossLink.${PBS_JOBID%".head.hollandia.amolf.nl"}.out"
+#PBS -e out/"CrossLink.${PBS_JOBID%".head.hollandia.amolf.nl"}.err"
 
 ## start job from the directory from which it was submitted.
 ## NO PBS DIRECTIVES AFTER THIS!
@@ -28,7 +28,7 @@ cd $PBS_O_WORKDIR
 ## https://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-bash:
 if [ -z "${CLA+x}" ]
 then
-echo "Variable CLA (command line arguments) was not defined. Please define, possibly empty."
+>&2 echo "Variable CLA (command line arguments) was not defined. Please define, possibly empty."
 else
 ./bin/Release/CrossLink "$CLA"
 fi
