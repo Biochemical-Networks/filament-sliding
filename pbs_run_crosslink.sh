@@ -2,6 +2,9 @@
 
 #PBS -S /bin/bash
 
+## Set the job name
+#PBS -N CrossLink
+
 ## set the number of nodes and processes per node
 #PBS ‐l nodes=1:ppn=1
 
@@ -10,6 +13,9 @@
 
 ## set max wallclock time
 #PBS -l walltime=100:00:00
+
+## set memory 
+#PBS -l mem=256m
 
 ## set email adress
 #PBS -M h.wierenga@amolf.nl
