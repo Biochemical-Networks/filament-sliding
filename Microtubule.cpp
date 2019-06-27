@@ -16,10 +16,10 @@
 
 
 Microtubule::Microtubule(const MicrotubuleType type, const double length, const double latticeSpacing)
-    :   m_type(type),
-        m_length(length),
-        m_latticeSpacing(latticeSpacing),
-        m_nSites(static_cast<int32_t>(std::floor(m_length/m_latticeSpacing))+1), // Choose such that microtubule always starts and ends with a site
+    :   m_latticeSpacing(latticeSpacing),
+        m_type(type),
+        m_nSites(static_cast<int32_t>(std::floor(length/m_latticeSpacing))+1), // Choose such that microtubule always starts and ends with a site
+        m_length(m_latticeSpacing*(m_nSites-1)), // Can be different than length: is rounded down to the closest multiple of lattice spacings
         m_nFreeSites(m_nSites),
         m_sites(m_nSites, Site(true)), // Create a copy of Site which is free (isFree=true), and copy it into the vector
         m_freeSitePositions(m_nSites) // Set the number of sites, but fill it in the body of the constructor
@@ -162,8 +162,8 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
     if (!(position<=-maxStretch||position >= m_length + maxStretch)) // Definitely no sites close if there is no microtubule there
     {
         // Now, we can assume there is at least one site (does not have to be free) within reach
-        int32_t lowerSiteLabel = getFirstPositionCloseTo(position, maxStretch);
-        int32_t upperSiteLabel = getLastPositionCloseTo(position, maxStretch);
+        const int32_t lowerSiteLabel = getFirstPositionCloseTo(position, maxStretch);
+        const int32_t upperSiteLabel = getLastPositionCloseTo(position, maxStretch);
         std::vector<PossibleFullConnection> newPossibleConnections;
         for (int32_t posToCheck = lowerSiteLabel; posToCheck<=upperSiteLabel; ++posToCheck)
         {
@@ -187,6 +187,11 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
                 #ifdef MYDEBUG
                 if(std::abs(stretch)>=maxStretch)
                 {
+                    std::cerr << "The position is " << position << "\nand the microtubule is " << ((m_type==MicrotubuleType::FIXED)?"fixed":"mobile") << "\n";
+                    std::cerr << "The lower site label: " << lowerSiteLabel << "\nthe upper site label: " << upperSiteLabel <<'\n';
+                    std::cerr << "The pos to check is " << posToCheck << '\n';
+                    std::cerr << "The proposed stretch is: " << stretch << "\nand the max stretch is " << maxStretch << '\n';
+                    std::cerr << "The length of the filament is " << m_length << '\n';
                     throw GeneralException("Microtubule::addPossibleConnectionsCloseTo() tried to make a disallowed stretch");
                 }
                 #endif // MYDEBUG
