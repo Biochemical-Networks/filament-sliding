@@ -21,13 +21,12 @@
 
 class Microtubule
 {
-private:
-    const MicrotubuleType m_type;
-    double m_length;
 protected: // such that MobileMicrotubule can access it
     const double m_latticeSpacing;
 private:
+    const MicrotubuleType m_type;
     int32_t m_nSites;
+    double m_length;
 
     std::vector<Site> m_sites; // Vector, because the size never changes, but is only known at run time
 
