@@ -3,15 +3,11 @@ TO DO FOR CROSSLINKER INDUCED MT FRICTION
 * Change the external force added to the microtubule to reflect the better calculation of the free energy.
 Now, I made the program depend on GSL, but we can derive simple equations for the differences between psi (digamma) functions, involving a sum over fractions.
 
-* Add algorithm (extra program or bash script?) for doing several runs with several parameter sets
-
 * Perform runs with different maximum stretches, find the (logarithm of the rate) vs. (free energy barrier height) plots and look at the positional histograms.
 Does the free energy with a max stretch of 1 lattice spacing approximate that with larger max stretches?
 
 * Study reaction rate theory: does the prefactor depend on the number of linkers, or on the length of the microtubule?
 
-
 TO DO FOR FILAMENT TRACKING
 
-* presentation.6 experienced an inconsistency in the possibility vector, resolve that
-
+* Create step function tip region
