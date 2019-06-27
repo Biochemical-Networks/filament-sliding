@@ -9,3 +9,9 @@ Now, I made the program depend on GSL, but we can derive simple equations for th
 Does the free energy with a max stretch of 1 lattice spacing approximate that with larger max stretches?
 
 * Study reaction rate theory: does the prefactor depend on the number of linkers, or on the length of the microtubule?
+
+
+TO DO FOR FILAMENT TRACKING
+
+* presentation.6 experienced an inconsistency in the possibility vector, resolve that
+
