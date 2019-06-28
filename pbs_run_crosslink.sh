@@ -21,8 +21,10 @@
 #PBS -M h.wierenga@amolf.nl
 
 ## Write std_out and std_err to out directory, with these file names:
-#PBS -o out/"CrossLink.${PBS_JOBID%".head.hollandia.amolf.nl"}.out"
-#PBS -e out/"CrossLink.${PBS_JOBID%".head.hollandia.amolf.nl"}.err"
+## Write to local host: this means that output files are written to the home folder on the node where the program is run.
+## Other mechanisms besides PBS are responsible for synchronising the home folders of the different nodes
+#PBS -o localhost:~/crosslink/out/"CrossLink.${PBS_JOBID%".head.hollandia.amolf.nl"}.out"
+#PBS -e localhost:~/crosslink/out/"CrossLink.${PBS_JOBID%".head.hollandia.amolf.nl"}.err"
 
 ## start job from the directory from which it was submitted.
 ## NO PBS DIRECTIVES AFTER THIS!
