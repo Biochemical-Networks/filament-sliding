@@ -36,5 +36,7 @@ if [ -z "${CLA+x}" ]
 then
 >&2 echo "Variable CLA (command line arguments) was not defined. Please define, possibly empty."
 else
-./bin/Release/CrossLink "$CLA"
+## Don't use quotes in the variable expansion of CLA, since it can contain multiple words and each should be interpreted by CrossLink as a separate command line argument,
+## and not as a single big argument (containing spaces), which would be the case if we used ' ./bin/Release/CrossLink "$CLA" '.
+./bin/Release/CrossLink $CLA
 fi
