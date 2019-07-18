@@ -9,7 +9,7 @@
 #PBS ‐l nodes=1:ppn=1
 
 ## set queue name
-#PBS -q test
+#PBS -q highcpu
 
 ## set max wallclock time
 #PBS -l walltime=100:00:00
