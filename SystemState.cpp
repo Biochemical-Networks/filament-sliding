@@ -23,7 +23,8 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
                             const int32_t nPassiveCrosslinkers,
                             const double springConstant,
                             const bool addExternalForce,
-                            const std::string externalForceTypeString)
+                            const std::string externalForceTypeString,
+                            const MicrotubuleDynamics microtubuleDynamics)
     :   m_maxStretchPerLatticeSpacing(maxStretchPerLatticeSpacing),
         m_maxNumberOfCloseSites(static_cast<int32_t> (std::ceil(2*m_maxStretchPerLatticeSpacing))),
         m_maxStretch(m_maxStretchPerLatticeSpacing*latticeSpacing),
@@ -38,7 +39,8 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
         m_passiveCrosslinkers(m_nPassiveCrosslinkers, Crosslinker(Crosslinker::Type::PASSIVE),Crosslinker::Type::PASSIVE, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch),
         m_dualCrosslinkers(m_nDualCrosslinkers, Crosslinker(Crosslinker::Type::DUAL),Crosslinker::Type::DUAL, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch),
         m_activeCrosslinkers(m_nActiveCrosslinkers, Crosslinker(Crosslinker::Type::ACTIVE),Crosslinker::Type::ACTIVE, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch),
-        m_addExternalForce(addExternalForce)
+        m_addExternalForce(addExternalForce),
+        m_microtubuleDynamics(microtubuleDynamics)
 {
     if(externalForceTypeString=="BARRIERFREE")
     {
@@ -905,9 +907,17 @@ int32_t SystemState::getNUnblockedSitesFixed() const
     return getNUnblockedSitesFixed(BoundState::BOUND)+getNUnblockedSitesFixed(BoundState::UNBOUND);
 }
 
-double SystemState::getMeanPositionMicrotubuleTip() const
+double SystemState::getPositionMicrotubuleTip() const
 {
-    return m_fixedMicrotubule.getMeanTipPosition();
+    switch(m_microtubuleDynamics)
+    {
+    case MicrotubuleDynamics::STOCHASTIC:
+        return m_fixedMicrotubule.getMeanTipPosition();
+    case MicrotubuleDynamics::DETERMINISTIC:
+        return m_fixedMicrotubule.getTipLength();
+    default:
+        throw GeneralException("SystemState.getPositionMicrotubuleTip() encountered a wrong MicrotubuleDynamics");
+    }
 }
 
 // Check if all duplicate information in the different parts of the SystemState object is consistent with each other.

@@ -111,8 +111,26 @@ int main(int argc, char* argv[])
     std::string externalForceTypeString;
     input.copyParameter("externalForceType", externalForceTypeString);
 
-    SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing, maximumStretchPerLatticeSpacing,
-                            nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers, springConstant, addExternalForce, externalForceTypeString);
+    std::string microtubuleDynamicsString;
+    input.copyParameter("microtubuleDynamics", microtubuleDynamicsString);
+    if(microtubuleDynamicsString!="STOCHASTIC" && microtubuleDynamicsString!="DETERMINISTIC")
+    {
+        throw GeneralException("The parameter microtubuleDynamics constains a wrong value");
+    }
+    const MicrotubuleDynamics microtubuleDynamics = (microtubuleDynamicsString=="STOCHASTIC") ? MicrotubuleDynamics::STOCHASTIC : MicrotubuleDynamics::DETERMINISTIC;
+
+
+    SystemState systemState(lengthMobileMicrotubule,
+                            lengthFixedMicrotubule,
+                            latticeSpacing,
+                            maximumStretchPerLatticeSpacing,
+                            nActiveCrosslinkers,
+                            nDualCrosslinkers,
+                            nPassiveCrosslinkers,
+                            springConstant,
+                            addExternalForce,
+                            externalForceTypeString,
+                            microtubuleDynamics);
 
     //-----------------------------------------------------------------------------------------------------
     // Create the output class. Needs to be done before the propagator, since this needs samplePositionalDistribution as well
@@ -234,14 +252,6 @@ int main(int argc, char* argv[])
     {
         throw GeneralException("The parameter rateFixedMicrotubuleGrowth contains a wrong value");
     }
-
-    std::string microtubuleDynamicsString;
-    input.copyParameter("microtubuleDynamics", microtubuleDynamicsString);
-    if(microtubuleDynamicsString!="STOCHASTIC" && microtubuleDynamicsString!="DETERMINISTIC")
-    {
-        throw GeneralException("The parameter microtubuleDynamics constains a wrong value");
-    }
-    const MicrotubuleDynamics microtubuleDynamics = (microtubuleDynamicsString=="STOCHASTIC") ? MicrotubuleDynamics::STOCHASTIC : MicrotubuleDynamics::DETERMINISTIC;
 
     double rateBlockBoundSites;
     input.copyParameter("rateBlockBoundSites", rateBlockBoundSites);

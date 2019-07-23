@@ -8,6 +8,7 @@
 #include "CrosslinkerContainer.hpp"
 #include "PossibleFullConnection.hpp"
 #include "FullConnection.hpp"
+#include "MicrotubuleDynamics.hpp"
 
 #include <cstdint>
 #include <utility>
@@ -59,6 +60,7 @@ private:
     const bool m_addExternalForce;
     ExternalForceType m_externalForceType; // not const, has to be found in the constructor body
 
+    const MicrotubuleDynamics m_microtubuleDynamics; // For deciding what to return for
 public:
     SystemState(const double lengthMobileMicrotubule,
                 const double lengthFixedMicrotubule,
@@ -69,7 +71,8 @@ public:
                 const int32_t nPassiveCrosslinkers,
                 const double springConstant,
                 const bool addExternalForce,
-                const std::string externalForceTypeString);
+                const std::string externalForceTypeString,
+                const MicrotubuleDynamics microtubuleDynamics);
     ~SystemState();
 
     SystemState(const SystemState&) = delete;
@@ -178,7 +181,7 @@ public:
 
     int32_t getNUnblockedSitesFixed() const;
 
-    double getMeanPositionMicrotubuleTip() const;
+    double getPositionMicrotubuleTip() const;
 
     void checkConsistency(); // throws if not consistent. Mutates object, since checking of possibilities is done through recalculation
 };

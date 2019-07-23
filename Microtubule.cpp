@@ -803,6 +803,11 @@ double Microtubule::getMeanTipPosition() const
     return (nUnblockedSites==0) ? 0.0 : sumPositions*m_latticeSpacing/nUnblockedSites;
 }
 
+double Microtubule::getTipLength() const
+{
+    return m_latticeSpacing*(getNUnblockedSites(BoundState::BOUND)+getNUnblockedSites(BoundState::UNBOUND)-1);
+}
+
 void Microtubule::checkInternalConsistency() const
 {
     // Check the deques containing information about the sites, which is duplicate info. Also, check that the sizes are the same as the numbers stored
