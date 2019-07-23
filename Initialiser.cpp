@@ -362,7 +362,6 @@ void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerat
             const bool crosslinkerOnBlocked =
             #endif // MYDEBUG
             systemState.blockSiteOnFixed(fixedLabel, disconnect);
-            ++nSitesBlocked;
 
             #ifdef MYDEBUG
             if(crosslinkerOnBlocked) ++nCrosslinkersOnBlockedInitally;
