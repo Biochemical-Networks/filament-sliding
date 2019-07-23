@@ -11,6 +11,7 @@
 #include "Output.hpp"
 #include "Reaction.hpp"
 #include "Log.hpp"
+#include "MicrotubuleDynamics.hpp"
 
 /* Propagator takes a SystemState, which is properly initialised, and propagates its dynamics.
  * In the process, it can report about the current SystemState, for example about the microtubule position.
@@ -33,6 +34,8 @@ private:
     const double m_actinDisconnectTime;
     const double m_springConstant;
     const double m_latticeSpacing;
+
+    const MicrotubuleDynamics m_microtubuleDynamics;
 
     const double m_deviationMicrotubule; // sqrt(2 D t), with t the time step size and D the diffusion constant of the microtubule. Stored to prevent this calculation every time step
 
@@ -94,6 +97,7 @@ public:
                const double actinDisconnectTime,
                const double springConstant,
                const double latticeSpacing,
+               const MicrotubuleDynamics microtubuleDynamics,
                const double baseRateZeroToOneExtremitiesConnected,
                const double baseRateOneToZeroExtremitiesConnected,
                const double baseRateOneToTwoExtremitiesConnected,

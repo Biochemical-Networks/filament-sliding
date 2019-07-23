@@ -924,6 +924,11 @@ int32_t SystemState::getNUnblockedSitesFixed(const BoundState boundState) const
     return m_fixedMicrotubule.getNUnblockedSites(boundState);
 }
 
+int32_t SystemState::getNUnblockedSitesFixed() const
+{
+    return getNUnblockedSitesFixed(BoundState::BOUND)+getNUnblockedSitesFixed(BoundState::UNBOUND);
+}
+
 double SystemState::getMeanPositionMicrotubuleTip() const
 {
     return m_fixedMicrotubule.getMeanTipPosition();

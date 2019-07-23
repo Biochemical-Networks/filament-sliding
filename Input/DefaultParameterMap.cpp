@@ -76,10 +76,15 @@ ParameterMap::ParameterMap()
 
     /*defineParameter("headBindingBiasEnergy", 0.0, "kT", "real");*/
 
-    // rates for the dynamics of the fixed microtubule
+    // Parameters for the dynamics of the fixed microtubule.
+    // Dynamics is either stochastic (random site addition at front, exponential blocking), or deterministic (fixed tip area, step function)
     defineParameter("rateFixedMicrotubuleGrowth", 0.0, "s^(-1)", ">=0");
+    defineParameter("microtubuleDynamics", "STOCHASTIC", "unitless", "STOCHASTIC,DETERMINISTIC");
+    // Parameters for stochastic system
     defineParameter("rateBlockBoundSites", 0.0, "s^(-1)", ">=0");
     defineParameter("rateBlockUnboundSites", 0.0, "s^(-1)", ">=0");
+    // Parameters for deterministic system
+    defineParameter("tipSize", 0.0, "micron", ">=0,<=lengthFixedMicrotubule");
 
     // Parameters to turn analysis on or off
     defineParameter("addExternalForce", "FALSE", "unitless", "TRUE,FALSE");

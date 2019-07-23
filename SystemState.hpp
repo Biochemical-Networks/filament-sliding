@@ -177,6 +177,8 @@ public:
 
     int32_t getNUnblockedSitesFixed(const BoundState boundState) const;
 
+    int32_t getNUnblockedSitesFixed() const;
+
     double getMeanPositionMicrotubuleTip() const;
 
     void checkConsistency(); // throws if not consistent. Mutates object, since checking of possibilities is done through recalculation
