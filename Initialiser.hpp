@@ -3,7 +3,7 @@
 
 #include "SystemState.hpp"
 #include "RandomGenerator.hpp"
-#include "MicrotubuleDynamics"
+#include "MicrotubuleDynamics.hpp"
 
 #include "Crosslinker.hpp"
 

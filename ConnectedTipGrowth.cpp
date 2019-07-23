@@ -32,8 +32,3 @@ void ConnectedTipGrowth::performReaction(SystemState& systemState, RandomGenerat
     // assume that the tip size is always fixed from the beginning: the initial microtubule must be at least as long as the tip
     systemState.blockSiteOnFixed(siteToBlock, m_unbindUponBlock);
 }
-
-int32_t RemoveSite::whichSiteToBlock(SystemState& systemState, RandomGenerator& generator)
-{
-    // This division must be possible, this function should never be called when its rate is zero
-    const double probBoundSiteRemoved = systemState.getNUnblockedSitesFixed(BoundState::BOUND)}
