@@ -31,7 +31,7 @@ Code::Blocks by adding sfml-graphics sfml-window sfml-system to:
 Project->Build Options->CrossLink->linker settings-> add
 
 To create a makefile out of the Code::Blocks project, use the tool cbp2make. Download here: https://sourceforge.net/projects/cbp2make/
-To run it, first compile cbp2make, then ./cbp2make -in <input project.cbp> (--all-os) (-out <makefile name>)
+To run it, first compile cbp2make, then cbp2make -in <input project.cbp> (--all-os) (-out <makefile name>)
 The --all-os option creates makefiles for windows, mac-os and unix-like systems (linux).
 
 ### HOW TO RUN ###

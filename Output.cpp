@@ -64,7 +64,7 @@ void Output::writePositionsAndCrosslinkerNumbers(const double time, const System
     {
         m_positionsAndCrosslinkersFile << std::setw(m_collumnWidth) << time
             << std::setw(m_collumnWidth) << systemState.getNSites(MicrotubuleType::FIXED)*systemState.getLatticeSpacing()
-            << std::setw(m_collumnWidth) << systemState.getMeanPositionMicrotubuleTip()
+            << std::setw(m_collumnWidth) << systemState.getPositionMicrotubuleTip()
             << std::setw(m_collumnWidth) << systemState.getMicrotubulePosition()
                 +systemState.getNSites(MicrotubuleType::MOBILE)*systemState.getLatticeSpacing()
             << std::setw(m_collumnWidth) << systemState.getNFullCrosslinkers()

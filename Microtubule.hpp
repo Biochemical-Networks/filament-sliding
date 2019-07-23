@@ -105,6 +105,8 @@ public:
 
     double getMeanTipPosition() const;
 
+    double getTipLength() const;
+
     void checkInternalConsistency() const;
 
     // Functions for testing consistency with the crosslinkercontainer
