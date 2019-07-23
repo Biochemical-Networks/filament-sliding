@@ -336,13 +336,21 @@ void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerat
     int32_t nCrosslinkersOnBlockedInitally=0;
     #endif // MYDEBUG
 
-    int32_t nSitesBlocked = 0;
+    const int32_t labelFirstUnblocked = systemState.getNSites(MicrotubuleType::FIXED)-m_tipLength;
+
+    #ifdef MYDEBUG
+    if(labelFirstUnblocked<0 || labelFirstUnblocked >= systemState.getNSites(MicrotubuleType::FIXED))
+    {
+        throw GeneralException("Initialiser::initialiseBlockedSites() encountered a tip region that is larger than the fixed microtubule");
+    }
+    #endif // MYDEBUG
+
     int32_t fixedLabel = systemState.getNSites(MicrotubuleType::FIXED)-1;
     double localUnblockedProbability=m_probabilityTipUnblocked;
     while(fixedLabel>=0)
     {
         if((m_microtubuleDynamics==MicrotubuleDynamics::STOCHASTIC && generator.getProbability()>=localUnblockedProbability)
-        || (m_microtubuleDynamics==MicrotubuleDynamics::DETERMINISTIC && nSitesBlocked < m_tipLength))
+        || (m_microtubuleDynamics==MicrotubuleDynamics::DETERMINISTIC && fixedLabel < labelFirstUnblocked))
         {
             // Since the energy difference between being partially connected or fully connected does not depend on the site state (tip or blocked),
             // there is a fixed probability that a linker in the overlap needs to be disconnected.
