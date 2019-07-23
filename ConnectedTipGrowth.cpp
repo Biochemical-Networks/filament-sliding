@@ -24,7 +24,7 @@ void ConnectedTipGrowth::performReaction(SystemState& systemState, RandomGenerat
 
     systemState.growFixed();
 
-    const int32_t siteToBlock = systemState.getNSites(MicrotubuleType::FIXED)-systemState.getNUnblockedSitesFixed()-1;
+    const int32_t siteToBlock = systemState.getNSites(MicrotubuleType::FIXED)-systemState.getNUnblockedSitesFixed();
 
     // Leave any crosslinkers bound to it after blocking: the new unbinding rate will take care of creating a stationary distribution. (m_unbindUponBlock=false)
     // Only in case that the (un)binding rates to on blocked sites are zero, do unbind them. (m_unbindUponBlock=true)
