@@ -57,7 +57,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_actinDisconnectTime(actinDisconnectTime),
         m_springConstant(springConstant),
         m_latticeSpacing(latticeSpacing),
-        m_microtubuleDynamics(MicrotubuleDynamics),
+        m_microtubuleDynamics(microtubuleDynamics),
         m_deviationMicrotubule(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep)),
         m_currentTime(-m_nEquilibrationBlocks*m_nTimeSteps*m_calcTimeStep), // time 0 is the start of the run blocks
         m_samplePositionalDistribution(samplePositionalDistribution),

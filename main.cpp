@@ -381,6 +381,7 @@ int main(int argc, char* argv[])
                           actinDisconnectTime,
                           springConstant,
                           latticeSpacing,
+                          microtubuleDynamics,
                           baseRateZeroToOneExtremitiesConnected,
                           baseRateOneToZeroExtremitiesConnected,
                           baseRateOneToTwoExtremitiesConnected,
