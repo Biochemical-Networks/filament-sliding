@@ -3,6 +3,7 @@
 
 #include "SystemState.hpp"
 #include "RandomGenerator.hpp"
+#include "MicrotubuleDynamics"
 
 #include "Crosslinker.hpp"
 
@@ -24,12 +25,14 @@ class Initialiser
     };*/
 private:
     const double m_initialPositionMicrotubule;
+    const MicrotubuleDynamics m_microtubuleDynamics;
     const double m_probabilityPartiallyConnectedTip;
     const double m_probabilityFullyConnectedTip;
     const double m_probabilityPartiallyConnectedBlocked;
     const double m_probabilityFullyConnectedBlocked;
     const double m_probabilityPartialBoundOnTipOutsideOverlap;
     const double m_probabilityTipUnblocked;
+    const int32_t m_tipLength;
     /*InitialCrosslinkerDistribution m_initialCrosslinkerDistribution;*/
 
     void initialiseCrosslinkers(SystemState& systemState, RandomGenerator& generator);
@@ -49,12 +52,15 @@ private:
 
 public:
     Initialiser(const double initialPositionMicrotubule,
+                const MicrotubuleDynamics microtubuleDynamics,
                 const double probabilityPartiallyConnectedTip,
                 const double probabilityFullyConnectedTip,
                 const double probabilityPartiallyConnectedBlocked,
                 const double probabilityFullyConnectedBlocked,
                 const double probabilityPartialBoundOnTipOutsideOverlap,
-                const double probabilityTipUnblocked);
+                const double probabilityTipUnblocked,
+                const double tipSize,
+                const double latticeSpacing);
     ~Initialiser();
 
     Initialiser(const Initialiser&) = delete;

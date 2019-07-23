@@ -2,6 +2,7 @@
 #include "SystemState.hpp"
 #include "RandomGenerator.hpp"
 #include "GeneralException/GeneralException.hpp"
+#include "MicrotubuleDynamics.hpp"
 
 #include "Crosslinker.hpp"
 #include "Extremity.hpp"
@@ -16,19 +17,24 @@
 #include <iostream>
 
 Initialiser::Initialiser(const double initialPositionMicrotubule,
+                         const MicrotubuleDynamics microtubuleDynamics,
                          const double probabilityPartiallyConnectedTip,
                          const double probabilityFullyConnectedTip,
                          const double probabilityPartiallyConnectedBlocked,
                          const double probabilityFullyConnectedBlocked,
                          const double probabilityPartialBoundOnTipOutsideOverlap,
-                         const double probabilityTipUnblocked)
+                         const double probabilityTipUnblocked,
+                         const double tipSize,
+                         const double latticeSpacing)
     :   m_initialPositionMicrotubule(initialPositionMicrotubule),
+        m_microtubuleDynamics(microtubuleDynamics),
         m_probabilityPartiallyConnectedTip(probabilityPartiallyConnectedTip),
         m_probabilityFullyConnectedTip(probabilityFullyConnectedTip),
         m_probabilityPartiallyConnectedBlocked(probabilityPartiallyConnectedBlocked),
         m_probabilityFullyConnectedBlocked(probabilityFullyConnectedBlocked),
         m_probabilityPartialBoundOnTipOutsideOverlap(probabilityPartialBoundOnTipOutsideOverlap),
-        m_probabilityTipUnblocked(probabilityTipUnblocked)
+        m_probabilityTipUnblocked(probabilityTipUnblocked),
+        m_tipLength(static_cast<int32_t>(std::floor(tipSize/latticeSpacing))+1)
 {
     // Translate the string to an enum object Initialiser::InitialCrosslinkerDistribution
     // switch statements do not work with strings
@@ -296,7 +302,7 @@ void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerat
         throw GeneralException("Initialiser::initialiseBlockedSites() encountered a wrong value for m_probabilityTipUnblocked");
     }
     #endif // MYDEBUG
-    if(m_probabilityTipUnblocked==1.0) return;
+    if(m_microtubuleDynamics==MicrotubuleDynamics::STOCHASTIC && m_probabilityTipUnblocked==1.0) return;
 
     // recalculate the overlap beginning and end as used in Initialiser::initialiseCrosslinkers(),
     // which is necessary to know for deciding whether a specific crosslinker needs to be unbound or not (that depends on whether it is in the overlap)
@@ -330,11 +336,13 @@ void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerat
     int32_t nCrosslinkersOnBlockedInitally=0;
     #endif // MYDEBUG
 
+    int32_t nSitesBlocked = 0;
     int32_t fixedLabel = systemState.getNSites(MicrotubuleType::FIXED)-1;
     double localUnblockedProbability=m_probabilityTipUnblocked;
     while(fixedLabel>=0)
     {
-        if(generator.getProbability()>=localUnblockedProbability)
+        if((m_microtubuleDynamics==MicrotubuleDynamics::STOCHASTIC && generator.getProbability()>=localUnblockedProbability)
+        || (m_microtubuleDynamics==MicrotubuleDynamics::DETERMINISTIC && nSitesBlocked < m_tipLength))
         {
             // Since the energy difference between being partially connected or fully connected does not depend on the site state (tip or blocked),
             // there is a fixed probability that a linker in the overlap needs to be disconnected.
@@ -346,6 +354,7 @@ void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerat
             const bool crosslinkerOnBlocked =
             #endif // MYDEBUG
             systemState.blockSiteOnFixed(fixedLabel, disconnect);
+            ++nSitesBlocked;
 
             #ifdef MYDEBUG
             if(crosslinkerOnBlocked) ++nCrosslinkersOnBlockedInitally;

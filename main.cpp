@@ -9,6 +9,7 @@
 #include "Log.hpp"
 #include "GeneralException/GeneralException.hpp"
 #include "ActinDisconnectException.hpp"
+#include "MicrotubuleDynamics.hpp"
 
 #include <iostream>
 #include <cstdint>
@@ -234,6 +235,14 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter rateFixedMicrotubuleGrowth contains a wrong value");
     }
 
+    std::string microtubuleDynamicsString;
+    input.copyParameter("microtubuleDynamics", microtubuleDynamicsString);
+    if(microtubuleDynamicsString!="STOCHASTIC" && microtubuleDynamicsString!="DETERMINISTIC")
+    {
+        throw GeneralException("The parameter microtubuleDynamics constains a wrong value");
+    }
+    const MicrotubuleDynamics microtubuleDynamics = (microtubuleDynamicsString=="STOCHASTIC") ? MicrotubuleDynamics::STOCHASTIC : MicrotubuleDynamics::DETERMINISTIC;
+
     double rateBlockBoundSites;
     input.copyParameter("rateBlockBoundSites", rateBlockBoundSites);
     if(rateBlockBoundSites<0.0)
@@ -246,6 +255,18 @@ int main(int argc, char* argv[])
     if(rateBlockUnboundSites<0.0)
     {
         throw GeneralException("The parameter rateBlockUnboundSites contains a wrong value");
+    }
+
+    if(microtubuleDynamics==MicrotubuleDynamics::DETERMINISTIC && rateBlockBoundSites != rateBlockUnboundSites)
+    {
+        throw GeneralException("In step function tip dynamics, it is not possible to have different hydrolysis rates for bound vs unbound sites");
+    }
+
+    double tipSize;
+    input.copyParameter("tipSize", tipSize);
+    if(tipSize<0.0 || tipSize>lengthFixedMicrotubule)
+    {
+        throw GeneralException("The parameter tipSize contains a wrong value");
     }
 
     const double occupancyProbabilityDenominatorTip = baseRateOneToZeroExtremitiesConnected*baseRateTwoToOneExtremitiesConnected+
@@ -274,7 +295,7 @@ int main(int argc, char* argv[])
     // Initially block sites according to a stationary distribution without the influence of actin.
     // The rate of hydrolysis without actin present is given by a weighted sum over the rates of hydrolysis with or without a partial linker present
     const double meanHydrolysisRate = rateBlockUnboundSites*(1-probabilityPartialBoundOnTipOutsideOverlap)+rateBlockBoundSites*probabilityPartialBoundOnTipOutsideOverlap;
-    std::cout << "The mean hydrolysis rate equals " << meanHydrolysisRate << " s^(-1).\n";
+    if(microtubuleDynamics==MicrotubuleDynamics::STOCHASTIC) std::cout << "The mean hydrolysis rate equals " << meanHydrolysisRate << " s^(-1).\n";
     const double unblockedPartitionSum = rateFixedMicrotubuleGrowth+meanHydrolysisRate;
     const double probabilityTipUnblocked = (unblockedPartitionSum==0.0)?1.0:
                         rateFixedMicrotubuleGrowth/(unblockedPartitionSum);
@@ -285,12 +306,15 @@ int main(int argc, char* argv[])
     }
 
     Initialiser initialiser(initialPositionMicrotubule,
+                            microtubuleDynamics,
                             probabilityPartiallyConnectedTip,
                             probabilityFullyConnectedTip,
                             probabilityPartiallyConnectedBlocked,
                             probabilityFullyConnectedBlocked,
                             probabilityPartialBoundOnTipOutsideOverlap,
-                            probabilityTipUnblocked);
+                            probabilityTipUnblocked,
+                            tipSize,
+                            latticeSpacing);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the propagator
