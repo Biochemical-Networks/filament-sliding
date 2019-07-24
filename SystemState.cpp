@@ -914,7 +914,7 @@ double SystemState::getPositionMicrotubuleTip() const
     case MicrotubuleDynamics::STOCHASTIC:
         return m_fixedMicrotubule.getMeanTipPosition();
     case MicrotubuleDynamics::DETERMINISTIC:
-        return m_fixedMicrotubule.getTipLength();
+        return m_fixedMicrotubule.getLength()- m_fixedMicrotubule.getTipLength();
     default:
         throw GeneralException("SystemState.getPositionMicrotubuleTip() encountered a wrong MicrotubuleDynamics");
     }
