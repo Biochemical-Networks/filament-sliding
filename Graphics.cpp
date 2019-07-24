@@ -187,6 +187,7 @@ void Graphics::handleEvent(const sf::Event& event)
         m_view.reset(visibleArea);
         m_view.setCenter(sf::Vector2f(centreOverlap, 0.5f*event.size.height));
         m_window.setView(m_view);
+        m_currentZoomFactor=1.0;
     }
     else if(event.type == sf::Event::MouseWheelScrolled)
     {
