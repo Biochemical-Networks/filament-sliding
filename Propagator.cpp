@@ -193,7 +193,7 @@ void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& gene
     if(m_actinIsFree && m_timeFreeActin > m_actinDisconnectTime)
     {
         // Actin has fallen off
-        throw ActinDisconnectException(m_currentTime);
+        throw ActinDisconnectException(m_currentTime, systemState.getMicrotubulePosition());
     }
 
 }
