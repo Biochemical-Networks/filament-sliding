@@ -63,7 +63,7 @@ void Output::writePositionsAndCrosslinkerNumbers(const double time, const System
     if(time <= m_maxPeriodPositionTracking)
     {
         m_positionsAndCrosslinkersFile << std::setw(m_collumnWidth) << time
-            << std::setw(m_collumnWidth) << systemState.getNSites(MicrotubuleType::FIXED)*systemState.getLatticeSpacing()
+            << std::setw(m_collumnWidth) << (systemState.getNSites(MicrotubuleType::FIXED)-1)*systemState.getLatticeSpacing()
             << std::setw(m_collumnWidth) << systemState.getPositionMicrotubuleTip()
             << std::setw(m_collumnWidth) << systemState.getMicrotubulePosition()
                 +systemState.getNSites(MicrotubuleType::MOBILE)*systemState.getLatticeSpacing()
