@@ -53,8 +53,15 @@ private:
     Log& m_log;
 
     // Keep track how long the actin has been disconnected:
+    // Assume it diffused away and terminate program when it has been disconnected too long
     bool m_actinIsFree;
     double m_timeFreeActin;
+
+    // Keep track of the time that actin is behind the tip.
+    bool m_actinWasOnTip;
+    double m_timeLastTrackingCompletion;
+    double m_totalTimeBehindTip;
+    double m_totalTimeOnTip;
 
     /*const double m_basinOfAttractionHalfWidth;
     int32_t m_previousBasinOfAttraction;*/
@@ -111,6 +118,7 @@ public:
                RandomGenerator& generator,
                const bool samplePositionalDistribution,
                const bool addExternalForce,
+               const bool actinInitiallyOnTip,
                Log& log);
     ~Propagator();
 

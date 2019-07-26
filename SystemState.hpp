@@ -185,6 +185,10 @@ public:
 
     double getPositionMicrotubuleTip() const;
 
+    void setTipSize(const int32_t tipLength);
+
+    bool actinOnTip() const;
+
     void checkConsistency(); // throws if not consistent. Mutates object, since checking of possibilities is done through recalculation
 };
 

@@ -69,6 +69,8 @@ void Initialiser::initialise(SystemState& systemState, RandomGenerator& generato
 {
     systemState.setMicrotubulePosition(m_initialPositionMicrotubule);
 
+    systemState.setTipSize(m_tipLength);
+
     initialiseCrosslinkers(systemState, generator);
 
     initialiseBlockedSites(systemState, generator);

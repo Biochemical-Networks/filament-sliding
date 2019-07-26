@@ -7,7 +7,11 @@
 class ActinDisconnectException : public GeneralException
 {
 public:
-    ActinDisconnectException(const double timeToDisconnect, const double positionOfDisconnect);
+    ActinDisconnectException(const double timeToDisconnect,
+                             const double positionOfDisconnect,
+                             const double timeLastTrackingCompletion,
+                             const double totalTimeBehindTip,
+                             const double totalTimeOnTip);
 };
 
 #endif // ACTINDISCONNECTEXCEPTION_HPP

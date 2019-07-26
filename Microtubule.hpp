@@ -27,6 +27,7 @@ private:
     const MicrotubuleType m_type;
     int32_t m_nSites;
     double m_length;
+    double m_tipSize;
 
     std::vector<Site> m_sites; // Vector, because the size never changes, but is only known at run time
 
@@ -103,9 +104,9 @@ public:
 
     std::vector<int32_t> getBlockedSitePositions() const;
 
-    double getMeanTipPosition() const;
+    double getTipSize() const;
 
-    double getTipLength() const;
+    void setTipSize(const int32_t tipLength);
 
     void checkInternalConsistency() const;
 

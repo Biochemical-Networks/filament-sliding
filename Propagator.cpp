@@ -47,6 +47,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        RandomGenerator& generator,
                        const bool samplePositionalDistribution,
                        const bool addExternalForce,
+                       const bool actinInitiallyOnTip,
                        Log& log)
     :   m_nEquilibrationBlocks(numberEquilibrationBlocks),
         m_nRunBlocks(numberRunBlocks),
@@ -66,7 +67,11 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_nStochasticBoundaryCrossings(0), // Counts the number of times diffusion of the mobile microtubule was reflected at a maximum stretch barrier
         m_log(log),
         m_actinIsFree(false), // start with connected filaments
-        m_timeFreeActin(0.0)
+        m_timeFreeActin(0.0),
+        m_actinWasOnTip(actinInitiallyOnTip),
+        m_timeLastTrackingCompletion(0.0),
+        m_totalTimeBehindTip(0.0),
+        m_totalTimeOnTip(0.0)
 {
     // objects in std::initializer_list are inherently const, so std::unique_ptr's copy constructor cannot be used there, and we cannot use this method of initialising m_reactions.
     // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
@@ -193,9 +198,29 @@ void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& gene
     if(m_actinIsFree && m_timeFreeActin > m_actinDisconnectTime)
     {
         // Actin has fallen off
-        throw ActinDisconnectException(m_currentTime, systemState.getMicrotubulePosition());
+        throw ActinDisconnectException(m_currentTime,
+                                       systemState.getMicrotubulePosition(),
+                                       m_timeLastTrackingCompletion,
+                                       m_totalTimeBehindTip,
+                                       m_totalTimeOnTip);
     }
 
+    const bool actinIsOnTip = systemState.actinOnTip();
+    if(actinIsOnTip && m_actinWasOnTip)
+    {
+        m_timeLastTrackingCompletion+=m_calcTimeStep;
+        m_totalTimeOnTip+=m_calcTimeStep;
+    }
+    else if(actinIsOnTip && !m_actinWasOnTip)
+    {
+        m_timeLastTrackingCompletion = m_currentTime;
+        m_totalTimeOnTip+=m_calcTimeStep;
+    }
+    else if(!actinIsOnTip)
+    {
+        m_totalTimeBehindTip+=m_calcTimeStep;
+    }
+    m_actinWasOnTip = actinIsOnTip;
 }
 
 void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& generator)
