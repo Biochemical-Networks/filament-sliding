@@ -272,12 +272,6 @@ int main(int argc, char* argv[])
         throw GeneralException("In step function tip dynamics, it is not possible to have different hydrolysis rates for bound vs unbound sites");
     }
 
-    double tipSize;
-    input.copyParameter("tipSize", tipSize);
-    if(tipSize<0.0 || tipSize>lengthFixedMicrotubule)
-    {
-        throw GeneralException("The parameter tipSize contains a wrong value");
-    }
 
     const double occupancyProbabilityDenominatorTip = baseRateOneToZeroExtremitiesConnected*baseRateTwoToOneExtremitiesConnected+
                                                    baseRateZeroToOneExtremitiesConnected*baseRateTwoToOneExtremitiesConnected+
@@ -313,6 +307,17 @@ int main(int argc, char* argv[])
     if(rateBlockUnboundSites!=rateBlockBoundSites)
     {
         std::cout << "rateBlockUnboundSites is different from rateBlockBoundSites. The initial distribution of blocked sites is set by rateBlockUnboundSites.\n";
+    }
+
+    double tipSize;
+    input.copyParameter("tipSize", tipSize);
+    if(microtubuleDynamics==MicrotubuleDynamics::STOCHASTIC)
+    {
+        tipSize = (meanHydrolysisRate==0.0)?lengthFixedMicrotubule:latticeSpacing*rateFixedMicrotubuleGrowth/meanHydrolysisRate;
+    }
+    if(tipSize<0.0 || tipSize>lengthFixedMicrotubule)
+    {
+        throw GeneralException("The parameter tipSize contains a wrong value");
     }
 
     Initialiser initialiser(initialPositionMicrotubule,
@@ -405,6 +410,7 @@ int main(int argc, char* argv[])
                           generator,
                           samplePositionalDistribution,
                           addExternalForce,
+                          initialPositionMicrotubule+lengthMobileMicrotubule > lengthFixedMicrotubule - std::floor(tipSize/latticeSpacing)*latticeSpacing,
                           log);
 
     //-----------------------------------------------------------------------------------------------------

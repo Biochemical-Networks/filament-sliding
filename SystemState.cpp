@@ -909,15 +909,17 @@ int32_t SystemState::getNUnblockedSitesFixed() const
 
 double SystemState::getPositionMicrotubuleTip() const
 {
-    switch(m_microtubuleDynamics)
-    {
-    case MicrotubuleDynamics::STOCHASTIC:
-        return m_fixedMicrotubule.getMeanTipPosition();
-    case MicrotubuleDynamics::DETERMINISTIC:
-        return m_fixedMicrotubule.getLength()- m_fixedMicrotubule.getTipLength();
-    default:
-        throw GeneralException("SystemState.getPositionMicrotubuleTip() encountered a wrong MicrotubuleDynamics");
-    }
+    return m_fixedMicrotubule.getLength()- m_fixedMicrotubule.getTipSize();
+}
+
+bool SystemState::actinOnTip() const
+{
+    return m_mobileMicrotubule.getPosition() + m_mobileMicrotubule.getLength() > getPositionMicrotubuleTip();
+}
+
+void SystemState::setTipSize(const int32_t tipLength)
+{
+    m_fixedMicrotubule.setTipSize(tipLength);
 }
 
 // Check if all duplicate information in the different parts of the SystemState object is consistent with each other.

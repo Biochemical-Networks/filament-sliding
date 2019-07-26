@@ -20,6 +20,7 @@ Microtubule::Microtubule(const MicrotubuleType type, const double length, const 
         m_type(type),
         m_nSites(static_cast<int32_t>(std::floor(length/m_latticeSpacing))+1), // Choose such that microtubule always starts and ends with a site
         m_length(m_latticeSpacing*(m_nSites-1)), // Can be different than length: is rounded down to the closest multiple of lattice spacings
+        m_tipSize(0.0), // initialise through setTipSize
         m_sites(m_nSites, Site()), // Create a copy of Site which is free, and copy it into the vector
         m_nFreeSitesTip(m_nSites),
         m_nFreeSitesBlocked(0),
@@ -779,33 +780,14 @@ std::vector<int32_t> Microtubule::getBlockedSitePositions() const
     return blockedSitePositions;
 }
 
-double Microtubule::getMeanTipPosition() const
+double Microtubule::getTipSize() const
 {
-    double sumPositions=0;
-    int32_t nUnblockedSites=0;
-    for(std::size_t i=0; i<m_sites.size(); ++i)
-    {
-        #ifdef MYDEBUG
-        try{
-        #endif // MYDEBUG
-        if(!m_sites.at(i).isBlocked())
-        {
-            sumPositions+=i;
-            ++nUnblockedSites;
-        }
-        #ifdef MYDEBUG
-        } catch(std::out_of_range& error)
-        {
-            throw GeneralException(std::string("Microtubule::getMeanTipPosition() tried to access a non-existing site. ")+error.what());
-        }
-        #endif // MYDEBUG
-    }
-    return (nUnblockedSites==0) ? 0.0 : sumPositions*m_latticeSpacing/nUnblockedSites;
+    return m_tipSize;
 }
 
-double Microtubule::getTipLength() const
+void Microtubule::setTipSize(const int32_t tipLength)
 {
-    return m_latticeSpacing*(getNUnblockedSites(BoundState::BOUND)+getNUnblockedSites(BoundState::UNBOUND)-1);
+    m_tipSize = (tipLength-1)*m_latticeSpacing;
 }
 
 void Microtubule::checkInternalConsistency() const
