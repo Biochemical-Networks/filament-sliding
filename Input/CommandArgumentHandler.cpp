@@ -4,9 +4,13 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <string>
+#include <cstdint>
 
 CommandArgumentHandler::CommandArgumentHandler(int argc, char* argv[])
-    :   m_mobileMicrotubuleLengthDefined(false),
+    :   m_runNameDefined(false),
+        m_runName(""),
+        m_mobileMicrotubuleLengthDefined(false),
         m_lengthMobile(0.0),
         m_numberOfPassiveCrosslinkersDefined(false),
         m_numberPassive(0),
@@ -41,6 +45,7 @@ CommandArgumentHandler::CommandArgumentHandler(int argc, char* argv[])
         {
             std::cerr << "Continue with the input file values of all variables.\n";
             // reset if something was set
+            m_runNameDefined = false;
             m_mobileMicrotubuleLengthDefined = false;
             m_numberOfPassiveCrosslinkersDefined = false;
             m_springConstantDefined = false;
@@ -61,7 +66,11 @@ void CommandArgumentHandler::readVariable(std::istringstream&& streamName, std::
     {
         throw InputException("CommandArgumentHandler::readVariable() expected a variableType, but found no valid one.");
     }
-    if(variableType == "-NP" || variableType == "-np" || variableType == "-nP" || variableType == "-Np" ||
+    if(variableType == "-N" || variableType == "-n")
+    {
+        newVariable=VariableName::RUNNAME;
+    }
+    else if(variableType == "-NP" || variableType == "-np" || variableType == "-nP" || variableType == "-Np" ||
        variableType == "-PN" || variableType == "-pn" || variableType == "-pN" || variableType == "-Pn")
     {
         newVariable=VariableName::NUMBERPASSIVE;
@@ -88,6 +97,17 @@ void CommandArgumentHandler::readVariable(std::istringstream&& streamName, std::
 
     switch(newVariable)
     {
+        case VariableName::RUNNAME:
+            if(m_runNameDefined)
+            {
+                throw InputException("CommandArgumentHandler::readVariable() tried to set the run name more than once.");
+            }
+            if(!(streamValue >> m_runName))
+            {
+                throw InputException("CommandArgumentHandler::readVariable() did not encounter a proper run name.");
+            }
+            m_runNameDefined = true;
+            break;
         case VariableName::NUMBERPASSIVE:
             if(m_numberOfPassiveCrosslinkersDefined)
             {
@@ -136,6 +156,23 @@ void CommandArgumentHandler::readVariable(std::istringstream&& streamName, std::
         default:
             throw InputException("CommandArgumentHandler::readVariable() set newVariable to an invalid value.");
     }
+}
+
+bool CommandArgumentHandler::runNameDefined() const
+{
+    return m_runNameDefined;
+}
+
+std::string CommandArgumentHandler::getRunName() const
+{
+    #ifdef MYDEBUG
+    if(!m_runNameDefined)
+    {
+        throw InputException("CommandArgumentHandler::getRunName() was called when the command line did not set the run name");
+    }
+    #endif // MYDEBUG
+
+    return m_runName;
 }
 
 bool CommandArgumentHandler::mobileLengthDefined() const
