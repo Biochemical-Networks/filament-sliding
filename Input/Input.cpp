@@ -28,8 +28,13 @@ Input::Input(const CommandArgumentHandler& cmd, const std::string fileName) : m_
             exit(1); // Terminate the program if no input file is present
         }
     }
-    setRunName(); // Set the name of the current run, first from the input file, adding labels if the name was previously used
 
+    // Set the name of the current run, first from the input file, then from the command line arguments, adding labels if the name was previously used
+    if(cmd.runNameDefined())
+    {
+        m_parameterMap.overrideParameter("runName", cmd.getRunName());
+    }
+    setRunName();
     m_parameterMap.overrideParameter("runName", m_runName);
 
     if(cmd.mobileLengthDefined())
