@@ -4,18 +4,23 @@
 #include <cstdint>
 #include <string>
 #include <sstream>
+#include <string>
 
 class CommandArgumentHandler
 {
 private:
     enum class VariableName
     {
+        RUNNAME,
         MOBILELENGTH,
         NUMBERPASSIVE,
         SPRINGCONSTANT,
         GROWTHVELOCITY,
         INVALID // MUST BE LAST ELEMENT DEFINED. Used to cast to the number of elements. Treat this together with default.
     };
+
+    bool m_runNameDefined;
+    std::string m_runName;
 
     bool m_mobileMicrotubuleLengthDefined;
     double m_lengthMobile;
@@ -34,6 +39,9 @@ private:
 public:
     CommandArgumentHandler(int argc, char* argv[]);
     ~CommandArgumentHandler();
+
+    bool runNameDefined() const;
+    std::string getRunName() const;
 
     bool mobileLengthDefined() const;
     double getMobileLength() const;
