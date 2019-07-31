@@ -6,15 +6,19 @@ re='^[0-9]+$'
 if [ "$#" -ne 3 ]
 then
 >&2 echo "Not the right number of arguments."
+exit 1
 elif [ -z "$1" ]
 then
 >&2 echo "Run name is empty."
+exit 1
 elif [ -z "$2" ] || [[ ! ($2 =~ $re) ]]
 then
 >&2 echo "Number of runs is empty or not a number."
+exit 1
 elif [ -z "$3" ] || [[ ! ($3 =~ $re) ]]
 then
 >&2 echo "Initial run number is empty or not a number."
+exit 1
 fi
 
 RUN_NAME="$1"
