@@ -333,6 +333,7 @@ void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerat
         throw GeneralException("Initialiser::initialiseBlockedSites() calculated two different unbinding probabilities.");
     }
 
+    #pragma omp critical
     std::cout << "disconnectProbabilityUponBlockInOverlap: " << disconnectProbabilityUponBlockInOverlap
               << "\ndisconnectProbabilityUponBlockOutOfOverlap: " << disconnectProbabilityUponBlockOutOfOverlap << '\n';
     int32_t nCrosslinkersOnBlockedInitally=0;
@@ -374,6 +375,7 @@ void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerat
     }
 
     #ifdef MYDEBUG
+    #pragma omp critical
     std::cout << "The number of crosslinkers that was initially put on the blocked area: " << nCrosslinkersOnBlockedInitally << '\n';
     #endif // MYDEBUG
 }

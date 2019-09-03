@@ -48,6 +48,12 @@ int main(int argc, char* argv[])
     #endif // MYDEBUG
 
     //-----------------------------------------------------------------------------------------------------
+
+    // Get the number of runs of the microtubule-actin complex until dissociation.
+    // Only the first run will give output regarding the position etc.,
+    // the other runs are used for gaining statistics on the diffusion constant profile, drift profile (giving the force),
+    // the unbinding time distribution,
+
     // Get the parameters needed for defining the general systemState.
     double lengthMobileMicrotubule;
     input.copyParameter("lengthMobileMicrotubule", lengthMobileMicrotubule);
