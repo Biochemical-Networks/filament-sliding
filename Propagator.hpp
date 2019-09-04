@@ -51,6 +51,7 @@ private:
     int32_t m_nDeterministicBoundaryCrossings;
     int32_t m_nStochasticBoundaryCrossings;
     Log& m_log;
+    const bool m_writeDetailedOutput;
 
     // Keep track how long the actin has been disconnected:
     // Assume it diffused away and terminate program when it has been disconnected too long
@@ -119,7 +120,8 @@ public:
                const bool samplePositionalDistribution,
                const bool addExternalForce,
                const bool actinInitiallyOnTip,
-               Log& log);
+               Log& log,
+               const bool writeDetailedOutput);
     ~Propagator();
 
     Propagator(const Propagator&) = delete;

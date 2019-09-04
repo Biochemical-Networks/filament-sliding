@@ -48,7 +48,8 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const bool samplePositionalDistribution,
                        const bool addExternalForce,
                        const bool actinInitiallyOnTip,
-                       Log& log)
+                       Log& log,
+                       const bool writeDetailedOutput)
     :   m_nEquilibrationBlocks(numberEquilibrationBlocks),
         m_nRunBlocks(numberRunBlocks),
         m_nTimeSteps(nTimeSteps),
@@ -66,6 +67,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_nDeterministicBoundaryCrossings(0), // Counts the number of times a force has tried to push the mobile microtubule across a maximum stretch barrier
         m_nStochasticBoundaryCrossings(0), // Counts the number of times diffusion of the mobile microtubule was reflected at a maximum stretch barrier
         m_log(log),
+        m_writeDetailedOutput(writeDetailedOutput),
         m_actinIsFree(false), // start with connected filaments
         m_timeFreeActin(0.0),
         m_actinWasOnTip(actinInitiallyOnTip),
@@ -154,11 +156,9 @@ void Propagator::equilibrate(SystemState& systemState, RandomGenerator& generato
 
 void Propagator::run(SystemState& systemState, RandomGenerator& generator, Output& output)
 {
-    constexpr bool writeOutput = true;
     for(int32_t blockNumber = 0; blockNumber < m_nRunBlocks; ++blockNumber)
     {
-        /*output.newBlock(blockNumber+1);*/
-        propagateBlock(systemState, generator, output, writeOutput, m_nTimeSteps);
+        propagateBlock(systemState, generator, output, m_writeDetailedOutput, m_nTimeSteps);
     }
 }
 
@@ -167,7 +167,6 @@ void Propagator::propagateGraphicsInterval(SystemState& systemState, RandomGener
     constexpr bool writeOutput = true;
     static int32_t intervalNumber = 0;
     ++intervalNumber;
-    /*output.newBlock(intervalNumber);*/
     propagateBlock(systemState, generator, output, writeOutput, nTimeStepsInterval);
 }
 
