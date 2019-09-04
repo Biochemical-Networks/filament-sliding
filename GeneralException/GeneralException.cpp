@@ -6,6 +6,7 @@
 GeneralException::GeneralException(const std::string &error) : m_error(error)
 {
     // Output the error message upon construction
+    #pragma omp critical
     std::cerr << m_error << '\n';
 }
 

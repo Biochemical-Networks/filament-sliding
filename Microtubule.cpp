@@ -349,6 +349,8 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
                     throw GeneralException("Wrong microtubule type in Microtubule::addPossibleConnectionsCloseTo()");
                 }
                 #ifdef MYDEBUG
+                #pragma omp critical
+                {
                 if(std::abs(stretch)>=maxStretch)
                 {
                     std::cerr << "The position is " << position << "\nand the microtubule is " << ((m_type==MicrotubuleType::FIXED)?"fixed":"mobile") << "\n";
@@ -357,6 +359,7 @@ void Microtubule::addPossibleConnectionsCloseTo(std::vector<PossibleFullConnecti
                     std::cerr << "The proposed stretch is: " << stretch << "\nand the max stretch is " << maxStretch << '\n';
                     std::cerr << "The length of the filament is " << m_length << '\n';
                     throw GeneralException("Microtubule::addPossibleConnectionsCloseTo() tried to make a disallowed stretch");
+                }
                 }
                 #endif // MYDEBUG
 
