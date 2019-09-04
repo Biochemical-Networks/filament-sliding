@@ -9,9 +9,7 @@ private:
     int64_t m_numberOfSamples; // 64 bit, could hold many steps (nRunBlocks*nStepsPerBlock/probePeriod)
 
     // use "online algorithm" (https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Online_algorithm)
-    double m_value;
     double m_mean;
-    double m_previousMean;
     double m_accumulatedSquaredDeviation;
 
 public:

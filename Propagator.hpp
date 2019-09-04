@@ -73,6 +73,8 @@ private:
     // std::unique_ptr deletes the thing it is pointing to when going out of scope, meaning that we don't have to worry about memory leaks
     std::unordered_map<std::string, std::unique_ptr<Reaction>> m_reactions;
 
+    // Store data for estimating the diffusion constant and drift
+
     void moveMicrotubule(SystemState& systemState, RandomGenerator& generator);
 
     void performReaction(SystemState& systemState, RandomGenerator& generator);
