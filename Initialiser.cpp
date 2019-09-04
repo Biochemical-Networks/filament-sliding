@@ -65,7 +65,7 @@ Initialiser::~Initialiser()
 {
 }
 
-void Initialiser::initialise(SystemState& systemState, RandomGenerator& generator)
+void Initialiser::initialise(SystemState& systemState, RandomGenerator& generator) const
 {
     systemState.setMicrotubulePosition(m_initialPositionMicrotubule);
 
@@ -76,7 +76,7 @@ void Initialiser::initialise(SystemState& systemState, RandomGenerator& generato
     initialiseBlockedSites(systemState, generator);
 }
 
-void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerator& generator)
+void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerator& generator) const
 {
     const int32_t nSitesOverlapFixed = systemState.getNSitesOverlapFixed();
     const int32_t nSitesOverlapMobile = systemState.getNSitesOverlapMobile();
@@ -296,7 +296,7 @@ void Initialiser::nCrosslinkersEachTypeToConnect(int32_t& nPassiveCrosslinkersTo
     }
 }
 
-void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerator& generator)
+void Initialiser::initialiseBlockedSites(SystemState& systemState, RandomGenerator& generator) const
 {
     #ifdef MYDEBUG
     if(m_probabilityTipUnblocked<0 || m_probabilityTipUnblocked>1)
