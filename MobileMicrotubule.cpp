@@ -38,6 +38,7 @@ void MobileMicrotubule::setPosition(const double initialPosition)
 
     /*m_currentAttractorPosition = static_cast<int32_t>(std::round(m_position/m_latticeSpacing));*/
     #ifdef MYDEBUG
+    #pragma omp critical
     std::cout << "Position: " << m_position /*<< ", Attractor position: " << m_currentAttractorPosition*/ << '\n';
     #endif // MYDEBUG
 }
