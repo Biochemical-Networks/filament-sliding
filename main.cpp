@@ -406,6 +406,8 @@ int main(int argc, char* argv[])
     // However, if there is no (un)binding, then linkers have to be removed upon blocking, since they would remain indefinitely otherwise
     const bool unbindUponUnblock = !bindingDynamicsOnBlocked;
 
+    const bool writeDetailedOutput=true;
+
     Propagator propagator(numberEquilibrationBlocks,
                           numberRunBlocks,
                           nTimeSteps,
@@ -430,7 +432,8 @@ int main(int argc, char* argv[])
                           samplePositionalDistribution,
                           addExternalForce,
                           initialPositionMicrotubule+lengthMobileMicrotubule > lengthFixedMicrotubule - std::floor(tipSize/latticeSpacing)*latticeSpacing,
-                          log);
+                          log,
+                          writeDetailedOutput);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the Graphics
