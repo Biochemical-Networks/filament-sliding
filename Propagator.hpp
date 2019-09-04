@@ -51,7 +51,9 @@ private:
     int32_t m_nDeterministicBoundaryCrossings;
     int32_t m_nStochasticBoundaryCrossings;
     Log& m_log;
-    const bool m_writeDetailedOutput;
+    const bool m_writeDetailedOutput; // Use to define whether output should be written when doing a run (not equilibration, this never writes).
+    // Set to false for preventing that multiple threads running concurrently all try to write to output at the same time.
+    // Only 1 propagator allowed that writes (not enforced by the code).
 
     // Keep track how long the actin has been disconnected:
     // Assume it diffused away and terminate program when it has been disconnected too long
