@@ -9,7 +9,6 @@
 Statistics::Statistics()
     :   m_numberOfSamples(0),
         m_mean(0.0),
-        m_previousMean(0.0), // not necessary
         m_accumulatedSquaredDeviation(0.0)
 {
 }
@@ -22,11 +21,11 @@ void Statistics::addValue(const double value)
 {
     ++m_numberOfSamples;
     // Calculate the new mean estimate:
-    m_previousMean = m_mean;
-    m_mean += (value - m_previousMean)/static_cast<double>(m_numberOfSamples);
+    double previousMean = m_mean;
+    m_mean += (value - previousMean)/static_cast<double>(m_numberOfSamples);
 
     // Calculate the new (n-1)*variance estimate:
-    m_accumulatedSquaredDeviation += (value-m_mean)*(value-m_previousMean);
+    m_accumulatedSquaredDeviation += (value-m_mean)*(value-previousMean);
 }
 
 int64_t Statistics::getNumberOfSamples() const
