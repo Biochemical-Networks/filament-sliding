@@ -51,7 +51,16 @@ int main(int argc, char* argv[])
     // Get the number of runs of the microtubule-actin complex until dissociation.
     // Only the first run will give output regarding the position etc.,
     // the other runs are used for gaining statistics on the diffusion constant profile, drift profile (giving the force),
-    // the unbinding time distribution,
+    // the unbinding time distribution, etc.
+    // Cannot be combined with the Graphics simulations
+
+    int32_t numberOfRuns;
+    input.copyParameter("numberOfRuns", numberOfRuns);
+    if(numberOfRuns<=0)
+    {
+        throw GeneralException("The parameter numberOfRuns contains a wrong value.");
+    }
+
 
     // Get the parameters needed for defining the general systemState.
     double lengthMobileMicrotubule;
@@ -430,6 +439,10 @@ int main(int argc, char* argv[])
     std::string showGraphicsString;
     input.copyParameter("showGraphics", showGraphicsString);
     const bool showGraphics = (showGraphicsString == "TRUE");
+    if(showGraphics && numberOfRuns!=1)
+    {
+        throw GeneralException("Graphics cannot be run with more than one run.");
+    }
 
     if(showGraphics)
     {

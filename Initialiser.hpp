@@ -35,7 +35,7 @@ private:
     const int32_t m_tipLength;
     /*InitialCrosslinkerDistribution m_initialCrosslinkerDistribution;*/
 
-    void initialiseCrosslinkers(SystemState& systemState, RandomGenerator& generator);
+    void initialiseCrosslinkers(SystemState& systemState, RandomGenerator& generator) const;
 
     void nCrosslinkersEachTypeToConnect(int32_t& nPassiveCrosslinkersToConnect,
                                         int32_t& nDualCrosslinkersToConnect,
@@ -46,7 +46,7 @@ private:
                                         const int32_t nFreeDualCrosslinkers,
                                         const int32_t nFreeActiveCrosslinkers) const;
 
-    void initialiseBlockedSites(SystemState& systemState, RandomGenerator& generator);
+    void initialiseBlockedSites(SystemState& systemState, RandomGenerator& generator) const;
 
     /*Crosslinker::Terminus terminusToConnectToFixedMicrotubule(RandomGenerator &generator);*/ // is always TAIL, HEAD binds to actin by choice
 
@@ -66,7 +66,7 @@ public:
     Initialiser(const Initialiser&) = delete;
     Initialiser& operator=(const Initialiser&) = delete;
 
-    void initialise(SystemState& systemState, RandomGenerator& generator);
+    void initialise(SystemState& systemState, RandomGenerator& generator) const;
 
 };
 

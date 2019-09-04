@@ -75,7 +75,7 @@ public:
                 const MicrotubuleDynamics microtubuleDynamics);
     ~SystemState();
 
-    SystemState(const SystemState&) = delete;
+    SystemState(const SystemState&) = delete; // The crosslinkers are tracked using pointers, shallow copy would be wrong.
     SystemState& operator=(const SystemState&) = delete;
 
     void setMicrotubulePosition(const double positionMicrotubule);
