@@ -94,6 +94,11 @@ ParameterMap::ParameterMap()
     defineParameter("positionalHistogramBinSize", 8.e-7, "micron", ">0");
     defineParameter("positionalHistogramLowestValue", 0.0, "micron", ">=0");
     defineParameter("positionalHistogramHighestValue", 8.e-3, "micron", ">positionalHistogramLowestValue");
+
+    defineParameter("estimateDiffusionAndDrift", "FALSE", "unitless", "TRUE,FALSE");
+    defineParameter("binSizeDynamicsEstimate", 8.e-3, "micron", ">0");
+    defineParameter("timeStepDynamicsEstimate", 1, "s", ">0");
+
     defineParameter("showGraphics", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("timeStepsDisplayInterval", 100000, "steps", ">0");
     defineParameter("updateDelayInMilliseconds", 100, "milliseconds", ">=0");
