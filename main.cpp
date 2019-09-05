@@ -175,6 +175,24 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter positionalHistogramHighestValue contains a wrong value.");
     }
 
+    std::string estimateDiffusionAndDriftString;
+    input.copyParameter("estimateDiffusionAndDrift", estimateDiffusionAndDriftString);
+    const bool estimateDiffusionAndDrift = (estimateDiffusionAndDriftString == "TRUE");
+
+    double binSizeDynamicsEstimate;
+    input.copyParameter("binSizeDynamicsEstimate", binSizeDynamicsEstimate);
+    if(estimateDiffusionAndDrift && binSizeDynamicsEstimate<=0.0)
+    {
+        throw GeneralException("The parameter binSizeDynamicsEstimate contains a wrong value");
+    }
+
+    double timeStepDynamicsEstimate;
+    input.copyParameter("timeStepDynamicsEstimate", timeStepDynamicsEstimate);
+    if(estimateDiffusionAndDrift && timeStepDynamicsEstimate<=0.0)
+    {
+        throw GeneralException("The parameter timeStepDynamicsEstimate contains a wrong value");
+    }
+
     double maxPeriodPositionTracking;
     input.copyParameter("maxPeriodPositionTracking", maxPeriodPositionTracking);
     if(maxPeriodPositionTracking<0.0)
