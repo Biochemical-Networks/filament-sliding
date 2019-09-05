@@ -24,6 +24,8 @@ public:
     double getSEM() const;
 
     bool canReportStatistics() const;
+
+    Statistics& operator+=(const Statistics& term);
 };
 
 #endif // STATISTICS_HPP

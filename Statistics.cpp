@@ -57,8 +57,19 @@ double Statistics::getSEM() const
     return std::sqrt(variance/static_cast<double>(m_numberOfSamples));
 }
 
-
 bool Statistics::canReportStatistics() const
 {
     return (m_numberOfSamples>1); // For the variance, at least 2 values are necessary
+}
+
+Statistics& Statistics::operator+=(const Statistics& term)
+{
+    // Use Chan et al. algorithm, "parallel algorithm" (https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Parallel_algorithm)
+    const int64_t oldNumberOfSamples=m_numberOfSamples;
+    const double meanDifference=term.m_mean - m_mean;
+    m_numberOfSamples+=term.m_numberOfSamples;
+    m_mean = (m_mean*oldNumberOfSamples+term.m_mean*term.m_numberOfSamples)/static_cast<double>(m_numberOfSamples);
+    m_accumulatedSquaredDeviation += term.m_accumulatedSquaredDeviation
+        + static_cast<double>(oldNumberOfSamples)*term.m_numberOfSamples/static_cast<double>(m_numberOfSamples)*meanDifference*meanDifference;
+    return (*this);
 }
