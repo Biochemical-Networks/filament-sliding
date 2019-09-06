@@ -57,8 +57,8 @@ std::ostream& operator<<(std::ostream& out, const ActinDynamicsEstimate& dynamic
 
         out << std::setw(OutputParameters::collumnWidth) << ((binNumber==0)?"-infinity":std::to_string(lowerBinBound))
             << std::setw(OutputParameters::collumnWidth) << ((binNumber==dynamicsContainer.m_numberOfBins-1)?"infinity":std::to_string(upperBinBound))
-            << std::setw(OutputParameters::collumnWidth) << histogram.m_bins.at(binNumber)
-            << std::setw(OutputParameters::collumnWidth) << static_cast<long double>(histogram.m_bins.at(binNumber))/static_cast<long double>(histogram.getNumberOfSamples()) << '\n';
+            << std::setw(OutputParameters::collumnWidth) << dynamicsContainer.getDiffusionConstant(binNumber)
+            << std::setw(OutputParameters::collumnWidth) << dynamicsContainer.getEffectiveForce(binNumber) << '\n';
     }
 
 }
