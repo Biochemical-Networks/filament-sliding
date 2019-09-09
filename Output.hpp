@@ -10,6 +10,7 @@
 #include "SystemState.hpp"
 #include "Statistics.hpp"
 #include "Histogram.hpp"
+#include "ActinDynamicsEstimate.hpp"
 /*#include "TransitionPath.hpp"*/
 
 /* Output contains all output files, and contains functions to output information to those.
@@ -22,6 +23,7 @@ private:
     std::ofstream m_positionsAndCrosslinkersFile;
     std::ofstream m_positionalHistogramFile;
     std::ofstream m_statisticalAnalysisFile;
+    std::ofstream m_actinDynamicsFile;
 
     const int m_collumnWidth;
 
@@ -31,13 +33,18 @@ private:
 
     const double m_maxPeriodPositionTracking;
 
+    const bool m_writeActinDynamicsEstimate;
+    const ActinDynamicsEstimate& m_dynamicsEstimate;
+
 public:
     Output(const std::string &runName,
            const bool writePositionalDistribution,
            const double positionalHistogramBinSize,
            const double positionalHistogramLowestValue,
            const double positionalHistogramHighestValue,
-           const double maxPeriodPositionTracking);
+           const double maxPeriodPositionTracking,
+           const bool writeActinDynamicsEstimate,
+           const ActinDynamicsEstimate& dynamicsEstimate);
 
     ~Output();
 
