@@ -18,20 +18,20 @@ ActinDynamicsEstimate::~ActinDynamicsEstimate()
 {
 }
 
-void ActinDynamicsEstimate::addPositionRelativeToTipBegin(const double value)
+void ActinDynamicsEstimate::addPositionRelativeToTipBegin(const double initialPosition, const double positionChange)
 {
-    if(value<0.0) // actin fully on lattice
+    if(initialPosition<0.0) // actin fully on lattice
     {
-        m_movementStatistics.front().addValue(value);
+        m_movementStatistics.front().addValue(positionChange);
     }
-    else if(value >= (m_numberOfBins-2)*m_binSize) // actin in front of tip
+    else if(initialPosition >= (m_numberOfBins-2)*m_binSize) // actin in front of tip
     {
-        m_movementStatistics.back().addValue(value);
+        m_movementStatistics.back().addValue(positionChange);
     }
-    else // 0.0 <= value < end of specific bins
+    else // 0.0 <= initialPosition < end of specific bins
     {
-        const int32_t binNumber = 1 + MathematicalFunctions::intFloor(value/m_binSize); // binNumber 1 is the first possibility, binNumber m_numberOfBins-2 the last
-        m_movementStatistics.at(binNumber).addValue(value);
+        const int32_t binNumber = 1 + MathematicalFunctions::intFloor(initialPosition/m_binSize); // binNumber 1 is the first possibility, binNumber m_numberOfBins-2 the last
+        m_movementStatistics.at(binNumber).addValue(positionChange);
     }
 }
 
@@ -48,6 +48,21 @@ double ActinDynamicsEstimate::getDiffusionConstant(const uint32_t binNumber) con
 double ActinDynamicsEstimate::getEffectiveForce(const uint32_t binNumber) const
 {
     return getDriftVelocity(binNumber)/getDiffusionConstant(binNumber);
+}
+
+double ActinDynamicsEstimate::getEstimateTimeStep() const
+{
+    return m_estimateTimeStep;
+}
+
+int64_t ActinDynamicsEstimate::getNSamples() const
+{
+    int64_t answer=0;
+    for(const Statistics& statistics : m_movementStatistics)
+    {
+        answer += statistics.getNumberOfSamples();
+    }
+    return answer;
 }
 
 std::ostream& operator<<(std::ostream& out, const ActinDynamicsEstimate& dynamicsContainer)

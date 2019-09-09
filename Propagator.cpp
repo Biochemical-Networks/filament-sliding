@@ -75,7 +75,10 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_actinWasOnTip(actinInitiallyOnTip),
         m_timeLastTrackingCompletion(0.0),
         m_totalTimeBehindTip(0.0),
-        m_totalTimeOnTip(0.0)
+        m_totalTimeOnTip(0.0),
+        m_currentlyEstimatingDynamics(false),
+        m_timeSinceStartCurrentDynamicsEstimate(0.0),
+        m_initialPositionCurrentDynicsEstimate(0.0)
 {
     // objects in std::initializer_list are inherently const, so std::unique_ptr's copy constructor cannot be used there, and we cannot use this method of initialising m_reactions.
     // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
@@ -126,7 +129,12 @@ Propagator::~Propagator()
     m_log.writeBoundaryProtocolAppearance(m_nDeterministicBoundaryCrossings, m_nStochasticBoundaryCrossings);
 }
 
-void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& generator, Output& output, const bool writeOutput, const int32_t nTimeSteps)
+void Propagator::propagateBlock(SystemState& systemState,
+                                RandomGenerator& generator,
+                                Output& output,
+                                const bool writeOutput,
+                                const int32_t nTimeSteps,
+                                const bool estimateDynamics)
 {
     for (int32_t timeStep = 0; timeStep < nTimeSteps; ++timeStep)
     {
@@ -143,7 +151,7 @@ void Propagator::propagateBlock(SystemState& systemState, RandomGenerator& gener
             }
         }
 
-        advanceTimeStep(systemState, generator);
+        advanceTimeStep(systemState, generator, estimateDynamics);
     }
 }
 
@@ -152,7 +160,7 @@ void Propagator::equilibrate(SystemState& systemState, RandomGenerator& generato
     constexpr bool writeOutput = false;
     for(int32_t blockNumber = 0; blockNumber < m_nEquilibrationBlocks; ++blockNumber)
     {
-        propagateBlock(systemState, generator, output, writeOutput, m_nTimeSteps);
+        propagateBlock(systemState, generator, output, writeOutput, m_nTimeSteps, false);
     }
 }
 
@@ -160,7 +168,7 @@ void Propagator::run(SystemState& systemState, RandomGenerator& generator, Outpu
 {
     for(int32_t blockNumber = 0; blockNumber < m_nRunBlocks; ++blockNumber)
     {
-        propagateBlock(systemState, generator, output, m_writeDetailedOutput, m_nTimeSteps);
+        propagateBlock(systemState, generator, output, m_writeDetailedOutput, m_nTimeSteps, true);
     }
 }
 
@@ -169,10 +177,10 @@ void Propagator::propagateGraphicsInterval(SystemState& systemState, RandomGener
     constexpr bool writeOutput = true;
     static int32_t intervalNumber = 0;
     ++intervalNumber;
-    propagateBlock(systemState, generator, output, writeOutput, nTimeStepsInterval);
+    propagateBlock(systemState, generator, output, writeOutput, nTimeStepsInterval, false);
 }
 
-void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& generator)
+void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& generator, const bool estimateDynamics)
 {
     // First, update the reaction rates and actions, and perform a reaction when the total action surpasses the threshold.
     // Then, move the mobile microtubule at the end of the time step
@@ -222,6 +230,27 @@ void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& gene
         m_totalTimeBehindTip+=m_calcTimeStep;
     }
     m_actinWasOnTip = actinIsOnTip;
+
+    // Estimate the dynamics
+    if(estimateDynamics)
+    {
+        if(!m_currentlyEstimatingDynamics)
+        {
+            m_currentlyEstimatingDynamics=true;
+            m_initialPositionCurrentDynicsEstimate=systemState.getMicrotubulePosition() - systemState.getPositionMicrotubuleTip();
+            m_timeSinceStartCurrentDynamicsEstimate=0.0;
+        }
+        else
+        {
+            m_timeSinceStartCurrentDynamicsEstimate+=m_calcTimeStep;
+            if(m_timeSinceStartCurrentDynamicsEstimate > m_dynamicsEstimate.getEstimateTimeStep())
+            {
+                m_currentlyEstimatingDynamics=false;
+                m_dynamicsEstimate.addPositionRelativeToTipBegin(m_initialPositionCurrentDynicsEstimate,
+                    systemState.getMicrotubulePosition()-systemState.getPositionMicrotubuleTip()-m_initialPositionCurrentDynicsEstimate);
+            }
+        }
+    }
 }
 
 void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& generator)
