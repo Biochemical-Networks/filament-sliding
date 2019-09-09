@@ -2,6 +2,8 @@
 #include "MathematicalFunctions.hpp"
 #include "OutputParameters.hpp"
 
+#include <iomanip>
+
 ActinDynamicsEstimate::ActinDynamicsEstimate(const double binSize,
                       const double estimateTimeStep,
                       const double tipSize)
@@ -60,5 +62,5 @@ std::ostream& operator<<(std::ostream& out, const ActinDynamicsEstimate& dynamic
             << std::setw(OutputParameters::collumnWidth) << dynamicsContainer.getDiffusionConstant(binNumber)
             << std::setw(OutputParameters::collumnWidth) << dynamicsContainer.getEffectiveForce(binNumber) << '\n';
     }
-
+    return out;
 }
