@@ -22,7 +22,7 @@ public:
                           const double tipSize);
     ~ActinDynamicsEstimate();
 
-    void addPositionRelativeToTipBegin(const double value);
+    void addPositionRelativeToTipBegin(const double initialPosition, const double positionChange);
 
     ActinDynamicsEstimate& operator+=(const ActinDynamicsEstimate& term);
 
@@ -31,6 +31,10 @@ public:
     double getDiffusionConstant(const uint32_t binNumber) const;
 
     double getEffectiveForce(const uint32_t binNumber) const;
+
+    double getEstimateTimeStep() const;
+
+    int64_t getNSamples() const;
 
     friend std::ostream& operator<<(std::ostream& out, const ActinDynamicsEstimate& dynamicsContainer);
 };

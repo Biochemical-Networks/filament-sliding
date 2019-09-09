@@ -68,6 +68,12 @@ private:
     double m_totalTimeBehindTip;
     double m_totalTimeOnTip;
 
+    // Create estimates of the effective actin dynamics constants (D & v),
+    // keep track of time for this
+    bool m_currentlyEstimatingDynamics;
+    double m_timeSinceStartCurrentDynamicsEstimate;
+    double m_initialPositionCurrentDynicsEstimate;
+
     /*const double m_basinOfAttractionHalfWidth;
     int32_t m_previousBasinOfAttraction;*/
 
@@ -95,9 +101,14 @@ private:
 
     Reaction& getReactionToHappen(RandomGenerator& generator) const;
 
-    void advanceTimeStep(SystemState& systemState, RandomGenerator& generator);
+    void advanceTimeStep(SystemState& systemState, RandomGenerator& generator, const bool estimateDynamics);
 
-    void propagateBlock(SystemState& systemState, RandomGenerator& generator, Output& output, const bool writeOutput, const int32_t nTimeSteps);
+    void propagateBlock(SystemState& systemState,
+                        RandomGenerator& generator,
+                        Output& output,
+                        const bool writeOutput,
+                        const int32_t nTimeSteps,
+                        const bool estimateDynamics);
 
     bool inBasinOfAttraction(const double mobilePosition, const int32_t nRightPullingCrosslinkers, const int32_t nFullCrosslinkers) const;
 
