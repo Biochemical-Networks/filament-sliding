@@ -936,6 +936,11 @@ double SystemState::getPositionMicrotubuleTip() const
     return m_fixedMicrotubule.getLength()- m_fixedMicrotubule.getTipSize();
 }
 
+double SystemState::getActinFrontPositionRelativeToTip() const
+{
+    return m_mobileMicrotubule.getPosition() + m_mobileMicrotubule.getLength() - m_fixedMicrotubule.getLength() + m_fixedMicrotubule.getTipSize();
+}
+
 bool SystemState::actinOnTip() const
 {
     return m_mobileMicrotubule.getPosition() + m_mobileMicrotubule.getLength() > getPositionMicrotubuleTip();
