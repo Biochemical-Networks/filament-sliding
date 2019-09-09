@@ -49,7 +49,8 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const bool addExternalForce,
                        const bool actinInitiallyOnTip,
                        Log& log,
-                       const bool writeDetailedOutput)
+                       const bool writeDetailedOutput,
+                       ActinDynamicsEstimate& dynamicsEstimate)
     :   m_nEquilibrationBlocks(numberEquilibrationBlocks),
         m_nRunBlocks(numberRunBlocks),
         m_nTimeSteps(nTimeSteps),
@@ -68,6 +69,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_nStochasticBoundaryCrossings(0), // Counts the number of times diffusion of the mobile microtubule was reflected at a maximum stretch barrier
         m_log(log),
         m_writeDetailedOutput(writeDetailedOutput),
+        m_dynamicsEstimate(dynamicsEstimate),
         m_actinIsFree(false), // start with connected filaments
         m_timeFreeActin(0.0),
         m_actinWasOnTip(actinInitiallyOnTip),

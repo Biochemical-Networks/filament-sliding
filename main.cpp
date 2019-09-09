@@ -369,6 +369,11 @@ int main(int argc, char* argv[])
                             latticeSpacing);
 
     //-----------------------------------------------------------------------------------------------------
+    // Create the ActinDynamicsEstimates
+
+    ActinDynamicsEstimate dynamicsEstimator{binSizeDynamicsEstimate, timeStepDynamicsEstimate, tipSize};
+
+    //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the propagator
 
     int32_t numberEquilibrationBlocks;
@@ -451,7 +456,8 @@ int main(int argc, char* argv[])
                           addExternalForce,
                           initialPositionMicrotubule+lengthMobileMicrotubule > lengthFixedMicrotubule - std::floor(tipSize/latticeSpacing)*latticeSpacing,
                           log,
-                          writeDetailedOutput);
+                          writeDetailedOutput,
+                          dynamicsEstimator);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the Graphics
