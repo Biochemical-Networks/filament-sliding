@@ -72,10 +72,13 @@ std::ostream& operator<<(std::ostream& out, const ActinDynamicsEstimate& dynamic
         const double lowerBinBound = (binNumber-1)*dynamicsContainer.m_binSize;
         const double upperBinBound = lowerBinBound+dynamicsContainer.m_binSize;
 
+        const int64_t numberOfSamples = dynamicsContainer.m_movementStatistics.at(binNumber).getNumberOfSamples();
+
         out << std::setw(OutputParameters::collumnWidth) << ((binNumber==0)?"-infinity":std::to_string(lowerBinBound))
             << std::setw(OutputParameters::collumnWidth) << ((binNumber==dynamicsContainer.m_numberOfBins-1)?"infinity":std::to_string(upperBinBound))
-            << std::setw(OutputParameters::collumnWidth) << dynamicsContainer.getDiffusionConstant(binNumber)
-            << std::setw(OutputParameters::collumnWidth) << dynamicsContainer.getEffectiveForce(binNumber) << '\n';
+            << std::setw(OutputParameters::collumnWidth) << numberOfSamples
+            << std::setw(OutputParameters::collumnWidth) << ((numberOfSamples<2)?0:dynamicsContainer.getDiffusionConstant(binNumber))
+            << std::setw(OutputParameters::collumnWidth) << ((numberOfSamples==0)?0:dynamicsContainer.getEffectiveForce(binNumber)) << '\n';
     }
     return out;
 }

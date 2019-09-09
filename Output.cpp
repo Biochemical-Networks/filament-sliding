@@ -18,12 +18,16 @@ Output::Output(const std::string &runName,
                const double positionalHistogramBinSize,
                const double positionalHistogramLowestValue,
                const double positionalHistogramHighestValue,
-               const double maxPeriodPositionTracking)
+               const double maxPeriodPositionTracking,
+               const bool writeActinDynamicsEstimate,
+               const ActinDynamicsEstimate& dynamicsEstimate)
     :   m_positionsAndCrosslinkersFile((runName+".filament_positions_and_crosslinker_numbers.txt").c_str()),
         m_statisticalAnalysisFile((runName+".statistical_analysis.txt").c_str()),
         m_collumnWidth(OutputParameters::collumnWidth),
         m_writePositionalDistribution(writePositionalDistribution),
-        m_maxPeriodPositionTracking(maxPeriodPositionTracking)
+        m_maxPeriodPositionTracking(maxPeriodPositionTracking),
+        m_writeActinDynamicsEstimate(writeActinDynamicsEstimate),
+        m_dynamicsEstimate(dynamicsEstimate)
 {
     m_positionsAndCrosslinkersFile << std::left
         << std::setw(m_collumnWidth) << "TIME"
@@ -50,6 +54,17 @@ Output::Output(const std::string &runName,
             << std::setw(m_collumnWidth) << "UPPER BIN BOUND"
             << std::setw(m_collumnWidth) << "NUMBER OF SAMPLES"
             << std::setw(m_collumnWidth) << "FRACTION OF SAMPLES" << '\n';
+    }
+
+    if(m_writeActinDynamicsEstimate)
+    {
+        m_actinDynamicsFile.open((runName+".actin_dynamics_estimates.txt").c_str());
+        m_actinDynamicsFile << std::left
+            << std::setw(m_collumnWidth) << "LOWER BIN BOUND"
+            << std::setw(m_collumnWidth) << "UPPER BIN BOUND"
+            << std::setw(m_collumnWidth) << "NUMBER OF SAMPLES"
+            << std::setw(m_collumnWidth) << "DIFFUSION CONSTANT (micron^2/s)"
+            << std::setw(m_collumnWidth) << "FORCE (kT/micron)" << '\n';
     }
 }
 
@@ -91,5 +106,10 @@ void Output::finishWriting()
 
             m_positionalHistogramFile << (*mp_positionalHistogram);
         }
+    }
+
+    if(m_writeActinDynamicsEstimate)
+    {
+        m_actinDynamicsFile << m_dynamicsEstimate;
     }
 }

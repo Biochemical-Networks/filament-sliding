@@ -149,32 +149,7 @@ int main(int argc, char* argv[])
                             microtubuleDynamics);
 
     //-----------------------------------------------------------------------------------------------------
-    // Create the output class. Needs to be done before the propagator, since this needs samplePositionalDistribution as well
-
-    std::string samplePositionalDistributionString;
-    input.copyParameter("samplePositionalDistribution", samplePositionalDistributionString);
-    const bool samplePositionalDistribution = (samplePositionalDistributionString == "TRUE"); // Whenever it is not TRUE, assume it is false
-
-    double positionalHistogramBinSize;
-    input.copyParameter("positionalHistogramBinSize", positionalHistogramBinSize);
-    if(samplePositionalDistribution&&positionalHistogramBinSize<=0.0)
-    {
-        throw GeneralException("The parameter positionalHistogramBinSize contains a wrong value.");
-    }
-
-    double positionalHistogramLowestValue;
-    input.copyParameter("positionalHistogramLowestValue", positionalHistogramLowestValue);
-    if(positionalHistogramLowestValue<0.0)
-    {
-        throw GeneralException("The parameter positionalHistogramLowestValue contains a wrong value.");
-    }
-
-    double positionalHistogramHighestValue;
-    input.copyParameter("positionalHistogramHighestValue", positionalHistogramHighestValue);
-    if(positionalHistogramHighestValue<=positionalHistogramLowestValue)
-    {
-        throw GeneralException("The parameter positionalHistogramHighestValue contains a wrong value.");
-    }
+    // Create the ActinDynamicsEstimates
 
     std::string estimateDiffusionAndDriftString;
     input.copyParameter("estimateDiffusionAndDrift", estimateDiffusionAndDriftString);
@@ -193,26 +168,6 @@ int main(int argc, char* argv[])
     {
         throw GeneralException("The parameter timeStepDynamicsEstimate contains a wrong value");
     }
-
-    double maxPeriodPositionTracking;
-    input.copyParameter("maxPeriodPositionTracking", maxPeriodPositionTracking);
-    if(maxPeriodPositionTracking<0.0)
-    {
-        throw GeneralException("The parameter maxPeriodPositionTracking contains a wrong value.");
-    }
-
-    Output output(runName,
-                  samplePositionalDistribution,
-                  positionalHistogramBinSize,
-                  positionalHistogramLowestValue,
-                  positionalHistogramHighestValue,
-                  maxPeriodPositionTracking);
-
-    //-----------------------------------------------------------------------------------------------------
-    // Get the parameters needed for initialising the state.
-
-    double initialPositionMicrotubule;
-    input.copyParameter("initialPositionMicrotubule", initialPositionMicrotubule);
 
     std::string bindingDynamicsString;
     input.copyParameter("bindingDynamics", bindingDynamicsString);
@@ -357,6 +312,59 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter tipSize contains a wrong value");
     }
 
+    ActinDynamicsEstimate dynamicsEstimator{binSizeDynamicsEstimate, timeStepDynamicsEstimate, tipSize};
+
+    //-----------------------------------------------------------------------------------------------------
+    // Create the output class. Needs to be done before the propagator, since this needs samplePositionalDistribution as well
+
+    std::string samplePositionalDistributionString;
+    input.copyParameter("samplePositionalDistribution", samplePositionalDistributionString);
+    const bool samplePositionalDistribution = (samplePositionalDistributionString == "TRUE"); // Whenever it is not TRUE, assume it is false
+
+    double positionalHistogramBinSize;
+    input.copyParameter("positionalHistogramBinSize", positionalHistogramBinSize);
+    if(samplePositionalDistribution&&positionalHistogramBinSize<=0.0)
+    {
+        throw GeneralException("The parameter positionalHistogramBinSize contains a wrong value.");
+    }
+
+    double positionalHistogramLowestValue;
+    input.copyParameter("positionalHistogramLowestValue", positionalHistogramLowestValue);
+    if(positionalHistogramLowestValue<0.0)
+    {
+        throw GeneralException("The parameter positionalHistogramLowestValue contains a wrong value.");
+    }
+
+    double positionalHistogramHighestValue;
+    input.copyParameter("positionalHistogramHighestValue", positionalHistogramHighestValue);
+    if(positionalHistogramHighestValue<=positionalHistogramLowestValue)
+    {
+        throw GeneralException("The parameter positionalHistogramHighestValue contains a wrong value.");
+    }
+
+    double maxPeriodPositionTracking;
+    input.copyParameter("maxPeriodPositionTracking", maxPeriodPositionTracking);
+    if(maxPeriodPositionTracking<0.0)
+    {
+        throw GeneralException("The parameter maxPeriodPositionTracking contains a wrong value.");
+    }
+
+    Output output(runName,
+                  samplePositionalDistribution,
+                  positionalHistogramBinSize,
+                  positionalHistogramLowestValue,
+                  positionalHistogramHighestValue,
+                  maxPeriodPositionTracking,
+                  estimateDiffusionAndDrift,
+                  dynamicsEstimator
+                  );
+
+    //-----------------------------------------------------------------------------------------------------
+    // Get the parameters needed for initialising the state.
+
+    double initialPositionMicrotubule;
+    input.copyParameter("initialPositionMicrotubule", initialPositionMicrotubule);
+
     Initialiser initialiser(initialPositionMicrotubule,
                             microtubuleDynamics,
                             probabilityPartiallyConnectedTip,
@@ -368,10 +376,6 @@ int main(int argc, char* argv[])
                             tipSize,
                             latticeSpacing);
 
-    //-----------------------------------------------------------------------------------------------------
-    // Create the ActinDynamicsEstimates
-
-    ActinDynamicsEstimate dynamicsEstimator{binSizeDynamicsEstimate, timeStepDynamicsEstimate, tipSize};
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for setting the propagator
