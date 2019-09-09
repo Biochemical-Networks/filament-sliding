@@ -12,6 +12,7 @@
 #include "Reaction.hpp"
 #include "Log.hpp"
 #include "MicrotubuleDynamics.hpp"
+#include "ActinDynamicsEstimate.hpp"
 
 /* Propagator takes a SystemState, which is properly initialised, and propagates its dynamics.
  * In the process, it can report about the current SystemState, for example about the microtubule position.
@@ -54,6 +55,7 @@ private:
     const bool m_writeDetailedOutput; // Use to define whether output should be written when doing a run (not equilibration, this never writes).
     // Set to false for preventing that multiple threads running concurrently all try to write to output at the same time.
     // Only 1 propagator allowed that writes (not enforced by the code).
+    ActinDynamicsEstimate& m_dynamicsEstimate;
 
     // Keep track how long the actin has been disconnected:
     // Assume it diffused away and terminate program when it has been disconnected too long
@@ -125,7 +127,8 @@ public:
                const bool addExternalForce,
                const bool actinInitiallyOnTip,
                Log& log,
-               const bool writeDetailedOutput);
+               const bool writeDetailedOutput,
+               ActinDynamicsEstimate& dynamicsEstimate);
     ~Propagator();
 
     Propagator(const Propagator&) = delete;
