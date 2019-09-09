@@ -74,11 +74,13 @@ std::ostream& operator<<(std::ostream& out, const ActinDynamicsEstimate& dynamic
 
         const int64_t numberOfSamples = dynamicsContainer.m_movementStatistics.at(binNumber).getNumberOfSamples();
 
+        // The diffusion constant is estimated from the variance and needs at least 2 samples.
+        // The force calculation requires the diffusion constant, so it also needs at least 2 samples.
         out << std::setw(OutputParameters::collumnWidth) << ((binNumber==0)?"-infinity":std::to_string(lowerBinBound))
             << std::setw(OutputParameters::collumnWidth) << ((binNumber==dynamicsContainer.m_numberOfBins-1)?"infinity":std::to_string(upperBinBound))
             << std::setw(OutputParameters::collumnWidth) << numberOfSamples
             << std::setw(OutputParameters::collumnWidth) << ((numberOfSamples<2)?0:dynamicsContainer.getDiffusionConstant(binNumber))
-            << std::setw(OutputParameters::collumnWidth) << ((numberOfSamples==0)?0:dynamicsContainer.getEffectiveForce(binNumber)) << '\n';
+            << std::setw(OutputParameters::collumnWidth) << ((numberOfSamples<2)?0:dynamicsContainer.getEffectiveForce(binNumber)) << '\n';
     }
     return out;
 }
