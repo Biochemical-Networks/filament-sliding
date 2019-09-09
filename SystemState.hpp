@@ -183,6 +183,8 @@ public:
 
     double getPositionMicrotubuleTip() const;
 
+    double getActinFrontPositionRelativeToTip() const;
+
     void setTipSize(const int32_t tipLength);
 
     bool actinOnTip() const;

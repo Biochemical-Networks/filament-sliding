@@ -237,7 +237,7 @@ void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& gene
         if(!m_currentlyEstimatingDynamics)
         {
             m_currentlyEstimatingDynamics=true;
-            m_initialPositionCurrentDynicsEstimate=systemState.getMicrotubulePosition() - systemState.getPositionMicrotubuleTip();
+            m_initialPositionCurrentDynicsEstimate=systemState.getActinFrontPositionRelativeToTip();
             m_timeSinceStartCurrentDynamicsEstimate=0.0;
         }
         else
@@ -247,7 +247,7 @@ void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& gene
             {
                 m_currentlyEstimatingDynamics=false;
                 m_dynamicsEstimate.addPositionRelativeToTipBegin(m_initialPositionCurrentDynicsEstimate,
-                    systemState.getMicrotubulePosition()-systemState.getPositionMicrotubuleTip()-m_initialPositionCurrentDynicsEstimate);
+                    systemState.getActinFrontPositionRelativeToTip()-m_initialPositionCurrentDynicsEstimate);
             }
         }
     }
