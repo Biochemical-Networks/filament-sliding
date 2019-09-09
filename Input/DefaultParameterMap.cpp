@@ -97,7 +97,7 @@ ParameterMap::ParameterMap()
 
     defineParameter("estimateDiffusionAndDrift", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("binSizeDynamicsEstimate", 8.e-3, "micron", ">0");
-    defineParameter("timeStepDynamicsEstimate", 1, "s", ">0");
+    defineParameter("timeStepDynamicsEstimate", 1.0, "s", ">0");
 
     defineParameter("showGraphics", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("timeStepsDisplayInterval", 100000, "steps", ">0");
