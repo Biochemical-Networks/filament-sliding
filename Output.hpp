@@ -6,11 +6,13 @@
 #include <vector>
 #include <cstdint>
 #include <memory>
+#include <utility>
 
 #include "SystemState.hpp"
 #include "Statistics.hpp"
 #include "Histogram.hpp"
 #include "ActinDynamicsEstimate.hpp"
+#include "ActinDisconnectException.hpp"
 /*#include "TransitionPath.hpp"*/
 
 /* Output contains all output files, and contains functions to output information to those.
@@ -34,7 +36,19 @@ private:
     const double m_maxPeriodPositionTracking;
 
     const bool m_writeActinDynamicsEstimate;
-    const ActinDynamicsEstimate& m_dynamicsEstimate;
+
+    // store the times of disconnecting in a vector the size of numberOfRuns.
+    // Don't push back, since concurrent accessing could lead to data races.
+    // Use the bool as a flag to indicate whether the value was set.
+    std::vector<std::pair<bool,ActinDisconnectException>> m_disconnectTimes;
+
+    Statistics m_actinTimeToDisconnectStatistics;
+    Statistics m_actinPositionOfDisconnectStatistics;
+    Statistics m_actinTimeLastTrackingCompletionStatistics;
+    Statistics m_actinTotalTimeBehindTipStatistics;
+    Statistics m_actinTotalTimeOnTipStatistics;
+
+    void createActinDisconnectStatistics();
 
 public:
     Output(const std::string &runName,
@@ -44,7 +58,7 @@ public:
            const double positionalHistogramHighestValue,
            const double maxPeriodPositionTracking,
            const bool writeActinDynamicsEstimate,
-           const ActinDynamicsEstimate& dynamicsEstimate);
+           const int32_t numberOfRuns);
 
     ~Output();
 
@@ -52,7 +66,9 @@ public:
 
     void addPosition(const double remainder);
 
-    void finishWriting();
+    void addActinDisconnectTime(const int32_t runID, ActinDisconnectException&& disconnectInformation);
+
+    void finishWriting(const ActinDynamicsEstimate& completeActinDynamicsEstimate);
 };
 
 #endif // OUPUT_HPP

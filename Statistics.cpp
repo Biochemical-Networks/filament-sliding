@@ -3,6 +3,9 @@
 
 #include <cstdint>
 #include <cmath>
+#include <iostream>
+#include <iomanip>
+#include "OutputParameters.hpp"
 
 // use "online algorithm" (https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Online_algorithm) for calculating mean and variance.
 
@@ -72,4 +75,13 @@ Statistics& Statistics::operator+=(const Statistics& term)
     m_accumulatedSquaredDeviation += term.m_accumulatedSquaredDeviation
         + static_cast<double>(oldNumberOfSamples)*term.m_numberOfSamples/static_cast<double>(m_numberOfSamples)*meanDifference*meanDifference;
     return (*this);
+}
+
+std::ostream& operator<<(std::ostream& out, const Statistics& statistics)
+{
+    out << std::setw(OutputParameters::collumnWidth) << statistics.getNumberOfSamples()
+        << std::setw(OutputParameters::collumnWidth) << statistics.getMean()
+        << std::setw(OutputParameters::collumnWidth) << statistics.getVariance()
+        << std::setw(OutputParameters::collumnWidth) << statistics.getSEM() << '\n';
+    return out;
 }

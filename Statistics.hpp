@@ -2,6 +2,7 @@
 #define STATISTICS_HPP
 
 #include <cstdint>
+#include <iostream>
 
 class Statistics
 {
@@ -27,5 +28,7 @@ public:
 
     Statistics& operator+=(const Statistics& term);
 };
+
+std::ostream& operator<<(std::ostream& out, const Statistics& statistics);
 
 #endif // STATISTICS_HPP

@@ -144,6 +144,8 @@ public:
 
     Propagator(const Propagator&) = delete;
     Propagator& operator=(const Propagator&) = delete;
+    Propagator(Propagator&&) = default;
+    Propagator& operator=(Propagator&&) = default;
 
     // Enter the SystemState as a reference into the run function, such that the propagator can propagate it.
     void run(SystemState& systemState, RandomGenerator& generator, Output& output);

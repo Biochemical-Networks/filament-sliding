@@ -1,6 +1,7 @@
 #include "ActinDynamicsEstimate.hpp"
 #include "MathematicalFunctions.hpp"
 #include "OutputParameters.hpp"
+#include "GeneralException/GeneralException.hpp"
 
 #include <iomanip>
 
@@ -63,6 +64,22 @@ int64_t ActinDynamicsEstimate::getNSamples() const
         answer += statistics.getNumberOfSamples();
     }
     return answer;
+}
+
+ActinDynamicsEstimate& ActinDynamicsEstimate::operator+=(const ActinDynamicsEstimate& term)
+{
+    #ifdef MYDEBUG
+    if(m_binSize!=term.m_binSize || m_estimateTimeStep!=term.m_estimateTimeStep || m_numberOfBins!=term.m_numberOfBins)
+    {
+        throw GeneralException("ActinDynamicsEstimate::operator+=() tried to add incompatible estimates");
+    }
+    #endif // MYDEBUG
+
+    for(int32_t binNumber=0; binNumber<m_numberOfBins; ++binNumber)
+    {
+        m_movementStatistics.at(binNumber) += term.m_movementStatistics.at(binNumber);
+    }
+    return (*this);
 }
 
 std::ostream& operator<<(std::ostream& out, const ActinDynamicsEstimate& dynamicsContainer)

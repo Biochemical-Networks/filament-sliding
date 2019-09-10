@@ -8,11 +8,11 @@
 class GeneralException
 {
 private:
-    const std::string m_error;
+    std::string m_error;
 
 public:
     GeneralException(const std::string &error);
-    GeneralException() = delete; // Do not allow an exception without a label
+    GeneralException() = default; // Allow initiation of dummy variables
 
     const std::string& getError() const;
 };
