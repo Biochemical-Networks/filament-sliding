@@ -15,6 +15,7 @@
 #include <cstdint>
 #include <string>
 #include <algorithm>
+#include <vector>
 
 
 #include "Crosslinker.hpp"
@@ -37,14 +38,6 @@ int main(int argc, char* argv[])
 
     Log log(runName, clock);
 
-    //-----------------------------------------------------------------------------------------------------
-    // Set the random number generator
-
-    RandomGenerator generator(runName); // Seed with the runName, which is unique
-
-    #ifdef MYDEBUG
-    std::cout<< "The runName is " << runName << '\n';
-    #endif // MYDEBUG
 
     //-----------------------------------------------------------------------------------------------------
 
@@ -60,6 +53,36 @@ int main(int argc, char* argv[])
     {
         throw GeneralException("The parameter numberOfRuns contains a wrong value.");
     }
+
+
+    //-----------------------------------------------------------------------------------------------------
+    // Set the random number generators.
+    // Create numberOfRuns different ones, since we do not want all concurrently running Propagators to have to share a single random number generator.
+    // For seeding, create numberOfRuns different strings, which are used to create seed_seqs, which in turn are used to seed each random engine.
+
+    std::vector<std::string> seedStrings;
+    for(int32_t i=0; i<numberOfRuns; ++i)
+    {
+        seedStrings.push_back(runName+std::to_string(i));
+    }
+
+    std::vector<RandomGenerator> generators;
+    for(int32_t i=0; i<numberOfRuns; ++i)
+    {
+        generators.emplace_back(seedStrings.at(i));
+    }
+
+    #ifdef MYDEBUG
+    for(int32_t i=0; i<numberOfRuns; ++i)
+    {
+        std::cout << generators.at(i).getProbability() << std::endl;
+    }
+    #endif // MYDEBUG
+
+
+    #ifdef MYDEBUG
+    std::cout<< "The runName is " << runName << '\n';
+    #endif // MYDEBUG
 
 
     // Get the parameters needed for defining the general systemState.
@@ -134,18 +157,21 @@ int main(int argc, char* argv[])
     }
     const MicrotubuleDynamics microtubuleDynamics = (microtubuleDynamicsString=="STOCHASTIC") ? MicrotubuleDynamics::STOCHASTIC : MicrotubuleDynamics::DETERMINISTIC;
 
-
-    SystemState systemState(lengthMobileMicrotubule,
-                            lengthFixedMicrotubule,
-                            latticeSpacing,
-                            maximumStretchPerLatticeSpacing,
-                            nActiveCrosslinkers,
-                            nDualCrosslinkers,
-                            nPassiveCrosslinkers,
-                            springConstant,
-                            addExternalForce,
-                            externalForceTypeString,
-                            microtubuleDynamics);
+    std::vector<SystemState> systemStates;
+    for(int32_t i=0; i<numberOfRuns; ++i)
+    {
+        systemStates.emplace_back(lengthMobileMicrotubule,
+                                  lengthFixedMicrotubule,
+                                  latticeSpacing,
+                                  maximumStretchPerLatticeSpacing,
+                                  nActiveCrosslinkers,
+                                  nDualCrosslinkers,
+                                  nPassiveCrosslinkers,
+                                  springConstant,
+                                  addExternalForce,
+                                  externalForceTypeString,
+                                  microtubuleDynamics);
+    }
 
     //-----------------------------------------------------------------------------------------------------
     // Create the ActinDynamicsEstimates
@@ -311,7 +337,12 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter tipSize contains a wrong value");
     }
 
-    ActinDynamicsEstimate dynamicsEstimator{binSizeDynamicsEstimate, timeStepDynamicsEstimate, tipSize};
+    std::vector<ActinDynamicsEstimate> dynamicsEstimators;
+
+    for(int32_t i=0; i<numberOfRuns; ++i)
+    {
+        dynamicsEstimators.emplace_back(binSizeDynamicsEstimate, timeStepDynamicsEstimate, tipSize);
+    }
 
     //-----------------------------------------------------------------------------------------------------
     // Create the output class. Needs to be done before the propagator, since this needs samplePositionalDistribution as well
@@ -355,8 +386,7 @@ int main(int argc, char* argv[])
                   positionalHistogramHighestValue,
                   maxPeriodPositionTracking,
                   estimateDiffusionAndDrift,
-                  dynamicsEstimator
-                  );
+                  numberOfRuns);
 
     //-----------------------------------------------------------------------------------------------------
     // Get the parameters needed for initialising the state.
@@ -432,35 +462,71 @@ int main(int argc, char* argv[])
     // However, if there is no (un)binding, then linkers have to be removed upon blocking, since they would remain indefinitely otherwise
     const bool unbindUponUnblock = !bindingDynamicsOnBlocked;
 
-    const bool writeDetailedOutput=true;
+    // Prevent concurrency races for writing to output by only keeping detailed track of a single run.
+    // The other runs are used for estimating the unbinding times and the effective parameters for actin dynamics
+    const bool writeDetailedOutputFirstRun=true;
+    const bool writeDetailedOutputAdditionalRuns=false;
 
-    Propagator propagator(numberEquilibrationBlocks,
-                          numberRunBlocks,
-                          nTimeSteps,
-                          calcTimeStep,
-                          positionProbePeriod,
-                          diffusionConstantMicrotubule,
-                          actinDisconnectTime,
-                          springConstant,
-                          latticeSpacing,
-                          microtubuleDynamics,
-                          baseRateZeroToOneExtremitiesConnected,
-                          baseRateOneToZeroExtremitiesConnected,
-                          baseRateOneToTwoExtremitiesConnected,
-                          baseRateTwoToOneExtremitiesConnected,
-                          baseRateZeroToOneOnBlocked,
-                          baseRateOneToZeroOnBlocked,
-                          rateFixedMicrotubuleGrowth,
-                          rateBlockBoundSites,
-                          rateBlockUnboundSites,
-                          unbindUponUnblock,
-                          generator,
-                          samplePositionalDistribution,
-                          addExternalForce,
-                          initialPositionMicrotubule+lengthMobileMicrotubule > lengthFixedMicrotubule - std::floor(tipSize/latticeSpacing)*latticeSpacing,
-                          log,
-                          writeDetailedOutput,
-                          dynamicsEstimator);
+    std::vector<Propagator> propagators;
+
+    propagators.emplace_back(numberEquilibrationBlocks,
+                             numberRunBlocks,
+                             nTimeSteps,
+                             calcTimeStep,
+                             positionProbePeriod,
+                             diffusionConstantMicrotubule,
+                             actinDisconnectTime,
+                             springConstant,
+                             latticeSpacing,
+                             microtubuleDynamics,
+                             baseRateZeroToOneExtremitiesConnected,
+                             baseRateOneToZeroExtremitiesConnected,
+                             baseRateOneToTwoExtremitiesConnected,
+                             baseRateTwoToOneExtremitiesConnected,
+                             baseRateZeroToOneOnBlocked,
+                             baseRateOneToZeroOnBlocked,
+                             rateFixedMicrotubuleGrowth,
+                             rateBlockBoundSites,
+                             rateBlockUnboundSites,
+                             unbindUponUnblock,
+                             generators.front(),
+                             samplePositionalDistribution,
+                             addExternalForce,
+                             initialPositionMicrotubule+lengthMobileMicrotubule > lengthFixedMicrotubule - std::floor(tipSize/latticeSpacing)*latticeSpacing,
+                             log,
+                             writeDetailedOutputFirstRun,
+                             dynamicsEstimators.front());
+
+    for(int32_t i=1; i<numberOfRuns; ++i)
+    {
+        propagators.emplace_back(numberEquilibrationBlocks,
+                                 numberRunBlocks,
+                                 nTimeSteps,
+                                 calcTimeStep,
+                                 positionProbePeriod,
+                                 diffusionConstantMicrotubule,
+                                 actinDisconnectTime,
+                                 springConstant,
+                                 latticeSpacing,
+                                 microtubuleDynamics,
+                                 baseRateZeroToOneExtremitiesConnected,
+                                 baseRateOneToZeroExtremitiesConnected,
+                                 baseRateOneToTwoExtremitiesConnected,
+                                 baseRateTwoToOneExtremitiesConnected,
+                                 baseRateZeroToOneOnBlocked,
+                                 baseRateOneToZeroOnBlocked,
+                                 rateFixedMicrotubuleGrowth,
+                                 rateBlockBoundSites,
+                                 rateBlockUnboundSites,
+                                 unbindUponUnblock,
+                                 generators.at(i),
+                                 samplePositionalDistribution,
+                                 addExternalForce,
+                                 initialPositionMicrotubule+lengthMobileMicrotubule > lengthFixedMicrotubule - std::floor(tipSize/latticeSpacing)*latticeSpacing,
+                                 log,
+                                 writeDetailedOutputAdditionalRuns,
+                                 dynamicsEstimators.at(i));
+    }
 
     //-----------------------------------------------------------------------------------------------------
     // Even though graphics are turned off in the export version,
@@ -483,20 +549,55 @@ int main(int argc, char* argv[])
     //=====================================================================================================
     // Using the objects created so far, perform the actions
 
-    initialiser.initialise(systemState, generator); // initialise the system state
-
-
-    try
+    // initialise in series: this does not take a long time, and we use a single initialiser object
+    for(int32_t i=0; i<numberOfRuns; ++i)
     {
-        propagator.equilibrate(systemState, generator, output); // run the dynamics for a certain time such that an equilibrium distribution can be reached (not guaranteed to be done)
+        initialiser.initialise(systemStates.at(i), generators.at(i));
+    }
 
-        propagator.run(systemState, generator, output);
-    }
-    catch(const ActinDisconnectException& actinDisconnect)
+    if(showGraphics) // Graphics can only be done with a single run
     {
-        // Do nothing. Message was already written and time recorded upon construction of the exception.
-        // Possible window of Graphics was closed by the destructor of Graphics, since that one is called at the end of the try block.
-        // Still catch, to signal that the program is meant to end in this way.
+        try
+        {
+            propagators.front().equilibrate(systemStates.front(), generators.front(), output);
+
+            Graphics graphics(runName, systemStates.front(), propagators.front(), generators.front(), output, timeStepsDisplayInterval, updateDelayInMilliseconds);
+
+            graphics.performMainLoop();
+        }
+        catch(const ActinDisconnectException& actinDisconnect)
+        {
+            // Message was already written and time recorded upon construction of the exception.
+            // Window of Graphics was closed by the destructor of Graphics, since that one is called at the end of the try block.
+            // Catch to signal that the program is meant to end in this way, and do not signal to output, since there is no statistics for a single time.
+        }
     }
+    else
+    {
+        #pragma omp parallel for
+        for(int32_t i=0; i<numberOfRuns; ++i)
+        {
+            propagators.at(i).equilibrate(systemStates.at(i), generators.at(i), output);
+
+            try
+            {
+                propagators.at(i).run(systemStates.at(i), generators.at(i), output);
+            }
+            catch(ActinDisconnectException& actinDisconnect)
+            {
+                // Message was already written and time recorded upon construction of the exception.
+                output.addActinDisconnectTime(i, std::move(actinDisconnect));
+            }
+        }
+    }
+
+    // Combine all dynamicsEstimators after the parallel part has recombined
+    for(int32_t i=1; i<numberOfRuns; ++i)
+    {
+        dynamicsEstimators.front() += dynamicsEstimators.at(i);
+    }
+
+    output.finishWriting(dynamicsEstimators.front());
+
     return 0;
 }

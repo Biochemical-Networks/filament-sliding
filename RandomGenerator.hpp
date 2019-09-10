@@ -15,6 +15,10 @@ private:
 public:
     RandomGenerator(const std::string seedString);
     ~RandomGenerator();
+    RandomGenerator(const RandomGenerator&) = delete;
+    RandomGenerator& operator=(const RandomGenerator&) = delete;
+    RandomGenerator(RandomGenerator&&) = default;
+    RandomGenerator& operator=(RandomGenerator&&) = default;
 
     std::mt19937_64& getBareGenerator(); // Return by reference, otherwise a copy is made, and the generator is not updated upon use
 

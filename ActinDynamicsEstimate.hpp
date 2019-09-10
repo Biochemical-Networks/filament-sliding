@@ -22,6 +22,11 @@ public:
                           const double tipSize);
     ~ActinDynamicsEstimate();
 
+    ActinDynamicsEstimate(const ActinDynamicsEstimate&) = delete;
+    ActinDynamicsEstimate& operator=(const ActinDynamicsEstimate&) = delete;
+    ActinDynamicsEstimate(ActinDynamicsEstimate&&) = default;
+    ActinDynamicsEstimate& operator=(ActinDynamicsEstimate&&) = default;
+
     void addPositionRelativeToTipBegin(const double initialPosition, const double positionChange);
 
     ActinDynamicsEstimate& operator+=(const ActinDynamicsEstimate& term);

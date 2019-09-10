@@ -12,6 +12,7 @@
 #include "OutputParameters.hpp"
 #include "Histogram.hpp"
 #include "MathematicalFunctions.hpp"
+#include "ActinDisconnectException.hpp"
 
 Output::Output(const std::string &runName,
                const bool writePositionalDistribution,
@@ -20,14 +21,14 @@ Output::Output(const std::string &runName,
                const double positionalHistogramHighestValue,
                const double maxPeriodPositionTracking,
                const bool writeActinDynamicsEstimate,
-               const ActinDynamicsEstimate& dynamicsEstimate)
+               const int32_t numberOfRuns)
     :   m_positionsAndCrosslinkersFile((runName+".filament_positions_and_crosslinker_numbers.txt").c_str()),
         m_statisticalAnalysisFile((runName+".statistical_analysis.txt").c_str()),
         m_collumnWidth(OutputParameters::collumnWidth),
         m_writePositionalDistribution(writePositionalDistribution),
         m_maxPeriodPositionTracking(maxPeriodPositionTracking),
         m_writeActinDynamicsEstimate(writeActinDynamicsEstimate),
-        m_dynamicsEstimate(dynamicsEstimate)
+        m_disconnectTimes(numberOfRuns, std::make_pair(false, ActinDisconnectException{}))
 {
     m_positionsAndCrosslinkersFile << std::left
         << std::setw(m_collumnWidth) << "TIME"
@@ -70,7 +71,6 @@ Output::Output(const std::string &runName,
 
 Output::~Output()
 {
-    finishWriting();
 }
 
 void Output::writePositionsAndCrosslinkerNumbers(const double time, const SystemState& systemState)
@@ -92,24 +92,79 @@ void Output::addPosition(const double remainder)
     mp_positionalHistogram->addValue(remainder);
 }
 
-void Output::finishWriting()
+void Output::addActinDisconnectTime(const int32_t runID, ActinDisconnectException&& disconnectInformation)
+{
+    #ifdef MYDEBUG
+    if(runID<0 || runID>=static_cast<int32_t>(m_disconnectTimes.size()))
+    {
+        throw GeneralException("Output::addActinDisconnectTime() encountered a wrong runID.");
+    }
+    #endif // MYDEBUG
+    m_disconnectTimes.at(runID) = std::make_pair(true, std::move(disconnectInformation));
+}
+
+void Output::finishWriting(const ActinDynamicsEstimate& completeActinDynamicsEstimate)
 {
     if(m_writePositionalDistribution)
     {
         if(mp_positionalHistogram->canReportStatistics())
         {
             m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "REMAINDER TOP MICROTUBULE POSITION"
-                << std::setw(m_collumnWidth) << mp_positionalHistogram->getNumberOfSamples()
-                << std::setw(m_collumnWidth) << mp_positionalHistogram->getMean()
-                << std::setw(m_collumnWidth) << mp_positionalHistogram->getVariance()
-                << std::setw(m_collumnWidth) << mp_positionalHistogram->getSEM() << '\n';
+                << static_cast<Statistics>(*mp_positionalHistogram);
 
             m_positionalHistogramFile << (*mp_positionalHistogram);
         }
     }
 
+    if(m_disconnectTimes.size()>1)
+    {
+        createActinDisconnectStatistics();
+    }
+
+    if(m_actinTimeToDisconnectStatistics.canReportStatistics())
+    {
+        m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "DISCONNECT TIMES" << m_actinTimeToDisconnectStatistics;
+    }
+    if(m_actinPositionOfDisconnectStatistics.canReportStatistics())
+    {
+        m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "DISCONNECT POSITIONS" << m_actinPositionOfDisconnectStatistics;
+    }
+    if(m_actinTimeLastTrackingCompletionStatistics.canReportStatistics())
+    {
+        m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "LAST TRACKING TIMES" << m_actinTimeLastTrackingCompletionStatistics;
+    }
+    if(m_actinTotalTimeBehindTipStatistics.canReportStatistics())
+    {
+        m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "TOTAL LATTICE TIME" << m_actinTotalTimeBehindTipStatistics;
+    }
+    if(m_actinTotalTimeOnTipStatistics.canReportStatistics())
+    {
+        m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "TOTAL TIP TIME" << m_actinTotalTimeOnTipStatistics;
+    }
+
     if(m_writeActinDynamicsEstimate)
     {
-        m_actinDynamicsFile << m_dynamicsEstimate;
+        m_actinDynamicsFile << completeActinDynamicsEstimate;
+    }
+}
+
+void Output::createActinDisconnectStatistics()
+{
+    #ifdef MYDEBUG
+    if(m_disconnectTimes.size()<2)
+    {
+        throw GeneralException("Output::createActinDisconnectStatistics() was called with a wrong number of runs");
+    }
+    #endif // MYDEBUG
+    for(const auto& disconnectInformation : m_disconnectTimes)
+    {
+        if(disconnectInformation.first)
+        {
+            m_actinTimeToDisconnectStatistics.addValue(disconnectInformation.second.getTimeToDisconnect());
+            m_actinPositionOfDisconnectStatistics.addValue(disconnectInformation.second.getPositionOfDisconnect());
+            m_actinTimeLastTrackingCompletionStatistics.addValue(disconnectInformation.second.getTimeLastTrackingCompletion());
+            m_actinTotalTimeBehindTipStatistics.addValue(disconnectInformation.second.getTotalTimeBehindTip());
+            m_actinTotalTimeOnTipStatistics.addValue(disconnectInformation.second.getTotalTimeOnTip());
+        }
     }
 }
