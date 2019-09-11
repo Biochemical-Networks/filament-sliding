@@ -12,11 +12,11 @@ LD = g++
 WINDRES = windres
 
 INC = 
-CFLAGS = -Wall -std=c++11 -fexceptions
+CFLAGS = -Wall -std=c++11 -fexceptions -fopenmp
 RESINC = 
 LIBDIR = 
 LIB = 
-LDFLAGS = 
+LDFLAGS = -fopenmp
 
 INC_DEBUG = $(INC) -Iinclude
 CFLAGS_DEBUG = $(CFLAGS) -pedantic -Wextra -Wall -g -DMYDEBUG
@@ -30,7 +30,7 @@ DEP_DEBUG =
 OUT_DEBUG = bin/Debug/CrossLink
 
 INC_RELEASE = $(INC) -Iinclude
-CFLAGS_RELEASE = $(CFLAGS) -O2
+CFLAGS_RELEASE = $(CFLAGS) -O3
 RESINC_RELEASE = $(RESINC)
 RCFLAGS_RELEASE = $(RCFLAGS)
 LIBDIR_RELEASE = $(LIBDIR)
@@ -40,9 +40,9 @@ OBJDIR_RELEASE = obj/Release
 DEP_RELEASE = 
 OUT_RELEASE = bin/Release/CrossLink
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)/MobileMicrotubule.o $(OBJDIR_DEBUG)/Propagator.o $(OBJDIR_DEBUG)/PossibleFullConnection.o $(OBJDIR_DEBUG)/Output.o $(OBJDIR_DEBUG)/RandomGenerator.o $(OBJDIR_DEBUG)/Microtubule.o $(OBJDIR_DEBUG)/MathematicalFunctions.o $(OBJDIR_DEBUG)/Log.o $(OBJDIR_DEBUG)/main.o $(OBJDIR_DEBUG)/UnbindPartialCrosslinker.o $(OBJDIR_DEBUG)/UnbindFullCrosslinker.o $(OBJDIR_DEBUG)/SystemState.o $(OBJDIR_DEBUG)/Statistics.o $(OBJDIR_DEBUG)/Site.o $(OBJDIR_DEBUG)/RemoveSite.o $(OBJDIR_DEBUG)/Reaction.o $(OBJDIR_DEBUG)/GeneralException/GeneralException.o $(OBJDIR_DEBUG)/Extremity.o $(OBJDIR_DEBUG)/CrosslinkerContainer.o $(OBJDIR_DEBUG)/Crosslinker.o $(OBJDIR_DEBUG)/ConnectedTipGrowth.o $(OBJDIR_DEBUG)/Clock/Clock.o $(OBJDIR_DEBUG)/BindPartialCrosslinker.o $(OBJDIR_DEBUG)/BindFreeCrosslinker.o $(OBJDIR_DEBUG)/Input/DefaultParameterMap.o $(OBJDIR_DEBUG)/Input/ParameterMap.o $(OBJDIR_DEBUG)/Input/InputException.o $(OBJDIR_DEBUG)/Input/Input.o $(OBJDIR_DEBUG)/Input/GenericValue.o $(OBJDIR_DEBUG)/ActinDisconnectException.o $(OBJDIR_DEBUG)/Input/CommandArgumentHandler.o $(OBJDIR_DEBUG)/Initialiser.o $(OBJDIR_DEBUG)/Histogram.o $(OBJDIR_DEBUG)/GrowFixedMicrotubule.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)/MobileMicrotubule.o $(OBJDIR_DEBUG)/Propagator.o $(OBJDIR_DEBUG)/PossibleFullConnection.o $(OBJDIR_DEBUG)/Output.o $(OBJDIR_DEBUG)/RandomGenerator.o $(OBJDIR_DEBUG)/Microtubule.o $(OBJDIR_DEBUG)/MathematicalFunctions.o $(OBJDIR_DEBUG)/Log.o $(OBJDIR_DEBUG)/main.o $(OBJDIR_DEBUG)/UnbindPartialCrosslinker.o $(OBJDIR_DEBUG)/UnbindFullCrosslinker.o $(OBJDIR_DEBUG)/SystemState.o $(OBJDIR_DEBUG)/Input/ParameterMap.o $(OBJDIR_DEBUG)/Statistics.o $(OBJDIR_DEBUG)/Site.o $(OBJDIR_DEBUG)/RemoveSite.o $(OBJDIR_DEBUG)/Reaction.o $(OBJDIR_DEBUG)/Extremity.o $(OBJDIR_DEBUG)/CrosslinkerContainer.o $(OBJDIR_DEBUG)/Crosslinker.o $(OBJDIR_DEBUG)/ConnectedTipGrowth.o $(OBJDIR_DEBUG)/GeneralException/GeneralException.o $(OBJDIR_DEBUG)/Clock/Clock.o $(OBJDIR_DEBUG)/BindPartialCrosslinker.o $(OBJDIR_DEBUG)/BindFreeCrosslinker.o $(OBJDIR_DEBUG)/ActinDynamicsEstimate.o $(OBJDIR_DEBUG)/Input/CommandArgumentHandler.o $(OBJDIR_DEBUG)/Input/InputException.o $(OBJDIR_DEBUG)/Input/Input.o $(OBJDIR_DEBUG)/Input/GenericValue.o $(OBJDIR_DEBUG)/Input/DefaultParameterMap.o $(OBJDIR_DEBUG)/ActinDisconnectException.o $(OBJDIR_DEBUG)/Initialiser.o $(OBJDIR_DEBUG)/Histogram.o $(OBJDIR_DEBUG)/GrowFixedMicrotubule.o
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/MobileMicrotubule.o $(OBJDIR_RELEASE)/Propagator.o $(OBJDIR_RELEASE)/PossibleFullConnection.o $(OBJDIR_RELEASE)/Output.o $(OBJDIR_RELEASE)/RandomGenerator.o $(OBJDIR_RELEASE)/Microtubule.o $(OBJDIR_RELEASE)/MathematicalFunctions.o $(OBJDIR_RELEASE)/Log.o $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/UnbindPartialCrosslinker.o $(OBJDIR_RELEASE)/UnbindFullCrosslinker.o $(OBJDIR_RELEASE)/SystemState.o $(OBJDIR_RELEASE)/Statistics.o $(OBJDIR_RELEASE)/Site.o $(OBJDIR_RELEASE)/RemoveSite.o $(OBJDIR_RELEASE)/Reaction.o $(OBJDIR_RELEASE)/GeneralException/GeneralException.o $(OBJDIR_RELEASE)/Extremity.o $(OBJDIR_RELEASE)/CrosslinkerContainer.o $(OBJDIR_RELEASE)/Crosslinker.o $(OBJDIR_RELEASE)/ConnectedTipGrowth.o $(OBJDIR_RELEASE)/Clock/Clock.o $(OBJDIR_RELEASE)/BindPartialCrosslinker.o $(OBJDIR_RELEASE)/BindFreeCrosslinker.o $(OBJDIR_RELEASE)/Input/DefaultParameterMap.o $(OBJDIR_RELEASE)/Input/ParameterMap.o $(OBJDIR_RELEASE)/Input/InputException.o $(OBJDIR_RELEASE)/Input/Input.o $(OBJDIR_RELEASE)/Input/GenericValue.o $(OBJDIR_RELEASE)/ActinDisconnectException.o $(OBJDIR_RELEASE)/Input/CommandArgumentHandler.o $(OBJDIR_RELEASE)/Initialiser.o $(OBJDIR_RELEASE)/Histogram.o $(OBJDIR_RELEASE)/GrowFixedMicrotubule.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/MobileMicrotubule.o $(OBJDIR_RELEASE)/Propagator.o $(OBJDIR_RELEASE)/PossibleFullConnection.o $(OBJDIR_RELEASE)/Output.o $(OBJDIR_RELEASE)/RandomGenerator.o $(OBJDIR_RELEASE)/Microtubule.o $(OBJDIR_RELEASE)/MathematicalFunctions.o $(OBJDIR_RELEASE)/Log.o $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/UnbindPartialCrosslinker.o $(OBJDIR_RELEASE)/UnbindFullCrosslinker.o $(OBJDIR_RELEASE)/SystemState.o $(OBJDIR_RELEASE)/Input/ParameterMap.o $(OBJDIR_RELEASE)/Statistics.o $(OBJDIR_RELEASE)/Site.o $(OBJDIR_RELEASE)/RemoveSite.o $(OBJDIR_RELEASE)/Reaction.o $(OBJDIR_RELEASE)/Extremity.o $(OBJDIR_RELEASE)/CrosslinkerContainer.o $(OBJDIR_RELEASE)/Crosslinker.o $(OBJDIR_RELEASE)/ConnectedTipGrowth.o $(OBJDIR_RELEASE)/GeneralException/GeneralException.o $(OBJDIR_RELEASE)/Clock/Clock.o $(OBJDIR_RELEASE)/BindPartialCrosslinker.o $(OBJDIR_RELEASE)/BindFreeCrosslinker.o $(OBJDIR_RELEASE)/ActinDynamicsEstimate.o $(OBJDIR_RELEASE)/Input/CommandArgumentHandler.o $(OBJDIR_RELEASE)/Input/InputException.o $(OBJDIR_RELEASE)/Input/Input.o $(OBJDIR_RELEASE)/Input/GenericValue.o $(OBJDIR_RELEASE)/Input/DefaultParameterMap.o $(OBJDIR_RELEASE)/ActinDisconnectException.o $(OBJDIR_RELEASE)/Initialiser.o $(OBJDIR_RELEASE)/Histogram.o $(OBJDIR_RELEASE)/GrowFixedMicrotubule.o
 
 all: before_build build_debug build_release after_build
 
@@ -56,9 +56,9 @@ after_build:
 before_debug: 
 	test -d bin/Debug || mkdir -p bin/Debug
 	test -d $(OBJDIR_DEBUG) || mkdir -p $(OBJDIR_DEBUG)
+	test -d $(OBJDIR_DEBUG)/Input || mkdir -p $(OBJDIR_DEBUG)/Input
 	test -d $(OBJDIR_DEBUG)/GeneralException || mkdir -p $(OBJDIR_DEBUG)/GeneralException
 	test -d $(OBJDIR_DEBUG)/Clock || mkdir -p $(OBJDIR_DEBUG)/Clock
-	test -d $(OBJDIR_DEBUG)/Input || mkdir -p $(OBJDIR_DEBUG)/Input
 
 after_debug: 
 
@@ -105,6 +105,9 @@ $(OBJDIR_DEBUG)/UnbindFullCrosslinker.o: UnbindFullCrosslinker.cpp
 $(OBJDIR_DEBUG)/SystemState.o: SystemState.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c SystemState.cpp -o $(OBJDIR_DEBUG)/SystemState.o
 
+$(OBJDIR_DEBUG)/Input/ParameterMap.o: Input/ParameterMap.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Input/ParameterMap.cpp -o $(OBJDIR_DEBUG)/Input/ParameterMap.o
+
 $(OBJDIR_DEBUG)/Statistics.o: Statistics.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Statistics.cpp -o $(OBJDIR_DEBUG)/Statistics.o
 
@@ -116,9 +119,6 @@ $(OBJDIR_DEBUG)/RemoveSite.o: RemoveSite.cpp
 
 $(OBJDIR_DEBUG)/Reaction.o: Reaction.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Reaction.cpp -o $(OBJDIR_DEBUG)/Reaction.o
-
-$(OBJDIR_DEBUG)/GeneralException/GeneralException.o: GeneralException/GeneralException.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c GeneralException/GeneralException.cpp -o $(OBJDIR_DEBUG)/GeneralException/GeneralException.o
 
 $(OBJDIR_DEBUG)/Extremity.o: Extremity.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Extremity.cpp -o $(OBJDIR_DEBUG)/Extremity.o
@@ -132,6 +132,9 @@ $(OBJDIR_DEBUG)/Crosslinker.o: Crosslinker.cpp
 $(OBJDIR_DEBUG)/ConnectedTipGrowth.o: ConnectedTipGrowth.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ConnectedTipGrowth.cpp -o $(OBJDIR_DEBUG)/ConnectedTipGrowth.o
 
+$(OBJDIR_DEBUG)/GeneralException/GeneralException.o: GeneralException/GeneralException.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c GeneralException/GeneralException.cpp -o $(OBJDIR_DEBUG)/GeneralException/GeneralException.o
+
 $(OBJDIR_DEBUG)/Clock/Clock.o: Clock/Clock.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Clock/Clock.cpp -o $(OBJDIR_DEBUG)/Clock/Clock.o
 
@@ -141,11 +144,11 @@ $(OBJDIR_DEBUG)/BindPartialCrosslinker.o: BindPartialCrosslinker.cpp
 $(OBJDIR_DEBUG)/BindFreeCrosslinker.o: BindFreeCrosslinker.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c BindFreeCrosslinker.cpp -o $(OBJDIR_DEBUG)/BindFreeCrosslinker.o
 
-$(OBJDIR_DEBUG)/Input/DefaultParameterMap.o: Input/DefaultParameterMap.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Input/DefaultParameterMap.cpp -o $(OBJDIR_DEBUG)/Input/DefaultParameterMap.o
+$(OBJDIR_DEBUG)/ActinDynamicsEstimate.o: ActinDynamicsEstimate.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ActinDynamicsEstimate.cpp -o $(OBJDIR_DEBUG)/ActinDynamicsEstimate.o
 
-$(OBJDIR_DEBUG)/Input/ParameterMap.o: Input/ParameterMap.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Input/ParameterMap.cpp -o $(OBJDIR_DEBUG)/Input/ParameterMap.o
+$(OBJDIR_DEBUG)/Input/CommandArgumentHandler.o: Input/CommandArgumentHandler.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Input/CommandArgumentHandler.cpp -o $(OBJDIR_DEBUG)/Input/CommandArgumentHandler.o
 
 $(OBJDIR_DEBUG)/Input/InputException.o: Input/InputException.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Input/InputException.cpp -o $(OBJDIR_DEBUG)/Input/InputException.o
@@ -156,11 +159,11 @@ $(OBJDIR_DEBUG)/Input/Input.o: Input/Input.cpp
 $(OBJDIR_DEBUG)/Input/GenericValue.o: Input/GenericValue.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Input/GenericValue.cpp -o $(OBJDIR_DEBUG)/Input/GenericValue.o
 
+$(OBJDIR_DEBUG)/Input/DefaultParameterMap.o: Input/DefaultParameterMap.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Input/DefaultParameterMap.cpp -o $(OBJDIR_DEBUG)/Input/DefaultParameterMap.o
+
 $(OBJDIR_DEBUG)/ActinDisconnectException.o: ActinDisconnectException.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ActinDisconnectException.cpp -o $(OBJDIR_DEBUG)/ActinDisconnectException.o
-
-$(OBJDIR_DEBUG)/Input/CommandArgumentHandler.o: Input/CommandArgumentHandler.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Input/CommandArgumentHandler.cpp -o $(OBJDIR_DEBUG)/Input/CommandArgumentHandler.o
 
 $(OBJDIR_DEBUG)/Initialiser.o: Initialiser.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Initialiser.cpp -o $(OBJDIR_DEBUG)/Initialiser.o
@@ -175,16 +178,16 @@ clean_debug:
 	rm -f $(OBJ_DEBUG) $(OUT_DEBUG)
 	rm -rf bin/Debug
 	rm -rf $(OBJDIR_DEBUG)
+	rm -rf $(OBJDIR_DEBUG)/Input
 	rm -rf $(OBJDIR_DEBUG)/GeneralException
 	rm -rf $(OBJDIR_DEBUG)/Clock
-	rm -rf $(OBJDIR_DEBUG)/Input
 
 before_release: 
 	test -d bin/Release || mkdir -p bin/Release
 	test -d $(OBJDIR_RELEASE) || mkdir -p $(OBJDIR_RELEASE)
+	test -d $(OBJDIR_RELEASE)/Input || mkdir -p $(OBJDIR_RELEASE)/Input
 	test -d $(OBJDIR_RELEASE)/GeneralException || mkdir -p $(OBJDIR_RELEASE)/GeneralException
 	test -d $(OBJDIR_RELEASE)/Clock || mkdir -p $(OBJDIR_RELEASE)/Clock
-	test -d $(OBJDIR_RELEASE)/Input || mkdir -p $(OBJDIR_RELEASE)/Input
 
 after_release: 
 
@@ -231,6 +234,9 @@ $(OBJDIR_RELEASE)/UnbindFullCrosslinker.o: UnbindFullCrosslinker.cpp
 $(OBJDIR_RELEASE)/SystemState.o: SystemState.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c SystemState.cpp -o $(OBJDIR_RELEASE)/SystemState.o
 
+$(OBJDIR_RELEASE)/Input/ParameterMap.o: Input/ParameterMap.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Input/ParameterMap.cpp -o $(OBJDIR_RELEASE)/Input/ParameterMap.o
+
 $(OBJDIR_RELEASE)/Statistics.o: Statistics.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Statistics.cpp -o $(OBJDIR_RELEASE)/Statistics.o
 
@@ -242,9 +248,6 @@ $(OBJDIR_RELEASE)/RemoveSite.o: RemoveSite.cpp
 
 $(OBJDIR_RELEASE)/Reaction.o: Reaction.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Reaction.cpp -o $(OBJDIR_RELEASE)/Reaction.o
-
-$(OBJDIR_RELEASE)/GeneralException/GeneralException.o: GeneralException/GeneralException.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c GeneralException/GeneralException.cpp -o $(OBJDIR_RELEASE)/GeneralException/GeneralException.o
 
 $(OBJDIR_RELEASE)/Extremity.o: Extremity.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Extremity.cpp -o $(OBJDIR_RELEASE)/Extremity.o
@@ -258,6 +261,9 @@ $(OBJDIR_RELEASE)/Crosslinker.o: Crosslinker.cpp
 $(OBJDIR_RELEASE)/ConnectedTipGrowth.o: ConnectedTipGrowth.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ConnectedTipGrowth.cpp -o $(OBJDIR_RELEASE)/ConnectedTipGrowth.o
 
+$(OBJDIR_RELEASE)/GeneralException/GeneralException.o: GeneralException/GeneralException.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c GeneralException/GeneralException.cpp -o $(OBJDIR_RELEASE)/GeneralException/GeneralException.o
+
 $(OBJDIR_RELEASE)/Clock/Clock.o: Clock/Clock.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Clock/Clock.cpp -o $(OBJDIR_RELEASE)/Clock/Clock.o
 
@@ -267,11 +273,11 @@ $(OBJDIR_RELEASE)/BindPartialCrosslinker.o: BindPartialCrosslinker.cpp
 $(OBJDIR_RELEASE)/BindFreeCrosslinker.o: BindFreeCrosslinker.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c BindFreeCrosslinker.cpp -o $(OBJDIR_RELEASE)/BindFreeCrosslinker.o
 
-$(OBJDIR_RELEASE)/Input/DefaultParameterMap.o: Input/DefaultParameterMap.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Input/DefaultParameterMap.cpp -o $(OBJDIR_RELEASE)/Input/DefaultParameterMap.o
+$(OBJDIR_RELEASE)/ActinDynamicsEstimate.o: ActinDynamicsEstimate.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ActinDynamicsEstimate.cpp -o $(OBJDIR_RELEASE)/ActinDynamicsEstimate.o
 
-$(OBJDIR_RELEASE)/Input/ParameterMap.o: Input/ParameterMap.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Input/ParameterMap.cpp -o $(OBJDIR_RELEASE)/Input/ParameterMap.o
+$(OBJDIR_RELEASE)/Input/CommandArgumentHandler.o: Input/CommandArgumentHandler.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Input/CommandArgumentHandler.cpp -o $(OBJDIR_RELEASE)/Input/CommandArgumentHandler.o
 
 $(OBJDIR_RELEASE)/Input/InputException.o: Input/InputException.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Input/InputException.cpp -o $(OBJDIR_RELEASE)/Input/InputException.o
@@ -282,11 +288,11 @@ $(OBJDIR_RELEASE)/Input/Input.o: Input/Input.cpp
 $(OBJDIR_RELEASE)/Input/GenericValue.o: Input/GenericValue.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Input/GenericValue.cpp -o $(OBJDIR_RELEASE)/Input/GenericValue.o
 
+$(OBJDIR_RELEASE)/Input/DefaultParameterMap.o: Input/DefaultParameterMap.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Input/DefaultParameterMap.cpp -o $(OBJDIR_RELEASE)/Input/DefaultParameterMap.o
+
 $(OBJDIR_RELEASE)/ActinDisconnectException.o: ActinDisconnectException.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ActinDisconnectException.cpp -o $(OBJDIR_RELEASE)/ActinDisconnectException.o
-
-$(OBJDIR_RELEASE)/Input/CommandArgumentHandler.o: Input/CommandArgumentHandler.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Input/CommandArgumentHandler.cpp -o $(OBJDIR_RELEASE)/Input/CommandArgumentHandler.o
 
 $(OBJDIR_RELEASE)/Initialiser.o: Initialiser.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Initialiser.cpp -o $(OBJDIR_RELEASE)/Initialiser.o
@@ -301,9 +307,9 @@ clean_release:
 	rm -f $(OBJ_RELEASE) $(OUT_RELEASE)
 	rm -rf bin/Release
 	rm -rf $(OBJDIR_RELEASE)
+	rm -rf $(OBJDIR_RELEASE)/Input
 	rm -rf $(OBJDIR_RELEASE)/GeneralException
 	rm -rf $(OBJDIR_RELEASE)/Clock
-	rm -rf $(OBJDIR_RELEASE)/Input
 
 .PHONY: before_build after_build before_debug after_debug clean_debug before_release after_release clean_release
 
