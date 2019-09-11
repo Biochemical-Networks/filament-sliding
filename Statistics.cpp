@@ -71,9 +71,12 @@ Statistics& Statistics::operator+=(const Statistics& term)
     const int64_t oldNumberOfSamples=m_numberOfSamples;
     const double meanDifference=term.m_mean - m_mean;
     m_numberOfSamples+=term.m_numberOfSamples;
-    m_mean = (m_mean*oldNumberOfSamples+term.m_mean*term.m_numberOfSamples)/static_cast<double>(m_numberOfSamples);
-    m_accumulatedSquaredDeviation += term.m_accumulatedSquaredDeviation
-        + static_cast<double>(oldNumberOfSamples)*term.m_numberOfSamples/static_cast<double>(m_numberOfSamples)*meanDifference*meanDifference;
+    if(m_numberOfSamples!=0) // Otherwise you would get 0/0. Both the mean and accumulatedSquaredDeviation remain 0 when neither has samples
+    {
+        m_mean = (m_mean*oldNumberOfSamples+term.m_mean*term.m_numberOfSamples)/static_cast<double>(m_numberOfSamples);
+        m_accumulatedSquaredDeviation += term.m_accumulatedSquaredDeviation
+            + static_cast<double>(oldNumberOfSamples)*term.m_numberOfSamples/static_cast<double>(m_numberOfSamples)*meanDifference*meanDifference;
+    }
     return (*this);
 }
 

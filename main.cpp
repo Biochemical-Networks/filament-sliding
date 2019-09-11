@@ -15,7 +15,7 @@
 #include <cstdint>
 #include <string>
 #include <algorithm>
-#include <vector>
+#include <deque> // Deque does not require resizing capacity, does not invalidate pointers
 
 
 #include "Crosslinker.hpp"
@@ -60,13 +60,13 @@ int main(int argc, char* argv[])
     // Create numberOfRuns different ones, since we do not want all concurrently running Propagators to have to share a single random number generator.
     // For seeding, create numberOfRuns different strings, which are used to create seed_seqs, which in turn are used to seed each random engine.
 
-    std::vector<std::string> seedStrings;
+    std::deque<std::string> seedStrings;
     for(int32_t i=0; i<numberOfRuns; ++i)
     {
         seedStrings.push_back(runName+std::to_string(i));
     }
 
-    std::vector<RandomGenerator> generators;
+    std::deque<RandomGenerator> generators;
     for(int32_t i=0; i<numberOfRuns; ++i)
     {
         generators.emplace_back(seedStrings.at(i));
@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
     }
     const MicrotubuleDynamics microtubuleDynamics = (microtubuleDynamicsString=="STOCHASTIC") ? MicrotubuleDynamics::STOCHASTIC : MicrotubuleDynamics::DETERMINISTIC;
 
-    std::vector<SystemState> systemStates;
+    std::deque<SystemState> systemStates;
     for(int32_t i=0; i<numberOfRuns; ++i)
     {
         systemStates.emplace_back(lengthMobileMicrotubule,
@@ -337,7 +337,7 @@ int main(int argc, char* argv[])
         throw GeneralException("The parameter tipSize contains a wrong value");
     }
 
-    std::vector<ActinDynamicsEstimate> dynamicsEstimators;
+    std::deque<ActinDynamicsEstimate> dynamicsEstimators;
 
     for(int32_t i=0; i<numberOfRuns; ++i)
     {
@@ -467,7 +467,7 @@ int main(int argc, char* argv[])
     const bool writeDetailedOutputFirstRun=true;
     const bool writeDetailedOutputAdditionalRuns=false;
 
-    std::vector<Propagator> propagators;
+    std::deque<Propagator> propagators;
 
     propagators.emplace_back(numberEquilibrationBlocks,
                              numberRunBlocks,
