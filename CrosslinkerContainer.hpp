@@ -110,9 +110,9 @@ public:
     // Delete the default copy constructor and assignment operator, there is no use for them
     CrosslinkerContainer(const CrosslinkerContainer&) = delete;
     CrosslinkerContainer& operator=(const CrosslinkerContainer&) = delete;
-    // Move operators are necessary for creating vectors containing CrosslinkerContainers or other classes that contain a CrosslinkerContainer themselves
-    CrosslinkerContainer(CrosslinkerContainer&&) = default;
-    CrosslinkerContainer& operator=(CrosslinkerContainer&&) = default;
+    // Do not allow moves, it would invalidate the pointers to crosslinkers that are kept in the container
+    CrosslinkerContainer(CrosslinkerContainer&&) = delete;
+    CrosslinkerContainer& operator=(CrosslinkerContainer&&) = delete;
 
     Crosslinker& at(const int32_t position);
 
