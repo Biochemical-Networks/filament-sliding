@@ -555,39 +555,19 @@ int main(int argc, char* argv[])
         initialiser.initialise(systemStates.at(i), generators.at(i));
     }
 
-    if(showGraphics) // Graphics can only be done with a single run
+    #pragma omp parallel for
+    for(int32_t i=0; i<numberOfRuns; ++i)
     {
+        propagators.at(i).equilibrate(systemStates.at(i), generators.at(i), output);
+
         try
         {
-            propagators.front().equilibrate(systemStates.front(), generators.front(), output);
-
-            Graphics graphics(runName, systemStates.front(), propagators.front(), generators.front(), output, timeStepsDisplayInterval, updateDelayInMilliseconds);
-
-            graphics.performMainLoop();
+            propagators.at(i).run(systemStates.at(i), generators.at(i), output);
         }
-        catch(const ActinDisconnectException& actinDisconnect)
+        catch(ActinDisconnectException& actinDisconnect)
         {
             // Message was already written and time recorded upon construction of the exception.
-            // Window of Graphics was closed by the destructor of Graphics, since that one is called at the end of the try block.
-            // Catch to signal that the program is meant to end in this way, and do not signal to output, since there is no statistics for a single time.
-        }
-    }
-    else
-    {
-        #pragma omp parallel for
-        for(int32_t i=0; i<numberOfRuns; ++i)
-        {
-            propagators.at(i).equilibrate(systemStates.at(i), generators.at(i), output);
-
-            try
-            {
-                propagators.at(i).run(systemStates.at(i), generators.at(i), output);
-            }
-            catch(ActinDisconnectException& actinDisconnect)
-            {
-                // Message was already written and time recorded upon construction of the exception.
-                output.addActinDisconnectTime(i, std::move(actinDisconnect));
-            }
+            output.addActinDisconnectTime(i, std::move(actinDisconnect));
         }
     }
 
