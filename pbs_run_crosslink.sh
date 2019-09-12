@@ -6,7 +6,7 @@
 #PBS -N CrossLink
 
 ## set the number of nodes and processes per node
-#PBS ‐l nodes=1:ppn=1
+#PBS -l nodes=1:ppn=4
 
 ## set queue name
 #PBS -q highcpu
@@ -15,10 +15,7 @@
 #PBS -l walltime=100:00:00
 
 ## set memory 
-#PBS -l mem=256m
-
-## set email adress
-#PBS -M h.wierenga@amolf.nl
+#PBS -l mem=1024m
 
 ## Write std_out and std_err to out directory, with these file names:
 ## Write to local host: this means that output files are written to the home folder on the node where the program is run.
