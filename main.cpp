@@ -558,10 +558,10 @@ int main(int argc, char* argv[])
     #pragma omp parallel for
     for(int32_t i=0; i<numberOfRuns; ++i)
     {
-        propagators.at(i).equilibrate(systemStates.at(i), generators.at(i), output);
-
         try
         {
+            propagators.at(i).equilibrate(systemStates.at(i), generators.at(i), output);
+
             propagators.at(i).run(systemStates.at(i), generators.at(i), output);
         }
         catch(ActinDisconnectException& actinDisconnect)
