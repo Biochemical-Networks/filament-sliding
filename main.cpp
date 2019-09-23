@@ -582,7 +582,10 @@ int main(int argc, char* argv[])
     }
     else
     {
-        #pragma omp parallel for
+        // Run times are exponentially distributed, so use 'dynamic' schedule for OpenMP.
+        // 'static' schedule divides the work at the beginning of the loop, which means that a thread that happens to contain many long runs
+        // can take much longer than other threads to complete.
+        #pragma omp parallel for schedule(dynamic)
         for(int32_t i=0; i<numberOfRuns; ++i)
         {
             try
