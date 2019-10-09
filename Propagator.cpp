@@ -62,7 +62,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_latticeSpacing(latticeSpacing),
         m_microtubuleDynamics(microtubuleDynamics),
         m_deviationMicrotubule(std::sqrt(2*m_diffusionConstantMicrotubule*m_calcTimeStep)),
-        m_currentTime(-m_nEquilibrationBlocks*m_nTimeSteps*m_calcTimeStep), // time 0 is the start of the run blocks
+        m_currentTime(0.0),
         m_samplePositionalDistribution(samplePositionalDistribution),
         m_addExternalForce(addExternalForce),
         m_nDeterministicBoundaryCrossings(0), // Counts the number of times a force has tried to push the mobile microtubule across a maximum stretch barrier

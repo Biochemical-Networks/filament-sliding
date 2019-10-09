@@ -40,7 +40,7 @@ private:
 
     const double m_deviationMicrotubule; // sqrt(2 D t), with t the time step size and D the diffusion constant of the microtubule. Stored to prevent this calculation every time step
 
-    double m_currentTime; // Time 0 is at the beginning of the run blocks: the equilibration blocks simulate negative time
+    double m_currentTime;
     double m_currentReactionRateThreshold; // units s^(-1), so in terms of the (accumulated) rate
 
     const bool m_samplePositionalDistribution;
