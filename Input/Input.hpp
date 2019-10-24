@@ -27,7 +27,7 @@ private:
     void setRunName();
 
 public:
-    Input(const CommandArgumentHandler& cmd, const std::string fileName = "parameters.txt");
+    Input(const CommandArgumentHandler& cmd);
 
     ~Input();
 

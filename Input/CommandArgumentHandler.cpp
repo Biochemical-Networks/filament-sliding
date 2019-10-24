@@ -8,7 +8,9 @@
 #include <cstdint>
 
 CommandArgumentHandler::CommandArgumentHandler(int argc, char* argv[])
-    :   m_runNameDefined(false),
+    :   m_parameterNameDefined(false),
+        m_parameterName(""),
+        m_runNameDefined(false),
         m_runName(""),
         m_mobileMicrotubuleLengthDefined(false),
         m_lengthMobile(0.0),
@@ -66,7 +68,11 @@ void CommandArgumentHandler::readVariable(std::istringstream&& streamName, std::
     {
         throw InputException("CommandArgumentHandler::readVariable() expected a variableType, but found no valid one.");
     }
-    if(variableType == "-N" || variableType == "-n")
+    if(variableType == "-P" || variableType == "-p")
+    {
+        newVariable=VariableName::PARAMETERFILENAME;
+    }
+    else if(variableType == "-N" || variableType == "-n")
     {
         newVariable=VariableName::RUNNAME;
     }
@@ -97,6 +103,17 @@ void CommandArgumentHandler::readVariable(std::istringstream&& streamName, std::
 
     switch(newVariable)
     {
+        case VariableName::PARAMETERFILENAME:
+            if(m_parameterNameDefined)
+            {
+                throw InputException("CommandArgumentHandler::readVariable() tried to set the parameter file name more than once.");
+            }
+            if(!(streamValue >> m_parameterName))
+            {
+                throw InputException("CommandArgumentHandler::readVariable() did not encounter a proper parameter file name.");
+            }
+            m_parameterNameDefined = true;
+            break;
         case VariableName::RUNNAME:
             if(m_runNameDefined)
             {
@@ -156,6 +173,23 @@ void CommandArgumentHandler::readVariable(std::istringstream&& streamName, std::
         default:
             throw InputException("CommandArgumentHandler::readVariable() set newVariable to an invalid value.");
     }
+}
+
+bool CommandArgumentHandler::parameterNameDefined() const
+{
+    return m_parameterNameDefined;
+}
+
+std::string CommandArgumentHandler::getParameterName() const
+{
+    #ifdef MYDEBUG
+    if(!m_parameterNameDefined)
+    {
+        throw InputException("CommandArgumentHandler::getParameterName() was called when the command line did not set the parameter file name");
+    }
+    #endif // MYDEBUG
+
+    return m_parameterName;
 }
 
 bool CommandArgumentHandler::runNameDefined() const

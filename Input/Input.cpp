@@ -10,7 +10,7 @@
 
 
 // Handle all input exceptions in the constructor of Input, because here is should be decided whether a default input file needs to be created. When the program does not have a
-Input::Input(const CommandArgumentHandler& cmd, const std::string fileName) : m_fileName(fileName)
+Input::Input(const CommandArgumentHandler& cmd) : m_fileName(cmd.parameterNameDefined() ? cmd.getParameterName() : "parameters.txt")
 {
     try
     {
