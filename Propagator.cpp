@@ -170,6 +170,15 @@ void Propagator::run(SystemState& systemState, RandomGenerator& generator, Outpu
     {
         propagateBlock(systemState, generator, output, m_writeDetailedOutput, m_nTimeSteps, true);
     }
+
+    // To write away information, even if the actin did not disconnect spontaneously,
+    // we throw an exception at the end of the run to signal information about the track time etc.
+    // It can be seen as if we force actin to disconnect at the end of the run.
+    throw ActinDisconnectException(m_currentTime,
+                                   systemState.getMicrotubulePosition(),
+                                   m_timeLastTrackingCompletion,
+                                   m_totalTimeBehindTip,
+                                   m_totalTimeOnTip);
 }
 
 void Propagator::propagateGraphicsInterval(SystemState& systemState, RandomGenerator& generator, Output& output, const int32_t nTimeStepsInterval)
