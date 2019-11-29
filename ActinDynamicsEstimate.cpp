@@ -10,7 +10,8 @@ ActinDynamicsEstimate::ActinDynamicsEstimate(const double binSize,
                       const double tipSize)
     :   m_binSize(binSize),
         m_estimateTimeStep(estimateTimeStep),
-        m_numberOfBins(MathematicalFunctions::intCeil(tipSize/binSize)+2), // have at least enough bins to cover the whole tip, 1 for everything behind the tip, and 1 for further away
+        // have at least enough bins to cover the whole tip and a region after the tip of at least the tip size, 1 for everything behind the tip, and 1 for further away
+        m_numberOfBins(MathematicalFunctions::intCeil(2*tipSize/binSize)+2),
         m_movementStatistics(m_numberOfBins)
 {
 }
@@ -25,7 +26,7 @@ void ActinDynamicsEstimate::addPositionRelativeToTipBegin(const double initialPo
     {
         m_movementStatistics.front().addValue(positionChange);
     }
-    else if(initialPosition >= (m_numberOfBins-2)*m_binSize) // actin in front of tip
+    else if(initialPosition >= (m_numberOfBins-2)*m_binSize) // actin in front of probe region
     {
         m_movementStatistics.back().addValue(positionChange);
     }
