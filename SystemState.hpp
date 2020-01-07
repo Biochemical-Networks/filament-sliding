@@ -26,7 +26,8 @@ public:
     enum class ExternalForceType
     {
         BARRIERFREE,
-        QUADRATIC
+        QUADRATIC,
+        CONSTANT
     };
 private:
     // With a stretch < 1.5 lattice spacing, there are maximally 3 types of stretch at a time (at exactly 1.5, there could be 4).
@@ -58,6 +59,7 @@ private:
 
     const bool m_addExternalForce;
     ExternalForceType m_externalForceType; // not const, has to be found in the constructor body
+    const double m_externalForceValue;
 
     double externalForceFlatOptimalPath() const;
 public:
@@ -70,7 +72,8 @@ public:
                 const int32_t nPassiveCrosslinkers,
                 const double springConstant,
                 const bool addExternalForce,
-                const std::string externalForceTypeString);
+                const std::string externalForceTypeString,
+                const double externalForceValue);
     ~SystemState();
 
     SystemState(const SystemState&) = delete;

@@ -110,8 +110,20 @@ int main(int argc, char* argv[])
     std::string externalForceTypeString;
     input.copyParameter("externalForceType", externalForceTypeString);
 
-    SystemState systemState(lengthMobileMicrotubule, lengthFixedMicrotubule, latticeSpacing, maximumStretchPerLatticeSpacing,
-                            nActiveCrosslinkers, nDualCrosslinkers, nPassiveCrosslinkers, springConstant, addExternalForce, externalForceTypeString);
+    double externalForceValue;
+    input.copyParameter("externalForceValue", externalForceValue);
+
+    SystemState systemState(lengthMobileMicrotubule,
+                            lengthFixedMicrotubule,
+                            latticeSpacing,
+                            maximumStretchPerLatticeSpacing,
+                            nActiveCrosslinkers,
+                            nDualCrosslinkers,
+                            nPassiveCrosslinkers,
+                            springConstant,
+                            addExternalForce,
+                            externalForceTypeString,
+                            externalForceValue);
 
     //-----------------------------------------------------------------------------------------------------
     // Create the output class. Needs to be done before the propagator, since this needs samplePositionalDistribution as well

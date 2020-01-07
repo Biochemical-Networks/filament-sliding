@@ -26,7 +26,8 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
                             const int32_t nPassiveCrosslinkers,
                             const double springConstant,
                             const bool addExternalForce,
-                            const std::string externalForceTypeString)
+                            const std::string externalForceTypeString,
+                            const double externalForceValue)
     :   m_maxStretchPerLatticeSpacing(maxStretchPerLatticeSpacing),
         m_maxNumberOfCloseSites(static_cast<int32_t> (std::ceil(2*m_maxStretchPerLatticeSpacing))),
         m_maxStretch(m_maxStretchPerLatticeSpacing*latticeSpacing),
@@ -41,7 +42,8 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
         m_passiveCrosslinkers(m_nPassiveCrosslinkers, Crosslinker(Crosslinker::Type::PASSIVE),Crosslinker::Type::PASSIVE, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch),
         m_dualCrosslinkers(m_nDualCrosslinkers, Crosslinker(Crosslinker::Type::DUAL),Crosslinker::Type::DUAL, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch),
         m_activeCrosslinkers(m_nActiveCrosslinkers, Crosslinker(Crosslinker::Type::ACTIVE),Crosslinker::Type::ACTIVE, m_fixedMicrotubule, m_mobileMicrotubule, m_latticeSpacing, m_maxStretch),
-        m_addExternalForce(addExternalForce)
+        m_addExternalForce(addExternalForce),
+        m_externalForceValue(externalForceValue)
 {
     if(externalForceTypeString=="BARRIERFREE")
     {
@@ -50,6 +52,10 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
     else if(externalForceTypeString=="QUADRATIC")
     {
         m_externalForceType=ExternalForceType::QUADRATIC;
+    }
+    else if(externalForceTypeString=="CONSTANT")
+    {
+        m_externalForceType=ExternalForceType::CONSTANT;
     }
     else
     {
@@ -831,6 +837,9 @@ double SystemState::findExternalForce() const
                 break;
             case ExternalForceType::QUADRATIC:
                 externalForce = 0; // Not yet defined
+                break;
+            case ExternalForceType::CONSTANT:
+                externalForce = m_externalForceValue;
                 break;
             default:
                 throw GeneralException("Caller of SystemState::findExternalForce() asked for an unsupported external force");
