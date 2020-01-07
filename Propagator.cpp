@@ -255,13 +255,9 @@ void Propagator::moveMicrotubule(SystemState& systemState, RandomGenerator& gene
     // use the expm1 function to prevent catastrophic cancellation for very small numbers.
     // Check for the case of no crosslinkers. The numberFullLinkers is implicitly converted to double.
     double deterministicChange = (numberFullLinkers!=0)?
-                                 (totalExtension/numberFullLinkers*std::expm1(-numberFullLinkers*m_springConstant*m_diffusionConstantMicrotubule*m_calcTimeStep)):
-                                 (0.0);
-
-    if(m_addExternalForce) // This if is not necessary, but it does prevent the multiplications below to be performed when not necessary
-    {
-        deterministicChange += m_diffusionConstantMicrotubule*systemState.findExternalForce()*m_calcTimeStep;
-    }
+                                 ((totalExtension-systemState.findExternalForce()/m_springConstant)/numberFullLinkers
+                                 *std::expm1(-numberFullLinkers*m_springConstant*m_diffusionConstantMicrotubule*m_calcTimeStep)):
+                                 (systemState.findExternalForce()*m_diffusionConstantMicrotubule*m_calcTimeStep);
 
     // Check if the deterministic change is breaking the boundaries; if so: place the particle just on the proper side of the boundary
     if (deterministicChange<=exclusiveMovementBorders.first)
