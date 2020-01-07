@@ -53,7 +53,7 @@ ParameterMap::ParameterMap()
     // For a minus end walking motor, use a negative bias free energy
     defineParameter("baseRateActivePartialHop", 1562.5, "s^(-1)", ">=0");
     defineParameter("baseRateActiveFullHop", 1562.5, "s^(-1)", ">=0");
-    defineParameter("activeHopToPlusBiasEnergy", 1., "kT", "real");
+    defineParameter("activeHopToPlusBiasEnergy", 1., "kT", "all");
 
     // Rates for connecting crosslinkers to the microtubules. The rates from zero to one are per crosslinker in solution per microtubule site.
     // So the full rate for connecting to any site is baseRateZeroToOneExtremitiesConnected * #free crosslinkers * # free microtubule sites
@@ -81,11 +81,12 @@ ParameterMap::ParameterMap()
     defineParameter("baseRateOneToZeroExtremitiesConnected", 0.0, "s^(-1)", ">=0");
     defineParameter("baseRateOneToTwoExtremitiesConnected", 0.0, "s^(-1)", ">=0");
     defineParameter("baseRateTwoToOneExtremitiesConnected", 0.0, "s^(-1)", ">=0");
-    defineParameter("headBindingBiasEnergy", 0.0, "kT", "real");
+    defineParameter("headBindingBiasEnergy", 0.0, "kT", "all");
 
     // Parameters to turn analysis on or off
     defineParameter("addExternalForce", "FALSE", "unitless", "TRUE,FALSE");
-    defineParameter("externalForceType", "BARRIERFREE", "unitless", "BARRIERFREE,QUADRATIC");
+    defineParameter("externalForceType", "BARRIERFREE", "unitless", "BARRIERFREE,QUADRATIC,CONSTANT");
+    defineParameter("externalForceValue", 0.0, "kT/micron", "all");
     defineParameter("samplePositionalDistribution", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("positionalHistogramBinSize", 8.e-7, "micron", ">0");
     defineParameter("positionalHistogramLowestValue", 0.0, "micron", ">=0");

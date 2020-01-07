@@ -34,7 +34,7 @@ private:
     double m_realValue = 0.0;
 
     // The unit is kept with the value, because a dangling value is often confusing / worthless
-    std::string m_unit = "unitless";
+    std::string m_unit;
 
 public:
     GenericValue() = delete; // no typeless constructed GenericValue
@@ -44,9 +44,9 @@ public:
      * If no unit is given, it is assumed the variable is unitless.
      */
     GenericValue (const GenericValue &genericValue); // Copy constructor
-    GenericValue(const std::string &stringValue, const std::string &unit = "unitless");
-    GenericValue(int32_t integerValue, const std::string &unit = "unitless");
-    GenericValue(double realValue, const std::string &unit = "unitless");
+    GenericValue(const std::string &stringValue, const std::string &unit);
+    GenericValue(int32_t integerValue, const std::string &unit);
+    GenericValue(double realValue, const std::string &unit);
 
     GenericValue& operator= (const GenericValue &genericValue); // Standard assignment
 
@@ -58,10 +58,11 @@ public:
      * copyValue uses a reference and no return value, such that the type can be deduced by the compiler,
      * and no type needs to be given when calling the function.
      */
-    void copyValue(std::string &stringValue);
-    void copyValue(int32_t &integerValue);
-    void copyValue(double &realValue);
+    void copyValue(std::string &stringValue) const;
+    void copyValue(int32_t &integerValue) const;
+    void copyValue(double &realValue) const;
 
+    std::string getUnit() const;
 
     /* The output operator can be implemented straightforwardly.
      * The input operator has to assume that the type of the right-hand-side is correct.
