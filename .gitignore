@@ -14,6 +14,7 @@ MakeFile*
 # Ignore shell scripts for running
 runScript.sh
 run_n_times.sh
+pbs_run_crosslink.sh
 
 # No results of the (pre)compiler
 bin/
