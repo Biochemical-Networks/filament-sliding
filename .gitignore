@@ -53,3 +53,6 @@ GitHashWhenCompiled.hpp
 # No videos
 *.mkv
 *.ogg
+
+# No output directory
+out/
