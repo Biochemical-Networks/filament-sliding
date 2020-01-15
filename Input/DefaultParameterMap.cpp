@@ -85,7 +85,7 @@ ParameterMap::ParameterMap()
 
     // Parameters to turn analysis on or off
     defineParameter("addExternalForce", "FALSE", "unitless", "TRUE,FALSE");
-    defineParameter("externalForceType", "BARRIERFREE", "unitless", "BARRIERFREE,QUADRATIC,CONSTANT");
+    defineParameter("externalForceType", "BARRIERFREE", "unitless", "BARRIERFREE,SINUS,CONSTANT");
     defineParameter("externalForceValue", 0.0, "kT/micron", "all");
     defineParameter("samplePositionalDistribution", "FALSE", "unitless", "TRUE,FALSE");
     defineParameter("positionalHistogramBinSize", 8.e-7, "micron", ">0");
