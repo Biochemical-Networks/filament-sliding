@@ -49,9 +49,9 @@ SystemState::SystemState(const double lengthMobileMicrotubule,
     {
         m_externalForceType=ExternalForceType::BARRIERFREE;
     }
-    else if(externalForceTypeString=="QUADRATIC")
+    else if(externalForceTypeString=="SINUS")
     {
-        m_externalForceType=ExternalForceType::QUADRATIC;
+        m_externalForceType=ExternalForceType::SINUS;
     }
     else if(externalForceTypeString=="CONSTANT")
     {
@@ -835,8 +835,8 @@ double SystemState::findExternalForce() const
             case ExternalForceType::BARRIERFREE:
                 externalForce = externalForceFlatOptimalPath();
                 break;
-            case ExternalForceType::QUADRATIC:
-                externalForce = 0; // Not yet defined
+            case ExternalForceType::SINUS:
+                externalForce = -m_externalForceValue*std::sin(2*m_pi*m_mobileMicrotubule.getPosition()/m_latticeSpacing);
                 break;
             case ExternalForceType::CONSTANT:
                 externalForce = m_externalForceValue;

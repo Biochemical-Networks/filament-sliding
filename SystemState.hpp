@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 #include <string>
+#include <cmath>
 
 /* SystemState is a class that keeps track of the current state of the system, and manages the existence of Microtubules and Crosslinkers through its members.
  * SystemState methods allow the SystemState to be changed; they do not provide the rules by which it is changed.
@@ -26,7 +27,7 @@ public:
     enum class ExternalForceType
     {
         BARRIERFREE,
-        QUADRATIC,
+        SINUS,
         CONSTANT
     };
 private:
@@ -62,6 +63,8 @@ private:
     const double m_externalForceValue;
 
     double externalForceFlatOptimalPath() const;
+
+    const double m_pi = std::acos(-1); // used for the calculation of sinus, for a sinusoidal external force
 public:
     SystemState(const double lengthMobileMicrotubule,
                 const double lengthFixedMicrotubule,
