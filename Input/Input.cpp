@@ -28,8 +28,13 @@ Input::Input(const CommandArgumentHandler& cmd, const std::string fileName) : m_
             exit(1); // Terminate the program if no input file is present
         }
     }
-    setRunName(); // Set the name of the current run, first from the input file, adding labels if the name was previously used
 
+    // Set the name of the current run, first from the input file, then from the command line arguments, adding labels if the name was previously used
+    if(cmd.runNameDefined())
+    {
+        m_parameterMap.overrideParameter("runName", cmd.getRunName());
+    }
+    setRunName();
     m_parameterMap.overrideParameter("runName", m_runName);
 
     if(cmd.mobileLengthDefined())
@@ -156,12 +161,14 @@ void Input::setRunName()
     int label = 0;
     m_runName = runName; // The name of the run is set from the input file
 
-    while (fileExists(m_runName+"."+m_fileName)) // If a run with the same name was done before, then there is a copy of the input file with the name m_runName+"."+m_fileName
+    // If a run with the same name was done before, then there is a copy of the log file with the name m_runName+".log.txt"
+    // Use the log file, and not the copied parameter file, since the latter depends on m_fileName, which can vary
+    // and which means that other files that do not depend on m_fileName (such as the log file) are overridden
+    while (fileExists(m_runName+".log.txt"))
     {
         ++label;
         m_runName = runName+"."+std::to_string(label);
     }
-
 }
 
 std::string Input::getRunName()
