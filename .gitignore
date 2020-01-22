@@ -15,6 +15,7 @@ MakeFile*
 runScript.sh
 run_n_times.sh
 pbs_run_crosslink.sh
+submit_jobs.sh
 
 # No results of the (pre)compiler
 bin/
