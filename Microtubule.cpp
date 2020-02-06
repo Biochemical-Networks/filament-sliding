@@ -43,7 +43,7 @@ void Microtubule::connectSite(const int32_t sitePosition, Crosslinker& crosslink
         --m_nFreeSites;
     #ifdef MYDEBUG
     }
-    catch(std::out_of_range)
+    catch(const std::out_of_range&)
     {
         throw GeneralException("The sitePosition given to Microtubule::connectSite() does not exist");
     }
@@ -62,7 +62,7 @@ void Microtubule::disconnectSite(const int32_t sitePosition)
         ++m_nFreeSites;
     #ifdef MYDEBUG
     }
-    catch(std::out_of_range)
+    catch(const std::out_of_range&)
     {
         throw GeneralException("The sitePosition given to Microtubule::disconnectSite() does not exist");
     }
