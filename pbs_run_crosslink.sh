@@ -6,7 +6,7 @@
 #PBS -N CrossLink
 
 ## set the number of nodes and processes per node
-#PBS -l nodes=1:ppn=36
+#PBS -l nodes=1:ppn=1:highcpu
 
 ## set queue name
 #PBS -q highcpu
