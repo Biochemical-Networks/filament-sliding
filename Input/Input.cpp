@@ -100,8 +100,16 @@ bool Input::askMakeDefault()
 {
     bool redo = true; // The parameter is set to false when a right input is given, and the loop should be terminated
     bool answerBool = false; // The variable to return
+    constexpr int32_t maximumNumberOfTriesForAnswer = 5;
+    int32_t numberOfTriesForAnswer=0;
     while (redo)
     {
+        ++numberOfTriesForAnswer;
+        if(numberOfTriesForAnswer > maximumNumberOfTriesForAnswer)
+        {
+            throw InputException("User failed to answer question on creating a default input file too often.");
+        }
+
         std::cout << "Would you like the program to produce a default input file, and override the current file? (Y/n)\n";
         char answer = '\0';
         std::cin >> answer;
