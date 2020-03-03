@@ -103,6 +103,11 @@ void Output::addActinDisconnectTime(const int32_t runID, ActinDisconnectExceptio
     m_disconnectTimes.at(runID) = std::make_pair(true, std::move(disconnectInformation));
 }
 
+void Output::addActinBindingState(const bool actinIsBound)
+{
+    m_actinBindProbabilityStatistics.addValue(actinIsBound?1.0:0.0);
+}
+
 void Output::finishWriting(const ActinDynamicsEstimate& completeActinDynamicsEstimate)
 {
     if(m_writePositionalDistribution)
@@ -140,6 +145,11 @@ void Output::finishWriting(const ActinDynamicsEstimate& completeActinDynamicsEst
     if(m_actinTotalTimeOnTipStatistics.canReportStatistics())
     {
         m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "TOTAL TIP TIME" << m_actinTotalTimeOnTipStatistics;
+    }
+
+    if(m_actinBindProbabilityStatistics.canReportStatistics())
+    {
+        m_statisticalAnalysisFile << std::setw(m_collumnWidth) << "ACTIN BINDING PROBABILITY" << m_actinBindProbabilityStatistics;
     }
 
     if(m_writeActinDynamicsEstimate)

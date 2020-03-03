@@ -101,7 +101,7 @@ private:
 
     Reaction& getReactionToHappen(RandomGenerator& generator) const;
 
-    void advanceTimeStep(SystemState& systemState, RandomGenerator& generator, const bool estimateDynamics);
+    void advanceTimeStep(SystemState& systemState, RandomGenerator& generator, Output& output, const bool estimateDynamics);
 
     void propagateBlock(SystemState& systemState,
                         RandomGenerator& generator,

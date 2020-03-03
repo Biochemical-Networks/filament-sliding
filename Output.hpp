@@ -47,6 +47,7 @@ private:
     Statistics m_actinTimeLastTrackingCompletionStatistics;
     Statistics m_actinTotalTimeBehindTipStatistics;
     Statistics m_actinTotalTimeOnTipStatistics;
+    Statistics m_actinBindProbabilityStatistics;
 
     void createActinDisconnectStatistics();
 
@@ -67,6 +68,8 @@ public:
     void addPosition(const double remainder);
 
     void addActinDisconnectTime(const int32_t runID, ActinDisconnectException&& disconnectInformation);
+
+    void addActinBindingState(const bool actinIsBound);
 
     void finishWriting(const ActinDynamicsEstimate& completeActinDynamicsEstimate);
 };
