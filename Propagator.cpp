@@ -151,7 +151,7 @@ void Propagator::propagateBlock(SystemState& systemState,
             }
         }
 
-        advanceTimeStep(systemState, generator, estimateDynamics);
+        advanceTimeStep(systemState, generator, output, estimateDynamics);
     }
 }
 
@@ -189,7 +189,7 @@ void Propagator::propagateGraphicsInterval(SystemState& systemState, RandomGener
     propagateBlock(systemState, generator, output, writeOutput, nTimeStepsInterval, false);
 }
 
-void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& generator, const bool estimateDynamics)
+void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& generator, Output& output, const bool estimateDynamics)
 {
     // First, update the reaction rates and actions, and perform a reaction when the total action surpasses the threshold.
     // Then, move the mobile microtubule at the end of the time step
@@ -203,6 +203,13 @@ void Propagator::advanceTimeStep(SystemState& systemState, RandomGenerator& gene
     m_currentTime+=m_calcTimeStep;
 
     const bool isFreeNow = (systemState.getNFullCrosslinkers()==0);
+
+    if(m_writeDetailedOutput) // Only do this when writeDetailedOutput is set, since concurrent processes are not allowed to write to the same output,
+                              // and only one process has writeDetailedOutput set
+    {
+        output.addActinBindingState(!isFreeNow);
+    }
+
     if(isFreeNow && m_actinIsFree)
     {
         m_timeFreeActin+=m_calcTimeStep;
