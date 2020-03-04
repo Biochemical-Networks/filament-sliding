@@ -37,6 +37,9 @@ obj/
 *.transition_paths.txt
 *.transition_path_histogram.txt
 *.peak_dynamics_statistics.txt
+# Also not for other projects
+*.actin_dynamics_estimates.txt
+*.filament_positions_and_crosslinker_numbers.txt
 
 # No files used by gprof
 gmon.out

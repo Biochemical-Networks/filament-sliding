@@ -340,6 +340,17 @@ int main(int argc, char* argv[])
     double activeHopToPlusBiasEnergy;
     input.copyParameter("activeHopToPlusBiasEnergy", activeHopToPlusBiasEnergy);
 
+    std::string cooperativityString;
+    input.copyParameter("cooperativity", cooperativityString);
+    const bool cooperativity = (cooperativityString == "TRUE");
+
+    double neighbourBiasEnergy;
+    input.copyParameter("neighbourBiasEnergy", neighbourBiasEnergy);
+    if(!cooperativity)
+    {
+        neighbourBiasEnergy=0.0;
+    }
+
     double baseRateZeroToOneExtremitiesConnected;
     input.copyParameter("baseRateZeroToOneExtremitiesConnected", baseRateZeroToOneExtremitiesConnected);
     if(baseRateZeroToOneExtremitiesConnected<0.0)
@@ -377,6 +388,11 @@ int main(int argc, char* argv[])
         baseRateTwoToOneExtremitiesConnected = 0.0;
     }
 
+    if(bindingDynamics && cooperativity)
+    {
+        throw GeneralException("Currently, cooperativity is only supported on a system with hopping crosslinkers, not on a system with binding dynamics.");
+    }
+
     double headBindingBiasEnergy;
     input.copyParameter("headBindingBiasEnergy", headBindingBiasEnergy);
 
@@ -393,6 +409,7 @@ int main(int argc, char* argv[])
                           baseRateActivePartialHop,
                           baseRateActiveFullHop,
                           activeHopToPlusBiasEnergy,
+                          neighbourBiasEnergy,
                           baseRateZeroToOneExtremitiesConnected,
                           baseRateOneToZeroExtremitiesConnected,
                           baseRateOneToTwoExtremitiesConnected,

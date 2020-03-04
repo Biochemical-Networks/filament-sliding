@@ -9,14 +9,16 @@ HopFull::HopFull(const double baseRateHead,
                  const Crosslinker::Type typeToHop,
                  const double springConstant,
                  const double headHopToPlusBiasEnergy,
-                 const double tailHopToPlusBiasEnergy)
+                 const double tailHopToPlusBiasEnergy,
+                 const double cooperativeBiasEnergy)
     :   Reaction(), // Use the base rates instead of the elementaryRate
         m_typeToHop(typeToHop),
         m_springConstant(springConstant),
         m_headHopToPlusBaseRate(baseRateHead*std::exp(headHopToPlusBiasEnergy*0.5)),
         m_headHopToMinusBaseRate(baseRateHead*std::exp(-headHopToPlusBiasEnergy*0.5)),
         m_tailHopToPlusBaseRate(baseRateTail*std::exp(tailHopToPlusBiasEnergy*0.5)),
-        m_tailHopToMinusBaseRate(baseRateTail*std::exp(-tailHopToPlusBiasEnergy*0.5))
+        m_tailHopToMinusBaseRate(baseRateTail*std::exp(-tailHopToPlusBiasEnergy*0.5)),
+        m_cooperativeRateFactorBias(std::exp(-cooperativeBiasEnergy))
 {
 }
 
@@ -39,7 +41,7 @@ void HopFull::setCurrentRate(const SystemState& systemState)
         // Second, the rate depends on the energy of stretching, 0.5*springConstant*extension^2
         // The influence of this energy is spread evenly over the forward and backward reactions,
         // explaining the extra factor 0.5 in the exponent.
-        double rate = getBaseRateToHop(possibleFullHop.terminusToHop, possibleFullHop.direction);
+        double rate = getBaseRateToHop(possibleFullHop.terminusToHop, possibleFullHop.direction, possibleFullHop.awayFromNeighbour);
         rate*= std::exp(0.25*m_springConstant*
                         (possibleFullHop.oldExtension*possibleFullHop.oldExtension
                          -possibleFullHop.newExtension*possibleFullHop.newExtension));
@@ -49,23 +51,24 @@ void HopFull::setCurrentRate(const SystemState& systemState)
     m_currentRate = sum;
 }
 
-double HopFull::getBaseRateToHop(const Crosslinker::Terminus terminusToHop, const HopDirection directionToHop) const
+double HopFull::getBaseRateToHop(const Crosslinker::Terminus terminusToHop, const HopDirection directionToHop, const bool awayFromNeighbour) const
 {
+    const double biasFactor=awayFromNeighbour?m_cooperativeRateFactorBias:1;
     if(terminusToHop == Crosslinker::Terminus::HEAD && directionToHop == HopDirection::FORWARD)
     {
-        return m_headHopToPlusBaseRate;
+        return m_headHopToPlusBaseRate*biasFactor;
     }
     else if(terminusToHop == Crosslinker::Terminus::HEAD && directionToHop == HopDirection::BACKWARD)
     {
-        return m_headHopToMinusBaseRate;
+        return m_headHopToMinusBaseRate*biasFactor;
     }
     else if(terminusToHop == Crosslinker::Terminus::TAIL && directionToHop == HopDirection::FORWARD)
     {
-        return m_tailHopToPlusBaseRate;
+        return m_tailHopToPlusBaseRate*biasFactor;
     }
     else if(terminusToHop == Crosslinker::Terminus::TAIL && directionToHop == HopDirection::BACKWARD)
     {
-        return m_tailHopToMinusBaseRate;
+        return m_tailHopToMinusBaseRate*biasFactor;
     }
     else
     {

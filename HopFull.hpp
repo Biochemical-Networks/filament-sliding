@@ -22,9 +22,11 @@ private:
     const double m_tailHopToPlusBaseRate;
     const double m_tailHopToMinusBaseRate;
 
-    std::vector<double> m_individualRates; // store one rate for each member of the CrosslinkerContainer.m_possiblePartialHops
+    const double m_cooperativeRateFactorBias;
 
-    double getBaseRateToHop(const Crosslinker::Terminus terminusToHop, const HopDirection directionToHop) const;
+    std::vector<double> m_individualRates; // store one rate for each member of the CrosslinkerContainer.m_possibleFullHops
+
+    double getBaseRateToHop(const Crosslinker::Terminus terminusToHop, const HopDirection directionToHop, const bool awayFromNeighbour) const;
 
     const PossibleFullHop& whichHop(const SystemState& systemState, RandomGenerator& generator) const;
 
@@ -34,7 +36,8 @@ public:
             const Crosslinker::Type typeToHop,
             const double springConstant,
             const double headHopToPlusBiasEnergy,
-            const double tailHopToPlusBiasEnergy);
+            const double tailHopToPlusBiasEnergy,
+            const double cooperativeBiasEnergy);
     ~HopFull() override;
 
     void setCurrentRate(const SystemState& systemState) override;
