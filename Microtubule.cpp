@@ -231,12 +231,14 @@ void Microtubule::addPossiblePartialHopsCloseTo(std::vector<PossiblePartialHop>&
     if(partialLocation.position!=0 && m_sites.at(partialLocation.position-1).isFree())
     {
         HopDirection direction = (m_type==MicrotubuleType::FIXED)?(HopDirection::BACKWARD):(HopDirection::FORWARD);
-        possiblePartialHops.push_back(PossiblePartialHop{p_partialLinker, terminusToHop, SiteLocation{m_type, partialLocation.position-1}, direction});
+        bool awayFromNeighbour = (partialLocation.position != (m_nSites-1)) && (!m_sites.at(partialLocation.position+1).isFree());
+        possiblePartialHops.push_back(PossiblePartialHop{p_partialLinker, terminusToHop, SiteLocation{m_type, partialLocation.position-1}, direction, awayFromNeighbour});
     }
     if(partialLocation.position != (m_nSites-1) && m_sites.at(partialLocation.position+1).isFree())
     {
         HopDirection direction = (m_type==MicrotubuleType::FIXED)?(HopDirection::FORWARD):(HopDirection::BACKWARD);
-        possiblePartialHops.push_back(PossiblePartialHop{p_partialLinker, terminusToHop, SiteLocation{m_type, partialLocation.position+1}, direction});
+        bool awayFromNeighbour = (partialLocation.position != 0) && (!m_sites.at(partialLocation.position-1).isFree());
+        possiblePartialHops.push_back(PossiblePartialHop{p_partialLinker, terminusToHop, SiteLocation{m_type, partialLocation.position+1}, direction, awayFromNeighbour});
     }
 }
 
@@ -301,12 +303,14 @@ void Microtubule::addPossibleFullHopsCloseTo(std::vector<PossibleFullHop>& possi
         if (std::abs(oldAndNewStretch.second) < maxStretch)
         {
             HopDirection direction = (m_type==MicrotubuleType::FIXED)?(HopDirection::BACKWARD):(HopDirection::FORWARD);
+            bool awayFromNeighbour = (originLocation.position != (m_nSites-1)) && (!m_sites.at(originLocation.position+1).isFree());
             possibleFullHops.push_back(PossibleFullHop{fullLinkerExtremity.p_fullLinker,
                                                        fullLinkerExtremity.terminus,
                                                        SiteLocation{m_type, originLocation.position-1},
                                                        direction,
                                                        oldAndNewStretch.first,
-                                                       oldAndNewStretch.second});
+                                                       oldAndNewStretch.second,
+                                                       awayFromNeighbour});
         }
     }
     if(originLocation.position != (m_nSites-1) && m_sites.at(originLocation.position+1).isFree())
@@ -316,12 +320,14 @@ void Microtubule::addPossibleFullHopsCloseTo(std::vector<PossibleFullHop>& possi
         if (std::abs(oldAndNewStretch.second) < maxStretch)
         {
             HopDirection direction = (m_type==MicrotubuleType::FIXED)?(HopDirection::FORWARD):(HopDirection::BACKWARD);
+            bool awayFromNeighbour = (originLocation.position != 0) && (!m_sites.at(originLocation.position-1).isFree());
             possibleFullHops.push_back(PossibleFullHop{fullLinkerExtremity.p_fullLinker,
                                                        fullLinkerExtremity.terminus,
                                                        SiteLocation{m_type, originLocation.position+1},
                                                        direction,
                                                        oldAndNewStretch.first,
-                                                       oldAndNewStretch.second});
+                                                       oldAndNewStretch.second,
+                                                       awayFromNeighbour});
         }
     }
 }

@@ -55,6 +55,9 @@ ParameterMap::ParameterMap()
     defineParameter("baseRateActiveFullHop", 1562.5, "s^(-1)", ">=0");
     defineParameter("activeHopToPlusBiasEnergy", 1., "kT", "all");
 
+    defineParameter("cooperativity", "FALSE", "unitless", "TRUE,FALSE");
+    defineParameter("neighbourBiasEnergy", 0.0, "kT", "all");
+
     // Rates for connecting crosslinkers to the microtubules. The rates from zero to one are per crosslinker in solution per microtubule site.
     // So the full rate for connecting to any site is baseRateZeroToOneExtremitiesConnected * #free crosslinkers * # free microtubule sites
     // For unbinding a full linker, the rate is given per linker, not per extremity.

@@ -16,6 +16,7 @@ struct PossiblePartialHop
     Crosslinker::Terminus terminusToHop; // Include the terminus, since hop rates for motor termini can be different
     SiteLocation locationToHopTo;
     HopDirection direction;
+    bool awayFromNeighbour;
 };
 
 struct PossibleFullHop
@@ -27,6 +28,7 @@ struct PossibleFullHop
     // Keep track of the extension, since this can be updated easily
     double oldExtension; // positionOnMobile - positionOnFixed
     double newExtension; // positionOnMobile - positionOnFixed, should differ exactly one lattice spacing from oldExtension
+    bool awayFromNeighbour;
 };
 
 struct FullExtremity

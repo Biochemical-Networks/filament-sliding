@@ -93,6 +93,7 @@ public:
                const double baseRateActivePartialHop,
                const double baseRateActiveFullHop,
                const double activeHopToPlusBiasEnergy,
+               const double neighbourBiasEnergy,
                const double baseRateZeroToOneExtremitiesConnected,
                const double baseRateOneToZeroExtremitiesConnected,
                const double baseRateOneToTwoExtremitiesConnected,

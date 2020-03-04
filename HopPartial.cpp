@@ -11,13 +11,15 @@ HopPartial::HopPartial(const double baseRateHead,
                        const double baseRateTail,
                        const Crosslinker::Type typeToHop,
                        const double headHopToPlusBiasEnergy,
-                       const double tailHopToPlusBiasEnergy)
+                       const double tailHopToPlusBiasEnergy,
+                       const double cooperativeBiasEnergy)
     :   Reaction(),
         m_typeToHop(typeToHop),
         m_headHopToPlusRate(baseRateHead*std::exp(headHopToPlusBiasEnergy*0.5)),
         m_headHopToMinusRate(baseRateHead*std::exp(-headHopToPlusBiasEnergy*0.5)),
         m_tailHopToPlusRate(baseRateTail*std::exp(tailHopToPlusBiasEnergy*0.5)),
-        m_tailHopToMinusRate(baseRateTail*std::exp(-tailHopToPlusBiasEnergy*0.5))
+        m_tailHopToMinusRate(baseRateTail*std::exp(-tailHopToPlusBiasEnergy*0.5)),
+        m_cooperativeRateFactorBias(std::exp(-cooperativeBiasEnergy))
 {
 }
 
@@ -35,30 +37,31 @@ void HopPartial::setCurrentRate(const SystemState& systemState)
     double sum = 0;
     for(const PossiblePartialHop& possiblePartialHop : possiblePartialHops)
     {
-        const double rate = getRateToHop(possiblePartialHop.terminusToHop, possiblePartialHop.direction);
+        const double rate = getRateToHop(possiblePartialHop.terminusToHop, possiblePartialHop.direction, possiblePartialHop.awayFromNeighbour);
         m_individualRates.push_back(rate);
         sum += rate;
     }
     m_currentRate = sum;
 }
 
-double HopPartial::getRateToHop(const Crosslinker::Terminus terminusToHop, const HopDirection directionToHop) const
+double HopPartial::getRateToHop(const Crosslinker::Terminus terminusToHop, const HopDirection directionToHop, bool awayFromNeighbour) const
 {
+    const double biasFactor = awayFromNeighbour?m_cooperativeRateFactorBias:1;
     if(terminusToHop == Crosslinker::Terminus::HEAD && directionToHop == HopDirection::FORWARD)
     {
-        return m_headHopToPlusRate;
+        return m_headHopToPlusRate*biasFactor;
     }
     else if(terminusToHop == Crosslinker::Terminus::HEAD && directionToHop == HopDirection::BACKWARD)
     {
-        return m_headHopToMinusRate;
+        return m_headHopToMinusRate*biasFactor;
     }
     else if(terminusToHop == Crosslinker::Terminus::TAIL && directionToHop == HopDirection::FORWARD)
     {
-        return m_tailHopToPlusRate;
+        return m_tailHopToPlusRate*biasFactor;
     }
     else if(terminusToHop == Crosslinker::Terminus::TAIL && directionToHop == HopDirection::BACKWARD)
     {
-        return m_tailHopToMinusRate;
+        return m_tailHopToMinusRate*biasFactor;
     }
     else
     {
