@@ -14,7 +14,6 @@ MakeFile*
 # Ignore shell scripts for running
 runScript.sh
 run_n_times.sh
-submit_jobs.sh
 
 # No results of the (pre)compiler
 bin/
