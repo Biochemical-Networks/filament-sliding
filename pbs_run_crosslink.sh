@@ -6,10 +6,10 @@
 #PBS -N CrossLink
 
 ## set the number of nodes and processes per node
-#PBS -l nodes=1:ppn=36:highcpu
+#PBS -l nodes=1:ppn=36:highcore
 
 ## set queue name
-#PBS -q highcpu
+#PBS -q highcore
 
 ## set max wallclock time
 #PBS -l walltime=300:00:00
