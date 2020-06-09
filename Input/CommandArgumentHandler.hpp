@@ -14,6 +14,7 @@ private:
         PARAMETERFILENAME,
         RUNNAME,
         MOBILELENGTH,
+        FIXEDLENGTH,
         NUMBERPASSIVE,
         SPRINGCONSTANT,
         GROWTHVELOCITY,
@@ -28,6 +29,9 @@ private:
 
     bool m_mobileMicrotubuleLengthDefined;
     double m_lengthMobile;
+
+    bool m_fixedMicrotubuleLengthDefined;
+    double m_lengthFixed;
 
     bool m_numberOfPassiveCrosslinkersDefined;
     int32_t m_numberPassive;
@@ -52,6 +56,9 @@ public:
 
     bool mobileLengthDefined() const;
     double getMobileLength() const;
+
+    bool fixedLengthDefined() const;
+    double getFixedLength() const;
 
     bool numberPassiveDefined() const;
     int32_t getNumberPassive() const;

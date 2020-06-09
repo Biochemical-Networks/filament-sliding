@@ -14,6 +14,8 @@ CommandArgumentHandler::CommandArgumentHandler(int argc, char* argv[])
         m_runName(""),
         m_mobileMicrotubuleLengthDefined(false),
         m_lengthMobile(0.0),
+        m_fixedMicrotubuleLengthDefined(false),
+        m_lengthFixed(0.0),
         m_numberOfPassiveCrosslinkersDefined(false),
         m_numberPassive(0),
         m_springConstantDefined(false),
@@ -49,6 +51,7 @@ CommandArgumentHandler::CommandArgumentHandler(int argc, char* argv[])
             // reset if something was set
             m_runNameDefined = false;
             m_mobileMicrotubuleLengthDefined = false;
+            m_fixedMicrotubuleLengthDefined = false;
             m_numberOfPassiveCrosslinkersDefined = false;
             m_springConstantDefined = false;
             m_growthVelocityDefined = false;
@@ -85,6 +88,11 @@ void CommandArgumentHandler::readVariable(std::istringstream&& streamName, std::
             variableType == "-ML" || variableType == "-ml" || variableType == "-mL" || variableType == "-Ml")
     {
         newVariable=VariableName::MOBILELENGTH;
+    }
+    else if(variableType == "-LF" || variableType == "-lf" || variableType == "-lF" || variableType == "-Lf" ||
+            variableType == "-FL" || variableType == "-fl" || variableType == "-fL" || variableType == "-Fl")
+    {
+        newVariable=VariableName::FIXEDLENGTH;
     }
     else if(variableType == "-K" || variableType == "-k")
     {
@@ -146,6 +154,17 @@ void CommandArgumentHandler::readVariable(std::istringstream&& streamName, std::
                 throw InputException("CommandArgumentHandler::readVariable() did not encounter a proper length of the mobile microtubule.");
             }
             m_mobileMicrotubuleLengthDefined = true;
+            break;
+        case VariableName::FIXEDLENGTH:
+            if(m_fixedMicrotubuleLengthDefined)
+            {
+                throw InputException("CommandArgumentHandler::readVariable() tried to set the fixed microtubule length more than once.");
+            }
+            if(!(streamValue >> m_lengthFixed))
+            {
+                throw InputException("CommandArgumentHandler::readVariable() did not encounter a proper length of the fixed microtubule.");
+            }
+            m_fixedMicrotubuleLengthDefined = true;
             break;
         case VariableName::SPRINGCONSTANT:
             if(m_springConstantDefined)
@@ -213,16 +232,34 @@ bool CommandArgumentHandler::mobileLengthDefined() const
 {
     return m_mobileMicrotubuleLengthDefined;
 }
+
 double CommandArgumentHandler::getMobileLength() const
 {
     #ifdef MYDEBUG
     if(!m_mobileMicrotubuleLengthDefined)
     {
-        throw InputException("CommandArgumentHandler::getLength() was called when the command line did not set the length");
+        throw InputException("CommandArgumentHandler::getMobileLength() was called when the command line did not set the length");
     }
     #endif // MYDEBUG
 
     return m_lengthMobile;
+}
+
+bool CommandArgumentHandler::fixedLengthDefined() const
+{
+    return m_fixedMicrotubuleLengthDefined;
+}
+
+double CommandArgumentHandler::getFixedLength() const
+{
+    #ifdef MYDEBUG
+    if(!m_fixedMicrotubuleLengthDefined)
+    {
+        throw InputException("CommandArgumentHandler::getFixedLength() was called when the command line did not set the length");
+    }
+    #endif // MYDEBUG
+
+    return m_lengthFixed;
 }
 
 bool CommandArgumentHandler::numberPassiveDefined() const
