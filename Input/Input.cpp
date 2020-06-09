@@ -42,6 +42,11 @@ Input::Input(const CommandArgumentHandler& cmd) : m_fileName(cmd.parameterNameDe
         m_parameterMap.overrideParameter("lengthMobileMicrotubule", cmd.getMobileLength());
     }
 
+    if(cmd.fixedLengthDefined())
+    {
+        m_parameterMap.overrideParameter("lengthFixedMicrotubule", cmd.getFixedLength());
+    }
+
     if(cmd.numberPassiveDefined())
     {
         m_parameterMap.overrideParameter("numberPassiveCrosslinkers", cmd.getNumberPassive());
