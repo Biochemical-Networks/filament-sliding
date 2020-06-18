@@ -12,7 +12,7 @@
 #PBS -q highcpu
 
 ## set max wallclock time
-#PBS -l walltime=300:00:00
+#PBS -l walltime=600:00:00
 
 ## set memory 
 #PBS -l mem=4096m
