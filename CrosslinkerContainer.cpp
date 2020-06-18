@@ -67,7 +67,7 @@ Crosslinker& CrosslinkerContainer::at(const int32_t position)
     {
         return m_crosslinkers.at(position);
     }
-    catch(std::out_of_range) // For the at function
+    catch(const std::out_of_range&) // For the at function
     {
         throw GeneralException("CrosslinkerContainer::at() went out of bounds.");
     }

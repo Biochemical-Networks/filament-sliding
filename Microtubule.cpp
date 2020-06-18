@@ -63,7 +63,7 @@ void Microtubule::connectSite(const int32_t sitePosition, Crosslinker& crosslink
             throw GeneralException("Microtubule::connectSite() did not manage to remove the proper site from the free sites after connecting.");
         }
     }
-    catch(std::out_of_range)
+    catch(const std::out_of_range&)
     {
         throw GeneralException("The sitePosition given to Microtubule::connectSite() does not exist");
     }
@@ -93,7 +93,7 @@ void Microtubule::disconnectSite(const int32_t sitePosition)
         }
     #ifdef MYDEBUG
     }
-    catch(std::out_of_range)
+    catch(const std::out_of_range&)
     {
         throw GeneralException("The sitePosition given to Microtubule::disconnectSite() does not exist");
     }
@@ -130,7 +130,7 @@ void Microtubule::blockSite(const int32_t sitePosition)
             throw GeneralException("Microtubule::blockSite() did not manage to remove the proper site from the free sites after connecting.");
         }
     }
-    catch(std::out_of_range)
+    catch(const std::out_of_range&)
     {
         throw GeneralException("Microtubule::blockSite() was passed a wrong sitePosition");
     }
@@ -167,7 +167,7 @@ void Microtubule::unblockSite(const int32_t sitePosition)
             throw GeneralException("Microtubule::blockSite() did not manage to remove the proper site from the free sites after connecting.");
         }
     }
-    catch(std::out_of_range)
+    catch(const std::out_of_range&)
     {
         throw GeneralException("Microtubule::blockSite() was passed a wrong sitePosition");
     }
@@ -258,7 +258,7 @@ int32_t Microtubule::getUnblockedSitePosition(const BoundState whichBoundState, 
         throw GeneralException("Microtubule::getUnblockedSitePosition() was passed a wrong BoundState");
     }
     #ifdef MYDEBUG
-    } catch(std::out_of_range error)
+    } catch(const std::out_of_range& error)
     {
         throw GeneralException(std::string("Microtubule::getUnblockedSitePosition() encountered a wrong site number! ")+error.what());
     }
@@ -737,7 +737,7 @@ Crosslinker* Microtubule::giveConnectionAt(const int32_t sitePosition) const
             return m_sites.at(sitePosition).whichCrosslinkerIsBound();
         }
     }
-    catch(std::out_of_range error)
+    catch(const std::out_of_range& error)
     {
         throw GeneralException(std::string("The sitePosition given to Microtubule::giveConnectionAt() does not exist. ") + error.what());
     }
@@ -754,7 +754,7 @@ bool Microtubule::siteIsBlocked(const int32_t sitePosition) const
 
     #ifdef MYDEBUG
     }
-    catch(std::out_of_range& error)
+    catch(const std::out_of_range& error)
     {
         throw GeneralException(std::string("Microtubule::siteIsBlocked() encountered a non-existing sitePosition. ")+error.what());
     }
@@ -774,7 +774,7 @@ std::vector<int32_t> Microtubule::getBlockedSitePositions() const
             blockedSitePositions.push_back(i);
         }
         #ifdef MYDEBUG
-        } catch(std::out_of_range& error)
+        } catch(const std::out_of_range& error)
         {
             throw GeneralException(std::string("Microtubule::getBlockedSitePositions() tried to access a non-existing site. ")+error.what());
         }
