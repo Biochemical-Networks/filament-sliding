@@ -26,6 +26,7 @@ int main(int argc, char* argv[])
     #ifdef MYDEBUG
     std::cout<< "You are running the MYDEBUG version of the program.\n";
     #endif // MYDEBUG
+
     Clock clock; // Counts time from creation to destruction
     CommandArgumentHandler invokerInputHandler(argc, argv);
     Input input(invokerInputHandler); // Read the input file, ask to create a default one when anything is wrong with it (e.g. nonexistent)
@@ -36,6 +37,10 @@ int main(int argc, char* argv[])
     // Get the name of the current run
 
     std::string runName = input.getRunName(); // copyParameter("runName", runName) would give the runName as it is in the input file, while this is the unique version
+
+    // Write this to the standard output, not to the Log file: it can be important to identify which run corresponds to which process.
+    // On the cluster, this get written to a file that also contains the job-ID, linking the ID to the runName
+    std::cout << "This is run " << runName << std::endl;
 
     Log log(runName, clock);
 
