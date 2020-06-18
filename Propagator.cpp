@@ -381,14 +381,16 @@ double Propagator::getTotalRate() const
 
 Reaction& Propagator::getReactionToHappen(RandomGenerator& generator) const
 {
-    double randomNumber = generator.getUniform(0.0, getTotalRate()); // uses interval [0,totalRate)
+    const double randomNumber = generator.getUniform(0.0, getTotalRate()); // uses interval [0,totalRate)
 
+    double accumulatedRate = 0.0;
     for (const auto& reaction : m_reactions)
     {
-        randomNumber -= reaction.second->getCurrentRate();
+        // Calculate the rate in the same way as in getTotalRate(), such that the double precision numbers will be equal
+        accumulatedRate += reaction.second->getCurrentRate();
+
         // If the randomNumber falls exactly on the border between two reactions, the later one is chosen. Since 0 is an option, this does not bias any reaction
-        // randomNumber is strictly smaller than the upper bound totalAccumulatedAction, so subtracting the total upper bound after the for loop will definitely make it lower than 0.0
-        if (randomNumber < 0.0)
+        if(accumulatedRate > randomNumber)
         {
             return *reaction.second;
         }
