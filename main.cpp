@@ -78,14 +78,6 @@ int main(int argc, char* argv[])
     }
 
     #ifdef MYDEBUG
-    for(int32_t i=0; i<numberOfRuns; ++i)
-    {
-        std::cout << generators.at(i).getProbability() << std::endl;
-    }
-    #endif // MYDEBUG
-
-
-    #ifdef MYDEBUG
     std::cout<< "The runName is " << runName << '\n';
     #endif // MYDEBUG
 
