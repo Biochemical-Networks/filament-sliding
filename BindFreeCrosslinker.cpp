@@ -67,4 +67,8 @@ void BindFreeCrosslinker::performReaction(SystemState& systemState, RandomGenera
     systemState.connectFreeCrosslinker(m_typeToBind, terminusToConnect, connectLocation);
 }
 
+std::string BindFreeCrosslinker::identity() const
+{
+    return "BindFreeCrosslinker";
+}
 

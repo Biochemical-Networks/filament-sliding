@@ -32,3 +32,8 @@ void ConnectedTipGrowth::performReaction(SystemState& systemState, RandomGenerat
     // assume that the tip size is always fixed from the beginning: the initial microtubule must be at least as long as the tip
     systemState.blockSiteOnFixed(siteToBlock, m_unbindUponBlock);
 }
+
+std::string ConnectedTipGrowth::identity() const
+{
+    return "ConnectedTipGrowth";
+}

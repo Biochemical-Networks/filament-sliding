@@ -4,6 +4,8 @@
 #include "SystemState.hpp"
 #include "RandomGenerator.hpp"
 
+#include <string>
+
 /* Reactions set the rules by which the SystemState is changed.
  * It is a virtual class that contains the basic methods and members required for a reaction, and other reactions are inherited from it.
  * This is done such that all reactions can be treated on equal footing when choosing which reaction needs to happen.
@@ -35,6 +37,8 @@ public:
     virtual void setCurrentRate(const SystemState& systemState) = 0;
 
     virtual void performReaction(SystemState& systemState, RandomGenerator& generator) = 0;
+
+    virtual std::string identity() const = 0;
 
 };
 

@@ -38,6 +38,7 @@ public:
 
     void performReaction(SystemState& systemState, RandomGenerator& generator) override;
 
+    std::string identity() const override;
 };
 
 #endif // BINDPARTIALCROSSLINKER_HPP
