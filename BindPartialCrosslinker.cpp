@@ -84,3 +84,8 @@ void BindPartialCrosslinker::performReaction(SystemState& systemState, RandomGen
     systemState.connectPartiallyConnectedCrosslinker(*(connectionToMake.p_partialLinker), connectionToMake.location);
 
 }
+
+std::string BindPartialCrosslinker::identity() const
+{
+    return "BindPartialCrosslinker";
+}

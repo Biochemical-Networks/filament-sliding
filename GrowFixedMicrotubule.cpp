@@ -22,3 +22,8 @@ void GrowFixedMicrotubule::performReaction(SystemState& systemState, RandomGener
     systemState.growFixed();
     (void)generator; // Do not use generator, since reaction is deterministic once it is needed. Only the time at which it occurs is random.
 }
+
+std::string GrowFixedMicrotubule::identity() const
+{
+    return "GrowFixedMicrotubule";
+}

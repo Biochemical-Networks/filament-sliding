@@ -554,15 +554,19 @@ int32_t SystemState::lastSiteOverlapMobile() const
     return m_mobileMicrotubule.getLastPositionCloseTo(pos,m_maxStretch);
 }
 
+bool SystemState::thereIsOverlap() const
+{
+    return (m_mobileMicrotubule.getPosition() < m_fixedMicrotubule.getLength()+m_maxStretch) && (m_mobileMicrotubule.getPosition()+m_mobileMicrotubule.getLength()+m_maxStretch>0);
+}
 
 int32_t SystemState::getNSitesOverlapFixed() const
 {
-    return lastSiteOverlapFixed()-firstSiteOverlapFixed()+1;
+    return thereIsOverlap()?lastSiteOverlapFixed()-firstSiteOverlapFixed()+1:0;
 }
 
 int32_t SystemState::getNSitesOverlapMobile() const
 {
-    return lastSiteOverlapMobile()-firstSiteOverlapMobile()+1;
+    return thereIsOverlap()?lastSiteOverlapMobile()-firstSiteOverlapMobile()+1:0;
 }
 
 int32_t SystemState::getNFreeSites(const MicrotubuleType microtubuleType, const SiteType siteType) const

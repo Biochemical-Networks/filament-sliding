@@ -27,6 +27,11 @@ void RemoveSite::performReaction(SystemState& systemState, RandomGenerator& gene
     systemState.blockSiteOnFixed(siteToBlock, m_unbindUponBlock);
 }
 
+std::string RemoveSite::identity() const
+{
+    return "RemoveSite";
+}
+
 int32_t RemoveSite::whichSiteToBlock(SystemState& systemState, RandomGenerator& generator)
 {
     // This division must be possible, this function should never be called when its rate is zero

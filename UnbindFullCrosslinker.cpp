@@ -45,6 +45,11 @@ void UnbindFullCrosslinker::performReaction(SystemState& systemState, RandomGene
     systemState.disconnectFullyConnectedCrosslinker(*connectionToDisconnect.p_fullLinker, terminusToDisconnect);
 }
 
+std::string UnbindFullCrosslinker::identity() const
+{
+    return "UnbindFullCrosslinker";
+}
+
 FullConnection UnbindFullCrosslinker::whichToDisconnect(SystemState& systemState, RandomGenerator& generator) const
 {
     const std::vector<FullConnection>& fullConnections = systemState.getFullConnections(m_typeToUnbind);

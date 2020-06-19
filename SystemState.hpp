@@ -125,6 +125,8 @@ public:
     double endOverlap() const;
     double overlapLength() const;
 
+    bool thereIsOverlap() const;
+
     int32_t firstSiteOverlapFixed() const;
     int32_t lastSiteOverlapFixed() const;
     int32_t firstSiteOverlapMobile() const;

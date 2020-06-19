@@ -398,6 +398,17 @@ void Propagator::setRates(const SystemState& systemState)
     for(auto& reaction : m_reactions)
     {
         reaction.second->setCurrentRate(systemState);
+
+        #ifdef MYDEBUG
+        if(reaction.second->getCurrentRate() < 0)
+        {
+            throw GeneralException(std::string("A negative rate was found in Propagator::setRates(): ")+reaction.second->identity());
+        }
+        if(reaction.second->getCurrentRate() == std::numeric_limits<double>::infinity())
+        {
+            throw GeneralException(std::string("An infinite rate was found in Propagator::setRates(): ")+reaction.second->identity());
+        }
+        #endif // MYDEBUG
     }
 }
 

@@ -18,6 +18,8 @@ public:
     void setCurrentRate(const SystemState& systemState) override;
 
     void performReaction(SystemState& systemState, RandomGenerator& generator) override;
+
+    std::string identity() const override;
 };
 
 #endif // GROWFIXEDMICROTUBULE_HPP

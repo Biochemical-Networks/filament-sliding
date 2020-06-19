@@ -32,6 +32,11 @@ void UnbindPartialCrosslinker::performReaction(SystemState& systemState, RandomG
     systemState.disconnectPartiallyConnectedCrosslinker(linkerToDisconnect);
 }
 
+std::string UnbindPartialCrosslinker::identity() const
+{
+    return "UnbindPartialCrosslinker";
+}
+
 Crosslinker& UnbindPartialCrosslinker::whichToDisconnect(SystemState& systemState, RandomGenerator& generator) const
 {
     // All partials are bound with only their tail on the fixed microtubule
