@@ -594,6 +594,7 @@ int main(int argc, char* argv[])
             catch(ActinDisconnectException& actinDisconnect)
             {
                 // Message was already written and time recorded upon construction of the exception.
+                #pragma omp critical // For safety, is probably not necessary
                 output.addActinDisconnectTime(i, std::move(actinDisconnect));
             }
         }
