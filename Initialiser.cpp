@@ -13,6 +13,7 @@
 #include <cmath> // std::ceil
 #include <vector>
 #include <iterator> // std::distance
+#include <limits>
 
 Initialiser::Initialiser(const double initialPositionMicrotubule, const double fractionOverlapSitesConnected, const std::string initialCrosslinkerDistributionString)
     :   m_initialPositionMicrotubule(initialPositionMicrotubule),
@@ -131,13 +132,61 @@ void Initialiser::initialiseCrosslinkers(SystemState& systemState, RandomGenerat
     int32_t connectedSoFar = 0;
 
     // Get the following numbers locally, such that they don't need to be retrieved upon every entry in the following loops
-    int32_t firstSiteOverlapFixed = systemState.firstSiteOverlapFixed();
-    int32_t firstSiteOverlapMobile = systemState.firstSiteOverlapMobile();
+    int32_t firstSiteOverlapFixed;
+    int32_t firstSiteOverlapMobile;
 
-    // Crosslinkers will usually be initialised in a highly stretched state;
-    // The first site in the overlap of the mobile microtubule can be a distance maxStretch from that of the fixed microtubule.
-    // Therefore, the program should be allowed to run at least for a little while for the system to assume an equilibrium distribution.
-    // The crosslinkers will never cross each other, since they are ordered in the same way on the fixed and mobile microtubules
+    // If we simply start filling from the initial position of the overlap in both cases,
+    // then the system will initially stretch the crosslinkers by an amount maxStretch.
+    // This can lead to problems with rounding errors.
+    // Hence, choose to minimise the stretch initially
+    if(nSitesOverlapFixed == nSitesOverlapMobile) // No choice: we could have to fill all positions
+    {
+        firstSiteOverlapFixed = systemState.firstSiteOverlapFixed();
+        firstSiteOverlapMobile = systemState.firstSiteOverlapMobile();
+    }
+    else if(nSitesOverlapFixed < nSitesOverlapMobile) // We can shift the first site of the sites to be filled on the mobile around
+    {
+        firstSiteOverlapFixed = systemState.firstSiteOverlapFixed();
+
+        const int32_t firstPossibility = systemState.firstSiteOverlapMobile();
+        const int32_t lastPossibility = firstPossibility + nSitesOverlapMobile - nSitesOverlap;
+
+        double optimalInitialStretch = std::numeric_limits<double>::max(); // find the smallest initial stretch: start with a large one and update after
+        int32_t optimalPosition = 0;
+
+        for(int32_t sitePossibility = firstPossibility; sitePossibility <= lastPossibility; ++sitePossibility)
+        {
+            const double initialStretch = std::abs((sitePossibility - firstSiteOverlapFixed) * systemState.getLatticeSpacing() + systemState.getMicrotubulePosition());
+            if(initialStretch < optimalInitialStretch)
+            {
+                optimalInitialStretch = initialStretch;
+                optimalPosition = sitePossibility;
+            }
+        }
+        firstSiteOverlapMobile = optimalPosition;
+    }
+    else // (nSitesOverlapFixed > nSitesOverlapMobile) // We can shift the first site of the sites to be filled on the fixed around
+    {
+        firstSiteOverlapMobile = systemState.firstSiteOverlapMobile();
+
+        const int32_t firstPossibility = systemState.firstSiteOverlapFixed();
+        const int32_t lastPossibility = firstPossibility + nSitesOverlapFixed - nSitesOverlap;
+
+        double optimalInitialStretch = std::numeric_limits<double>::max(); // find the smallest initial stretch: start with a large one and update after
+        int32_t optimalPosition = 0;
+
+        for(int32_t sitePossibility = firstPossibility; sitePossibility <= lastPossibility; ++sitePossibility)
+        {
+            const double initialStretch = std::abs((firstSiteOverlapMobile - sitePossibility) * systemState.getLatticeSpacing() + systemState.getMicrotubulePosition());
+            if(initialStretch < optimalInitialStretch)
+            {
+                optimalInitialStretch = initialStretch;
+                optimalPosition = sitePossibility;
+            }
+        }
+        firstSiteOverlapFixed = optimalPosition;
+    }
+
     for (int32_t i = 0; i<nPassiveCrosslinkersToConnect; ++connectedSoFar, ++i)
     {
         systemState.fullyConnectFreeCrosslinker(Crosslinker::Type::PASSIVE,
