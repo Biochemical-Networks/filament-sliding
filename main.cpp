@@ -133,9 +133,17 @@ int main(int argc, char* argv[])
     //-----------------------------------------------------------------------------------------------------
     // Create the output class. Needs to be done before the propagator, since this needs samplePositionalDistribution as well
 
+
+    std::string recordTransitionPathsString;
+    input.copyParameter("recordTransitionPaths", recordTransitionPathsString);
+    const bool recordTransitionPaths = (recordTransitionPathsString == "TRUE");
+
     std::string samplePositionalDistributionString;
     input.copyParameter("samplePositionalDistribution", samplePositionalDistributionString);
-    const bool samplePositionalDistribution = (samplePositionalDistributionString == "TRUE"); // Whenever it is not TRUE, assume it is false
+    // Whenever it is not TRUE, assume it is false.
+    // Also overwrite sampling the positional distribution even when it is turned off when recordTransitionPaths is true.
+    // This is a choice made in the output class, and setting samplePositionalDistribution to true makes sure those assumptions are satisfied
+    const bool samplePositionalDistribution = (samplePositionalDistributionString == "TRUE") || recordTransitionPaths;
 
     double positionalHistogramBinSize;
     input.copyParameter("positionalHistogramBinSize", positionalHistogramBinSize);
@@ -157,10 +165,6 @@ int main(int argc, char* argv[])
     {
         throw GeneralException("The parameter positionalHistogramHighestValue contains a wrong value.");
     }
-
-    std::string recordTransitionPathsString;
-    input.copyParameter("recordTransitionPaths", recordTransitionPathsString);
-    const bool recordTransitionPaths = (recordTransitionPathsString == "TRUE");
 
     std::string bindingDynamicsString;
     input.copyParameter("bindingDynamics", bindingDynamicsString);
