@@ -66,7 +66,7 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_nDeterministicBoundaryCrossings(0), // Counts the number of times a force has tried to push the mobile microtubule across a maximum stretch barrier
         m_nStochasticBoundaryCrossings(0), // Counts the number of times diffusion of the mobile microtubule was reflected at a maximum stretch barrier
         m_log(log),
-        m_basinOfAttractionHalfWidth(0.15*m_latticeSpacing)
+        m_basinOfAttractionHalfWidth(0.3*m_latticeSpacing)
 {
     // objects in std::initializer_list are inherently const, so std::unique_ptr's copy constructor cannot be used there, and we cannot use this method of initialising m_reactions.
     // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
