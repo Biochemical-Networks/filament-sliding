@@ -16,13 +16,13 @@
 class BindFreeCrosslinker : public Reaction
 {
 private:
-    const double m_rateOneLinkerToOneSite;
+    const double m_rateToOneSite;
     const Crosslinker::Type m_typeToBind;
     const double m_probHeadBinds;
 
     SiteLocation whereToConnect(const SystemState& systemState, RandomGenerator& generator) const;
 public:
-    BindFreeCrosslinker(const double rateOneLinkerToOneSite, const Crosslinker::Type typeToBind, const double headBiasEnergy);
+    BindFreeCrosslinker(const double rateToOneSite, const Crosslinker::Type typeToBind, const double headBiasEnergy);
     ~BindFreeCrosslinker() override;
 
     void setCurrentRate(const SystemState& systemState) override;
