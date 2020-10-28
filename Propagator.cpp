@@ -40,6 +40,9 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
                        const double baseRateOneToZeroExtremitiesConnected,
                        const double baseRateOneToTwoExtremitiesConnected,
                        const double baseRateTwoToOneExtremitiesConnected,
+                       const bool bindPassiveLinkers,
+                       const bool bindDualLinkers,
+                       const bool bindActiveLinkers,
                        const double headBindingBiasEnergy,
                        RandomGenerator& generator,
                        const bool samplePositionalDistribution,
@@ -68,13 +71,18 @@ Propagator::Propagator(const int32_t numberEquilibrationBlocks,
         m_log(log),
         m_basinOfAttractionHalfWidth(0.3*m_latticeSpacing)
 {
+    // If no active/dual/partial linkers were set (their number is zero), then set the binding rate to zero.
+    const double rateToOneSitePassive = bindPassiveLinkers ? baseRateZeroToOneExtremitiesConnected : 0.0;
+    const double rateToOneSiteDual = bindDualLinkers ? baseRateZeroToOneExtremitiesConnected : 0.0;
+    const double rateToOneSiteActive = bindActiveLinkers ? baseRateZeroToOneExtremitiesConnected : 0.0;
+
     // objects in std::initializer_list are inherently const, so std::unique_ptr's copy constructor cannot be used there, and we cannot use this method of initialising m_reactions.
     // See https://stackoverflow.com/questions/38213088/initialize-static-stdmap-with-unique-ptr-as-value
     // Use pointers, because m_reactions contains Reactions, while we want to store objects of a class inherited from Reaction
     // Make sure that the specific reaction has been included in this file
-    m_reactions["bindingFreePassiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(baseRateZeroToOneExtremitiesConnected, Crosslinker::Type::PASSIVE, headBindingBiasEnergy));
-    m_reactions["bindingFreeDualCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(baseRateZeroToOneExtremitiesConnected, Crosslinker::Type::DUAL, headBindingBiasEnergy));
-    m_reactions["bindingFreeActiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(baseRateZeroToOneExtremitiesConnected, Crosslinker::Type::ACTIVE, headBindingBiasEnergy));
+    m_reactions["bindingFreePassiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(rateToOneSitePassive, Crosslinker::Type::PASSIVE, headBindingBiasEnergy));
+    m_reactions["bindingFreeDualCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(rateToOneSiteDual, Crosslinker::Type::DUAL, headBindingBiasEnergy));
+    m_reactions["bindingFreeActiveCrosslinker"] = std::unique_ptr<Reaction>(new BindFreeCrosslinker(rateToOneSiteActive, Crosslinker::Type::ACTIVE, headBindingBiasEnergy));
     m_reactions["bindingPartialPassiveCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(baseRateOneToTwoExtremitiesConnected, Crosslinker::Type::PASSIVE, headBindingBiasEnergy, m_springConstant));
     m_reactions["bindingPartialDualCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(baseRateOneToTwoExtremitiesConnected, Crosslinker::Type::DUAL, headBindingBiasEnergy, m_springConstant));
     m_reactions["bindingPartialActiveCrosslinker"] = std::unique_ptr<Reaction>(new BindPartialCrosslinker(baseRateOneToTwoExtremitiesConnected, Crosslinker::Type::ACTIVE, headBindingBiasEnergy, m_springConstant));
