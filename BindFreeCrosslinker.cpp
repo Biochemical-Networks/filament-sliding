@@ -9,7 +9,9 @@
 
 BindFreeCrosslinker::BindFreeCrosslinker(const double rateToOneSite, const Crosslinker::Type typeToBind, const double headBiasEnergy)
     :   Reaction(),
-        m_rateToOneSite(rateToOneSite),
+        // Set the binding rate to zero if no cross-linkers of this type are present.
+        // This is done here, because it sets the choice of which cross-linkers are present: the typeToBind
+        m_rateToOneSite(systemState.getNFreeCrosslinkersOfType(m_typeToBind)==0 ? 0.0 : rateToOneSite),
         m_typeToBind(typeToBind),
         m_probHeadBinds(1/(1+std::exp(-headBiasEnergy))) // headBiasEnergy should have units of (k_B T)
 {
