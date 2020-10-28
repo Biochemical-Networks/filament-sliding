@@ -7,9 +7,9 @@
 #include <cstdint>
 #include <cmath>
 
-BindFreeCrosslinker::BindFreeCrosslinker(const double rateOneLinkerToOneSite, const Crosslinker::Type typeToBind, const double headBiasEnergy)
+BindFreeCrosslinker::BindFreeCrosslinker(const double rateToOneSite, const Crosslinker::Type typeToBind, const double headBiasEnergy)
     :   Reaction(),
-        m_rateOneLinkerToOneSite(rateOneLinkerToOneSite),
+        m_rateToOneSite(rateToOneSite),
         m_typeToBind(typeToBind),
         m_probHeadBinds(1/(1+std::exp(-headBiasEnergy))) // headBiasEnergy should have units of (k_B T)
 {
@@ -21,9 +21,7 @@ BindFreeCrosslinker::~BindFreeCrosslinker()
 
 void BindFreeCrosslinker::setCurrentRate(const SystemState& systemState)
 {
-    // getNFreeSites() gives the number of free sites on both microtubules. Each of those is an (unbiased) option for binding a free linker.
-    int32_t nCrosslinkersOfThisType = systemState.getNFreeCrosslinkersOfType(m_typeToBind);
-    m_currentRate = m_rateOneLinkerToOneSite * systemState.getNFreeSites() * nCrosslinkersOfThisType;
+    m_currentRate = m_rateToOneSite * systemState.getNFreeSites();
 }
 
 SiteLocation BindFreeCrosslinker::whereToConnect(const SystemState& systemState, RandomGenerator& generator) const
@@ -49,6 +47,11 @@ SiteLocation BindFreeCrosslinker::whereToConnect(const SystemState& systemState,
 
 void BindFreeCrosslinker::performReaction(SystemState& systemState, RandomGenerator& generator)
 {
+    if(systemState.getNFreeCrosslinkersOfType(m_typeToBind) <= 0)
+    {
+        throw GeneralException("BindFreeCrosslinker::performReaction() was called, but no cross-linkers are available any more");
+    }
+
     SiteLocation connectLocation = whereToConnect(systemState, generator);
 
     // Binding can be biased towards the head or tail
