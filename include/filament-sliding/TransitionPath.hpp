@@ -6,37 +6,41 @@
 #include <vector>
 
 class TransitionPath {
-private:
-  struct SystemCoordinate {
-    const double m_time;
-    const double m_mobilePosition;
-    const int32_t m_nRightPullingCrosslinkers;
-  };
+  private:
+    struct SystemCoordinate {
+        const double m_time;
+        const double m_mobilePosition;
+        const int32_t m_nRightPullingCrosslinkers;
+    };
 
-  const int32_t m_writeFrequency;
+    const int32_t m_writeFrequency;
 
-  std::vector<SystemCoordinate> m_pathVector;
+    std::vector<SystemCoordinate> m_pathVector;
 
-public:
-  TransitionPath(const int32_t writeFrequency);
-  ~TransitionPath();
+  public:
+    TransitionPath(const int32_t writeFrequency);
+    ~TransitionPath();
 
-  void addPoint(const double time, const double mobilePosition,
-                const int32_t nRightPullingCrosslinkers);
+    void addPoint(
+            const double time,
+            const double mobilePosition,
+            const int32_t nRightPullingCrosslinkers);
 
-  void clean();
+    void clean();
 
-  int32_t getSize() const;
+    int32_t getSize() const;
 
-  double getMobilePosition(const int32_t label) const;
+    double getMobilePosition(const int32_t label) const;
 
-  int32_t getNRightPullingLinkers(const int32_t label) const;
+    int32_t getNRightPullingLinkers(const int32_t label) const;
 
-  friend std::ostream &operator<<(std::ostream &out,
-                                  const TransitionPath &transitionPath);
+    friend std::ostream& operator<<(
+            std::ostream& out,
+            const TransitionPath& transitionPath);
 };
 
-std::ostream &operator<<(std::ostream &out,
-                         const TransitionPath &transitionPath);
+std::ostream& operator<<(
+        std::ostream& out,
+        const TransitionPath& transitionPath);
 
 #endif // TRANSITIONPATH_HPP

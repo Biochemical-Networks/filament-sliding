@@ -15,32 +15,34 @@
  * all full linkers of this type to the public.
  */
 
-class UnbindFullCrosslinker : public Reaction {
-private:
-  const double m_rateOneLinkerUnbinds;
-  const Crosslinker::Type m_typeToUnbind;
-  const double m_probHeadUnbinds;
+class UnbindFullCrosslinker: public Reaction {
+  private:
+    const double m_rateOneLinkerUnbinds;
+    const Crosslinker::Type m_typeToUnbind;
+    const double m_probHeadUnbinds;
 
-  const double m_springConstant;
+    const double m_springConstant;
 
-  std::vector<double>
-      m_individualRates; // store one rate for each member of the
-                         // CrosslinkerContainer.m_fullConnections
+    std::vector<double>
+            m_individualRates; // store one rate for each member of the
+                               // CrosslinkerContainer.m_fullConnections
 
-  FullConnection whichToDisconnect(SystemState &systemState,
-                                   RandomGenerator &generator) const;
+    FullConnection whichToDisconnect(
+            SystemState& systemState,
+            RandomGenerator& generator) const;
 
-public:
-  UnbindFullCrosslinker(const double rateOneLinkerUnbinds,
-                        const Crosslinker::Type typeToUnbind,
-                        const double headBiasEnergy,
-                        const double springConstant);
-  ~UnbindFullCrosslinker() override;
+  public:
+    UnbindFullCrosslinker(
+            const double rateOneLinkerUnbinds,
+            const Crosslinker::Type typeToUnbind,
+            const double headBiasEnergy,
+            const double springConstant);
+    ~UnbindFullCrosslinker() override;
 
-  void setCurrentRate(const SystemState &systemState) override;
+    void setCurrentRate(const SystemState& systemState) override;
 
-  void performReaction(SystemState &systemState,
-                       RandomGenerator &generator) override;
+    void performReaction(SystemState& systemState, RandomGenerator& generator)
+            override;
 };
 
 #endif // UNBINDFULLCROSSLINKER_HPP

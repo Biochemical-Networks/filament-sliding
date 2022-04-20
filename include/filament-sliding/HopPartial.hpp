@@ -11,44 +11,48 @@
  * all partial linkers of this type to the public.
  */
 
-class HopPartial : public Reaction {
-private:
-  const Crosslinker::Type m_typeToHop;
+class HopPartial: public Reaction {
+  private:
+    const Crosslinker::Type m_typeToHop;
 
-  // The rates of hopping towards the plus or minus tip obey r+/r- =
-  // exp(hopToPlusBiasEnergy), with the choice r+ =
-  // elementaryRate*exp(hopToPlusBias/2) and r- =
-  // elementaryRate*exp(-hopToPlusBias/2)
-  const double m_headHopToPlusRate;
-  const double m_headHopToMinusRate;
-  const double m_tailHopToPlusRate;
-  const double m_tailHopToMinusRate;
+    // The rates of hopping towards the plus or minus tip obey r+/r- =
+    // exp(hopToPlusBiasEnergy), with the choice r+ =
+    // elementaryRate*exp(hopToPlusBias/2) and r- =
+    // elementaryRate*exp(-hopToPlusBias/2)
+    const double m_headHopToPlusRate;
+    const double m_headHopToMinusRate;
+    const double m_tailHopToPlusRate;
+    const double m_tailHopToMinusRate;
 
-  const double m_cooperativeRateFactorBias;
+    const double m_cooperativeRateFactorBias;
 
-  std::vector<double>
-      m_individualRates; // store one rate for each member of the
-                         // CrosslinkerContainer.m_possiblePartialHops
+    std::vector<double>
+            m_individualRates; // store one rate for each member of the
+                               // CrosslinkerContainer.m_possiblePartialHops
 
-  double getRateToHop(const Crosslinker::Terminus terminusToHop,
-                      const HopDirection directionToHop,
-                      bool awayFromNeighbour) const;
+    double getRateToHop(
+            const Crosslinker::Terminus terminusToHop,
+            const HopDirection directionToHop,
+            bool awayFromNeighbour) const;
 
-  PossiblePartialHop whichHop(const SystemState &systemState,
-                              RandomGenerator &generator) const;
+    PossiblePartialHop whichHop(
+            const SystemState& systemState,
+            RandomGenerator& generator) const;
 
-public:
-  HopPartial(const double baseRateHead, const double baseRateTail,
-             const Crosslinker::Type typeToHop,
-             const double headHopToPlusBiasEnergy,
-             const double tailHopToPlusBiasEnergy,
-             const double cooperativeBiasEnergy);
-  ~HopPartial() override;
+  public:
+    HopPartial(
+            const double baseRateHead,
+            const double baseRateTail,
+            const Crosslinker::Type typeToHop,
+            const double headHopToPlusBiasEnergy,
+            const double tailHopToPlusBiasEnergy,
+            const double cooperativeBiasEnergy);
+    ~HopPartial() override;
 
-  void setCurrentRate(const SystemState &systemState) override;
+    void setCurrentRate(const SystemState& systemState) override;
 
-  void performReaction(SystemState &systemState,
-                       RandomGenerator &generator) override;
+    void performReaction(SystemState& systemState, RandomGenerator& generator)
+            override;
 };
 
 #endif // HOPPARTIAL_HPP

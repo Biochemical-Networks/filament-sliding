@@ -6,14 +6,14 @@
 
 // A class to be thrown upon exceptions relating the input file
 class GeneralException {
-private:
-  const std::string m_error;
+  private:
+    const std::string m_error;
 
-public:
-  GeneralException(const std::string &error);
-  GeneralException() = delete; // Do not allow an exception without a label
+  public:
+    GeneralException(const std::string& error);
+    GeneralException() = delete; // Do not allow an exception without a label
 
-  const std::string &getError() const;
+    const std::string& getError() const;
 };
 
 #endif // GENERALEXCEPTION_HPP

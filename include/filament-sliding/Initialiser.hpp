@@ -12,43 +12,47 @@
  */
 
 class Initialiser {
-public:
-  enum class InitialCrosslinkerDistribution {
-    RANDOM,
-    HEADSMOBILE,
-    TAILSMOBILE,
-    TEST
-  };
+  public:
+    enum class InitialCrosslinkerDistribution {
+        RANDOM,
+        HEADSMOBILE,
+        TAILSMOBILE,
+        TEST
+    };
 
-private:
-  const double m_initialPositionMicrotubule;
-  const double m_fractionOverlapSitesConnected;
-  InitialCrosslinkerDistribution m_initialCrosslinkerDistribution;
+  private:
+    const double m_initialPositionMicrotubule;
+    const double m_fractionOverlapSitesConnected;
+    InitialCrosslinkerDistribution m_initialCrosslinkerDistribution;
 
-  void initialiseCrosslinkers(SystemState &systemState,
-                              RandomGenerator &generator);
+    void initialiseCrosslinkers(
+            SystemState& systemState,
+            RandomGenerator& generator);
 
-  void nCrosslinkersEachTypeToConnect(
-      int32_t &nPassiveCrosslinkersToConnect,
-      int32_t &nDualCrosslinkersToConnect,
-      int32_t &nActiveCrosslinkersToConnect, const int32_t nSitesToConnect,
-      const int32_t nFreeCrosslinkers, const int32_t nFreePassiveCrosslinkers,
-      const int32_t nFreeDualCrosslinkers,
-      const int32_t nFreeActiveCrosslinkers) const;
+    void nCrosslinkersEachTypeToConnect(
+            int32_t& nPassiveCrosslinkersToConnect,
+            int32_t& nDualCrosslinkersToConnect,
+            int32_t& nActiveCrosslinkersToConnect,
+            const int32_t nSitesToConnect,
+            const int32_t nFreeCrosslinkers,
+            const int32_t nFreePassiveCrosslinkers,
+            const int32_t nFreeDualCrosslinkers,
+            const int32_t nFreeActiveCrosslinkers) const;
 
-  Crosslinker::Terminus
-  terminusToConnectToFixedMicrotubule(RandomGenerator &generator);
+    Crosslinker::Terminus terminusToConnectToFixedMicrotubule(
+            RandomGenerator& generator);
 
-public:
-  Initialiser(const double initialPositionMicrotubule,
-              const double fractionOverlapSitesConnected,
-              const std::string initialCrosslinkerDistributionString);
-  ~Initialiser();
+  public:
+    Initialiser(
+            const double initialPositionMicrotubule,
+            const double fractionOverlapSitesConnected,
+            const std::string initialCrosslinkerDistributionString);
+    ~Initialiser();
 
-  Initialiser(const Initialiser &) = delete;
-  Initialiser &operator=(const Initialiser &) = delete;
+    Initialiser(const Initialiser&) = delete;
+    Initialiser& operator=(const Initialiser&) = delete;
 
-  void initialise(SystemState &systemState, RandomGenerator &generator);
+    void initialise(SystemState& systemState, RandomGenerator& generator);
 };
 
 #endif // INITIALISER_HPP

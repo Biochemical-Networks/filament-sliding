@@ -14,36 +14,37 @@
  */
 
 class Reaction {
-protected: // Protected, since the inherited classes need access to these.
-  // Do not include an elementary rate, since there may be several (this is the
-  // case for HopFull)
-  double m_currentRate;
+  protected: // Protected, since the inherited classes need access to these.
+    // Do not include an elementary rate, since there may be several (this is
+    // the case for HopFull)
+    double m_currentRate;
 
-  double
-      m_action; // The summation of the rates at each time step, used for
-                // integrating the rate over time (time steps are assumed fixed)
-public:
-  Reaction();
-  virtual ~Reaction(); // Don't allow Reaction pointers to destroy derived
-                       // objects only using the Reaction destructor
+    double m_action; // The summation of the rates at each time step, used for
+                     // integrating the rate over time (time steps are assumed
+                     // fixed)
+  public:
+    Reaction();
+    virtual ~Reaction(); // Don't allow Reaction pointers to destroy derived
+                         // objects only using the Reaction destructor
 
-  void resetAction();
+    void resetAction();
 
-  double getAction() const; // does not have time step duration included
+    double getAction() const; // does not have time step duration included
 
-  double getCurrentRate() const;
+    double getCurrentRate() const;
 
-  void updateAction();
-  // Action is updated by adding the current rate times the time step size to
-  // it. Once the total action of all reactions reaches a (randomly set) plateau
-  // value, one fires
+    void updateAction();
+    // Action is updated by adding the current rate times the time step size to
+    // it. Once the total action of all reactions reaches a (randomly set)
+    // plateau value, one fires
 
-  // Pure virtual functions, these have to be present in a reaction, but need to
-  // be implemented in the derived classes
-  virtual void setCurrentRate(const SystemState &systemState) = 0;
+    // Pure virtual functions, these have to be present in a reaction, but need
+    // to be implemented in the derived classes
+    virtual void setCurrentRate(const SystemState& systemState) = 0;
 
-  virtual void performReaction(SystemState &systemState,
-                               RandomGenerator &generator) = 0;
+    virtual void performReaction(
+            SystemState& systemState,
+            RandomGenerator& generator) = 0;
 };
 
 #endif // REACTION_HPP

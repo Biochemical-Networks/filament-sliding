@@ -12,60 +12,61 @@
  */
 
 class Crosslinker {
-public:
-  enum class Type { PASSIVE, DUAL, ACTIVE };
+  public:
+    enum class Type { PASSIVE, DUAL, ACTIVE };
 
-  enum class Terminus // Such that other classes can name the extremities
-  {
-    HEAD,
-    TAIL
-  };
+    enum class Terminus // Such that other classes can name the extremities
+    {
+        HEAD,
+        TAIL
+    };
 
-private:
-  const Type m_type;
+  private:
+    const Type m_type;
 
-  Extremity m_head;
-  Extremity m_tail;
+    Extremity m_head;
+    Extremity m_tail;
 
-public:
-  Crosslinker(const Type crosslinkerType);
-  ~Crosslinker();
+  public:
+    Crosslinker(const Type crosslinkerType);
+    ~Crosslinker();
 
-  bool isConnected() const;
+    bool isConnected() const;
 
-  bool isFree()
-      const; // The negation of isConnected(). isConnected() is legacy, isFree()
-             // was added to create symmetry with isPartial() and isFull()
+    bool isFree() const; // The negation of isConnected(). isConnected() is
+                         // legacy, isFree() was added to create symmetry with
+                         // isPartial() and isFull()
 
-  bool isPartial() const;
+    bool isPartial() const;
 
-  bool isFull() const;
+    bool isFull() const;
 
-  Type getType() const;
+    Type getType() const;
 
-  SiteLocation getSiteLocationOf(const Terminus terminus) const;
+    SiteLocation getSiteLocationOf(const Terminus terminus) const;
 
-  void connectFromFree(const Terminus terminusToConnect,
-                       const SiteLocation connectAt);
+    void connectFromFree(
+            const Terminus terminusToConnect,
+            const SiteLocation connectAt);
 
-  void disconnectFromPartialConnection();
+    void disconnectFromPartialConnection();
 
-  void fullyConnectFromPartialConnection(const SiteLocation connectAt);
+    void fullyConnectFromPartialConnection(const SiteLocation connectAt);
 
-  void disconnectFromFullConnection(const Terminus terminusToDisconnect);
+    void disconnectFromFullConnection(const Terminus terminusToDisconnect);
 
-  Terminus getFreeTerminusWhenPartiallyConnected() const;
+    Terminus getFreeTerminusWhenPartiallyConnected() const;
 
-  Terminus getBoundTerminusWhenPartiallyConnected() const;
+    Terminus getBoundTerminusWhenPartiallyConnected() const;
 
-  Terminus getTerminusOfFullOn(const MicrotubuleType microtubule) const;
+    Terminus getTerminusOfFullOn(const MicrotubuleType microtubule) const;
 
-  SiteLocation getLocationOfFullOn(const MicrotubuleType microtubule) const;
+    SiteLocation getLocationOfFullOn(const MicrotubuleType microtubule) const;
 
-  SiteLocation getBoundLocationWhenPartiallyConnected() const;
+    SiteLocation getBoundLocationWhenPartiallyConnected() const;
 
-  SiteLocation getOneBoundLocationWhenFullyConnected(
-      const Crosslinker::Terminus terminus) const;
+    SiteLocation getOneBoundLocationWhenFullyConnected(
+            const Crosslinker::Terminus terminus) const;
 };
 
 #endif // CROSSLINKER_HPP

@@ -12,8 +12,8 @@ enum class MicrotubuleType { FIXED, MOBILE };
 // combination (microtubuleType/position on the microtubule). The word
 // 'Position' refers to an integer giving the site number.
 struct SiteLocation {
-  MicrotubuleType microtubule;
-  int32_t position;
+    MicrotubuleType microtubule;
+    int32_t position;
 };
 
 #endif // MICROTUBULETYPE_HPP

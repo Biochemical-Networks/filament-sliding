@@ -24,100 +24,112 @@
  */
 
 class Microtubule {
-protected: // such that MobileMicrotubule can access it
-  const double m_latticeSpacing;
+  protected: // such that MobileMicrotubule can access it
+    const double m_latticeSpacing;
 
-private:
-  const MicrotubuleType m_type;
-  int32_t m_nSites;
-  double m_length;
+  private:
+    const MicrotubuleType m_type;
+    int32_t m_nSites;
+    double m_length;
 
-  // Choose to focus on free instead of occupied sites, since functions may ask
-  // if the site is free, not if it is occupied (otherwise completely equivalent
-  // of course)
-  int32_t m_nFreeSites;
-  std::vector<Site> m_sites; // Vector, because the size never changes, but is
-                             // only known at run time
+    // Choose to focus on free instead of occupied sites, since functions may
+    // ask if the site is free, not if it is occupied (otherwise completely
+    // equivalent of course)
+    int32_t m_nFreeSites;
+    std::vector<Site> m_sites; // Vector, because the size never changes, but is
+                               // only known at run time
 
-  std::deque<int32_t>
-      m_freeSitePositions; // Elements are removed often, so std::deque is used.
-                           // The order of the positions will NOT be preserved.
+    std::deque<int32_t>
+            m_freeSitePositions; // Elements are removed often, so std::deque is
+                                 // used. The order of the positions will NOT be
+                                 // preserved.
 
-  std::pair<double, double> getOldAndNewStretchFullHop(
-      const int32_t oldPosition, const int32_t newPosition,
-      const double positionOppositeExtremity, const double maxStretch) const;
+    std::pair<double, double> getOldAndNewStretchFullHop(
+            const int32_t oldPosition,
+            const int32_t newPosition,
+            const double positionOppositeExtremity,
+            const double maxStretch) const;
 
-  void cleanPossibleCrossings(
-      std::vector<PossibleFullConnection> &possibleConnectionsToCheck,
-      const double mobilePosition, const double maxStretch) const;
+    void cleanPossibleCrossings(
+            std::vector<PossibleFullConnection>& possibleConnectionsToCheck,
+            const double mobilePosition,
+            const double maxStretch) const;
 
-  std::vector<FullConnectionLocations>
-  getFullCrosslinkersCloseTo(const double position,
-                             const double maxStretch) const;
+    std::vector<FullConnectionLocations> getFullCrosslinkersCloseTo(
+            const double position,
+            const double maxStretch) const;
 
-public:
-  Microtubule(const MicrotubuleType type, const double length,
-              const double latticeSpacing);
-  virtual ~Microtubule();
+  public:
+    Microtubule(
+            const MicrotubuleType type,
+            const double length,
+            const double latticeSpacing);
+    virtual ~Microtubule();
 
-  void connectSite(const int32_t sitePosition,
-                   Crosslinker &crosslinkerToConnect,
-                   const Crosslinker::Terminus terminusToConnect);
+    void connectSite(
+            const int32_t sitePosition,
+            Crosslinker& crosslinkerToConnect,
+            const Crosslinker::Terminus terminusToConnect);
 
-  void disconnectSite(const int32_t sitePosition);
+    void disconnectSite(const int32_t sitePosition);
 
-  double getLength() const;
+    double getLength() const;
 
-  int32_t getNSites() const;
+    int32_t getNSites() const;
 
-  double getLatticeSpacing() const;
+    double getLatticeSpacing() const;
 
-  int32_t getNFreeSites() const;
+    int32_t getNFreeSites() const;
 
-  int32_t getFreeSitePosition(const int32_t whichFreeSite)
-      const; // whichFreeSite labels the free sites, and can be 0 <=
-             // whichFreeSite < m_nFreeSites
+    int32_t getFreeSitePosition(const int32_t whichFreeSite)
+            const; // whichFreeSite labels the free sites, and can be 0 <=
+                   // whichFreeSite < m_nFreeSites
 
-  int32_t getFirstPositionCloseTo(const double position,
-                                  const double maxStretch) const;
+    int32_t getFirstPositionCloseTo(
+            const double position,
+            const double maxStretch) const;
 
-  int32_t getLastPositionCloseTo(const double position,
-                                 const double maxStretch) const;
+    int32_t getLastPositionCloseTo(
+            const double position,
+            const double maxStretch) const;
 
-  int32_t getNFreeSitesCloseTo(const double position,
-                               const double maxStretch) const;
+    int32_t getNFreeSitesCloseTo(const double position, const double maxStretch)
+            const;
 
-  // The following functions are const, since they do not modify the Microtubule
-  // in any way; only the CrosslinkerContainer is changed
-  void addPossibleConnectionsCloseTo(
-      std::vector<PossibleFullConnection> &possibleConnections,
-      Crosslinker *const p_oppositeCrosslinker, const double position,
-      const double mobilePosition, const double maxStretch) const;
+    // The following functions are const, since they do not modify the
+    // Microtubule in any way; only the CrosslinkerContainer is changed
+    void addPossibleConnectionsCloseTo(
+            std::vector<PossibleFullConnection>& possibleConnections,
+            Crosslinker* const p_oppositeCrosslinker,
+            const double position,
+            const double mobilePosition,
+            const double maxStretch) const;
 
-  void addPossiblePartialHopsCloseTo(
-      std::vector<PossiblePartialHop> &possiblePartialHops,
-      Crosslinker *const p_partialLinker) const;
+    void addPossiblePartialHopsCloseTo(
+            std::vector<PossiblePartialHop>& possiblePartialHops,
+            Crosslinker* const p_partialLinker) const;
 
-  void
-  addPossibleFullHopsCloseTo(std::vector<PossibleFullHop> &possibleFullHops,
-                             const FullExtremity &fullLinkerExtremity,
-                             const double positionOppositeExtremity,
-                             const double maxStretch) const;
+    void addPossibleFullHopsCloseTo(
+            std::vector<PossibleFullHop>& possibleFullHops,
+            const FullExtremity& fullLinkerExtremity,
+            const double positionOppositeExtremity,
+            const double maxStretch) const;
 
-  std::vector<Crosslinker *>
-  getPartialCrosslinkersCloseTo(const double position, const double maxStretch,
-                                const Crosslinker::Type typeToCheck) const;
+    std::vector<Crosslinker*> getPartialCrosslinkersCloseTo(
+            const double position,
+            const double maxStretch,
+            const Crosslinker::Type typeToCheck) const;
 
-  // The following functions take a location instead of a linker (pointer),
-  // since it could be used for finding neighbours of both full or partial
-  // linkers
-  std::vector<Crosslinker *> getNeighbouringPartialCrosslinkersOf(
-      const SiteLocation &originLocation,
-      const Crosslinker::Type typeToCheck) const;
+    // The following functions take a location instead of a linker (pointer),
+    // since it could be used for finding neighbours of both full or partial
+    // linkers
+    std::vector<Crosslinker*> getNeighbouringPartialCrosslinkersOf(
+            const SiteLocation& originLocation,
+            const Crosslinker::Type typeToCheck) const;
 
-  std::vector<FullExtremity>
-  getNeighbouringFullCrosslinkersOf(const SiteLocation &originLocation,
-                                    const Crosslinker::Type typeToCheck) const;
+    std::vector<FullExtremity> getNeighbouringFullCrosslinkersOf(
+            const SiteLocation& originLocation,
+            const Crosslinker::Type typeToCheck) const;
 };
 
 #endif // MICROTUBULE_HPP
