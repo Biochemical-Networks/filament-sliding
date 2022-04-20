@@ -37,3 +37,9 @@ GitHashWhenCompiled.hpp
 # No videos
 *.mkv
 *.ogg
+
+# Misc
+.cache/
+build/
+*tags
+*swp
