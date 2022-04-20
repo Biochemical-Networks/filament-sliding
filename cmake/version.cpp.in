@@ -1,0 +1,3 @@
+#include "filament-sliding/version.hpp"
+
+char const *const GIT_COMMIT = "@GIT_HASH@";
