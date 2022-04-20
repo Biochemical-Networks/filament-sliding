@@ -34,6 +34,7 @@ add_library(
   src/BindFreeCrosslinker.cpp
   src/BindPartialCrosslinker.cpp
   src/Clock.cpp
+  src/CommandArgumentHandler.cpp
   src/Crosslinker.cpp
   src/CrosslinkerContainer.cpp
   src/DefaultParameterMap.cpp
