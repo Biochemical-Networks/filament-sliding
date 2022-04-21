@@ -6,31 +6,20 @@ and diffuse between the microtubules. We use this dynamics to study the movement
 which can move under influence of passive diffusion or external forces, and to quantify the friction between
 the filaments caused by the crosslinkers.
 
-## Compilation
+## Compilation and installation
 
-I have created the executables using CodeBlocks and g++. Make sure to run "addGitHash.sh" before every compile (include it in the build process).
-When compiling on a system where git is not available, this should first be broken out of the Log class.
-In Code::Blocks, run the script automatically before each compilation by adding "./addGitHash.sh" to the Pre-build steps in Project->Build Options->Pre/post build steps.
-Then, if the git hash has changed before compilation, GitHashWhenCompiled.hpp will change. Since Code::Blocks automatically makes
-Log.cpp depend on GitHashWhenCompiled.hpp, a recompile of Log will happen and the new hash is added.
+The project uses the GNU Scientific Library (GSL) for some special functions.
+For creating graphics, the program uses the Simple and Fast Multimedia Library (SFML), which uses OpenGL.
+If the libraries are installed in the default location, finding them should be automatic.
+Building and installation is done with CMake.
+To configure, build and install in `installdir`, run
+```
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX=[installdir]
+cmake --build build
+cmake --install build
+```
 
 To create a debug version of the code, define MYDEBUG as a variable. This is done in g++ by adding the "-DMYDEBUG" flag.
-In Code::Blocks, go to Project->Build Options->Debug->Compiler Settings-> #defines, and add MYDEBUG as a variable.
-
-The project uses the GNU Scientific Library (GSL) for some special functions. For this, make sure that the GSL is installed,
-and that the compiler and linker know where to find it.
-If the libraries are installed in the default location, finding them should be automatic.
-The linker needs the options -lgsl -lgslcblas -lm, which can be added in Code::Blocks by adding gsl, gslcblas and m to:
-Project->Build Options->CrossLink->linker settings-> add
-
-For creating graphics, the program uses the Simple and Fast Multimedia Library (SFML), which uses OpenGL.
-The linker needs the options -lsfml-graphics -lsfml-window -lsfml-system, which can be added in
-Code::Blocks by adding sfml-graphics sfml-window sfml-system to:
-Project->Build Options->CrossLink->linker settings-> add
-
-To create a makefile out of the Code::Blocks project, use the tool cbp2make. Download here: https://sourceforge.net/projects/cbp2make/
-To run it, first compile cbp2make, then ./cbp2make -in <input project.cbp> (--all-os) (-out <makefile name>)
-The --all-os option creates makefiles for windows, mac-os and unix-like systems (linux).
 
 ## How to run
 
@@ -110,5 +99,7 @@ and not the rates at which these connections are created.
 ## Author
 
 Harmen Wierenga
+
 h.wierenga@amolf.nl
-2018,2019,2020
+
+2018, 2019, 2020
